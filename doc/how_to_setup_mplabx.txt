@@ -1,0 +1,11 @@
+How to setup MPLAB X IDE:
+- Clone repository to local dir
+- Create new project
+- Choose PIC18F87K22
+- Choose C18 Toolchain (v3.42 or above)
+- Add Files:
+	.asm to Source Files
+	.c to Source Files
+	p2_definitions.h and shared_definitions.h to Header Files
+	.inc to Important Files
+	18F87K22_ostc3.lkr to Linker Files

@@ -13,12 +13,12 @@ icons_data   CODE
 
 ; Dive mode warning icon
 	global	dive_warning_block
-#include "../OSTC3/Icons/dive_warning.inc"	;45x39 px
+#include "../src/Icons/dive_warning.inc"	;45x39 px
 ; small warning icon
 ;	global	warning_block
-;#include "../OSTC3/Icons/warning.inc"       ;25x22 px
+;#include "../src/Icons/warning.inc"       ;25x22 px
 	global	ostc3_logo_block
 ; OSTC3 scribble
-#include "../OSTC3/Icons/ostc3_logo.inc"    ;220x61 px
+#include "../src/Icons/ostc3_logo.inc"    ;220x61 px
 
         END

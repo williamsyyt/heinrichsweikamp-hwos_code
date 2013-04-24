@@ -39,8 +39,8 @@ aa_font16_block:
 			DB	'¿'-aa_font16_firstChar     ; replace by ¿ when unknown.
 			DB	aa_font16_height + 0x80
 ;
-#include	"../OSTC3/Fonts/aa_font16_idx.inc"				; SHOULD FOLLOW !
-#include	"../OSTC3/Fonts/aa_font16.inc"
+#include	"../src/Fonts/aa_font16_idx.inc"				; SHOULD FOLLOW !
+#include	"../src/Fonts/aa_font16.inc"
 aa_font16_end:
 ; Make sure this is coherent...
 	if aa_font16_nbbits != 3
@@ -76,8 +76,8 @@ aa_font28_block:
 			DB	0x83-aa_font28_firstChar; replace by ¤ when unknown.
 			DB	aa_font28_height + 0x80
 ;
-#include	"../OSTC3/Fonts/aa_font28_idx.inc"				; SHOULD FOLLOW !
-#include	"../OSTC3/Fonts/aa_font28.inc"
+#include	"../src/Fonts/aa_font28_idx.inc"				; SHOULD FOLLOW !
+#include	"../src/Fonts/aa_font28.inc"
 aa_font28_end:
 ; Make sure this is coherent...
 	if aa_font28_nbbits != 3
@@ -116,8 +116,8 @@ aa_font36_block:
 			DB	0x87-aa_font34_firstChar; replace by ¤ when unknown.
 			DB	aa_font34_height + 0x80
 ;
-#include	"../OSTC3/Fonts/aa_font34_idx.inc"				; SHOULD FOLLOW !
-#include	"../OSTC3/Fonts/aa_font34.inc"
+#include	"../src/Fonts/aa_font34_idx.inc"				; SHOULD FOLLOW !
+#include	"../src/Fonts/aa_font34.inc"
 aa_font36_end:
 ; Make sure this is coherent...
 	if aa_font34_nbbits != 3
@@ -138,8 +138,8 @@ aa_font48_block:
 			DB	0x3E-aa_font48_firstChar
 			DB	aa_font48_height + 0x80		; AA flag.
 ;
-#include	"../OSTC3/Fonts/aa_font48_idx.inc"
-#include	"../OSTC3/Fonts/aa_font48.inc"
+#include	"../src/Fonts/aa_font48_idx.inc"
+#include	"../src/Fonts/aa_font48.inc"
 aa_font48_end:
 ; Make sure this is coherent...
 	if aa_font48_nbbits != 3
@@ -158,8 +158,8 @@ aa_font90_block:
 			DB	0x2F-aa_font90_firstChar
 			DB	aa_font90_height + 0x80		; AA flag.
 ;
-#include	"../OSTC3/Fonts/aa_font90_idx.inc"
-#include	"../OSTC3/Fonts/aa_font90.inc"
+#include	"../src/Fonts/aa_font90_idx.inc"
+#include	"../src/Fonts/aa_font90.inc"
 aa_font90_end:
 ; Make sure this is coherent...
 	if aa_font90_nbbits != 3

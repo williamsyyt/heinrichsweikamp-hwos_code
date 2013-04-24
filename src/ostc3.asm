@@ -12,23 +12,22 @@
 #include "ostc3.inc"
 
 ;=============================================================================
-;
 ;----------------------------- CONFIG ---------------------------------
-;    CONFIG	RETEN = OFF          ;Disabled - Controlled by SRETEN bit
-;    CONFIG	SOSCSEL = HIGH       ;High Power SOSC circuit selected
-;    CONFIG XINST = OFF          ;Code won't excute in extended mode...
-;    CONFIG	FOSC = INTIO2        ;Internal RC oscillator, no clock-out
-;    CONFIG	PLLCFG = OFF
-;    CONFIG	IESO = OFF           ;Disabled
-;    CONFIG	PWRTEN = OFF         ;Disabled, because incompatible with ICD3 (Ri-400)
-;    CONFIG	BOREN = ON           ;Controlled with SBOREN bit
-;    CONFIG	BORV = 2             ;2.0V
-;    CONFIG	BORPWR = MEDIUM      ;BORMV set to medium power level
-;    CONFIG	WDTEN = ON           ;WDT controlled by SWDTEN bit setting
-;    CONFIG	WDTPS = 128          ;1:128
-;    CONFIG	RTCOSC = SOSCREF     ;RTCC uses SOSC
-;    CONFIG	MCLRE = ON           ;MCLR Enabled, RG5 Disabled
-;    CONFIG	CCP2MX = PORTBE      ;RE7-Microcontroller Mode/RB3-All other modes
+    CONFIG	RETEN = OFF          ;Disabled - Controlled by SRETEN bit
+    CONFIG	SOSCSEL = HIGH       ;High Power SOSC circuit selected
+    CONFIG XINST = OFF          ;Code won't excute in extended mode...
+    CONFIG	FOSC = INTIO2        ;Internal RC oscillator, no clock-out
+    CONFIG	PLLCFG = OFF
+    CONFIG	IESO = OFF           ;Disabled
+    CONFIG	PWRTEN = OFF         ;Disabled, because incompatible with ICD3 (Ri-400)
+    CONFIG	BOREN = ON           ;Controlled with SBOREN bit
+    CONFIG	BORV = 2             ;2.0V
+    CONFIG	BORPWR = MEDIUM      ;BORMV set to medium power level
+    CONFIG	WDTEN = ON           ;WDT controlled by SWDTEN bit setting
+    CONFIG	WDTPS = 128          ;1:128
+    CONFIG	RTCOSC = SOSCREF     ;RTCC uses SOSC
+    CONFIG	MCLRE = ON           ;MCLR Enabled, RG5 Disabled
+    CONFIG	CCP2MX = PORTBE      ;RE7-Microcontroller Mode/RB3-All other modes
 ;=============================================================================
 boot    CODE
     global init_ostc3

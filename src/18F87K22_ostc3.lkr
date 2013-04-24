@@ -7,7 +7,6 @@ FILES "p18F87K22.lib"
 
 // General PROM code area
 CODEPAGE   NAME=page       START=0x0            END=0x1DCFF
-CODEPAGE   NAME=boot       START=0x1E000        END=0x1FFFF
 
 // Special area reserved for tables. Just to make sure the linker won't
 // relocate something at the end of the bühlmann text table...
