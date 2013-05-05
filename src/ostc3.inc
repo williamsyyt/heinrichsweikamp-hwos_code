@@ -19,7 +19,7 @@
 #include <ports.inc>                        ; Portmap
 
 #DEFINE	softwareversion_x		d'0'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'90'		; Software version  XX.YY
+#DEFINE	softwareversion_y		d'91'		; Software version  XX.YY
 #DEFINE softwareversion_beta 	0 			; (and 0 for release)
 
 #DEFINE comm_service_key        0xABCDEF
@@ -141,7 +141,7 @@
 #DEFINE	velocity_warning_level_1	.7	; [m/min]
 
 ; Battery thresholds
-#DEFINE lithium_36v_empty       .3050   ; [mV] Saft 3,6V LS14500 AA - threshold for battery percent display
+#DEFINE lithium_36v_empty       .2800   ; [mV] Saft 3,6V LS14500 AA - threshold for battery percent display
 #DEFINE	lithium_36v_low			.2000	; [mV] (Must be bigger then aa_15v_high!)
 #DEFINE	aa_15v_high				.1550	; [mV] Energizer 1,5V E2 AA
 #DEFINE	aa_15v_low				.1100	; [mV] According to Energizer Datasheet EBC-4201R, Page 2
@@ -158,12 +158,12 @@
 #DEFINE current_compass             .28
 
 ; Brightness thresholds (between zero (off) and 255 (max. power))
-#DEFINE	ambient_light_max_high_36V	.220		; When used with a 3,6V battery
-#DEFINE	ambient_light_max_high		.170
+#DEFINE	ambient_light_max_high_36V	.175		; When used with a 3,6V battery
+#DEFINE	ambient_light_max_high		.150
 #DEFINE	ambient_light_min_high		.40
-#DEFINE	ambient_light_max_medium 	.155
+#DEFINE	ambient_light_max_medium 	.135
 #DEFINE	ambient_light_min_medium 	.30
-#DEFINE	ambient_light_max_eco		.120
+#DEFINE	ambient_light_max_eco		.110
 #DEFINE	ambient_light_min_eco		.20
 
 ; IR Link timeout
