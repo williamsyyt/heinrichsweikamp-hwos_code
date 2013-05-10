@@ -144,6 +144,11 @@ write_byte_ext_flash_plus_h1:
 	rcall		ext_flash_byte_write	; Write the byte
 	bra			incf_ext_flash_address_p1	; +1 and return
 
+    global  write_byte_ext_flash_plus_nocnt
+write_byte_ext_flash_plus_nocnt:       ; Write from WREG and increase address after write with banking at 0x200000
+    movwf		temp1					; store data
+    bra         write_byte_ext_flash_plus2
+
 	global	write_byte_ext_flash_plus	; Write from WREG and increase address after write with banking at 0x200000
 write_byte_ext_flash_plus:
 	movwf		temp1					; store data
@@ -154,6 +159,7 @@ write_byte_ext_flash_plus:
     addwfc      ext_flash_dive_counter+1,F
     addwfc      ext_flash_dive_counter+2,F  ; 24bit++
 
+write_byte_ext_flash_plus2:
 	; Now test if write is done at first byte of 4kB block
 	; if yes -> delete 4kB block first
 	tstfsz		ext_flash_address+0			; at 0x00?

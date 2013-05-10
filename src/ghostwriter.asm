@@ -336,11 +336,11 @@ ghostwriter_end_dive:
     incf_ext_flash_address_0x20	d'6'        ; Skip internal "0xFA 0xFA #Divenumber:2 0xFA 0xFA" Header
     ; Store dive length
     movf   ext_flash_dive_counter+0,W
-	rcall	ghostwrite_byte_profile 	; WREG -> Profile in ext. flash
+	call    write_byte_ext_flash_plus_nocnt ; WREG -> Profile in ext. flash (No ext_flash_dive_counter:3 increase)
     movf   ext_flash_dive_counter+1,W
-	rcall	ghostwrite_byte_profile 	; WREG -> Profile in ext. flash
+	call    write_byte_ext_flash_plus_nocnt ; WREG -> Profile in ext. flash (No ext_flash_dive_counter:3 increase)
     movf   ext_flash_dive_counter+2,W
-	rcall	ghostwrite_byte_profile 	; WREG -> Profile in ext. flash
+	call    write_byte_ext_flash_plus_nocnt ; WREG -> Profile in ext. flash (No ext_flash_dive_counter:3 increase)
 
 ; profile recording done.
 
