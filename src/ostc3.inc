@@ -19,7 +19,7 @@
 #include <ports.inc>                        ; Portmap
 
 #DEFINE	softwareversion_x		d'0'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'91'		; Software version  XX.YY
+#DEFINE	softwareversion_y		d'92'		; Software version  XX.YY
 #DEFINE softwareversion_beta 	0 			; (and 0 for release)
 
 #DEFINE comm_service_key        0xABCDEF

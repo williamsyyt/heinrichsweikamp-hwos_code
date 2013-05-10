@@ -594,11 +594,15 @@ end_dive_oc_cc_common:
     rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
     movff   char_O_relative_gradient_GF,WREG
     rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
-    ; Spares at Byte 57-60
-    movlw   0xFF
+
+    ; Logbook offset
+    call    do_logoffset_common_read; Read into lo:hi
+    movf    lo,W
     rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
-    movlw   0xFF
+    movf    hi,W
     rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
+
+    ; Spare at Byte 60
     movlw   0xFF
     rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
     ; Store 5 Setpoints
