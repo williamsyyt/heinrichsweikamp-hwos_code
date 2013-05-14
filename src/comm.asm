@@ -624,11 +624,11 @@ comm_set_custom_text:
 comm_set_ctext_loop:
     call	rs232_get_byte
     btfsc	rs232_recieve_overflow          ; Got byte?
-    return                                  ; No, abort!
-    movff	RCREG1,POSTINC2                  ; Store character
+    bra		comm_download_mode0             ; No, loop with timeout reset
+    movff	RCREG1,POSTINC2                 ; Store character
     decfsz	lo,F
     bra		comm_set_ctext_loop
-    bra		comm_download_mode0        ; Done. Loop with timeout reset
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
 
 ;-----------------------------------------------------------------------------
 ; Reply Serial (2 bytes low:high), firmware (major.minor) and custom text.
