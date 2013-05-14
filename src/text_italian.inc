@@ -21,7 +21,7 @@
     TCODE   tDivemenu_Gaslist,  "Lista Gas"       ; Gaslist
     TCODE   tDivemenu_ResetAvr, "Azzera Media"  ; Reset Avr.
     TCODE   tDivemenu_Setpoint, "Setpoint"      ; Setpoint
-    TCODE   tDivemenu_UseSensor,"Usa Sensore"    ; Use Sensor
+    TCODE   tDivemenu_UseSensor,"Usa Sensori"    ; Use Sensor
     TCODE   tDivemenu_ToggleGF, "Alterna GF"     ; Toggle GF
 
 ; Main menu
@@ -43,7 +43,7 @@
     TCODE   tCCRSetup,  "Imposta CCR"     ; CCR Setup
     TCODE   tDiluentSetup,"Imposta Diluente"   ; Diluent Setup
     TCODE   tFixedSetpoints,"Setpoints Fissi" ; Fixed Setpoints
-    TCODE   tCCRSensor, "Sensore CCR"    ; CCR Sensor
+    TCODE   tCCRSensor, "Sensori CCR"    ; CCR Sensor
 
 ; Gas menu
     TCODE   tGaslist,   "Lista Gas OC"
@@ -69,9 +69,9 @@
     TCODE   tDepthMinus,"Profondita' -"
     TCODE   tDepthReset,"Reset a MOD:"
     TCODE   tSetup_mix, "Imposta Miscela"
-    TCODE   tCCRMode,   "Modalita' CCR:"             ; CCR Mode:
+    TCODE   tCCRMode,   "Modo CCR:"             ; CCR Mode:
     TCODE   tCCRModeFixedSP,  "SP Fissi"        ; Fixed SP
-    TCODE   tCCRModeSensor,   "Sensore"          ; Sensor
+    TCODE   tCCRModeSensor,   "Sensori"          ; Sensor
     TCODE   tSP,            "SP"                ; SP (SetPoint)
     TCODE   tSPPlus,    "pO2+"                  ; pO2+
 
@@ -187,12 +187,12 @@
 	TCODE	tSelectO2,	 "O2  "           	; O2
     TCODE   tSelectNx,   "Nx"               ; Nx
     TCODE   tSelectTx,   "Tx"               ; Tx
-    TCODE   tDepth,      "Prof.'"           ; Depth
+    TCODE   tDepth,      "Prof."            ; Depth
     TCODE   tMaxDepth,   "Prof. Max"        ; Max. Depth
     TCODE   tDivetime,   "Divetime"         ; Divetime
-    TCODE   tDiveHudMask1,  "Sensore 1"
-    TCODE   tDiveHudMask2,  "Sensore 2"
-    TCODE   tDiveHudMask3,  "Sensore 3"
+    TCODE   tDiveHudMask1,  "Sensor 1"
+    TCODE   tDiveHudMask2,  "Sensor 2"
+    TCODE   tDiveHudMask3,  "Sensor 3"
     TCODE   tDiveTotalAvr,  "Media"
     TCODE   tDiveStopwatch, "Cronometro"
     TCODE   tDiveStopAvr,   "Media Interrotta"
