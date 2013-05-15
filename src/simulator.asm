@@ -54,7 +54,6 @@ do_demo_planner:
 ;        call    deco_reset              ; TODO: remove reset all Decodata
         call    deco_planer
         call    deco_show_plan
-        call    speed_eco
         bcf     switch_right
         bcf     switch_left
         goto    do_planner_menu
@@ -631,7 +630,7 @@ deco_show_plan_2:
         bra     deco_show_plan_4
         call    log_screendump_and_onesecond    ; Check if we need to make a screenshot and check for new second
     	btfsc	sleepmode                       ; Timeout?
-        bra		deco_show_plan_4                ; Exit
+        goto    restart
         bra     deco_show_plan_2
 
 deco_show_plan_3:

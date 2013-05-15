@@ -1,2 +1,9 @@
 New in 0.91:
 BUGFIX: Battery percents in cold water
+
+New in 0.93:
+BUGFIX: Custom text <60 chars
+BUGFIX: Logbook PC protocol
+Italian language updates
+BUGFIX: Timeout in decoplanner result page
+
