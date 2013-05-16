@@ -59,6 +59,8 @@ clear_rambank:
 	banksel common                  ; get_calibration_data uses isr_backup
 	bcf		no_sensor_int		    ; normal sensor interrupt mode
 
+    call	TFT_DisplayOff			; display off
+    bsf     LEDr                    ; Status LED
 	bcf		pressure_refresh
 ; First pass will not have valid temperature!
 	btfss	pressure_refresh 		; Air pressure compensation
@@ -67,6 +69,7 @@ clear_rambank:
 	bcf		pressure_refresh
 	btfss	pressure_refresh 		; Air pressure compensation
 	bra		$-2
+    bcf     LEDr
 
 	clrf	rel_pressure+0
 	clrf	rel_pressure+1
