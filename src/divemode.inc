@@ -25,6 +25,8 @@
 
 #DEFINE	max_depth_row           depth_row
 #DEFINE	max_depth_column        .64
+#DEFINE	max_depth_dm_column     .87
+#DEFINE max_depth_dm_row        depth_row+.12
 #DEFINE	max_depth_feet_row		max_depth_row
 #DEFINE	max_depth_feet_column	.64
 

@@ -1,3 +1,6 @@
+New in 0.94:
+CHANGE: Show Max. Depth with 0.1m precision
+
 New in 0.91:
 BUGFIX: Battery percents in cold water
 

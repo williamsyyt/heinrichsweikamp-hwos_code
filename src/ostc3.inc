@@ -19,7 +19,7 @@
 #include <ports.inc>                        ; Portmap
 
 #DEFINE	softwareversion_x		d'0'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'93'		; Software version  XX.YY
+#DEFINE	softwareversion_y		d'94'		; Software version  XX.YY
 #DEFINE softwareversion_beta 	0 			; (and 0 for release)
 
 #DEFINE comm_service_key        0xABCDEF
@@ -565,6 +565,7 @@ opt_enable_aGF          res 1   ; =1: aGF can be selected underwater
 #DEFINE ccr_diluent_setup       flag7,4 ; =1: Setting up Diluents ("Gas6-10")
 #DEFINE menu_show_sensors       flag7,5 ; =1: Update HUD data in menu
 #DEFINE short_gas_decriptions   flag7,6 ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
+#DEFINE max_depth_greater_100m  flag7,7 ; =1: Max. Depth > 100m
 
 #DEFINE is_bailout              flag8,0 ; =1: Bailout
 #DEFINE is_bailout_menu         flag8,1 ; =1: Bailout

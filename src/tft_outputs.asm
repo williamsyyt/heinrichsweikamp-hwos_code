@@ -1651,8 +1651,12 @@ TFT_depth_metric:
     bra		depth_greater_99_84mtr
 
 	btfsc	depth_greater_100m			; Was depth>100m during last call
-	call	TFT_clear_depth             ; Yes, clear depth area
+	rcall	TFT_clear_depth             ; Yes, clear depth area
 	bcf		depth_greater_100m			; Do this once only...
+
+	movlw	.039
+	cpfslt	hi
+    bra		depth_greater_99_84mtr
 
 	lfsr    FSR2,buffer
 	movlw	HIGH	d'1000'
@@ -2080,13 +2084,96 @@ TFT_max_pressure3:
 	return
 
 TFT_max_pressure2_metric:
-	WIN_MEDIUM	max_depth_column,max_depth_row
-	lfsr	FSR2,buffer
-	call	TFT_standard_color
-	bsf		ignore_digit4			; no 0.1m
+    WIN_MEDIUM	max_depth_column,max_depth_row
+
+	movlw	.039
+	cpfslt	hi
+    bra		max_depth_greater_99_84mtr
+
+	btfsc	max_depth_greater_100m			; Was depth>100m during last call
+	rcall	TFT_clear_max_depth             ; Yes, clear depth area
+	bcf		max_depth_greater_100m			; Do this once only...
+
+	movlw	.039
+	cpfslt	hi
+    bra		max_depth_greater_99_84mtr
+
+	lfsr    FSR2,buffer
+	movlw	HIGH	d'1000'
+	movwf	sub_a+1
+	movlw	LOW		d'1000'
+	movwf	sub_a+0
+	movff	hi,sub_b+1
+	movff	lo,sub_b+0
+	incf	sub_b+0,F
+	movlw	d'0'
+	addwfc	sub_b+1,F				; Add 1mbar offset
+	call	sub16					; sub_c = sub_a - sub_b
+    movlw   ' '
+	btfss	neg_flag				; Depth lower then 10m?
+    movwf   POSTINC2                ; Yes, add extra space
+
+	clrf    sub_a+1
+	movlw	d'99'
+	movwf	sub_a+0
+	movff	hi,sub_b+1
+	movff	lo,sub_b+0
+	call	subU16					; sub_c = sub_a - sub_b
+	btfss	neg_flag				; Depth lower then 1m?
+	bra		tft_max_depth2          ; Yes, display manual Zero
+
+	bsf     ignore_digit4			; no 0.1m
+    bsf     leftbind
 	output_16
-	STRCAT_PRINT ""
+	bra		tft_max_depth3
+
+tft_max_depth2:
+	WIN_MEDIUM	max_depth_column,max_depth_row
+	STRCAT	"0"
+
+tft_max_depth3:
+	call	TFT_standard_color
+	STRCAT_PRINT ""					; Display full meters
+    bcf     leftbind
+
+	; .1m in SMALL font
+	WIN_SMALL	max_depth_dm_column,max_depth_dm_row
+
+    SAFE_2BYTE_COPY max_pressure, lo
+	call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
+
+    lfsr    FSR2,buffer
+	PUTC    "."
+
+	movlw	d'4'
+	movwf	ignore_digits
+	bsf		ignore_digit5
+    bsf     leftbind
+	output_16dp	d'0'
+	STRCAT_PRINT ""					; Display decimeters
+    bcf     leftbind
 	return
+
+max_depth_greater_99_84mtr:             ; Display only in full meters
+	btfss	max_depth_greater_100m		; Is max depth>100m already?
+	rcall	TFT_clear_max_depth			; No, clear max depth area and set flag
+	; Max. Depth is already in hi:lo
+	; Show max. depth in Full meters
+	; That means ignore figure 4 and 5
+	lfsr    FSR2,buffer
+	bsf		ignore_digit4
+	bsf		leftbind
+	output_16
+	bcf		leftbind
+    STRCAT_PRINT ""					; Display full meters only
+	WIN_FONT 	FT_SMALL
+	return
+
+TFT_clear_max_depth:            			; No, clear max. depth area and set flag
+    WIN_BOX_BLACK   max_depth_row,.49,max_depth_column, max_depth_dm_column+.13    ;top, bottom, left, right
+	bsf		max_depth_greater_100m			; Set Flag
+	return
+
 
 TFT_max_pressure_apnoe:
 	btfss	FLAG_active_descent				; Are we descending?			
