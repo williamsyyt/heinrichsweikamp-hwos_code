@@ -1270,8 +1270,8 @@ TFT_temp_surfmode_metric:
 	bsf		ignore_digit5		; Full degrees only
 	output_16
 
-	; read-back the buffer+3
-	movff	buffer+3,lo
+	; read-back the buffer+4
+	movff	buffer+4,lo
 	movlw	" "					; Space
 	cpfseq	lo					; Was it a space (between +1°C and -1°C)?
 	bra		TFT_temp_surfmode1	; No.
