@@ -541,7 +541,7 @@ gaslist_calc_mod_divemode:
 gaslist_MOD_END:
         rcall   gaslist_calc_mod        ; Compute MOD into WREG
         movwf   lo                      ; Copy to lo
-        STRCAT_TEXT tEAD                ; EAD:
+        STRCAT_TEXT tMOD                ; MOD:
    		TSTOSS	opt_units               ; 0=Meters, 1=Feets
 		bra		gaslist_MOD_metric
 ;gaslist_MOD_imperial:
