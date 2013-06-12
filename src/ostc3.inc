@@ -164,7 +164,7 @@
 #DEFINE	ambient_light_max_medium 	.135
 #DEFINE	ambient_light_min_medium 	.30
 #DEFINE	ambient_light_max_eco		.110
-#DEFINE	ambient_light_min_eco		.20
+#DEFINE	ambient_light_min_eco		.15
 
 ; IR Link timeout
 #DEFINE ir_timeout_value            .48         ; multiples of 62,5ms
