@@ -1137,9 +1137,23 @@ TFT_dive_compass_mask:
     global  TFT_surface_compass_heading
 TFT_surface_compass_heading:
     rcall   compass_heading_common
+    btfsc   compass_fast_mode               ; In fast mode?
+    bra     TFT_surface_compass_heading2    ; Yes
+    ; No, update 1/second max.
+    movff   sensor_state_counter,lo
+    movlw   .6
+    cpfsgt  lo
+    return
+TFT_surface_compass_heading2:
     WIN_STD   surf_compass_head_column,surf_compass_head_row
 	call	TFT_standard_color
     lfsr	FSR2,buffer
+;    movff   sub_c+0,lo                      ; Show difference to old value
+;    output_8
+;    movlw   "f"                             ; "Fast"
+;    btfss   compass_fast_mode               ; In fast mode?
+;    movlw   "s"                             ; "Slow"
+;    movwf   POSTINC2
     movff	compass_heading+0,lo
     movff	compass_heading+1,hi
     call    TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
@@ -1152,6 +1166,14 @@ TFT_surface_compass_heading:
     global  TFT_dive_compass_heading
 TFT_dive_compass_heading:
     rcall   compass_heading_common
+    btfsc   compass_fast_mode               ; In fast mode?
+    bra     TFT_dive_compass_heading2       ; Yes
+    ; No, update 1/second max.
+    movff   sensor_state_counter,lo
+    movlw   .6
+    cpfsgt  lo
+    return
+TFT_dive_compass_heading2:
     WIN_STD dive_compass_head_column,dive_compass_head_row
 	call	TFT_standard_color
     lfsr	FSR2,buffer
@@ -1176,6 +1198,20 @@ compass_heading_common:
     rcall   TFT_get_compass
     call    compass                     ; Do compass corrections.
     banksel common
+  
+    ; More then compass_fast_treshold?
+    movff   compass_heading_old+0,sub_a+0
+    movff   compass_heading_old+1,sub_a+1
+    movff   compass_heading+0,sub_b+0
+    movff   compass_heading+1,sub_b+1
+    call    sub16
+    movff   compass_heading+0,compass_heading_old+0 ; copy new "old"
+    movff   compass_heading+1,compass_heading_old+1
+
+    bcf     compass_fast_mode
+    movlw   compass_fast_treshold
+    cpfslt  sub_c+0                             ; > compass_fast_treshold?
+    bsf     compass_fast_mode                   ; Yes!
     return
 
 TFT_get_compass:

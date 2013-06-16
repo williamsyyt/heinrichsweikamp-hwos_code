@@ -19,7 +19,7 @@
 #include <ports.inc>                        ; Portmap
 
 #DEFINE	softwareversion_x		d'0'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'95'		; Software version  XX.YY
+#DEFINE	softwareversion_y		d'96'		; Software version  XX.YY
 #DEFINE softwareversion_beta 	0 			; (and 0 for release)
 
 #DEFINE comm_service_key        0xABCDEF
@@ -176,6 +176,9 @@
 #DEFINE gaslist_sp_max              .160        ; Max. Setpoint [cbar]
 #DEFINE gaslist_sp_min              .50         ; Min. Setpoint [cbar]
 
+; Compass display
+#DEFINE compass_fast_treshold       .12         ; Faster update if new and old > compass_fast_treshold
+
 ;---------------------------- Macros ------------------------------------
 
 TSTOSS  macro opt_reg           ; TeST Option Skip if not Zero
@@ -274,6 +277,7 @@ compass_CZ_f        res 2
 
 ; Compass more data
 compass_heading     res 2       ; Corrected heading (in 1°) : -180 .. 180
+compass_heading_old res 2       ; Old heading (For smoother display)
 compass_roll        res 2       ; Rotation around the X axis
 compass_pitch       res 2       ; Rotation arounf the Y axis
 
@@ -306,6 +310,7 @@ flag5           		res 1
 flag6           		res 1
 flag7           		res 1
 flag8           		res 1
+flag9           		res 1
 
 temp1			res 1
 temp2			res 1
@@ -575,6 +580,8 @@ opt_enable_aGF          res 1   ; =1: aGF can be selected underwater
 #DEFINE adc_running             flag8,5 ; =1: The ADC is in use
 #DEFINE comm_service_enabled    flag8,6 ; =1: COMM Service mode unlocked
 #DEFINE compass_enabled         flag8,7 ; =1: The compass and accelerometer chip is active
+
+#DEFINE compass_fast_mode       flag9,0 ; =1: The compass is in fast mode
 
 ;=============================================================================
 ; C-code Routines

@@ -226,6 +226,7 @@ restart:
 	clrf	flag6
     clrf	flag7
     clrf	flag8
+    clrf    flag9
 	bsf		tft_is_dimming	; TFT is dimming up (soon), ignore ambient sensor!
 	; Select high altitude (Fly) mode?
 	movff	last_surfpressure_30min+0,sub_b+0
