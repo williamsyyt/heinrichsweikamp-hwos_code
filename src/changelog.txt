@@ -1,3 +1,7 @@
+New in 0.96:
+NEW: calm compass reading for minor heading changes
+NEW: reduce eco low brightness threshold (for cave diving)
+
 New in 0.95:
 BUGFIX: Show "MOD:" instead of "EAD:" in gas setup
 
