@@ -137,6 +137,8 @@
     TCODE   tFrench,    "Français"
     TCODE   tItalian,   "Italien"
     TCODE   tCompassMenu,"Calibration boussole"  ; Compass calibration
+    TCODE   tCompassGain,"Sensibilité"          ; Compass gain
+    TCODE   tcharx,     "x"
 
     TCODE   tUnits,     "Unités:"
     TCODE   tMetric,     " m/°C"            ; Enum menu

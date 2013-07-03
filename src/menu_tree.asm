@@ -259,9 +259,16 @@ do_settings_menu:
         MENU_CALL   tSetTimeDate,   do_date_time_menu
         MENU_CALL   tDispSets,      do_dispsets_menu
         MENU_OPTION tLanguage,      oLanguage,       0
-        MENU_CALL   tCompassMenu,   compass_calibration_loop
+        MENU_CALL   tCompassMenu,   do_compass_menu
         MENU_CALL   tResetMenu,     do_reset_menu
         MENU_CALL   tExit,          do_continue_main_menu
+    MENU_END
+
+do_compass_menu:
+    MENU_BEGIN  tSystSets, .3
+        MENU_CALL   tCompassMenu,   compass_calibration_loop
+        MENU_OPTION tCompassGain,   oCompassGain,       0
+        MENU_CALL   tExit,          do_return_settings
     MENU_END
 
 ;=============================================================================

@@ -465,7 +465,7 @@ lbl:    db      2, LOW(defText)         ; Type2 = STRING
     ; OPTION_UINT8  Label,   min,    max,    default, text-string,   EEPROM location (-1 for RAM only),   RAM location
 
 ; Manage Gas List.
-        extern tPercent, tMeters, tMinutes, tGasDisabled, tbar
+        extern tPercent, tMeters, tMinutes, tGasDisabled, tbar, tcharx
 
 option_table_begin:
         extern  char_I_deco_gas_change, char_I_setpoint_change, char_I_setpoint_cbar, char_I_dil_change
@@ -490,6 +490,7 @@ option_table_begin:
         OPTION_UINT8    oaGF_low,      .60,  .100, .60,  tPercent,  .17,    opt_aGF_low
         OPTION_UINT8    oaGF_high,     .80,  .120, .85, tPercent,   .18,    opt_aGF_high
         OPTION_BOOL     oEnable_aGF,    1,                          .19,    opt_enable_aGF              ; =1: aGF can be selected underwater
+        OPTION_UINT8    oCompassGain,   0,  7,  6,       tcharx,    .20,    opt_compass_gain            ; 0-7 (230LSB/Gauss to 1370LSB/Gaus)
 
 ;=============================================================================
 ; Managing Settings

@@ -137,6 +137,8 @@
     TCODE   tFrench,    "Französisch"
     TCODE   tItalian,   "Italienisch"
     TCODE   tCompassMenu,"Kompass-kalibrierung"  ; Compass calibration
+    TCODE   tCompassGain,"Empfindlichkeit"        ; Compass gain
+    TCODE   tcharx,     "x"
 
     TCODE   tUnits,     "Einheiten:"
     TCODE   tMetric,     " m/°C"            ; Enum menu
