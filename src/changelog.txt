@@ -1,3 +1,6 @@
+New in 0.97:
+NEW: compass gain option to work with more magnetic battery types
+
 New in 0.96:
 NEW: calm compass reading for minor heading changes
 NEW: reduce eco low brightness threshold (for cave diving)
