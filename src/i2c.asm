@@ -241,20 +241,7 @@ I2C_init_compass:
 ;	movlw		b'01101001'        ; ConfigA:  3Hz, 8 Samples averaged, Test Mode (Positive Bias)
 	movlw		b'01101000'        ; ConfigA:  3Hz, 8 Samples averaged
     rcall       I2C_TX
-    movff       opt_compass_gain,i2c_temp    ; 0-7 (230LSB/Gauss to 1370LSB/Gaus)
-    swapf       i2c_temp,F
-    comf        i2c_temp,F
-    bcf         STATUS,C
-    rlcf        i2c_temp
-    movf        i2c_temp,W
-    clrf        i2c_temp
-    rcall       I2C_TX
-	movlw		b'00000000'        ; Continous Mode
-    rcall       I2C_TX
-	bsf			SSP1CON2,PEN		; Stop condition
-	rcall		WaitMSSP
-    bsf         compass_enabled
-    return
+    bra         I2C_init_compass_common
 
     global  I2C_init_compass_fast
 I2C_init_compass_fast:
@@ -267,6 +254,7 @@ I2C_init_compass_fast:
     movlw		b'00111000'        ; ConfigA: 75Hz, 2 Samples averaged
 ;    movlw		b'00111001'        ; ConfigA: 75Hz, 2 Samples averaged, Test Mode (Positive Bias)
     rcall       I2C_TX
+I2C_init_compass_common:
     movff       opt_compass_gain,i2c_temp    ; 0-7 (230LSB/Gauss to 1370LSB/Gaus)
     swapf       i2c_temp,F
     comf        i2c_temp,F
@@ -281,7 +269,6 @@ I2C_init_compass_fast:
 	rcall		WaitMSSP
     bsf         compass_enabled
     return
-
 
     global  I2C_sleep_compass
 I2C_sleep_compass:
