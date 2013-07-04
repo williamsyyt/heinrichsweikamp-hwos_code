@@ -19,17 +19,20 @@
 #include	"ghostwriter.inc"
 #include 	"eeprom_rs232.inc"
 #include	"external_flash.inc"
+#include    "wait.inc"
 
         extern  write_eeprom
         extern  read_eeprom
         extern  eeprom_serial_save,eeprom_opt_backup
 
         global  option_reset_all        ; Reset all options to factory default.
+        global  option_check_all        ; Check all option and reset option if out of min/max boundary
         global  option_reset            ; Reset FSR0 option to factory default.
         global  option_save_all         ; Save options to EEPROM.
         global  option_restore_all      ; Restore options from EEPROM.
         global  option_inc              ; Increment FSR0 option.
         global  option_draw             ; STRCAT FRS0 option.
+
 
 ;=============================================================================
         CBLOCK  tmp+0x10                ; Reserve space for wordprocessor & convert
@@ -76,11 +79,12 @@ option_reset_all2:
 		clrf	lo
 		clrf	hi
 		call	do_logoffset_common_write	; reset Logbook offset
+
+        ; Point to option table begin
         movlw   LOW(option_table_begin)
         movwf   FSR0L
         movlw   HIGH(option_table_begin)
         movwf   FSR0H
-
 option_reset_all_1:
         movf    FSR0L,W                 ; Reached end of table ?
         xorlw   LOW(option_table_end)   ; (8bit test -> 10 bytes x 128 options max)
@@ -89,6 +93,28 @@ option_reset_all_1:
 
         rcall   option_reset            ; Reset one option.
         bra     option_reset_all_1      ; and loop.
+
+;=============================================================================
+; Check all option and reset option if out of min/max boundary
+;
+; INPUT:  none
+; OUTPUT: none
+; TRASH:  TBLPTR, TABLAT, WREG, FSR0, FSR1, FSR2
+option_check_all:
+        ; Point to option table begin
+        movlw   LOW(option_table_begin)
+        movwf   FSR0L
+        movlw   HIGH(option_table_begin)
+        movwf   FSR0H
+
+option_check_all_1:
+        movf    FSR0L,W                 ; Reached end of table ?
+        xorlw   LOW(option_table_end)   ; (8bit test -> 10 bytes x 128 options max)
+        btfsc   STATUS,Z                ; YES: done.
+        return
+
+        rcall   option_check            ; check one option.
+        bra     option_check_all_1      ; and loop
 
 ;=============================================================================
 ; Read option handle
@@ -127,9 +153,38 @@ option_read:
         movff   TABLAT,FSR1H
         movff   TBLPTRL,FSR0L           ; Advance handle too, for reset_all
         movff   TBLPTRH,FSR0H
-
         return
-        
+
+;=============================================================================
+; Check one option and reset if it's out of it's min/max boundaries
+; INPUT:  FSR0 = option handle
+; OUTPUT: none
+; TRASH:  TBLPTR, TABLAT, WREG, FSR1, FSR2, lo
+;
+option_check:
+        ; Read type, default and register from table
+        rcall   option_read
+
+        ; Switch on type
+        movf    opt_type,W              ; Type == STRING ?
+        xorlw   2
+        bz      option_check_string     ; String: Do not reset strings
+
+        movf    opt_min,W
+        cpfsgt  INDF1                   ; bigger then opt_min?
+        bra     option_check_reset      ; No, reset option
+        movf    INDF1,W
+        cpfsgt  opt_max                 ; bigger then INDF1?
+        bra     option_check_reset      ; No, reset option
+        return                          ; in range, return
+
+option_check_reset:
+        movff   opt_default,INDF1       ; reset option to default
+        return                          ; Done.
+
+option_check_string:
+        return
+
 ;=============================================================================
 ; Reset an option to its default value.
 ; INPUT:  FSR0 = option handle

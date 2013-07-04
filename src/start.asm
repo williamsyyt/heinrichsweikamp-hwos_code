@@ -214,7 +214,9 @@ check_firmware_new2:
 	global	restart	
 restart:
     clrf    STKPTR                  ; Never return from here
-	extern	option_save_all
+	extern	option_save_all, option_check_all
+
+    call    option_check_all        ; Check all options (and reset if not within their min/max boundaries)
 	btfsc	menubit					; Return from Menu/COMM mode or timeout?
 	call	option_save_all			; Yes, save all settings into EEPROM
 
