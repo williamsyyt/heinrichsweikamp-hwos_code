@@ -232,12 +232,6 @@ restart:
     clrf    flag9
 	bsf		tft_is_dimming	; TFT is dimming up (soon), ignore ambient sensor!
 
-    ; Setup sampling rate
-    movlw   .10
-    tstfsz  opt_sampling_rate   ; =1: 2s, =0: 10s
-    movlw   .2
-    movwf   samplingrate
-
 	; Select high altitude (Fly) mode?
 	movff	last_surfpressure_30min+0,sub_b+0
 	movff	last_surfpressure_30min+1,sub_b+1
@@ -262,6 +256,15 @@ restart:
 	global	restart_set_modes_and_flags
 restart_set_modes_and_flags:		    ; "Call"ed from divemode, as well!
     call    option_restore_all      	; Restore everything from EEPROM
+
+    ; Setup sampling rate
+    movlw   .2
+    movwf   samplingrate
+    TSTOSS  opt_sampling_rate           ; =1: 10s, =0: 2s
+    bra     restart_set_modes_and_flags1
+    movlw   .10
+    movwf   samplingrate
+restart_set_modes_and_flags1:
     movff   opt_dive_mode,lo            ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
 
 	bcf		FLAG_apnoe_mode

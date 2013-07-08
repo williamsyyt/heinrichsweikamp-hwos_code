@@ -503,7 +503,7 @@ opt_GF_high             res 1   ; GF HIGH
 opt_GF_low              res 1   ; GF LOW
 opt_enable_aGF          res 1   ; =1: aGF can be selected underwater
 opt_compass_gain        res 1   ; 0-7 (230LSB/Gauss to 1370LSB/Gaus)
-opt_sampling_rate       res 1   ; =1: 2s, =0: 10s
+opt_sampling_rate       res 1   ; =1: 10s, =0: 2s
 
 ;-----------------------------EEPROM DATA ------------------------------------
 ; Automatic reset of all options when this is changed:

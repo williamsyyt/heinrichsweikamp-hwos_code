@@ -1954,7 +1954,7 @@ TFT_update_batt_voltage:
 	movff	buffer+5,buffer+3
 	movlw	0x00
 	movff	WREG,buffer+4			; Only "x.yV"
-	STRCAT_PRINT	""
+    STRCAT_PRINT	""
 	return
 
 ;update_battery_debug:
