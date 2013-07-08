@@ -216,9 +216,10 @@ restart:
     clrf    STKPTR                  ; Never return from here
 	extern	option_save_all, option_check_all
 
-    call    option_check_all        ; Check all options (and reset if not within their min/max boundaries)
 	btfsc	menubit					; Return from Menu/COMM mode or timeout?
 	call	option_save_all			; Yes, save all settings into EEPROM
+
+    call    option_check_all        ; Check all options (and reset if not within their min/max boundaries)
 
 	clrf	flag1					; clear all flags
 	clrf	flag2
@@ -230,6 +231,13 @@ restart:
     clrf	flag8
     clrf    flag9
 	bsf		tft_is_dimming	; TFT is dimming up (soon), ignore ambient sensor!
+
+    ; Setup sampling rate
+    movlw   .10
+    tstfsz  opt_sampling_rate   ; =1: 2s, =0: 10s
+    movlw   .2
+    movwf   samplingrate
+
 	; Select high altitude (Fly) mode?
 	movff	last_surfpressure_30min+0,sub_b+0
 	movff	last_surfpressure_30min+1,sub_b+1

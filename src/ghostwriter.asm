@@ -579,9 +579,9 @@ end_dive_oc_cc_common:
 	movf	batt_voltage+1,W
 	rcall	ghostwrite_byte_header
 
-	movlw	samplingrate				; Sampling rate
-	btfsc	FLAG_apnoe_mode				; Apnoe mode?
-	movlw	samplingrate_apnoe			; Apnoe sampling rate
+	movf    samplingrate,W			; Sampling rate
+    btfsc	FLAG_apnoe_mode         ; Apnoe mode?
+	movlw	samplingrate_apnoe		; Apnoe sampling rate
 	rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
 
     ; CNS at gebinning of dive
@@ -804,7 +804,7 @@ ghostwriter_short_header:	; Write short header with divenumber into profile memo
     ; Keep room for dive length ext_flash_dive_counter:3 (Stored at the end of the dive)
     incf_ext_flash_address_0x20	d'3'        ; Skip Bytes in external flash (faster)
 
-	movlw	samplingrate				; Sampling rate
+	movf	samplingrate,W  			; Sampling rate
 	btfsc	FLAG_apnoe_mode				; Apnoe mode?
 	movlw	samplingrate_apnoe			; Apnoe sampling rate
 	rcall	ghostwrite_byte_profile 	; WREG -> Profile in ext. flash

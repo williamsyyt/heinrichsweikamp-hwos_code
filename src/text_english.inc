@@ -263,3 +263,8 @@
 	TCODE	tLogOffsetp10,	"+10"				; +10
 	TCODE	tLogOffsetm1,	"-1"				; -1
 	TCODE	tLogOffsetm10,	"-10"				; -10
+
+; Sampling rate
+    TCODE   tSamplingrate,  "Sampling rate:"    ; Sampling rate:
+    TCODE   tSampling2s,    "2s"                ; 2s
+    TCODE   tSampling10s,   "10s"               ; 10s

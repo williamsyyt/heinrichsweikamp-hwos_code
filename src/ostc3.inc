@@ -72,7 +72,6 @@
 
 ; Profile recording parameters
 #DEFINE	logbook_profile_version	0x23
-#DEFINE	samplingrate		.10	; [seconds]
 #DEFINE	samplingrate_apnoe	.1	; [seconds]
 ; Warning: Divisors must be <.16 !
 #DEFINE	div_temperature		.6	; x samplingrate [s]
@@ -400,6 +399,7 @@ apnoe_max_pressure		res 2
 ; Divemode
 divemins				res 2
 divesecs				res 1
+samplingrate            res 1
 samplesecs_value		res 1
 divisor_temperature		res 1
 divisor_deco			res 1
@@ -503,6 +503,7 @@ opt_GF_high             res 1   ; GF HIGH
 opt_GF_low              res 1   ; GF LOW
 opt_enable_aGF          res 1   ; =1: aGF can be selected underwater
 opt_compass_gain        res 1   ; 0-7 (230LSB/Gauss to 1370LSB/Gaus)
+opt_sampling_rate       res 1   ; =1: 2s, =0: 10s
 
 ;-----------------------------EEPROM DATA ------------------------------------
 ; Automatic reset of all options when this is changed:

@@ -452,10 +452,11 @@ do_dispsets_menu_3stack:
     call    menu_processor_pop
 
 do_dispsets_menu:
-    MENU_BEGIN  tDispSets, .5
+    MENU_BEGIN  tDispSets, .6
         MENU_OPTION tBright,    oBrightness,    0
         MENU_OPTION tUnits,    oUnits,          0
 		MENU_CALL	tLogOffset,					do_log_offset_menu
+        MENU_OPTION tSamplingrate,oSamplingRate,0
         MENU_OPTION tDvSalinity,oDiveSalinity,  0
         MENU_CALL   tExit,                      do_return_settings
     MENU_END

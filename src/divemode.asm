@@ -1138,8 +1138,7 @@ diveloop_boot_2:
 	SAFE_2BYTE_COPY	temperature,minimum_temperature ; Reset Min-Temp registers
 
 ; Init profile recording parameters	
-	movlw	samplingrate
-	movwf	samplesecs_value            ; to avoid EEPROM access in the ISR
+	movff	samplingrate,samplesecs_value            ; to avoid EEPROM access in the ISR
 	movlw	div_temperature
 	movwf	divisor_temperature         ; load divisors for profile storage
 	movlw	div_deco
