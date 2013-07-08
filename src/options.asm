@@ -537,7 +537,7 @@ option_table_begin:
         OPTION_ENUM8    oDecoMode,      2,  1,  tZHL16,              .9,    char_I_deco_model
         OPTION_UINT8p10 oPPO2Max,       .120, ppo2_warning_high, .160,   0,      .10,    opt_ppO2_max
         OPTION_UINT8    oLastDeco,      .3,  .6, .3,  tMeters,      .11,    opt_last_stop
-        OPTION_UINT8    oGF_low,       .10,  .100, .40,  tPercent,  .12,    opt_GF_low
+        OPTION_UINT8    oGF_low,       .10,  .100, .30,  tPercent,  .12,    opt_GF_low
         OPTION_UINT8    oGF_high,      .70,  .110, .85, tPercent,   .13,    opt_GF_high
         OPTION_UINT8p10 osatmult,      .100,  .140, .110,tPercent,  .14,    char_I_saturation_multiplier
         OPTION_UINT8p10 odesatmult,    .60,  .100,  .90,tPercent,   .15,    char_I_desaturation_multiplier
