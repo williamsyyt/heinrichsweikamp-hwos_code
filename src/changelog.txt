@@ -1,3 +1,5 @@
+New in 0.98:
+
 New in 0.97:
 NEW: compass gain option to work with more magnetic battery types
 BUGFIX: fix imperial units in logbook
