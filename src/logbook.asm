@@ -522,11 +522,8 @@ display_profile_offset4:
 ;display_profile_offset4_imperial:
 	call		convert_mbar_to_feet       	; convert value in lo:hi from mbar to feet
 	PUTC	' '
-	bsf			ignore_digit4
-	movlw		d'1'
-	movff		WREG,ignore_digits
-	bsf			leftbind	
-	output_16							; full feet
+	bcf			leftbind
+    output_16_3
 	STRCAT_TEXT_PRINT    tFeets
 	bra			display_profile_offset4_common
 
@@ -1348,11 +1345,8 @@ display_listdive2:
 ;display_listdive2_imperial:
 	call		convert_mbar_to_feet    ; convert value in lo:hi from mbar to feet
 	PUTC	' '
-	bsf			ignore_digit4
-	movlw		d'1'
-	movff		WREG,ignore_digits
-	bcf			leftbind	
-	output_16							; full feet
+	bcf			leftbind
+    output_16_3
 	STRCAT_TEXT tFeets1
 	bra			display_listdive3
 
