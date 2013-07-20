@@ -23,15 +23,14 @@
 #include 	"external_flash.inc"
 #include	"ghostwriter.inc"
 #include    "i2c.inc"
+#include    "mcp.inc"
 
 gui     CODE
 
 	global	sleeploop
 sleeploop:							; enter sleepmode!
     call    disable_ir              ; IR off
-    bcf     mcp_power               ; RX off
-    btfsc   mcp_power
-    bra     $-4
+    call    mcp_sleep
 	bcf		LEDg
 	bcf		LEDr
 	call	TFT_Display_FadeOut

@@ -36,13 +36,16 @@ HighInt:
         movff   PRODL,isr_prod+0
         movff   PRODH,isr_prod+1
 
+; INT3 for RX control
+		btfsc	INTCON3,INT3IF             ; Timer3 INT
+		rcall	isr_int3
+; Timer0 for RX timing
+		btfsc	INTCON,TMR0IF			; Timer0 INT
+		rcall	timer0int
+
 ; Pressure sensor and others
 		btfsc	PIR5,TMR7IF				; Timer 7
 		rcall	isr_tmr7        		; Every 62,5ms
-
-; Timer0 for RX timing
-;		btfsc	INTCON,TMR0IF			; Timer0 INT (Button Debounce Timer)
-;		rcall	timer0int
 
 ; Buttons
 		btfsc	PIR1,TMR1IF             ; Timer1 INT (Button hold-down Timer)
@@ -68,16 +71,31 @@ HighInt:
 
 ;=============================================================================
 
-;timer0int:
-;		bcf		T0CON,TMR0ON			; Stop Timer 0
-;       return
-;
-;		movlw   .240
-;       movwf   TMR0H
-;		bcf		INTCON,TMR0IF			; Clear flag
-;		clrf	TMR0L
-;		return
+timer0int:
+		bcf		T0CON,TMR0ON			; Stop Timer 0
 
+   ;     bcf     LEDr;mH
+
+		movlw   TMR0H_VALUE
+        movwf   TMR0H
+		bcf		INTCON,TMR0IF			; Clear flag
+		clrf	TMR0L
+        bsf     INTCON2,INTEDG3         ; INT3 on rising edge
+		return
+
+isr_int3:
+        bcf     INTCON3,INT3IF          ; Clear flag
+        bsf		T0CON,TMR0ON			; Start Timer 0
+        btg     INTCON2,INTEDG3         ; Toggle INT3 edge
+
+    ;    btg     LEDr;mH
+
+        ; Reset RX Timeout
+		clrf	TMR0L
+		movlw   TMR0H_VALUE
+        movwf   TMR0H
+		bcf		INTCON,TMR0IF			; Clear flag
+        return
 
 
 isr_uart2:               ; IR-Link

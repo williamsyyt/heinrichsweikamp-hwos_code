@@ -10,4 +10,5 @@
 
  extern  mcp_reset_rssi          ; Setup RX for RSSI mode
  extern  mcp_reset               ; Setup RX (Normal mode)
+ extern  mcp_sleep               ; Power down RX
 

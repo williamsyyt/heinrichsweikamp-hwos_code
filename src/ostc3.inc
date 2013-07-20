@@ -19,7 +19,7 @@
 #include <ports.inc>                        ; Portmap
 
 #DEFINE	softwareversion_x		d'0'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'98'		; Software version  XX.YY
+#DEFINE	softwareversion_y		d'99'		; Software version  XX.YY
 #DEFINE softwareversion_beta 	1 			; (and 0 for release)
 
 #DEFINE comm_service_key        0xABCDEF
@@ -30,6 +30,8 @@
 #DEFINE T2CON_ECO           b'00000100'		; 1:1 Postscaler, 1:1 Prescaler, Timer 2 start -> 980Hz (Good compromise of no-flicker and efficiency)
 #DEFINE T2CON_NORMAL        b'00001110'
 #DEFINE T2CON_FASTEST       b'00001110'		; 1:2 Postscaler, 1:16 Prescaler, Timer 2 start -> 1960Hz (no-flicker)
+
+#DEFINE TMR0H_VALUE         .245             ; RX Timeout (~3ms)
 
 ; Timing for button hold-down flags
 #DEFINE TMR1H_VALUE_FIRST        .255-.128  ; in steps of 7,8125ms -> 1s

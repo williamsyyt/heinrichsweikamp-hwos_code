@@ -264,7 +264,24 @@ mcp_reset_common:
 ;	mcp_writebyte_1st	b'11000000'	; Read from Config0
 ;	mcp_writebyte_2nd	b'00000000'	; Dummy clks + Odd Parity Bit (Bit0)
 ;	call	mcp_readbyte			; read into mcp_temp+0
+    bsf     INTCON3,INT3IE          ; Enable INT3
+    bsf     INTCON2,INTEDG3         ; INT3 on rising edge
+
+    ; Setup Timer 0
+    movlw   TMR0H_VALUE
+    movwf   TMR0H
+	bcf		INTCON,TMR0IF			; Clear flag
+	clrf	TMR0L
 	return
+
+    global  mcp_sleep
+mcp_sleep:
+    bcf     INTCON3,INT3IE          ; Disable INT3
+    bcf     mcp_power               ; RX off
+    btfsc   mcp_power
+    bra     $-4
+    return
+
 
 
         END

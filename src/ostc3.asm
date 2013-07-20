@@ -108,8 +108,8 @@ init_ostc3:
 
 
 ; Timer 0
-;	movlw	b'00000000'				; Timer0 with 1:2 prescaler
-	movlw	b'00001000'				; Timer0 with 1:1 prescaler
+	movlw	b'00000001'				; Timer0 with 1:4 prescaler
+;	movlw	b'00001000'				; Timer0 with 1:1 prescaler
 	movwf	T0CON
 
 ; Timer 1 - Button hold-down timer
@@ -234,9 +234,9 @@ init_ostc3:
 ; Interrupts
 	movlw	b'11110000'
 	movwf	INTCON
-	movlw	b'10000000'			; BIT7=1: Pullup for PORTB disabled
+	movlw	b'10001000'			; BIT7=1: Pullup for PORTB disabled
 	movwf	INTCON2
-	movlw	b'00001000'			
+	movlw	b'00101000'			; Bit5: INT3
 	movwf	INTCON3
 	movlw	b'00000001'			; Bit0: TMR1
 	movwf	PIE1
