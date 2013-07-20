@@ -1148,19 +1148,23 @@ TFT_surface_compass_heading2:
     WIN_STD   surf_compass_head_column,surf_compass_head_row
 	call	TFT_standard_color
     lfsr	FSR2,buffer
-;    movff   sub_c+0,lo                      ; Show difference to old value
+;    movff	compass_heading+0,lo
+;    movff	compass_heading+1,hi
+;    call    TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
 ;    output_8
-;    movlw   "f"                             ; "Fast"
-;    btfss   compass_fast_mode               ; In fast mode?
-;    movlw   "s"                             ; "Slow"
-;    movwf   POSTINC2
+;    PUTC    " "
+;    movff   hi,lo
+;    output_8
+;    PUTC    " "
     movff	compass_heading+0,lo
     movff	compass_heading+1,hi
     call    TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
     bsf     leftbind
     output_16
     bcf     leftbind
-    STRCAT_PRINT "°  "
+    STRCAT  "° "
+    rcall   tft_compass_cardinal        ; Add cardinal and ordinal to POSTINC2
+    STRCAT_PRINT "  "
     return
 
     global  TFT_dive_compass_heading
@@ -1183,9 +1187,76 @@ TFT_dive_compass_heading2:
     bsf     leftbind
     output_16
     bcf     leftbind
-    STRCAT_PRINT "°  "
+    STRCAT  "° "
+    rcall   tft_compass_cardinal        ; Add cardinal and ordinal to POSTINC2
+    STRCAT_PRINT "   "
     return
 
+tft_compass_cardinal:
+    btfsc  hi,0          ; Heading >255°?
+    bra     tft_compass_cardinal2   ; Yes must be W, NW or N
+    ; No, Must be W, SW, S, SE, E, NE or N
+    movlw   .23
+    subwf   lo,W
+    btfss   STATUS,C
+    bra     tft_compass_cardinal_N
+    movlw   .68
+    subwf   lo,W
+    btfss   STATUS,C
+    bra     tft_compass_cardinal_NE
+    movlw   .113
+    subwf   lo,W
+    btfss   STATUS,C
+    bra     tft_compass_cardinal_E
+    movlw   .158
+    subwf   lo,W
+    btfss   STATUS,C
+    bra     tft_compass_cardinal_SE
+    movlw   .203
+    subwf   lo,W
+    btfss   STATUS,C
+    bra     tft_compass_cardinal_S
+    movlw   .248
+    subwf   lo,W
+    btfss   STATUS,C
+    bra     tft_compass_cardinal_SW
+    bra     tft_compass_cardinal_W
+
+tft_compass_cardinal2:
+    movlw   .37
+    subwf   lo,W
+    btfss   STATUS,C
+    bra     tft_compass_cardinal_W
+    movlw   .82
+    subwf   lo,W
+    btfss   STATUS,C
+    bra     tft_compass_cardinal_NW
+    bra     tft_compass_cardinal_N
+
+tft_compass_cardinal_N:
+    STRCAT_TEXT     tN
+    return
+tft_compass_cardinal_NE:
+    STRCAT_TEXT     tNE
+    return
+tft_compass_cardinal_E:
+    STRCAT_TEXT     tE
+    return
+tft_compass_cardinal_SE:
+    STRCAT_TEXT     tSE
+    return
+tft_compass_cardinal_S:
+    STRCAT_TEXT     tS
+    return
+tft_compass_cardinal_SW:
+    STRCAT_TEXT     tSW
+    return
+tft_compass_cardinal_W:
+    STRCAT_TEXT     tW
+    return
+tft_compass_cardinal_NW:
+    STRCAT_TEXT     tNW
+    return
 
 compass_heading_common:
     extern  compass

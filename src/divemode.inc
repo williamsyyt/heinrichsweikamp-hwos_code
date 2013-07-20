@@ -181,5 +181,5 @@
 
 #DEFINE dive_compass_mask_row       decoplan_title_row
 #DEFINE dive_compass_mask_column    decoplan_title_column
-#DEFINE dive_compass_head_column    .65
+#DEFINE dive_compass_head_column    .57
 #DEFINE dive_compass_head_row       divemode_customview_row+.25

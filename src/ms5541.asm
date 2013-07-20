@@ -468,7 +468,11 @@ send_clk_pulse:
 	nop
 	nop
 	nop
+	nop
+	nop
 	bcf		MS5541_clk
+	nop
+	nop
 	nop
 	nop
     return
@@ -477,6 +481,8 @@ send_data_MS5541:
 	movwf	clock_count     ; From WREG
 	; send three startbits first
 	bcf		MS5541_clk
+	nop
+	nop
 	bsf		MS5541_mosi
 	movlw	d'3'
 	subwf	clock_count,F	; total bit counter
@@ -486,6 +492,8 @@ send_data_MS5541:
 	; now send 8 bytes from isr_temp1 and fill-up with zeros
 send_data_MS5541_2:
 	bcf		MS5541_clk
+	nop
+	nop
 
 	btfss	isr1_temp,7	;MSB first
 	bcf		MS5541_mosi
@@ -496,8 +504,8 @@ send_data_MS5541_2:
 
 	bcf		STATUS,C
 	rlcf	isr1_temp,F
-;	nop
-;	nop
+	nop
+	nop
 ;	nop
 ;	nop
 ;	nop

@@ -268,3 +268,15 @@
     TCODE   tSamplingrate,  "Abtastrate:"       ; Sampling rate:
     TCODE   tSampling2s,    "2s"                ; 2s
     TCODE   tSampling10s,   "10s"               ; 10s
+
+; Compass directions
+    TCODE   tN,             "N"                 ; N(orth),338°-22°
+    TCODE   tNE,            "NO"                ; North-East,23°-67°
+    TCODE   tE,             "O"                 ; E(east),68°-112°
+    TCODE   tSE,            "SO"                ; South-East,113°-157°
+    TCODE   tS,             "S"                 ; S(outh),157°-202°
+    TCODE   tSW,            "SW"                ; South-West,203°-247°
+    TCODE   tW,             "W"                 ; W(West),248°-292°
+    TCODE   tNW,            "NW"                ; North-West,293°-337°
+
+
