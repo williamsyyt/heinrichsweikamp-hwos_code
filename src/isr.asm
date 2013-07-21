@@ -453,8 +453,8 @@ isr_dimm_tft:				; Adjust until max_CCPR1L=CCPR1L !
 		return
 isr_dimm_tft2:
 		movf		max_CCPR1L,W
-		sublw		.20
-		cpfsgt		CCPR1L					; CCPR1L>max_CCPR1L-20?
+		sublw		ambient_light_min_eco
+		cpfsgt		CCPR1L					; CCPR1L>max_CCPR1L-ambient_light_min_eco?
 		bra			isr_dimm_tft3			; No, dimm up slow
 		; dimm up faster
 		movlw		.5

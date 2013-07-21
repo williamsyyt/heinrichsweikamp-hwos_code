@@ -917,9 +917,13 @@ TFT_compass_fast:
 
 	global	TFT_update_raw_data
 TFT_update_raw_data:
+    call	TFT_standard_color
 	WIN_TINY	.0,.0
 	STRCPY  "pres:"
     SAFE_2BYTE_COPY amb_pressure, lo
+    movlw   .5  ;>1280mbar
+    cpfslt  hi
+    call	TFT_warnings_color
 	bsf		leftbind
 	output_16
 	STRCAT_PRINT "mbar "
@@ -932,6 +936,7 @@ TFT_update_raw_data:
 	output_16dp	d'2'					; temperature
 	STRCAT_PRINT "°C "
 
+    call	TFT_standard_color
 	call	get_battery_voltage			; get battery voltage
 	WIN_TINY	.0,.18
 	STRCPY  "AN06:"

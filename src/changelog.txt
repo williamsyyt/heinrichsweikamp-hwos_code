@@ -1,3 +1,6 @@
+New in 0.99:
+BUGFIX: alternating brightness at very low ambient light
+
 New in 0.98:
 New: Add cardinal (and ordinal) directions for the compass
 
