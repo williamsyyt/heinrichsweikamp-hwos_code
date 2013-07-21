@@ -354,7 +354,6 @@ isr_sensor_state2:
 		movff		temperature_avg+0,temperature+0
 
 		banksel 	common                  ; flag1 is in Bank1
-		bsf			pressure_refresh 		; Set flag! Temp and pressure were updated!
         bcf         temp_changed			; Clear flag for temperature update
         bcf         pressure_refresh        ; Clear flag for pressure update
         banksel 	isr_backup              ; Back to Bank0 ISR data
