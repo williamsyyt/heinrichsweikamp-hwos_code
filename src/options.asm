@@ -538,12 +538,12 @@ option_table_begin:
         OPTION_UINT8p10 oPPO2Max,       .120, ppo2_warning_high, .160,   0,      .10,    opt_ppO2_max
         OPTION_UINT8    oLastDeco,      .3,  .6, .3,  tMeters,      .11,    opt_last_stop
         OPTION_UINT8    oGF_low,       .10,  .100, .30,  tPercent,  .12,    opt_GF_low
-        OPTION_UINT8    oGF_high,      .70,  .110, .85, tPercent,   .13,    opt_GF_high
+        OPTION_UINT8    oGF_high,      .60,  .110, .85, tPercent,   .13,    opt_GF_high
         OPTION_UINT8p10 osatmult,      .100,  .140, .110,tPercent,  .14,    char_I_saturation_multiplier
         OPTION_UINT8p10 odesatmult,    .60,  .100,  .90,tPercent,   .15,    char_I_desaturation_multiplier
         OPTION_UINT8p10 oPPO2Min,       .16, ppo2_warning_low, .19,   0,         .16,    opt_ppO2_min
         OPTION_UINT8    oaGF_low,      .60,  .100, .60,  tPercent,  .17,    opt_aGF_low
-        OPTION_UINT8    oaGF_high,     .80,  .120, .85, tPercent,   .18,    opt_aGF_high
+        OPTION_UINT8    oaGF_high,     .70,  .120, .85, tPercent,   .18,    opt_aGF_high
         OPTION_BOOL     oEnable_aGF,    1,                          .19,    opt_enable_aGF              ; =1: aGF can be selected underwater
         OPTION_UINT8    oCompassGain,   0,  7,  6,       tcharx,    .20,    opt_compass_gain            ; 0-7 (230LSB/Gauss to 1370LSB/Gaus)
         OPTION_ENUM8    oSamplingRate,  2,  0,  tSampling2s,        .21,    opt_sampling_rate           ; =1: 10s, =0: 2s
