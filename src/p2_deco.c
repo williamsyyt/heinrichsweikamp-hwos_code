@@ -84,6 +84,7 @@
 // 2012/10/05: [jDG] Better deco_gas_volumes accuracy (average depth, switch between stop).
 // 2013/03/05: [jDG] Should vault low_depth too.
 // 2013/03/05: [jDG] Wrobell remark: ascent_to_first_stop works better with finer steps (2sec).
+// 2013/05/08: [jDG] A. Salm remark: NOAA tables for CNS are in ATA, not bar.
 //
 // TODO:
 //
@@ -1927,40 +1928,46 @@ void deco_calc_CNS_fraction(void)
         time_factor = 30.0f;
     else if( char_I_step_is_1min == 2  )
         time_factor = 300.0f;
-
+    //------------------------------------------------------------------------
+    // Don't increase CNS below 0.5 bar, but keep it steady.
     if (char_I_actual_ppO2 < 50)
         ;   // no changes
-    else if (char_I_actual_ppO2 < 60)
-        CNS_fraction += time_factor/(-540.0 * char_I_actual_ppO2 + 54000.0);
-    else if (char_I_actual_ppO2 < 70)
-        CNS_fraction += time_factor/(-450.0 * char_I_actual_ppO2 + 48600.0);
-    else if (char_I_actual_ppO2 < 80)
-        CNS_fraction += time_factor/(-360.0 * char_I_actual_ppO2 + 42300.0);
-    else if (char_I_actual_ppO2 < 90)
-        CNS_fraction += time_factor/(-270.0 * char_I_actual_ppO2 + 35100.0);
-    else if (char_I_actual_ppO2 < 110)
-        CNS_fraction += time_factor/(-180.0 * char_I_actual_ppO2 + 27000.0);
-    else if (char_I_actual_ppO2 < 150)
-        CNS_fraction += time_factor/( -90.0 * char_I_actual_ppO2 + 17100.0);
-    else if (char_I_actual_ppO2 < 160)
-        CNS_fraction += time_factor/(-225.0 * char_I_actual_ppO2 + 37350.0);
-    else if (char_I_actual_ppO2 < 165)
-        CNS_fraction += time_factor*0.000755; // Arieli et all.(2002): Modeling pulmonary and CNS O2 toxicity... Formula (A1) based on value for 1.55 and c=20
-    else if (char_I_actual_ppO2 < 170)
-        CNS_fraction += time_factor*0.00102; // example calculation: Sqrt((1.7/1.55)^20)*0.000404
-    else if (char_I_actual_ppO2 < 175)
+    //------------------------------------------------------------------------
+    // Below (and including) 1.60 bar
+    else if (char_I_actual_ppO2 < 61)
+        CNS_fraction += time_factor/(-533.07 * char_I_actual_ppO2 + 54000.0);
+    else if (char_I_actual_ppO2 < 71)
+        CNS_fraction += time_factor/(-444.22 * char_I_actual_ppO2 + 48600.0);
+    else if (char_I_actual_ppO2 < 81)
+        CNS_fraction += time_factor/(-355.38 * char_I_actual_ppO2 + 42300.0);
+    else if (char_I_actual_ppO2 < 91)
+        CNS_fraction += time_factor/(-266.53 * char_I_actual_ppO2 + 35100.0);
+    else if (char_I_actual_ppO2 < 111)
+        CNS_fraction += time_factor/(-177.69 * char_I_actual_ppO2 + 27000.0);
+    else if (char_I_actual_ppO2 < 152)
+        CNS_fraction += time_factor/( -88.84 * char_I_actual_ppO2 + 17100.0);
+    else if (char_I_actual_ppO2 < 167)
+        CNS_fraction += time_factor/(-222.11 * char_I_actual_ppO2 + 37350.0);
+    //------------------------------------------------------------------------
+    // Arieli et all.(2002): Modeling pulmonary and CNS O2 toxicity:
+    // J Appl Physiol 92: 248–256, 2002, doi:10.1152/japplphysiol.00434.2001
+    // Formula (A1) based on value for 1.55 and c=20
+    // example calculation: Sqrt((1.7/1.55)^20)*0.000404
+    else if (char_I_actual_ppO2 < 172)
+        CNS_fraction += time_factor*0.00102;
+    else if (char_I_actual_ppO2 < 177)
         CNS_fraction += time_factor*0.00136;
-    else if (char_I_actual_ppO2 < 180)
+    else if (char_I_actual_ppO2 < 182)
         CNS_fraction += time_factor*0.00180;
-    else if (char_I_actual_ppO2 < 185)
+    else if (char_I_actual_ppO2 < 187)
         CNS_fraction += time_factor*0.00237;
-    else if (char_I_actual_ppO2 < 190)
+    else if (char_I_actual_ppO2 < 192)
         CNS_fraction += time_factor*0.00310;
-    else if (char_I_actual_ppO2 < 195)
+    else if (char_I_actual_ppO2 < 198)
         CNS_fraction += time_factor*0.00401;
-    else if (char_I_actual_ppO2 < 200)
+    else if (char_I_actual_ppO2 < 203)
         CNS_fraction += time_factor*0.00517;
-    else if (char_I_actual_ppO2 < 230)
+    else if (char_I_actual_ppO2 < 233)
         CNS_fraction += time_factor*0.0209;
     else
         CNS_fraction += time_factor*0.0482; // value for 2.5
