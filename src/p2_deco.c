@@ -216,7 +216,6 @@ static float		CNS_fraction;			// new in v.101
 static float		float_saturation_multiplier;    // new in v.101
 static float		float_desaturation_multiplier;  // new in v.101
 static float		float_deco_distance;            // new in v.101
-//static char		flag_in_divemode;		// new in v.108
 
 static unsigned char    deco_gas_change[NUM_GAS];       // new in v.109
 
@@ -898,7 +897,6 @@ static void clear_tissue(void)
     }
 
     clear_deco_table();
-//    flag_in_divemode = 0;
     char_O_deco_status = 0;
     char_O_nullzeit = 0;
     int_O_ascenttime = 0;
@@ -1146,12 +1144,12 @@ void calc_hauptroutine_calc_deco(void)
 {
     overlay unsigned char loop;
 
-    for(loop = 0; loop < 32; ++loop)
+    for(loop = 0; loop < 16; ++loop)
     {
         // Limit loops to 512ms, using timer 5:
       	if( tmr5() & (512*32) )
       	    break;
-        // Do not ascent while doing a gas switch ?
+
             if( calc_nextdecodepth() )
             {
                 if( temp_depth_limit == 0 )
