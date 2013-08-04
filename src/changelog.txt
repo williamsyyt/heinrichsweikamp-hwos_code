@@ -1,6 +1,8 @@
 New in 0.99:
 BUGFIX: alternating brightness at very low ambient light
 CHANGE: GF high lowest setting 60%
+BUGFIX: NOAA tables for CNS are in ATA, not bar
+CHANGE: change apnea timeout, do no longer store apnea dives in logbook
 
 New in 0.98:
 New: Add cardinal (and ordinal) directions for the compass
