@@ -101,7 +101,7 @@
 ; Dive mode limits and thresholds
 #DEFINE	start_dive_threshold 	.100	; [cm]
 #DEFINE	high_altitude_dive_threshold .300;[cm]
-#DEFINE	apnoe_timeout			.30 	; [min]
+#DEFINE	apnoe_timeout			.15 	; [min]
 #DEFINE divemode_menuview_timeout   .10 ; [s]
 #DEFINE	divemode_timeout		.300	; [s]
 #DEFINE	divemode_menu_timeout	.30		; [s]

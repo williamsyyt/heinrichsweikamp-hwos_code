@@ -470,7 +470,7 @@ timeout_divemode:
 	return
 	
 	btfsc	FLAG_apnoe_mode				; In Apnoe mode?
-	bra		timeout_divemode2			; Yes, use CF30 [min] for timeout
+	bra		timeout_divemode2			; Yes, use apnoe_timeout [min] for timeout
 
     ifndef __DEBUG
     	btfsc	simulatormode_active    ; In Simulator mode?

@@ -30,11 +30,14 @@ store_dive_data:						; 5 seconds gone
     	return                          ; Yes, discard everything
     endif
 
+    btfsc	FLAG_apnoe_mode             ; In Apnoe mode?
+    return                              ; Yes, discard everything
+
     SAFE_2BYTE_COPY rel_pressure, lo
 	movf	lo,W				        ; store depth with every sample
-	rcall   ghostwrite_byte_profile      ; WREG -> Profile in ext. Flash
+	rcall   ghostwrite_byte_profile     ; WREG -> Profile in ext. Flash
 	movf	hi,W
-	rcall   ghostwrite_byte_profile      ; WREG -> Profile in ext. Flash
+	rcall   ghostwrite_byte_profile     ; WREG -> Profile in ext. Flash
 
 ;First, find out how many bytes will append to this sample....
 	clrf	ProfileFlagByte					; clear number of bytes to append
@@ -299,7 +302,10 @@ ghostwriter_end_dive:
     	goto	ghostwriter_end_dive_common				; Yes, discard everything
     endif
 
-	; Dive finished (and longer then one minute or Apnoe timeout occured)
+    btfsc	FLAG_apnoe_mode                         ; In Apnoe mode?
+    goto	ghostwriter_end_dive_common				; Yes, discard everything
+
+	; Dive finished (and longer then one minute)
 
 	btfsc	FLAG_apnoe_mode					; Calc max. depth (again) for very short apnoe dives
 	call	apnoe_calc_maxdepth
