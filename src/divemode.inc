@@ -37,6 +37,13 @@
 #DEFINE divetime_secs_row       depth_row+.12
 #DEFINE	divetime_apnoe_row		depth_row
 #DEFINE	divetime_apnoe_column	.103
+#DEFINE apnoe_total_divetime_row            divetime_apnoe_row+.50
+#DEFINE apnoe_total_divetime_column         divetime_apnoe_column
+#DEFINE apnoe_total_divetime_secs_row       apnoe_total_divetime_row+.12
+#DEFINE apnoe_total_divetime_secs_column    divetime_secs_column
+#DEFINE total_apnoe_text_column             .95
+#DEFINE total_apnoe_text_row                apnoe_total_divetime_row-.14
+
 
 #DEFINE divemode_mask_depth_row         .0
 #DEFINE divemode_mask_depth_column      .12

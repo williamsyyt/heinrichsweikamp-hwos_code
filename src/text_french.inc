@@ -198,18 +198,19 @@
     TCODE   tDiveTotalAvr,  "Prof. Moy."
     TCODE   tDiveStopwatch, "Chrono"
     TCODE   tDiveStopAvr,   "P.MoyChrono"
+    TCODE   tApnoeTotal,    "   Durée Total"; Total Divetime
     TCODE   tApnoeMax,      "Dern.plongée"  ; Last decend
-    TCODE   tApnoeSurface,  "Tps.Surface"  ; Surface Time
-    TCODE   tDiveDecoplan,  "Runtime"      ; Decoplan
+    TCODE   tApnoeSurface,  "Tps.Surface"   ; Surface Time
+    TCODE   tDiveDecoplan,  "Runtime"       ; Decoplan
     TCODE   tDiveClock,     "Heure"         ; Clock
     TCODE   tDiveEAD_END,   "PEA/END"       ; EAD/END
-    TCODE   tDiveTissues,   "Tissus"       ; Tissues
+    TCODE   tDiveTissues,   "Tissus"        ; Tissues
     TCODE   tEND,           "END:"          ; END:
     TCODE   tHe,            "He"            ; He
     TCODE   tN2,            "N2"            ; N2
     TCODE   tDiveBailout,   "Bailout"       ; Bailout
-    TCODE   tGFactors,      "Valeurs GF"     ; GF Values
-    TCODE   taGFactors,     "Valeurs aGF"    ; aGF Values
+    TCODE   tGFactors,      "Valeurs GF"    ; GF Values
+    TCODE   taGFactors,     "Valeurs aGF"   ; aGF Values
     TCODE   tGFInfo,        "GF Info"       ; GF Info
 
 ; Divemode menu

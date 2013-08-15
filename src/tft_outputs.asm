@@ -2396,7 +2396,6 @@ TFT_display_apnoe_descent:		; Descent divetime
 	output_16_3                     ; displays only last three figures from a 16Bit value (0-999)
 	call	TFT_standard_color
 	STRCAT_PRINT ""                 ; Show minutes in large font
-
 	WIN_SMALL  divetime_secs_column, divetime_secs_row   		; left position for two sec figures
 	lfsr    FSR2,buffer
 	PUTC    ':'
@@ -2405,6 +2404,28 @@ TFT_display_apnoe_descent:		; Descent divetime
 	output_99x
 	bcf     leftbind
 	STRCAT_PRINT ""                 ; Show seconds in small font
+
+
+    call    TFT_divemask_color
+    WIN_TINY    total_apnoe_text_column,total_apnoe_text_row
+    STRCPY_TEXT_PRINT   tApnoeTotal
+	call	TFT_standard_color
+	movff	divemins,lo
+    clrf    hi
+	WIN_MEDIUM	apnoe_total_divetime_column, apnoe_total_divetime_row
+	lfsr	FSR2,buffer
+	output_16_3                     ; displays only last three figures from a 16Bit value (0-999)
+	call	TFT_standard_color
+	STRCAT_PRINT ""                 ; Show minutes in large font
+	WIN_SMALL  apnoe_total_divetime_secs_column, apnoe_total_divetime_secs_row   		; left position for two sec figures
+	lfsr    FSR2,buffer
+	PUTC    ':'
+	bsf		leftbind
+	movff	divesecs,lo
+	output_99x
+	bcf     leftbind
+	STRCAT_PRINT ""                 ; Show seconds in small font
+
 	return
 	
 ;=============================================================================

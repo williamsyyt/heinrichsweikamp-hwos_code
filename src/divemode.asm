@@ -140,10 +140,6 @@ diveloop_loop6:
 ;--------------------------------------------------------------------------------------------------------
 
 
-
-
-
-
 divemode_apnoe_tasks:                       ; 1 sec. Apnoe tasks
 	call	TFT_display_apnoe_descent		; Show descent timer
 	call	TFT_max_pressure				; use normal max. depth
@@ -1086,7 +1082,8 @@ diveloop_boot:
 	clrf	apnoe_surface_mins			
 	clrf	apnoe_surface_secs		
 	clrf	apnoe_mins
-	clrf	apnoe_secs
+    movlw   .2
+    movwf	apnoe_secs
 	clrf	divemins+0
 	clrf	divemins+1
     bcf     no_more_divesecs                ; =1: Do no longer show seconds in divemode
