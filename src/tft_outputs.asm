@@ -1591,6 +1591,7 @@ TFT_display_decotype_surface4:
 TFT_display_decotype_exit:
     call	TFT_standard_color
     return
+
 ;=============================================================================
 
     global  TFT_splist_surfmode     ; Show Setpoint list

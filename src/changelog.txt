@@ -3,6 +3,9 @@ BUGFIX: alternating brightness at very low ambient light
 CHANGE: GF high lowest setting 60%
 BUGFIX: NOAA tables for CNS are in ATA, not bar
 CHANGE: change apnea timeout, do no longer store apnea dives in logbook
+BUGFIX: Simulator in CC mode
+BUGFIX: Apnea total divetime
+BUGFIX: Battery percent value with 3,6V battery
 
 New in 0.98:
 New: Add cardinal (and ordinal) directions for the compass

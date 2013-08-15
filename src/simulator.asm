@@ -86,7 +86,6 @@ get_first_gas_to_WREG3:
         movf    lo,W                    ; Put into Wreg
         return                          ; Done
 
-        global  deco_setup
 deco_setup:
         banksel char_I_step_is_1min     ; Select the right bank...
         clrf    char_I_step_is_1min     ; Default to 2sec steps.
@@ -99,15 +98,20 @@ deco_setup:
         movwf   int_I_pres_surface+1
         movwf   int_I_pres_respiration+1
     
-        clrf    int_I_divemins+0        ; Dive start
+        clrf    int_I_divemins+0                ; Dive start
         clrf    int_I_divemins+1
+        bcf     use_agf                         ; =1: Use aGF
+        rcall   deco_setup_dive
 
-        call    get_first_gas_to_WREG           ; Gets first gas (0-4) into WREG
+        movff   char_I_setpoint_cbar+0,char_I_const_ppO2    ; Setup fixed Setpoint (Always start with SP1)
+
+        rcall   get_first_gas_to_WREG           ; Gets first gas (0-4) into WREG
         movff   WREG,char_I_first_gas           ; Copy for compatibility
         extern  setup_gas_registers
         call    setup_gas_registers             ; With WREG=Gas 0-4, set current N2/He/O2 ratios.
         extern  set_actual_ppo2
         call    set_actual_ppo2                 ; Then configure char_I_actual_ppO2 (For CNS)
+        return
 
         global	deco_setup_dive
 deco_setup_dive:						; Called from divemode
@@ -590,7 +594,13 @@ deco_show_plan_m1:
         STRCAT_PRINT  "%"
         ;bra     deco_show_plan_m2
 
-deco_show_plan_m2:        
+deco_show_plan_m2:
+        ; Show deco mode
+        extern  TFT_display_decotype_surface1
+        WIN_TOP .90
+        lfsr    FSR2,buffer
+        movff   opt_dive_mode,lo        ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
+        call    TFT_display_decotype_surface1
         
         ;---- Display TTS result
         WIN_TOP     .165
