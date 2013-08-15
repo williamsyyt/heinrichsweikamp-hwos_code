@@ -1149,12 +1149,13 @@ TFT_surface_decosettings1:
     TEXT_SMALL  surf_gaslist_column,surf_gaslist_row,  tZHL16GF
     WIN_TOP surf_gaslist_row+(surf_gaslist_spacing*.1)
     lfsr    FSR2,buffer
+    STRCPY_TEXT tGF         ; GF:
     movff   char_I_GF_Low_percentage,lo
     output_99x
-    STRCAT  "%/"
+    STRCAT  "/"
     movff   char_I_GF_High_percentage,lo
     output_99x
-    STRCAT_PRINT  "%"
+    STRCAT_PRINT  ""
     ;bra     TFT_surface_decosettings2
 TFT_surface_decosettings2:
     ; FTTS
