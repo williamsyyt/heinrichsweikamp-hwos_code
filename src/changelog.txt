@@ -6,6 +6,7 @@ CHANGE: change apnea timeout, do no longer store apnea dives in logbook
 BUGFIX: Simulator in CC mode
 BUGFIX: Apnea total divetime
 BUGFIX: Battery percent value with 3,6V battery
+NEW: Surface customview with important deco settings
 
 New in 0.98:
 New: Add cardinal (and ordinal) directions for the compass

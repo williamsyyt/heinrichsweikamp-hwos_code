@@ -38,6 +38,7 @@ TFT_color_code macro color_code_temp
     extern  TFT_surface_tissues         ; Show Tissue diagram in surface mode
     extern  TFT_surface_compass_mask    ; Compass heading mask
     extern  TFT_surface_compass_heading ; Compass heading value
+    extern  TFT_surface_decosettings    ; Show all deco settings
 
 ; Menu
 	extern	TFT_LogOffset_Logtitle

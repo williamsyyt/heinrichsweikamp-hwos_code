@@ -1123,6 +1123,66 @@ TFT_update_compass_2:
     bcf     leftbind
     return
 
+    global  TFT_surface_decosettings    ; Show all deco settings
+TFT_surface_decosettings:
+   ; Deco Mode
+	call	TFT_standard_color
+    movff   char_I_deco_model,WREG
+    iorwf   WREG
+    bnz     TFT_surface_decosettings1
+
+    ; Display ZH-L16 sat/desat model.
+    TEXT_SMALL  surf_gaslist_column,surf_gaslist_row,  tZHL16
+    WIN_TOP surf_gaslist_row+(surf_gaslist_spacing*.2)
+    lfsr    FSR2,buffer
+    movff   char_I_desaturation_multiplier,lo
+    bsf     leftbind
+    output_8
+    STRCAT  "%/"
+    movff   char_I_saturation_multiplier,lo
+    output_8
+    STRCAT_PRINT  "%"
+    bra     TFT_surface_decosettings2
+
+   ; Display ZH-L16-GF low/high model.
+TFT_surface_decosettings1:
+    TEXT_SMALL  surf_gaslist_column,surf_gaslist_row,  tZHL16GF
+    WIN_TOP surf_gaslist_row+(surf_gaslist_spacing*.1)
+    lfsr    FSR2,buffer
+    movff   char_I_GF_Low_percentage,lo
+    output_99x
+    STRCAT  "%/"
+    movff   char_I_GF_High_percentage,lo
+    output_99x
+    STRCAT_PRINT  "%"
+    ;bra     TFT_surface_decosettings2
+TFT_surface_decosettings2:
+    ; FTTS
+    WIN_TOP surf_gaslist_row+(surf_gaslist_spacing*.2)
+    lfsr    FSR2,buffer
+    STRCPY_TEXT tFTTSMenu
+    movff   char_I_extra_time,lo
+    bsf     leftbind
+    output_8
+    STRCAT_TEXT_PRINT   tMinutes
+
+    ; Last Stop
+    WIN_TOP surf_gaslist_row+(surf_gaslist_spacing*.3)
+    lfsr    FSR2,buffer
+    STRCPY_TEXT tLastDecostop
+    movff   char_I_depth_last_deco,lo
+    output_8
+    STRCAT_TEXT_PRINT   tMeters
+
+    ; Salinity
+    WIN_TOP surf_gaslist_row+(surf_gaslist_spacing*.4)
+    lfsr    FSR2,buffer
+    STRCPY_TEXT tDvSalinity
+    movff   opt_salinity,lo
+    output_8
+    bcf     leftbind
+    STRCAT_TEXT_PRINT   tPercent
+    return                          ; Done.
 
     global  TFT_surface_compass_mask
 TFT_surface_compass_mask:
