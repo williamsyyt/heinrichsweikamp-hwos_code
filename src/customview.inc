@@ -17,9 +17,11 @@
     extern  customview_show_change_depth    ; Put " in lo m" or " in lo ft" into Postinc2
     extern  menuview_toggle
     extern  menuview_toggle_reset
+    extern  customview_mask
 
     ; Surface mode
     extern  surf_customview_toggle
+    extern  surf_customview_mask
 
 ;	extern	surf_customview_second
 ;	extern	surf_customview_minute

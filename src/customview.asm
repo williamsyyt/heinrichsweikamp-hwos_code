@@ -276,6 +276,7 @@ customview_toggle:
 	bra		customview_mask		            ; No, show
 customview_toggle_reset:					; Timeout occured
 	clrf	menupos3			            ; Reset to zero (Zero=no custom view)
+    global  customview_mask
 customview_mask:	
 	call	TFT_clear_customview_divemode	
 	WIN_SMALL	divemode_customview_column,divemode_customview_row

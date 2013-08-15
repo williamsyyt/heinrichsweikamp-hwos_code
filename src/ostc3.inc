@@ -465,6 +465,8 @@ hud_status_byte     res 1
 sensor_setpoint     res 1       ; sensor ppo2 in 0.01bar for deco routine
 
 better_gas_number	res 1       ; number (1-5) of the "better gas" in divemode, =0: no better gas available
+customview_divemode res 1       ; keeps last custom view
+customview_surfmode res 1
 
 ;---------------------------- TMP DATA ---------------------------------------
 ; Space for various overlayed data from color, word, menu processors, etc.

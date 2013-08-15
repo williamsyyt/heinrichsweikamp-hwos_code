@@ -28,6 +28,7 @@ gui     CODE
 ; Main Menu
         global  do_main_menu
 do_main_menu:
+        movff   menupos3,customview_surfmode; save last customview
 		bcf		sleepmode				; for timeout
 		call    menu_processor_reset    ; restart from first icon.
 

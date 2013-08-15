@@ -293,6 +293,8 @@ ghostwriter_end_dive:
 	movff	ext_flash_address+1,ext_flash_log_pointer+1
 	movff	ext_flash_address+2,ext_flash_log_pointer+2	; Save end-of-profile pointer to store in header
 
+    movff   menupos3,customview_divemode            ; store last customview
+
 	btfss	realdive					; dive longer then one minute
 	goto	ghostwriter_end_dive_common				; No, discard everything
 

@@ -133,7 +133,7 @@ surfloop:
 	call	TFT_update_surf_press		; display surface pressure
 	call	TFT_temp_surfmode			; Displays temperature
 	call	TFT_display_decotype_surface
-    extern  surf_customview_mask
+    movff   customview_surfmode,menupos3    ; Reload last customview
     call    surf_customview_mask        ; Update #menupos3 view
 
     WIN_TOP     .0

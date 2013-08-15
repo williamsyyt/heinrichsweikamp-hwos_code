@@ -36,6 +36,8 @@ diveloop:
 	call	TFT_ClearScreen			; clean up TFT
 	call	TFT_divemode_mask		; Display mask
 	call	TFT_temp_divemode		; Displays temperature
+    movff   customview_divemode,menupos3    ; Reload last customview
+    call    customview_mask         ; Redraw last custom view
 
 	btfsc	FLAG_apnoe_mode
 	bsf		realdive					; Set Realdive flag in Apnoe mode
@@ -1082,14 +1084,11 @@ diveloop_boot:
 	clrf	apnoe_surface_mins			
 	clrf	apnoe_surface_secs		
 	clrf	apnoe_mins
-    movlw   .2
-    movwf	apnoe_secs
 	clrf	divemins+0
 	clrf	divemins+1
     bcf     no_more_divesecs                ; =1: Do no longer show seconds in divemode
 	bcf		divemode_menu_active
     clrf    menupos
-    clrf	menupos3                        ; Reset to zero (Zero=no custom view)
     clrf    menupos2                        ; Reset to zero (Zero=no premenu or simulator task)
 
     bcf     is_bailout                      ; =1: Bailout
@@ -1165,9 +1164,11 @@ divemode1:
 	call	disable_rs232				; Disable RS232
     btfsc   enable_screen_dumps         ; =1: Ignore vin_usb, wait for "l" command (Screen dump)
     call	enable_rs232				; Also sets to speed_normal ...
-    movlw   .2
+    ; Reset divetime seconds
+    movlw   .2                          ; Start at 2seconds
 	movwf   total_divetime_seconds+0
-	movwf   divesecs                    ; Start at 2seconds
+	movwf   divesecs
+    movwf	apnoe_secs
 	bsf		divemode2                   ; displayed divetime is running (Divetime starts HERE)
 
 	movff	int_O_CNS_fraction+0,CNS_start+0
