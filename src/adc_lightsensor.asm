@@ -102,11 +102,59 @@ get_battery_voltage3:
 	cpfslt	lo
 	movwf	lo
 	; lo will be between 100 (Full) and 0 (empty)
+
+; use 3,6V battery sensing based on 50mA load
+; 75%
+	movff	batt_voltage+0,sub_b+0
+	movff	batt_voltage+1,sub_b+1
+	movlw	LOW		lithium_36v_75
+	movwf	sub_a+0
+	movlw	HIGH	lithium_36v_75
+	movwf	sub_a+1
+	call	subU16				; sub_c = sub_a - sub_b
+	btfsc	neg_flag
+    bra     get_battery_voltage3a
+    movlw   .75
+    movwf   lo
+get_battery_voltage3a:
+; 50%
+	movlw	LOW		lithium_36v_50
+	movwf	sub_a+0
+	movlw	HIGH	lithium_36v_50
+	movwf	sub_a+1
+	call	subU16				; sub_c = sub_a - sub_b
+	btfsc	neg_flag
+    bra     get_battery_voltage3b
+    movlw   .50
+    movwf   lo
+get_battery_voltage3b:
+    ; 25%
+	movlw	LOW		lithium_36v_25
+	movwf	sub_a+0
+	movlw	HIGH	lithium_36v_25
+	movwf	sub_a+1
+	call	subU16				; sub_c = sub_a - sub_b
+	btfsc	neg_flag
+    bra     get_battery_voltage3c
+    movlw   .25
+    movwf   lo
+get_battery_voltage3c:
+    ; 10%
+	movlw	LOW		lithium_36v_10
+	movwf	sub_a+0
+	movlw	HIGH	lithium_36v_10
+	movwf	sub_a+1
+	call	subU16				; sub_c = sub_a - sub_b
+	btfsc	neg_flag
+    bra     get_battery_voltage3d
+    movlw   .10
+    movwf   lo
+get_battery_voltage3d:
     movf    batt_percent,W
     cpfsgt  lo                      ; keep batt_percent on the lowest value found
     movff   lo,batt_percent         ; store value
-    btfsc   battery_is_36v          ; but always use computed value for 3,6V battery
-    movff   lo,batt_percent         ; store value
+;    btfsc   battery_is_36v          ; but always use computed value for 3,6V battery
+;    movff   lo,batt_percent         ; store value
     bcf     adc_running              ; =1: The ADC is in use
 	return
 

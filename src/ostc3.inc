@@ -142,12 +142,18 @@
 #DEFINE	velocity_warning_level_1	.7	; [m/min]
 
 ; Battery thresholds
-#DEFINE lithium_36v_empty       .2800   ; [mV] Saft 3,6V LS14500 AA - threshold for battery percent display
+#DEFINE lithium_36v_empty       .2400   ; [mV] Saft 3,6V LS14500 AA - threshold for battery percent display
 #DEFINE	lithium_36v_low			.2000	; [mV] (Must be bigger then aa_15v_high!)
 #DEFINE	aa_15v_high				.1550	; [mV] Energizer 1,5V E2 AA
 #DEFINE	aa_15v_low				.1100	; [mV] According to Energizer Datasheet EBC-4201R, Page 2
 #DEFINE color_code_battery_low  .15     ; [%]
 #DEFINE battery_show_level      .30     ; [%]
+
+; 3,6V battery sensing data points at 55mA load
+#DEFINE lithium_36v_75          .3200   ; [mV]
+#DEFINE lithium_36v_50          .3100   ; [mV]
+#DEFINE lithium_36v_25          .2900   ; [mV]
+#DEFINE lithium_36v_10          .2600   ; [mV]
 
 #DEFINE	current_sleepmode           .62
 #DEFINE	current_backlight_multi     .115    ; *CCPR1L+current_backlight_offset
