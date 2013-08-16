@@ -20,7 +20,7 @@
 
 #DEFINE	softwareversion_x		d'0'		; Software version  XX.YY
 #DEFINE	softwareversion_y		d'99'		; Software version  XX.YY
-#DEFINE softwareversion_beta 	1 			; (and 0 for release)
+#DEFINE softwareversion_beta 	0 			; (and 0 for release)
 
 #DEFINE comm_service_key        0xABCDEF
 
@@ -146,8 +146,8 @@
 #DEFINE	lithium_36v_low			.2000	; [mV] (Must be bigger then aa_15v_high!)
 #DEFINE	aa_15v_high				.1550	; [mV] Energizer 1,5V E2 AA
 #DEFINE	aa_15v_low				.1100	; [mV] According to Energizer Datasheet EBC-4201R, Page 2
-#DEFINE color_code_battery_low  .15     ; [%]
-#DEFINE battery_show_level      .30     ; [%]
+#DEFINE color_code_battery_low  .10     ; [%]
+#DEFINE battery_show_level      .24     ; [%]
 
 ; 3,6V battery sensing data points at 55mA load
 #DEFINE lithium_36v_75          .3200   ; [mV]
