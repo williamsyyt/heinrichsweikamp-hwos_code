@@ -150,6 +150,10 @@ get_battery_voltage3c:
     movlw   .10
     movwf   lo
 get_battery_voltage3d:
+	movlw	.100
+	cpfslt	lo
+	movwf	lo
+	; lo will be between 100 (Full) and 0 (empty)
     movf    batt_percent,W
     cpfsgt  lo                      ; keep batt_percent on the lowest value found
     movff   lo,batt_percent         ; store value
@@ -175,7 +179,7 @@ get_battery_voltage4:
     rrcf    sub_c+1
     rrcf    sub_c+0             ; /4
     movff   sub_c+0,lo
-    bra     get_battery_voltage3    ; Check limits and return
+    bra     get_battery_voltage3d    ; Check limits and return
 
 	global	get_ambient_level
 get_ambient_level:              ; starts ADC and waits until finished
