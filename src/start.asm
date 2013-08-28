@@ -182,7 +182,7 @@ check_firmware_new:
 	PUTC	"."
 	movlw	softwareversion_y
 	movwf	lo
-	output_8
+	output_99x
 	bcf		leftbind
 	STRCAT_PRINT	""					; Print second row
     call    TFT_Display_FadeIn          ; Display resulting surface screen.
