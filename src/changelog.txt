@@ -1,3 +1,6 @@
+New in 1.01:
+BUGFIX: deco gas init in OC planner
+
 New in 1.00:
 BUGFIX: Percent display with 1,5V batteries
 
