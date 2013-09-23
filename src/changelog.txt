@@ -1,3 +1,7 @@
+New in 1.02:
+CHANGE: Time and Date in normal (Not tiny) font
+BUGFIX: Minor french language fix
+
 New in 1.01:
 BUGFIX: deco gas init in OC planner
 

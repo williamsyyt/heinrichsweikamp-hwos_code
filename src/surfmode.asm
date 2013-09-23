@@ -136,6 +136,7 @@ surfloop:
     movff   customview_surfmode,menupos3    ; Reload last customview
     call    surf_customview_mask        ; Update #menupos3 view
 
+; Logo
     WIN_TOP     .0
     WIN_LEFT    .70
     movlw   LOW(ostc3_logo_block)

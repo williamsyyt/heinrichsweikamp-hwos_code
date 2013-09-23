@@ -109,7 +109,7 @@
     TCODE   tZHL16GF,   "ZH-L16+GF"
     TCODE   tPPO2Max,   "ppO2 Max:"
     TCODE   tPPO2Min,   "ppO2 Min:"
-    TCODE   tLastDecostop, "Dern. palier:"
+    TCODE   tLastDecostop, "Dern.palier:"
     TCODE   tDecoparameters, "Param. Deco"
     TCODE   tGF_low,    "GF bas:"
     TCODE   tGF_high,   "GF haut:"

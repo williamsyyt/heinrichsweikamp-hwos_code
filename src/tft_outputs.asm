@@ -835,7 +835,7 @@ TFT_menu_hud:            ; Yes, update HUD data
 
     	global	TFT_clock
 TFT_clock:
-	WIN_TINY  surf_clock_column,surf_clock_row
+	WIN_SMALL  surf_clock_column,surf_clock_row
 TFT_clock2:                         ; called from divemode clock
    	call	TFT_standard_color
 	lfsr    FSR2,buffer
@@ -2226,7 +2226,7 @@ TFT_convert_date_short1:
 
 	global	TFT_date
 TFT_date:
-    WIN_TINY   surf_date_column,surf_date_row				; Init new Wordprocessor
+    WIN_SMALL  surf_date_column,surf_date_row				; Init new Wordprocessor
 	call	TFT_standard_color
 	lfsr	FSR2,buffer
 	movff	month,convert_value_temp+0

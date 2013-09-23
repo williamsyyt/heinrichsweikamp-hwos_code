@@ -116,7 +116,7 @@ surf_customview_toggle:
 
     global  surf_customview_mask
 surf_customview_mask:
-    WIN_BOX_BLACK    batt_voltage_row+.16,surf_warning1_row-1, .0, surf_decotype_column-.1	; top, bottom, left, right
+    WIN_BOX_BLACK    .50,surf_warning1_row-1, .0, surf_decotype_column-.1	; top, bottom, left, right
 	call	TFT_standard_color
 	movff	menupos3,WREG                   ; Menupos3 holds number of customview function
 	dcfsnz	WREG,F
