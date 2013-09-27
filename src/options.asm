@@ -621,7 +621,7 @@ option_table_begin:
         OPTION_UINT8    oDil5Depth,     .0, .100,   .0,     tMeters,  .84,     char_I_dil_change+4
         OPTION_STRING   oName,          opt_name_length,    tDefName, .85,     opt_name
         ; opt_name from 85 to 145
-
+        OPTION_ENUM8    oColorSetDive,  4,  0, tColorSetName0,       .146,     opt_dive_color_scheme            ; Color scheme divemode
 
 ; Set Time/Set Date
 		OPTION_UINT8    oSetHours,		.0,	.23, .0,	0, -1,		hours

@@ -50,7 +50,6 @@ testloop:
 	WIN_FONT 	FT_SMALL
 	WIN_INVERT	.0					    ; Init new Wordprocessor
 	call    TFT_standard_color
-    call    mcp_reset_rssi              ; Setup RX
     call    TFT_Display_FadeIn
 
     call    I2C_init_compass

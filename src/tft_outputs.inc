@@ -42,6 +42,7 @@ TFT_color_code macro color_code_temp
 
 ; Menu
 	extern	TFT_LogOffset_Logtitle
+    extern  TFT_show_color_schemes      ; Yes, update the color schemes
 
 ; Debug and useless stuff
 	extern	TFT_update_raw_data
@@ -93,6 +94,8 @@ TFT_color_code macro color_code_temp
 ; Misc
 	extern	TFT_standard_color
     extern  TFT_disabled_color
+    extern  TFT_attention_color
+    extern  TFT_warnings_color
 	extern	adjust_depth_with_salinity
 	extern	TFT_convert_date_short
 	extern	TFT_convert_signed_16bit

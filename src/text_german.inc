@@ -280,4 +280,13 @@
     TCODE   tW,             "W"                 ; W(West),248°-292°
     TCODE   tNW,            "NW"                ; North-West,293°-337°
 
+; Color Scheme menu
+    TCODE   tColorScheme,   "Farbschema"        ; Color Scheme
+    TCODE   tColorSetDive,  "Tauchmodus:"       ; Divemode Colors:
+    TCODE   tColorSetName0, "Name 0"
+    TCODE   tColorSetName1, "Name 1"
+    TCODE   tColorSetName2, "Name 2"
+    TCODE   tColorSetName3, "Name 3"
+
+
 

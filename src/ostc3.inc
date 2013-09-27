@@ -19,7 +19,7 @@
 #include <ports.inc>                        ; Portmap
 
 #DEFINE	softwareversion_x		d'1'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'02'		; Software version  XX.YY
+#DEFINE	softwareversion_y		d'03'		; Software version  XX.YY
 #DEFINE softwareversion_beta 	1 			; (and 0 for release)
 
 #DEFINE comm_service_key        0xABCDEF
@@ -514,6 +514,7 @@ opt_GF_low              res 1   ; GF LOW
 opt_enable_aGF          res 1   ; =1: aGF can be selected underwater
 opt_compass_gain        res 1   ; 0-7 (230LSB/Gauss to 1370LSB/Gaus)
 opt_sampling_rate       res 1   ; =1: 10s, =0: 2s
+opt_dive_color_scheme   res 1   ; 0-3
 
 ;-----------------------------EEPROM DATA ------------------------------------
 ; Automatic reset of all options when this is changed:
@@ -594,6 +595,7 @@ opt_sampling_rate       res 1   ; =1: 10s, =0: 2s
 #DEFINE compass_enabled         flag8,7 ; =1: The compass and accelerometer chip is active
 
 #DEFINE compass_fast_mode       flag9,0 ; =1: The compass is in fast mode
+#DEFINE in_color_menu           flag9,1 ; =1: In the color scheme menu
 
 ;=============================================================================
 ; C-code Routines

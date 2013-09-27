@@ -176,11 +176,13 @@ pressuretest_sleep_fast:				; Get pressure without averaging (Faster to save som
 	banksel 	common
 	rcall 		sleepmode_sleep			; Wait at least 35ms (every 62,5ms Timer7 wakeup)
 	rcall 		sleepmode_sleep			; Wait at least 35ms (every 62,5ms Timer7 wakeup)
+    bsf         LEDg                    ; Show some activity
 	banksel 	isr_backup              ; Back to Bank0 ISR data
 	call		get_pressure_value		; State2: Get pressure (51us)
 	call		calculate_compensation		; calculate temperature compensated pressure (27us)
 	banksel 	common
     SAFE_2BYTE_COPY amb_pressure_avg, amb_pressure	; copy for compatibility
+    bcf         LEDg
 	return
 
 sleepmode_sleep:

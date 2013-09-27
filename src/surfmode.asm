@@ -125,7 +125,6 @@ surfloop:
     STRCPY_TEXT_PRINT  tView        ;"View>"
 	call    TFT_standard_color
 
-    call    mcp_reset                   ; Setup RX
 	call	TFT_clock					; display time
     call    update_surfloop60
 	call	get_battery_voltage			; get battery voltage

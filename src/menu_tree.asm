@@ -350,7 +350,7 @@ do_date_menu:
 	bsf		settime_setdate
     MENU_BEGIN  tSetDate, .4
         MENU_OPTION tSetDay,	oSetDay,		0
-		MENU_OPTION	tSetMonth,	oSetMonth,	0
+		MENU_OPTION	tSetMonth,	oSetMonth,  	0
         MENU_OPTION tSetYear,	oSetYear,		0
         MENU_CALL   tExit,                      do_continue_menu_3stack
     MENU_END
@@ -449,18 +449,30 @@ do_logoffset_plus10:
 	goto	do_logoffset_common_write			; Store and return
 
 do_dispsets_menu_3stack:
+    bcf		in_color_menu
     call    menu_processor_pop
     call    menu_processor_pop
 
 do_dispsets_menu:
-    MENU_BEGIN  tDispSets, .6
+    MENU_BEGIN  tDispSets, .7
         MENU_OPTION tBright,    oBrightness,    0
         MENU_OPTION tUnits,    oUnits,          0
 		MENU_CALL	tLogOffset,					do_log_offset_menu
         MENU_OPTION tSamplingrate,oSamplingRate,0
         MENU_OPTION tDvSalinity,oDiveSalinity,  0
+        MENU_CALL   tColorScheme,               do_color_scheme
         MENU_CALL   tExit,                      do_return_settings
     MENU_END
+
+
+    extern  oColorSetDive
+do_color_scheme:
+    bsf		in_color_menu
+	MENU_BEGIN  tColorScheme, .2
+        MENU_OPTION     tColorSetDive,oColorSetDive,  0
+        MENU_CALL       tExit,                  	do_dispsets_menu_3stack
+    MENU_END
+
 
 ;=============================================================================
 

@@ -975,8 +975,8 @@ logbook_show_temp_metric:
 	STRCAT_TEXT_PRINT    tLogTunitC
 
 logbook_show_temp_common:
-	bcf			leftbind
-	call        TFT_standard_color     ; Back to normal
+	bcf		leftbind
+	call    TFT_standard_color
 
 	; Get pointer to Gaslist
     LOG_POINT_TO    log_gas1

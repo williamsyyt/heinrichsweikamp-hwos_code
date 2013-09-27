@@ -19,6 +19,7 @@
 #include "divemode.inc"
 #include "math.inc"
 #include "eeprom_rs232.inc"
+#include "tft_outputs.inc"
 
 gui     CODE
 
@@ -367,12 +368,12 @@ deco_plan_show_stop:
         btfss   lo,7                    ; Bit set ?
         bra     deco_plan_show_std_stop  ; No : Just an usual stop.
 
-        TFT_ATTENTION_COLOR
+        call    TFT_attention_color
         bcf     lo,7                    ; and cleanup depth.
         bra     deco_plan_show_nstd_stop
 
 deco_plan_show_std_stop:
-    	TFT_STD_COLOR
+    	call    TFT_standard_color
 
 deco_plan_show_nstd_stop:        
 	    lfsr	FSR2,buffer
@@ -450,7 +451,7 @@ deco_plan_show_nstd_stop_common:
         call	TFT_box
 
         ; Restore win_top
-	    TFT_STD_COLOR
+	    call    TFT_standard_color
         decf    win_top,F               ; Restore win_top
         return
 
@@ -488,7 +489,7 @@ deco_show_plan_page:
         bnz		deco_plan_show_1
 
         ;---- No Deco --------------------------------------------------------
-    	TFT_STD_COLOR
+    	call    TFT_standard_color
         TEXT_SMALL   .80, .0, tNoDeco
         bsf     decoplan_last_ceiling_shown
         return
@@ -547,7 +548,7 @@ deco_plan_show_2:
         ; Display the message "more..."
         rcall   deco_plan_show_clear_bottom  ; Clear from next line
 
-    	TFT_STD_COLOR
+    	call    TFT_standard_color
         TEXT_SMALL .85, .240-.25, tMore
         return
 
@@ -565,7 +566,7 @@ deco_show_plan:
         call    TFT_ClearScreen
         WIN_COLOR   color_greenish
         TEXT_SMALL  .1,.1, tDivePlan
-        TFT_STD_COLOR
+        call    TFT_standard_color
         WIN_LEFT    .0
         
         ;---- Display model

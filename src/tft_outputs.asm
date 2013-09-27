@@ -26,6 +26,7 @@
 #include	"ghostwriter.inc"
 #include    "customview.inc"
 #include    "i2c.inc"
+#include    "colorschemes.inc"
 
 	extern	aa_wordprocessor
 
@@ -36,7 +37,39 @@ gui    CODE
 
     global   TFT_divemask_color
 TFT_divemask_color:
-    movlw   color_green         ; TODO
+    movlw   color_green
+    btfsc   divemode            ; in Divemode?
+    rcall   TFT_divemask_color_dive
+	bra		TFT_standard_color0
+
+TFT_divemask_color_dive:
+    movff   opt_dive_color_scheme,WREG  ; 0-3
+    incf    WREG
+	dcfsnz	WREG
+	bra		TFT_divemask_colordive0  	;0
+	dcfsnz	WREG
+	bra		TFT_divemask_colordive1  	;1
+	dcfsnz	WREG
+	bra		TFT_divemask_colordive2  	;2
+	dcfsnz	WREG
+	bra		TFT_divemask_colordive3  	;3
+TFT_divemask_colordive0:
+    movlw   color_scheme_divemode_mask1
+    return
+TFT_divemask_colordive1:
+    movlw   color_scheme_divemode_mask2
+    return
+TFT_divemask_colordive2:
+    movlw   color_scheme_divemode_mask3
+    return
+TFT_divemask_colordive3:
+    movlw   color_scheme_divemode_mask4
+    return
+
+
+    global  TFT_attention_color
+TFT_attention_color:
+    movlw   color_yellow
 	bra		TFT_standard_color0
 
     global  TFT_warnings_color
@@ -51,10 +84,35 @@ TFT_disabled_color:
 
     global  TFT_standard_color
 TFT_standard_color:
-    setf    WREG                ; TODO...
+    setf    WREG
+    btfsc   divemode            ; in Divemode?
+    rcall   TFT_standard_color_dive
 TFT_standard_color0:
 	call	TFT_set_color
 	return
+TFT_standard_color_dive:
+    movff   opt_dive_color_scheme,WREG  ; 0-3
+    incf    WREG
+	dcfsnz	WREG
+	bra		TFT_standard_colordive0  	;0
+	dcfsnz	WREG
+	bra		TFT_standard_colordive1  	;1
+	dcfsnz	WREG
+	bra		TFT_standard_colordive2  	;2
+	dcfsnz	WREG
+	bra		TFT_standard_colordive3  	;3
+TFT_standard_colordive0:
+    movlw   color_scheme_divemode_std1
+    return
+TFT_standard_colordive1:
+    movlw   color_scheme_divemode_std2
+    return
+TFT_standard_colordive2:
+    movlw   color_scheme_divemode_std3
+    return
+TFT_standard_colordive3:
+    movlw   color_scheme_divemode_std4
+    return
 
 TFT_color_code macro color_code_temp
 	movlw	color_code_temp
@@ -250,6 +308,97 @@ TFT_color_code_battery:             ; With battery percent in lo
     return
 
 ; ****************************************************************************
+
+
+    global  TFT_show_color_schemes
+TFT_show_color_schemes:         ; update the color schemes
+    bsf     divemode            ; put in divemode
+    call    TFT_divemask_color
+    WIN_TINY  divemode_mask_depth_column,divemode_mask_depth_row+.40
+    lfsr	FSR2,buffer
+    STRCAT_TEXT_PRINT	tDepth
+    WIN_TINY  divemode_mask_maxdepth_column,divemode_mask_maxdepth_row+.40
+    lfsr	FSR2,buffer
+    STRCAT_TEXT_PRINT	tMaxDepth
+    WIN_TINY  divemode_mask_divetime_column,divemode_mask_divetime_row+.40
+    lfsr	FSR2,buffer
+    STRCAT_TEXT_PRINT	tDivetime
+
+    ; Show some demo screen
+
+    ; Depth demo
+    call	TFT_standard_color
+    lfsr	FSR2,buffer
+	WIN_MEDIUM	depth_column+.3,depth_row+.40
+    movlw   LOW     .5172
+    movwf   lo
+    movlw   HIGH    .5172
+    movwf   hi
+	bsf		leftbind
+	bsf		ignore_digit4
+	output_16						; Full meters in Big font
+	bcf		leftbind
+	STRCAT_PRINT ""					; Display full meters
+    WIN_SMALL	depth_dm_column-.15,max_depth_dm_row+.40
+    movlw   LOW     .5172
+    movwf   lo
+    movlw   HIGH    .5172
+    movwf   hi
+    lfsr    FSR2,buffer
+	PUTC    "."
+	movlw	d'4'
+	movwf	ignore_digits
+	bsf		ignore_digit5
+	output_16dp	d'0'                ; .1m in SMALL font
+	STRCAT_PRINT ""					; Display decimeters
+	WIN_FONT 	FT_SMALL
+
+    ; Max. Depth demo
+    WIN_MEDIUM	max_depth_column,max_depth_row+.40
+	lfsr    FSR2,buffer
+	bsf     ignore_digit4			; no 0.1m
+    bsf     leftbind
+    movlw   LOW     .6349
+    movwf   lo
+    movlw   HIGH    .6349
+    movwf   hi
+	output_16
+	STRCAT_PRINT ""					; Display full meters
+    bcf     leftbind
+	; .1m in SMALL font
+	WIN_SMALL	max_depth_dm_column,max_depth_dm_row+.40
+    lfsr    FSR2,buffer
+	PUTC    "."
+	movlw	d'4'
+	movwf	ignore_digits
+	bsf		ignore_digit5
+    bsf     leftbind
+    movlw   LOW     .6349
+    movwf   lo
+    movlw   HIGH    .6349
+    movwf   hi
+	output_16dp	d'0'
+	STRCAT_PRINT ""					; Display decimeters
+    bcf     leftbind
+
+    ; Divetime demo
+    movff   mins,lo
+    clrf    hi
+	WIN_MEDIUM	divetime_column, divetime_row+.40
+	lfsr	FSR2,buffer
+	output_16_3                     ; displays only last three figures from a 16Bit value (0-999)
+	STRCAT_PRINT ""                 ; Show minutes in large font
+	WIN_SMALL  divetime_secs_column, divetime_secs_row+.40   		; left position for two sec figures
+	lfsr    FSR2,buffer
+	PUTC    ':'
+	bsf		leftbind
+	movff   secs,lo
+	output_99x
+	bcf     leftbind
+	STRCAT_PRINT ""                 ; Show seconds in small font
+
+    bcf     divemode                ; don't stay in divemode
+	return
 
 	global	TFT_divemode_mask
 TFT_divemode_mask:					; Displays mask in Dive-Mode
@@ -789,8 +938,7 @@ TFT_surface_hud6:
 
     global  TFT_menu_hud
 TFT_menu_hud:            ; Yes, update HUD data
-    movlw   color_yellow
-    call	TFT_set_color
+    call    TFT_attention_color         ; show in yellow
     bsf     leftbind
     WIN_SMALL   surf_menu_sensor1_column,surf_menu_sensor1_row
     lfsr    FSR2,buffer
@@ -1609,8 +1757,7 @@ TFT_active_gas_divemode:				; Display gas/Setpoint
 	btg		blinking_better_gas         ; Toggle blink bit...
 	btfss	blinking_better_gas         ; blink now?
 	return                              ; No, Done.
-	movlw	color_yellow                ; Blink in yellow
-    call	TFT_set_color
+    call    TFT_attention_color         ; blink in yellow
     WIN_STD_INVERT active_gas_column,active_gas_row
     movff   char_I_O2_ratio,lo          ; lo now stores O2 in %
     movff   char_I_He_ratio,hi          ; hi now stores He in %
@@ -3007,7 +3154,8 @@ surf_tissue_saturation_loop:
 ; Draw saturation graph, is surface mode or in dive mode.
 DISP_tissue_saturation_graph:
     ;---- Draw Frame
-    WIN_FRAME_STD   tissue_diagram_top, tissue_diagram_bottom, tissue_diagram_left, .159    ; outer frame
+    call	TFT_standard_color
+    WIN_FRAME_COLOR16   tissue_diagram_top, tissue_diagram_bottom, tissue_diagram_left, .159    ; outer frame
 
 	movlw	.1
 	movff	WREG,win_height             ; row bottom (0-239)

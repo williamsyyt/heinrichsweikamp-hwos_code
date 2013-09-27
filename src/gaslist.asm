@@ -171,8 +171,7 @@ gaslist_strcat_gas_better:   ; Yes, check if this is a "better gas"
         incf    gaslist_gas,W               ; gaslist_gas+1 -> WREG
         cpfseq  better_gas_number           ; 1-5 for OC/Bailout and 6-10 for diluents
         return
-       	movlw	color_yellow                ; show in yellow
-        call	TFT_set_color
+        call    TFT_attention_color         ; show in yellow
         movlw   .1
         movff   WREG,win_invert             ; and invert
         return
@@ -224,7 +223,7 @@ gaslist_strcat_3:
         rcall   gaslist_calc_mod        ; Compute MOD into WREG
         cpfsgt  lo
         bra		gaslist_strcat_4
-        TFT_WARNINGS_COLOR              ; Turn red if bigger
+        call    TFT_warnings_color      ; Turn red if bigger
 gaslist_strcat_4:
 		TSTOSS	opt_units               ; 0=Meters, 1=Feets
 		bra		gaslist_strcat_3_metric
@@ -615,7 +614,7 @@ gaslist_reset_mod_title2:
         movf   	PLUSW1,W
         cpfslt  lo
         bra     gaslist_strcat_4        ; And return...
-        TFT_WARNINGS_COLOR              ; Turn red if bigger !
+        call    TFT_warnings_color      ; Turn red if bigger !
         bra     gaslist_strcat_4        ; And return...
 
 ;----------------------------------------------------------------------------

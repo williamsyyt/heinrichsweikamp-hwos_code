@@ -135,7 +135,7 @@ menu_processor_title_1:
         movwf   win_leftx2              ; Aligned to center.
         
         call    aa_wordprocessor
-        TFT_STD_COLOR
+        call    TFT_standard_color
         return
 
 ;=============================================================================
@@ -249,6 +249,9 @@ menu_vertical_1:
 
         btfss   divemode                ; Not in divemode
         rcall   menu_draw_selected_line
+
+        btfsc   in_color_menu           ; =1: In the color scheme menu
+        call    TFT_show_color_schemes  ; Yes, update the color schemes
 
 		extern	rtc_set_rtc
 		btfss	settime_setdate			; In the Set Time or Set Date menu?
@@ -437,7 +440,7 @@ menu_draw_lines_2:
         movff   start_item, menu_item
 
 menu_draw_lines_1:
-        TFT_STD_COLOR                   ; Restore color after disabled lines.
+        call    TFT_standard_color     ; Restore color after disabled lines.
         
         movf    menu_item,W
         rcall   menu_read_item
@@ -552,7 +555,7 @@ menu_draw_selected_line:
 		clrf	timeout_counter2		; Reset timeout
         WIN_BOX_BLACK .34,.221,MENU_LEFT-8,MENU_LEFT-2  ; Clear left column
         
-        TFT_STD_COLOR
+        call    TFT_standard_color
         WIN_SMALL  MENU_LEFT-8, 0       ; Arrow symbol only in small font
         movf    start_item,W            ; First line (scrolled)
         subwf   selected_item,W         ; selected - first

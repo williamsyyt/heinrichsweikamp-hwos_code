@@ -228,7 +228,7 @@ comm_send_firmware_loop:
 
 comm_send_firmware_failed:
 	WIN_SMALL	comm_string_column, comm_string_row
-	TFT_WARNINGS_COLOR
+    call    TFT_warnings_color
 	STRCPY_PRINT    "Checksum failed"
 
 comm_send_firmware_abort:

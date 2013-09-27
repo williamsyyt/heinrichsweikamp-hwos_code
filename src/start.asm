@@ -65,11 +65,11 @@ clear_rambank:
 ; First pass will not have valid temperature!
 	btfss	pressure_refresh 		; Air pressure compensation
 	bra		$-2
+    bcf     LEDr
 ; Second pass
 	bcf		pressure_refresh
 	btfss	pressure_refresh 		; Air pressure compensation
 	bra		$-2
-    bcf     LEDr
 
 	clrf	rel_pressure+0
 	clrf	rel_pressure+1

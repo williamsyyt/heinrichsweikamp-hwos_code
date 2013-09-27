@@ -48,34 +48,6 @@
 	extern  half_horizontal_line
     extern  TFT_dump_screen
 
-;-----------------------------------------------------------------------------
-; Macro to encode standard colors.
-; TODO: User preferences... Maybe.
-TFT_STD_COLOR   macro
-        setf    WREG                    ; Default to white
-        call    TFT_set_color
-        endm
-
-TFT_MASK_COLOR  macro
-        movlw   color_greenish          ; Default to OSTC mask-green
-        call    TFT_set_color
-        endm
-
-TFT_ATTENTION_COLOR  macro
-        movlw   color_yellow             ; Default to OSTC yelow
-        call    TFT_set_color
-        endm
-
-TFT_WARNINGS_COLOR  macro
-        movlw   color_red                ; Default to OSTC red
-        call    TFT_set_color
-        endm
-
-;TFT_DISABLED_COLOR  macro
-;        movlw   color_grey               ; Default to OSTC grey (dark blue)
-;        call    TFT_set_color
-;        endm
-
 ;=============================================================================
 ; Low level macros (for aa_wordprocessor and color_processor).
 ;
