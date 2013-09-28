@@ -276,17 +276,17 @@
     TCODE   tE,             "E"                 ; E(east),68°-112°
     TCODE   tSE,            "SE"                ; South-East,113°-157°
     TCODE   tS,             "S"                 ; S(outh),157°-202°
-    TCODE   tSW,            "SW"                ; South-West,203°-247°
-    TCODE   tW,             "W"                 ; W(West),248°-292°
-    TCODE   tNW,            "NW"                ; North-West,293°-337°
+    TCODE   tSW,            "SO"                ; South-West,203°-247°
+    TCODE   tW,             "O"                 ; W(West),248°-292°
+    TCODE   tNW,            "NO"                ; North-West,293°-337°
 
 ; Color Scheme menu
-    TCODE   tColorScheme,   "Color scheme"      ; Color scheme
-    TCODE   tColorSetDive,  "Divemode:"         ; Divemode colors:
-    TCODE   tColorSetName0, "Name 0"
-    TCODE   tColorSetName1, "Name 1"
-    TCODE   tColorSetName2, "Name 2"
-    TCODE   tColorSetName3, "Name 3"
+    TCODE   tColorScheme,   "Jeu de couleurs"   ; Color scheme
+    TCODE   tColorSetDive,  "Mode plongée:"     ; Divemode:
+    TCODE   tColorSetName0, "Norme"             ; Standard
+    TCODE   tColorSetName1, "Rouge"             ; Red
+    TCODE   tColorSetName2, "Vert"              ; Green
+    TCODE   tColorSetName3, "Bleu"              ; Blue
 
 
 

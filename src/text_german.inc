@@ -282,11 +282,8 @@
 
 ; Color Scheme menu
     TCODE   tColorScheme,   "Farbschema"        ; Color Scheme
-    TCODE   tColorSetDive,  "Tauchmodus:"       ; Divemode Colors:
-    TCODE   tColorSetName0, "Name 0"
-    TCODE   tColorSetName1, "Name 1"
-    TCODE   tColorSetName2, "Name 2"
-    TCODE   tColorSetName3, "Name 3"
-
-
-
+    TCODE   tColorSetDive,  "Tauchmodus:"       ; Divemode:
+    TCODE   tColorSetName0, "Standard"          ; Standard
+    TCODE   tColorSetName1, "Rot"               ; Red
+    TCODE   tColorSetName2, "Grün"              ; Green
+    TCODE   tColorSetName3, "Blau"              ; Blue

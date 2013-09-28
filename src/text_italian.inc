@@ -267,7 +267,7 @@
 
 ; Sampling rate
     TCODE   tSamplingrate,  "Campionamento:"    ; Sampling rate:
-    TCODE   tSampling2s,    "2s)"               ; 2s
+    TCODE   tSampling2s,    "2s"                ; 2s
     TCODE   tSampling10s,   "10s"               ; 10s
 
 ; Compass directions
@@ -276,16 +276,14 @@
     TCODE   tE,             "E"                 ; E(east),68°-112°
     TCODE   tSE,            "SE"                ; South-East,113°-157°
     TCODE   tS,             "S"                 ; S(outh),157°-202°
-    TCODE   tSW,            "SW"                ; South-West,203°-247°
-    TCODE   tW,             "W"                 ; W(West),248°-292°
-    TCODE   tNW,            "NW"                ; North-West,293°-337°
+    TCODE   tSW,            "SO"                ; South-West,203°-247°
+    TCODE   tW,             "O"                 ; W(West),248°-292°
+    TCODE   tNW,            "NO"                ; North-West,293°-337°
 
 ; Color Scheme menu
-    TCODE   tColorScheme,   "Color scheme"      ; Color scheme
-    TCODE   tColorSetDive,  "Divemode:"         ; Divemode colors:
-    TCODE   tColorSetName0, "Name 0"
-    TCODE   tColorSetName1, "Name 1"
-    TCODE   tColorSetName2, "Name 2"
-    TCODE   tColorSetName3, "Name 3"
-
-
+    TCODE   tColorScheme,   "Schema di colori"  ; Color scheme
+    TCODE   tColorSetDive,  "Immersione:"       ; Divemode:
+    TCODE   tColorSetName0, "Standard"          ; Standard
+    TCODE   tColorSetName1, "Rosso"             ; Red
+    TCODE   tColorSetName2, "Verde"             ; Green
+    TCODE   tColorSetName3, "Blu"               ; Blue
