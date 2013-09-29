@@ -737,6 +737,95 @@ TFT_mask_avr_stopwatch:
     call	TFT_standard_color
     return
 
+    global  TFT_dyn_gaslist
+TFT_dyn_gaslist:                            ; Show the dynamic gaslist
+    ; The mask
+    call    TFT_divemask_color
+    WIN_TINY  dive_custom_dyn_mask_column,dive_custom_dyn_mask_row
+    STRCPY_TEXT_PRINT tGaslist
+    call	TFT_standard_color
+
+    WIN_SMALL dive_custom_dyn_mask_column1,dive_custom_dyn_mask_row1
+    lfsr	FSR2,buffer
+    movlw   .1
+    movwf   mcp_temp+0
+    cpfseq  active_gas  ;1-5
+    bra     $+4
+    incf    mcp_temp+0,F     ; +1
+    movff   mcp_temp+0,lo
+    movff   mcp_temp+0,PRODL
+    decf    PRODL,F     ;-1 to have 0-4
+    bsf     leftbind
+    output_8            ; Gas number
+    PUTC    ":"
+    bsf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
+    call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
+    PUTC    " "         ; Clearing space
+    movlw   0x00
+    movff   WREG,buffer+.11  ; limit to 11 chars
+    STRCAT_PRINT ""
+
+    WIN_SMALL dive_custom_dyn_mask_column1,dive_custom_dyn_mask_row2
+    lfsr	FSR2,buffer
+    incf    mcp_temp+0,F     ; +1
+    movf    mcp_temp+0,W     ; into W
+    cpfseq  active_gas  ;1-5
+    bra     $+4
+    incf    mcp_temp+0,F     ; +1
+    movff   mcp_temp+0,lo
+    movff   mcp_temp+0,PRODL
+    decf    PRODL,F     ;-1 to have 0-4
+    bsf     leftbind
+    output_8            ; Gas number
+    PUTC    ":"
+    call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
+    PUTC    " "         ; Clearing space
+    movlw   0x00
+    movff   WREG,buffer+.11  ; limit to 11 chars
+    STRCAT_PRINT ""
+
+    WIN_SMALL dive_custom_dyn_mask_column2,dive_custom_dyn_mask_row1
+    lfsr	FSR2,buffer
+    incf    mcp_temp+0,F     ; +1
+    movf    mcp_temp+0,W     ; into W
+    cpfseq  active_gas  ;1-5
+    bra     $+4
+    incf    mcp_temp+0,F     ; +1
+    movff   mcp_temp+0,lo
+    movff   mcp_temp+0,PRODL
+    decf    PRODL,F     ;-1 to have 0-4
+    bsf     leftbind
+    output_8            ; Gas number
+    PUTC    ":"
+    call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
+    PUTC    " "         ; Clearing space
+    movlw   0x00
+    movff   WREG,buffer+.11  ; limit to 11 chars
+    STRCAT_PRINT ""
+
+    WIN_SMALL dive_custom_dyn_mask_column2,dive_custom_dyn_mask_row2
+    lfsr	FSR2,buffer
+    incf    mcp_temp+0,F     ; +1
+    movf    mcp_temp+0,W     ; into W
+    cpfseq  active_gas  ;1-5
+    bra     $+4
+    incf    mcp_temp+0,F     ; +1
+    movff   mcp_temp+0,lo
+    movff   mcp_temp+0,PRODL
+    decf    PRODL,F     ;-1 to have 0-4
+    bsf     leftbind
+    output_8            ; Gas number
+    bcf     leftbind
+    PUTC    ":"
+    call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
+    PUTC    " "         ; Clearing space
+    movlw   0x00
+    movff   WREG,buffer+.11  ; limit to 11 chars
+    STRCAT_PRINT ""
+    bcf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
+    call	TFT_standard_color
+    return
+
     global  TFT_update_avr_stopwatch           ; Update average depth and stopwatch
 TFT_update_avr_stopwatch:
     call    TFT_standard_color

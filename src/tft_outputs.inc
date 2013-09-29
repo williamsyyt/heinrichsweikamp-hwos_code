@@ -90,6 +90,8 @@ TFT_color_code macro color_code_temp
     extern  TFT_warning_agf                     ; Show a warning if aGF is selected
     extern  TFT_dive_compass_mask               ; Compass mask
     extern  TFT_dive_compass_heading            ; Compass heading
+    extern  TFT_dyn_gaslist                     ; Show the dyn gaslist
+
 
 ; Misc
 	extern	TFT_standard_color

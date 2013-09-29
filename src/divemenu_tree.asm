@@ -70,6 +70,11 @@ do_divemode_resetavr:
     bsf     reset_average_depth     ; Set Flag
     bra     do_exit_divemode_menu   ; And exit
 
+
+do_switch_gas6:
+    movlw   .6
+    movwf   active_gas              ; Gas6 selected
+    bra     do_switch_gasX
     extern  diveloop_loop4
     extern  timeout_divemode_menu2
 do_switch_gas:
@@ -129,7 +134,7 @@ do_divemode_gaslist_more:
         MENU_CALL       tO2Minus,               do_dive_mO2
         MENU_CALL       tHePlus,                do_dive_pHe
         MENU_CALL       tHeMinus,               do_dive_mHe
-        MENU_CALL       tEnter,                 do_switch_gasX
+        MENU_CALL       tEnter,                 do_switch_gas6
     MENU_END
 
 do_dive_nothing:

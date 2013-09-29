@@ -425,7 +425,6 @@ apnoe_timeout_counter 	res 1
 apnoe_surface_mins 		res 1
 apnoe_surface_secs		res 1
 
-
 ; Profile storing
 AlarmType			res 1
 samplesecs			res 1

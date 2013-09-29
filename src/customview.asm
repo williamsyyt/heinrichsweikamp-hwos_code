@@ -40,6 +40,10 @@ customview_second:
 	bra		customview_1sec_view4
 	dcfsnz	WREG,F
 	bra		customview_1sec_view5
+	dcfsnz	WREG,F
+	bra		customview_1sec_view6
+	dcfsnz	WREG,F
+	bra		customview_1sec_view7
 	; Menupos3=0, do nothing
 	return
 
@@ -57,6 +61,12 @@ customview_1sec_view4:
     return
 customview_1sec_view5:
     call    TFT_gf_info                     ; Update GF informations
+    return
+customview_1sec_view6:
+    ; Compass updated seperately (Faster) in divemode
+    return
+customview_1sec_view7:                      ; Dynamic gaslist
+    call    TFT_dyn_gaslist                 ; Update the gaslist
     return
 
 ;=============================================================================
@@ -281,7 +291,7 @@ menuview_view6:
 customview_toggle:
 	bcf		switch_right
 	incf	menupos3,F			            ; Number of customview to show
-	movlw	d'6'							; Max number of customsviews in divemode
+	movlw	d'7'							; Max number of customsviews in divemode
 	cpfsgt	menupos3			            ; Max reached?
 	bra		customview_mask		            ; No, show
 customview_toggle_reset:					; Timeout occured
@@ -304,6 +314,8 @@ customview_mask:
 	bra		customview_init_view5           ; GF informations
 	dcfsnz	WREG,F
 	bra		customview_init_view6           ; Compass
+	dcfsnz	WREG,F
+	bra		customview_init_view7           ; Dynamic gaslist
 customview_init_nocustomview:
     call    I2C_sleep_accelerometer         ; Stop accelerometer
     call    I2C_sleep_compass               ; Stop compass
@@ -359,6 +371,14 @@ customview_init_view6:                      ; Compass (View 6)
     call    I2C_init_accelerometer          ; Start accelerometer
     call    I2C_init_compass                ; Start compass
     call	TFT_dive_compass_mask           ; Show compass
+    bra		customview_toggle_exit
+
+customview_init_view7:                      ; Dynamic gaslist (View 7)
+	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
+	bra		customview_toggle				; Yes, Call next view...
+	btfsc	FLAG_ccr_mode					; In CC mode?
+	bra		customview_toggle				; Yes, Call next view...
+    call    TFT_dyn_gaslist                 ; Show the dyn gaslist
     bra		customview_toggle_exit
 
 customview_toggle_exit:

@@ -117,6 +117,14 @@
 #DEFINE dive_currentgf_row          dive_gf_row
 #DEFINE dive_currentgf_column       .118
 
+; Customview Dynamic Gaslist
+#DEFINE dive_custom_dyn_mask_column .59
+#DEFINE dive_custom_dyn_mask_row    decoplan_title_row
+#DEFINE dive_custom_dyn_mask_row1   dive_hud_data_row
+#DEFINE dive_custom_dyn_mask_column1   .0
+#DEFINE dive_custom_dyn_mask_row2   dive_hud_data_row+.23
+#DEFINE dive_custom_dyn_mask_column2   .80
+
 ; Customview clock/date, END/EAD and Tissues
 #DEFINE dive_clock_row              dive_hud_data_row
 #DEFINE dive_clock_column           .0
