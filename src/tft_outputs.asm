@@ -1570,6 +1570,36 @@ TFT_debug_output:
 	STRCAT_PRINT ""
 	return
 
+    global  TFT_divetimeout                     ; Show timeout counter
+TFT_divetimeout:
+	call	TFT_warning_set_window		; Sets the row and column for the current warning
+    tstfsz  WREG                        ; Is there room for the warning?
+    return                              ; No
+
+    call	TFT_standard_color
+    STRCPY  0x94                        ; "End of dive" icon
+    movlw   LOW     divemode_timeout
+    movwf   sub_a+0
+    movlw   HIGH    divemode_timeout
+    movwf   sub_a+1
+    movff   timeout_counter,sub_b+0
+    movff   timeout_counter2,sub_b+1
+    call    subU16  ;  sub_c = sub_a - sub_b (with UNSIGNED values)
+	movff	sub_c+0, lo
+	movff	sub_c+1, hi
+	call	convert_time				; converts hi:lo in minutes to hours (hi) and minutes (lo)
+	movf	hi,W
+	movff	lo,hi
+	movwf	lo							; exchange lo and hi
+	output_99x
+	PUTC    ':'
+	movff	hi,lo
+	output_99x
+    movlw   warning_length             ; Divemode string length
+    call    TFT_fillup_with_spaces     ; Fillup FSR2 with spaces (Total string length in #WREG)
+	STRCAT_PRINT ""
+	return
+
 	global	TFT_ftts
 TFT_ftts:
     movff   char_I_extra_time,lo
@@ -3263,6 +3293,7 @@ tissue_saturation_graph_loop:
 	call	TFT_box
     return
 
+
 	global	TFT_display_cns
 TFT_display_cns:
 	rcall	TFT_warning_set_window		; Sets the row and column for the current warning
@@ -3290,7 +3321,7 @@ TFT_display_ppo2:                       ; Show ppO2 (ppO2 stored in xC, in mbar!
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
 	TFT_color_code		warn_ppo2		; Color-code output (ppO2 stored in xC)
-    STRCPY  "O2:"
+    STRCPY  "ppO2:"
 ; Check very high ppO2 manually
 	tstfsz	xC+2                        ; char_I_O2_ratio * p_amb/10 > 65536, ppO2>6,55bar?
 	bra		TFT_show_ppO2_3             ; Yes, display fixed Value!

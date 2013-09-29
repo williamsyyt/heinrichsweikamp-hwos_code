@@ -2,6 +2,8 @@ New in 1.03:
 NEW: user-selectable color schemes
 BUGFIX: div. language corrections
 NEW: Dynamic Gaslist in OC mode (Divemode, Customview 7)
+CHANGE: Change "O2" warning to "ppO2"
+NEW: "End-of-Dive" countdown when surfaced
 
 New in 1.02:
 CHANGE: Time and Date in normal (Not tiny) font

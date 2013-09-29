@@ -1190,6 +1190,7 @@ divemode_check_for_warnings:
 
     ; Warnings for all modes
     call	check_warn_battery                  ; Check if the battery level should be displayed/warned
+    call    check_divetimeout                   ; Not actually a warning. Check and show the divemode timeout
 
 	btfsc	FLAG_apnoe_mode             ; Done for Apnoe or Gauge mode
     bra     divemode_check_for_warnings2
@@ -1243,6 +1244,14 @@ check_warn_battery:
 	return                              ; No warning
 	bsf		warning_active		; Set Warning flag
 	return
+
+check_divetimeout:
+    btfsc		divemode2				
+    return                              ; displayed divetime is not running
+	incf	warning_counter,F			; increase counter
+    call    TFT_divetimeout             ; Show timeout counter
+	return
+
 
 check_ppO2:							    ; check current ppO2 and display warning if required
     SAFE_2BYTE_COPY amb_pressure, xA
