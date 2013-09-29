@@ -255,7 +255,7 @@
 	TCODE	tSetYear,	"Imp Anno"			; Set Year
 
 ; After update texts
-	TCODE	tNewFirmware1, "Aggiornam OK!"	; Update sucessful!
+	TCODE	tNewFirmware1, "Aggiornam OK!"	; Update successful!
 	TCODE	tNewFirmware2, "Nuovo Firmware: "		; New Firmware:
 
 ; Logbook Offset Menu
@@ -281,7 +281,7 @@
     TCODE   tNW,            "NO"                ; North-West,293°-337°
 
 ; Color Scheme menu
-    TCODE   tColorScheme,   "Schema di colori"  ; Color scheme
+    TCODE   tColorScheme,   "Schema di colori"  ; Colour scheme
     TCODE   tColorSetDive,  "Immersione:"       ; Divemode:
     TCODE   tColorSetName0, "Standard"          ; Standard
     TCODE   tColorSetName1, "Rosso"             ; Red

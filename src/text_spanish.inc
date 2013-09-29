@@ -194,7 +194,7 @@
     TCODE   tDiveTotalAvr,  "Total Avr"
     TCODE   tDiveStopwatch, "Stopwatch"
     TCODE   tDiveStopAvr,   "Stopped Avr"
-    TCODE   tApnoeMax,      "Last Descend"  ; Last decend
+    TCODE   tApnoeMax,      "Last Descent"  ; Last descent
     TCODE   tApnoeSurface,  "Surface Time"  ; Surface Time
     TCODE   tDiveDecoplan,  "Decoplan"      ; Decoplan
     TCODE   tDiveClock,     "Clock"         ; Clock
@@ -249,7 +249,7 @@
 	TCODE	tSetYear,	"Set Year"			; Set Year
 
 ; After update texts
-	TCODE	tNewFirmware1, "Update sucessful!"	; Update sucessful!
+	TCODE	tNewFirmware1, "Update successful!"	; Update successful!
 	TCODE	tNewFirmware2, "New Firmware: "		; New Firmware:
 
 ; Logbook Offset Menu

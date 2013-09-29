@@ -18,7 +18,7 @@
     TCODE   tHeading,   "Heading:"      ; Heading:
 
 ; Divemode Menu
-    TCODE   tDivemenu_Gaslist,  "listgaz"       ; Gaslist
+    TCODE   tDivemenu_Gaslist,  "liste gaz"      ; Gaslist
     TCODE   tDivemenu_ResetAvr, "Resetchrono"    ; Reset Avr.
     TCODE   tDivemenu_Setpoint, "Setpoint"      ; Setpoint
     TCODE   tDivemenu_UseSensor,"cellules"    ; Use Sensor
@@ -37,23 +37,23 @@
 	TCODE	tSetTimeDate,"Date & Heure" ; Set Time & Date
     TCODE   tDispSets,  "Préf. Affich."	; Display Settings
     TCODE   tExit,      "Retour"        ; Exit
-	TCODE	tResetMenu, "Menu reset"     ; Reset Menu
+	TCODE	tResetMenu, "Menu RaZ"      ; Reset Menu
 	TCODE	tDiveModeMenu,"Menu Déco"	; Deco Mode
 	TCODE	tInfoMenu,	"Information"	; Information
     TCODE   tCCRSetup,  "Config. CCR"     ; CCR Setup
-    TCODE   tDiluentSetup,"Config. Diluent"   ; Diluent Setup
+    TCODE   tDiluentSetup,"Config. Diluant"   ; Diluent Setup
     TCODE   tFixedSetpoints,"Setpoints fixes" ; Fixed Setpoints
     TCODE   tCCRSensor, "Cellules CCR"    ; CCR Sensor
 
 ; Gas menu
-    TCODE   tGaslist,   "List. gaz OC"
-    TCODE   tGasEdit,   "Préf. Gaz"
+    TCODE   tGaslist,   "Liste gaz OC"
+    TCODE   tGasEdit,   "Préf. Gaz"     ; Edit Gas
     TCODE   tType,      "Type: "
-    TCODE   tGasDisabled,"Desactiv."  ; Disabled
+    TCODE   tGasDisabled,"Désactivé"  ; Disabled
     TCODE   tGasFirst,   "Premier"     ; First
     TCODE   tGasTravel,  "Travel"    ; Travel
-    TCODE   tGasDeco,    "Deco"      ; Deco
-    TCODE   tDilDisabled,"Desactiv."  ; Disabled
+    TCODE   tGasDeco,    "Déco"      ; Deco
+    TCODE   tDilDisabled,"Désactivé"  ; Disabled
     TCODE   tDilFirst,   "Premier"     ; First
     TCODE   tDilNorm,   "Normal"     ; Normal
     TCODE   tAir,       "Air  "         ; Enum: values must follows (5 chars)
@@ -64,11 +64,11 @@
     TCODE   tHeMinus,   "He -"
     TCODE   tMOD,       "PMU:"
     TCODE   tEAD,       "PEA:"
-    TCODE   tGasDepth,  "Prof. changmt"
+    TCODE   tGasDepth,  "Prof. changmt"         ; Change Depth
     TCODE   tDepthPlus, "Prof. +"
     TCODE   tDepthMinus,"Prof. -"
     TCODE   tDepthReset,"PMU par défaut:"
-    TCODE   tSetup_mix, "Confi. Mix"
+    TCODE   tSetup_mix, "Confi. Mix"            ; Setup mix
     TCODE   tCCRMode,   "Mode CCR:"             ; CCR Mode:
     TCODE   tCCRModeFixedSP,  "SP Fixe"        ; Fixed SP
     TCODE   tCCRModeSensor,   "Cellule"          ; Sensor
@@ -78,8 +78,8 @@
 ; New batteries menu
 	TCODE   tNewBattTitle,      "Nouvelle Batterie?"
 	TCODE	tNewBattOld,		"Conserver"
-	TCODE	tNewBattNew36,		"Réinit. 3,6V"
-	TCODE	tNewBattNew15,		"Réinit. 1,5V"
+	TCODE	tNewBattNew36,		"Réinit. 3,6V"  ; New 3,6V
+	TCODE	tNewBattNew15,		"Réinit. 1,5V"  ; New 1,5V
 
 ; Gaslist management
     TCODE   tGas,       "Gaz"           ; Gas
@@ -102,7 +102,7 @@
     TCODE   tDvMode,    "Mode:"
     TCODE   tDvOC,      "OC"
     TCODE   tDvCC,      "CC"
-    TCODE   tDvGauge,   "Gauge"
+    TCODE   tDvGauge,   "Profondi."
     TCODE   tDvApnea,   "Apnee"
     TCODE   tDkMode,    "Modèle:"
     TCODE   tZHL16,     "ZH-L16"
@@ -110,11 +110,11 @@
     TCODE   tPPO2Max,   "ppO2 Max:"
     TCODE   tPPO2Min,   "ppO2 Min:"
     TCODE   tLastDecostop, "Dern.palier:"
-    TCODE   tDecoparameters, "Param. Deco"
+    TCODE   tDecoparameters, "Param. Déco"
     TCODE   tGF_low,    "GF bas:"
     TCODE   tGF_high,   "GF haut:"
     TCODE   tSaturationMult,    "Saturation:"
-    TCODE   tDesaturationMult,  "Desaturation:"
+    TCODE   tDesaturationMult,  "Désaturation:"
     TCODE   tFTTSMenu,  "Future DTR:"            ; Future TTS
     TCODE   taGFMenu,   "GF Alternatif"         ; Alternative GF
     TCODE   taGF_low,   "aGF bas:"               ; aGF low
@@ -125,7 +125,7 @@
 ; Display Settings
     TCODE   tBright,    "Luminosité:"
     TCODE   tEco,       "Eco"
-    TCODE   tMedium,    "Medium"
+    TCODE   tMedium,    "Moyenne"
     TCODE   tHigh,      "Haute"
     TCODE   tDvSalinity,"Salinité:"             ; Salinity
 
@@ -242,20 +242,20 @@
 	TCODE	tReboot,	"Redemarrage"            ;Reboot
 	TCODE	tResetMenu2,"Confirmer ?"       ;Are you sure?
 	TCODE	tAbort,     "Quitter"         ;Abort
-	TCODE	tResetSettings, "RàZ complète"  ;Reset all
-	TCODE	tResetDeco,	"RàZ Deco"          ;Reset Deco
-    TCODE	tResetBattery,	"RàZ Batterie"		;Reset Battery
+	TCODE	tResetSettings, "RaZ complète"  ;Reset all
+	TCODE	tResetDeco,	"RaZ Deco"          ;Reset Deco
+    TCODE	tResetBattery,	"RaZ Batterie"		;Reset Battery
 
 ; Set Time Menu/Set Date Menu
 	TCODE	tSetHours,	"Ajust. Heures"     ; Set Hours
 	TCODE	tSetMinutes,"Ajust. Minutes"    ; Set Minutes
-	TCODE	tSetSeconds,"RàZ Secondes"      ; Clear seconds
+	TCODE	tSetSeconds,"RaZ Secondes"      ; Clear seconds
 	TCODE	tSetDay,	"Ajust. Jours"      ; Set Day
 	TCODE	tSetMonth,	"Ajust. Mois"       ; Set Month
 	TCODE	tSetYear,	"Ajust. Année"      ; Set Year
 
 ; After update texts
-	TCODE	tNewFirmware1, "Mise à jours ok !"	; Update sucessful!
+	TCODE	tNewFirmware1, "Mise a jours ok !"	; Update successful!
 	TCODE	tNewFirmware2, "Nouvelle version: "		; New Firmware: 
 
 ; Logbook Offset Menu
@@ -281,7 +281,7 @@
     TCODE   tNW,            "NO"                ; North-West,293°-337°
 
 ; Color Scheme menu
-    TCODE   tColorScheme,   "Jeu de couleurs"   ; Color scheme
+    TCODE   tColorScheme,   "Jeu de couleurs"   ; Colour scheme
     TCODE   tColorSetDive,  "Mode plongée:"     ; Divemode:
     TCODE   tColorSetName0, "Norme"             ; Standard
     TCODE   tColorSetName1, "Rouge"             ; Red

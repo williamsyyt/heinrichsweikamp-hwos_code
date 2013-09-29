@@ -255,7 +255,7 @@
 	TCODE	tSetYear,	"Setze Jahr"		; Set Year
 
 ; After update texts
-	TCODE	tNewFirmware1, "Update erfolgreich!"	; Update sucessful!
+	TCODE	tNewFirmware1, "Update erfolgreich!"	; Update successful!
 	TCODE	tNewFirmware2, "Neue Firmware: "		; New Firmware: 
 
 ; Logbook Offset Menu
@@ -281,7 +281,7 @@
     TCODE   tNW,            "NW"                ; North-West,293°-337°
 
 ; Color Scheme menu
-    TCODE   tColorScheme,   "Farbschema"        ; Color Scheme
+    TCODE   tColorScheme,   "Farbschema"        ; Colour Scheme
     TCODE   tColorSetDive,  "Tauchmodus:"       ; Divemode:
     TCODE   tColorSetName0, "Standard"          ; Standard
     TCODE   tColorSetName1, "Rot"               ; Red

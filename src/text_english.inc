@@ -199,7 +199,7 @@
     TCODE   tDiveStopwatch, "Stopwatch"
     TCODE   tDiveStopAvr,   "Stopped Avr"
     TCODE   tApnoeTotal,    "Total Divetime:"; Total Divetime
-    TCODE   tApnoeMax,      "Last Descend"  ; Last descend
+    TCODE   tApnoeMax,      "Last Descent"  ; Last descent
     TCODE   tApnoeSurface,  "Surface Time"  ; Surface Time
     TCODE   tDiveDecoplan,  "Decoplan"      ; Decoplan
     TCODE   tDiveClock,     "Clock"         ; Clock
@@ -255,7 +255,7 @@
 	TCODE	tSetYear,	"Set Year"			; Set Year
 
 ; After update texts
-	TCODE	tNewFirmware1, "Update sucessful!"	; Update sucessful!
+	TCODE	tNewFirmware1, "Update successful!"	; Update successful!
 	TCODE	tNewFirmware2, "New Firmware: "		; New Firmware: 
 
 ; Logbook Offset Menu
@@ -281,7 +281,7 @@
     TCODE   tNW,            "NW"                ; North-West,293°-337°
 
 ; Color Scheme menu
-    TCODE   tColorScheme,   "Color scheme"      ; Color scheme
+    TCODE   tColorScheme,   "Colour scheme"     ; Colour scheme
     TCODE   tColorSetDive,  "Divemode:"         ; Divemode:
     TCODE   tColorSetName0, "Standard"          ; Standard
     TCODE   tColorSetName1, "Red"               ; Red

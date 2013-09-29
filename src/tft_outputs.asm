@@ -275,7 +275,7 @@ TFT_color_code_ppo2:
 	return
 
 TFT_color_code_velocity:
-	btfss	neg_flag                        ; Ignore for descend!
+	btfss	neg_flag                        ; Ignore for descent!
 	bra		TFT_color_code_velocity1		; Skip check!
 	movff	divA+0,lo
 	movlw	color_code_velocity_warn_high	; Velocity warn [m/min]
