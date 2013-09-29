@@ -1,6 +1,7 @@
 New in 1.03:
 NEW: user-selectable color schemes
-BUGFIX: Minor german language fix
+BUGFIX: div. language corrections
+NEW: Dynamic Gaslist in OC mode (Divemode, Customview 7)
 
 New in 1.02:
 CHANGE: Time and Date in normal (Not tiny) font
