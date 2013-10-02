@@ -30,17 +30,17 @@
 
     TCODE   tMainMenu,  "Menu Principal"; MainMenu
     TCODE   tLogbook,   "Carnet de Plongée" ; Logbook
-    TCODE   tGasSetup,  "Config.gaz OC"  ; OC Gas Setup
+    TCODE   tGasSetup,  "Configuration Gaz OC"  ; OC Gas Setup
     TCODE   tSimulator, "Simulateur"    ; Simulator
     TCODE   tSetTime,   "Réglage Heure"	; Set Time
 	TCODE	tSetDate,	"Réglage Date"	; Set Date
 	TCODE	tSetTimeDate,"Date & Heure" ; Set Time & Date
-    TCODE   tDispSets,  "Préf. Affich."	; Display Settings
+    TCODE   tDispSets,  "Paramètres Affichage."	; Display Settings
     TCODE   tExit,      "Retour"        ; Exit
 	TCODE	tResetMenu, "Menu RaZ"      ; Reset Menu
 	TCODE	tDiveModeMenu,"Menu Déco"	; Deco Mode
 	TCODE	tInfoMenu,	"Information"	; Information
-    TCODE   tCCRSetup,  "Config. CCR"     ; CCR Setup
+    TCODE   tCCRSetup,  "Paramètres CCR"     ; CCR Setup
     TCODE   tDiluentSetup,"Config. Diluant"   ; Diluent Setup
     TCODE   tFixedSetpoints,"Setpoints fixes" ; Fixed Setpoints
     TCODE   tCCRSensor, "Cellules CCR"    ; CCR Sensor
@@ -283,7 +283,7 @@
 ; Color Scheme menu
     TCODE   tColorScheme,   "Jeu de couleurs"   ; Colour scheme
     TCODE   tColorSetDive,  "Mode plongée:"     ; Divemode:
-    TCODE   tColorSetName0, "Norme"             ; Standard
+    TCODE   tColorSetName0, "Par Défaut"        ; Standard
     TCODE   tColorSetName1, "Rouge"             ; Red
     TCODE   tColorSetName2, "Vert"              ; Green
     TCODE   tColorSetName3, "Bleu"              ; Blue
