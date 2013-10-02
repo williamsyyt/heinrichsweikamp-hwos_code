@@ -35,7 +35,7 @@
     TCODE   tSetTime,   "Réglage Heure"	; Set Time
 	TCODE	tSetDate,	"Réglage Date"	; Set Date
 	TCODE	tSetTimeDate,"Date & Heure" ; Set Time & Date
-    TCODE   tDispSets,  "Paramètres Affichage."	; Display Settings
+    TCODE   tDispSets,  "Param. Affichage"	; Display Settings
     TCODE   tExit,      "Retour"        ; Exit
 	TCODE	tResetMenu, "Menu RaZ"      ; Reset Menu
 	TCODE	tDiveModeMenu,"Menu Déco"	; Deco Mode
@@ -283,7 +283,7 @@
 ; Color Scheme menu
     TCODE   tColorScheme,   "Jeu de couleurs"   ; Colour scheme
     TCODE   tColorSetDive,  "Mode plongée:"     ; Divemode:
-    TCODE   tColorSetName0, "Par Défaut"        ; Standard
+    TCODE   tColorSetName0, "Norme"             ; Standard
     TCODE   tColorSetName1, "Rouge"             ; Red
     TCODE   tColorSetName2, "Vert"              ; Green
     TCODE   tColorSetName3, "Bleu"              ; Blue
