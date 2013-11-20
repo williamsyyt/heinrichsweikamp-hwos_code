@@ -250,7 +250,11 @@ init_ostc3:
 	movwf	PIE5
 
     bsf     power_sw1
+    btfss   power_sw1
+    bra     $-4
     bsf     power_sw2
+    btfss   power_sw2
+    bra     $-4
 
 	return
 
