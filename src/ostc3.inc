@@ -19,8 +19,8 @@
 #include <ports.inc>                        ; Portmap
 
 #DEFINE	softwareversion_x		d'1'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'03'		; Software version  XX.YY
-#DEFINE softwareversion_beta 	1 			; (and 0 for release)
+#DEFINE	softwareversion_y		d'04'		; Software version  XX.YY
+#DEFINE softwareversion_beta 	0 			; (and 0 for release)
 
 #DEFINE comm_service_key        0xABCDEF
 
@@ -170,7 +170,7 @@
 #DEFINE	ambient_light_min_high		.40
 #DEFINE	ambient_light_max_medium 	.135
 #DEFINE	ambient_light_min_medium 	.30
-#DEFINE	ambient_light_max_eco		.110
+#DEFINE	ambient_light_max_eco		.100
 #DEFINE	ambient_light_min_eco		.15         ; Must be the lowest value!
 
 ; IR Link timeout

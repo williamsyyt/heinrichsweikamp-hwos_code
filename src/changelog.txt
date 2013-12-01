@@ -1,3 +1,7 @@
+New in 1.04:
+NEW: 1.6 hardware support
+CHANGE: Backlight level in eco mode
+
 New in 1.03:
 NEW: user-selectable color schemes
 BUGFIX: div. language corrections
