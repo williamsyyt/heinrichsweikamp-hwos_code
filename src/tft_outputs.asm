@@ -2906,6 +2906,8 @@ TFT_desaturation_time:
 	bcf		leftbind
     movlw   surf_warning_length             ; Only use surface string length
     rcall   TFT_fillup_with_spaces          ; Fillup FSR2 with spaces (Total string length in #WREG)
+    movlw   .0
+    movff   WREG,buffer+11
 	STRCAT_PRINT	""
 	return
 
@@ -2929,6 +2931,8 @@ TFT_nofly_time:
 	bcf		leftbind
     movlw   surf_warning_length         ; Only use surface string length
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
+    movlw   .0
+    movff   WREG,buffer+11
 	STRCAT_PRINT	""
 	return
 
