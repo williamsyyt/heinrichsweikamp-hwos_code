@@ -245,6 +245,7 @@
 	TCODE	tResetSettings, "RaZ complète"  ;Reset all
 	TCODE	tResetDeco,	"RaZ Deco"          ;Reset Deco
     TCODE	tResetBattery,	"RaZ Batterie"		;Reset Battery
+    TCODE	tResetLogbook,	"RaZ Carnet"		;Reset Logbook
 
 ; Set Time Menu/Set Date Menu
 	TCODE	tSetHours,	"Ajust. Heures"     ; Set Hours

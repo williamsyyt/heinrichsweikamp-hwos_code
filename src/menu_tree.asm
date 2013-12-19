@@ -276,11 +276,12 @@ do_compass_menu:
 ; Reset and confirmation menu.
 
 do_reset_menu:
-    MENU_BEGIN  tResetMenu, .5
+    MENU_BEGIN  tResetMenu, .6
         MENU_CALL       tExit,                  do_return_settings
         MENU_CALL       tReboot,	            do_reset_menu2			; Confirm
 		MENU_CALL       tResetDeco,	            do_reset_menu3			; Confirm
 		MENU_CALL       tResetSettings,	        do_reset_menu4			; Confirm
+        MENU_CALL       tResetLogbook,	        do_reset_menu5			; Confirm
         MENU_CALL       tResetBattery,          new_battery_menu        ; New Battery submenu
     MENU_END
 
@@ -301,6 +302,21 @@ do_reset_menu4:
         MENU_CALL       tAbort,                 do_continue_menu_3stack
         MENU_CALL       tResetSettings,         do_reset_settings		; Reset all settings
     MENU_END
+
+do_reset_menu5:
+    MENU_BEGIN  tResetMenu2, .2
+        MENU_CALL       tAbort,                 do_continue_menu_3stack
+        MENU_CALL       tResetLogbook,          do_reset_logbook		; Reset logbook
+    MENU_END
+
+do_reset_logbook:
+	clrf    EEADRH                      ; Make sure to select eeprom bank 0
+	clrf	EEDATA
+	write_int_eeprom	.4
+	write_int_eeprom	.5
+	write_int_eeprom	.6              ; Reset logbook pointers
+	call	ext_flash_erase_logbook		; And complete logbook (!)
+    goto	do_continue_main_menu		; back to menu
 
 
 do_reset_deco:

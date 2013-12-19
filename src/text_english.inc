@@ -245,6 +245,7 @@
 	TCODE	tResetSettings, "Reset all" 	;Reset all
 	TCODE	tResetDeco,	"Reset Deco"		;Reset Deco
     TCODE	tResetBattery,	"Reset Battery"		;Reset Battery
+    TCODE	tResetLogbook,	"Reset Logbook"		;Reset Logbook
 
 ; Set Time Menu/Set Date Menu
 	TCODE	tSetHours,	"Set Hours"			; Set Hours
