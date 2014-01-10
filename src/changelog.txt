@@ -1,3 +1,6 @@
+New in 1.10:
+Stable release
+
 New in 1.04:
 NEW: 1.6 hardware support
 CHANGE: Backlight level in eco mode

@@ -178,6 +178,7 @@
     TCODE   tFirmware,  "Logiciel: "        ; Firmware: (space)
     TCODE   tSerial,    "N. Série: "        ; Serial  : (space)
 	TCODE	tTotalDives,"Plongées tot.: "   ; Total Dives: (space)
+    TCODE   tBatteryV,  "Batterie: "        ; Battery:
 
 ; Divemode screen
     TCODE   tNDL,       "NDL"

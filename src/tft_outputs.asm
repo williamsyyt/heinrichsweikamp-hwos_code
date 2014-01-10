@@ -2812,6 +2812,20 @@ TFT_cat_total_dives:
     bcf		leftbind
     return
 
+; For the Information menu: Append battery voltage
+    global  info_menu_battery_volts
+    extern  tBatteryV
+info_menu_battery_volts:
+    lfsr    FSR1,tBatteryV
+    call    strcat_text
+    movff   batt_voltage+1,hi
+    movff   batt_voltage+0,lo
+	bsf		leftbind
+	output_16dp .2      ; x.xxx
+    bcf		leftbind
+    PUTC    "V"
+    return
+
 ;-----------------------------------------------------------------------------
 ; ppO2 menu
 	global	divesets_ppo2_max

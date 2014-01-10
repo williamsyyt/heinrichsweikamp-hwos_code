@@ -48,10 +48,11 @@ do_continue_main_menu:
     MENU_END
 
 do_info_menu:
-	MENU_BEGIN  tInfoMenu, .4
+	MENU_BEGIN  tInfoMenu, .5
 	    MENU_DYNAMIC    info_menu_serial,       0
 	    MENU_DYNAMIC    info_menu_firmware,     0
 	    MENU_DYNAMIC    info_menu_total_dives,  0
+        MENU_DYNAMIC    info_menu_battery_volts,0
         MENU_CALL       tExit,                  do_return_settings
     MENU_END
 

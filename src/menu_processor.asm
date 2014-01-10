@@ -21,6 +21,7 @@
 #include "divemode.inc"
 #include "tft_outputs.inc"
 #include "eeprom_rs232.inc"
+#include "adc_lightsensor.inc"
 
 ;NOTE: should be idenric in .inc and .asm !
 #define MENU_LINES_MAX  .7              ; Number of lines per screen?
@@ -314,6 +315,7 @@ menu_line_loop:
 
 		call	timeout_surfmode		; timeout
 		call	set_dive_modes			; check, if divemode must be entered
+        call	get_battery_voltage			; gets battery voltage
 		
 		btfsc	settime_setdate			; In the Set Time or Set Date menu?
 		call	TFT_show_time_date_menu	; Yes, update clock

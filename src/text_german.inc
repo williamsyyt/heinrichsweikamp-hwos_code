@@ -177,7 +177,8 @@
 ; Information menu
     TCODE   tFirmware,  "Firmware: "        ; Firmware: (space)
     TCODE   tSerial,    "Seriennr.: "        ; Serial  : (space)
-	TCODE	tTotalDives,"Anzahl TG: "		; Total Dives: 
+	TCODE	tTotalDives,"Anzahl TG: "		; Total Dives:
+    TCODE   tBatteryV,  "Batterie: "        ; Battery:
 
 ; Divemode screen
     TCODE   tNDL,       " NZ"
