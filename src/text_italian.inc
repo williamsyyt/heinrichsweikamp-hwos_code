@@ -246,6 +246,7 @@
 	TCODE	tResetSettings, "Azzera Tutto" 	;Reset all
 	TCODE	tResetDeco,	"Azzera Deco"		;Reset Deco
     TCODE	tResetBattery,	"Azzera Batteria"		;Reset Battery
+    TCODE	tResetLogbook,	"Azzera Logbook"		;Reset Logbook
 
 ; Set Time Menu/Set Date Menu
 	TCODE	tSetHours,	"Imposta Ora"			; Set Hours
