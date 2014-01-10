@@ -1,3 +1,7 @@
+New in 1.11:
+NEW: allow logbook erase from reset menu
+NEW: show battery voltage in info menu
+
 New in 1.10:
 Stable release
 
