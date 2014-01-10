@@ -1,0 +1,3 @@
+syntax: glob
+ostc3.X/*
+tools/o3_tiny.hex
