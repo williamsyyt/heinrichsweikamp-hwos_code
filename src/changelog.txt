@@ -1,3 +1,6 @@
+New in 1.12:
+BUGFIX: Maintain last selected customview in surface mode
+
 New in 1.11:
 NEW: allow logbook erase from reset menu
 NEW: show battery voltage in info menu

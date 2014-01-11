@@ -22,7 +22,7 @@
 #include "rtc.inc"
 #include "adc_lightsensor.inc"
 
-	extern  testloop,do_main_menu,new_battery_menu,restart,option_reset_all
+	extern  testloop,new_battery_menu,restart,option_reset_all
 
 #DEFINE timeout_comm_pre_mode   .120        ; Pre-loop
 #DEFINE timeout_comm_mode       .120        ; Download mode

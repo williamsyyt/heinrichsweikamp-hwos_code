@@ -28,7 +28,7 @@
 #include	"divemode.inc"
 #include	"ghostwriter.inc"
 
-   	extern   do_main_menu,comm_mode
+   	extern   do_main_menu2,comm_mode
 
     CBLOCK tmp+0x40		        ; Keep space for menu processor.
         count_temperature       ; Current sample count for temperature divisor
@@ -285,7 +285,7 @@ logbook2:
 
 logbook3b:
 	btfss		logbook_page_not_empty	; Was there at least one dive?
-	goto		do_main_menu			; Not a single header was found, leave logbook.
+	goto		do_main_menu2			; Not a single header was found, leave logbook.
 	bra			logbook_display_loop2
 
 logbook_reset:
@@ -347,7 +347,7 @@ logbook_loop:
 
     rcall       log_screendump_and_onesecond    ; Check if we need to make a screenshot and check for new second
 	btfsc		sleepmode					; Timeout?
-	goto		do_main_menu				; Yes
+	goto		do_main_menu2				; Yes
 
 	bra         logbook_loop                ; Wait for something to do
 
@@ -355,7 +355,7 @@ display_profile_or_exit:
 	movlw		logbook_row_number+.2		; exit?
 	cpfseq		menupos
 	bra			display_profile_or_exit2	; No, check for "Next Page"
-	goto		do_main_menu
+	goto		do_main_menu2
 
 display_profile_or_exit2:
 	movlw		logbook_row_number+.1		; Next page?
