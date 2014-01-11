@@ -46,6 +46,7 @@ TFT_color_code macro color_code_temp
 
 ; Debug and useless stuff
 	extern	TFT_update_raw_data
+    extern	TFT_update_raw_data2
     extern  TFT_compass_fast
 
 ; Dive mode

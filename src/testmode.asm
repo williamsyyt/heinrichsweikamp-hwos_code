@@ -24,6 +24,7 @@
 #include    "surfmode.inc"
 #include    "math.inc"
 #include    "eeprom_rs232.inc"
+#include	"ms5541.inc"
 
     extern  compass
     extern  compass_filter
@@ -37,7 +38,7 @@ testmode    CODE
 ;=============================================================================
 ; Boot tasks for all modes
 	global	testloop
-testloop:
+testloop:   ; Page1
     call	speed_normal
     bcf     no_sensor_int           ; Sensor ISR
 
@@ -101,15 +102,66 @@ testloop_loop2:
 ; Mode tasks
     extern  surfloop
     btfsc   switch_left
-   	goto	surfloop    				; Exit
+   	bra     testloop2    				; Page 2
 
     btfsc   switch_right
    	goto	compass_calibration_loop
 
     btfsc	sleepmode					; Sleepmode active?
-	goto	sleeploop					; Yes, switch into sleepmode!
+	bra     testloop2    				; Page 2
 
 	bra		testloop_loop				; loop testmode
+
+testloop2:  ; Page2
+    call	speed_normal
+	bsf		no_sensor_int			; disable sensor interrupt
+	call	get_calibration_data	; Get calibration data from pressure sensor
+	banksel common                  ; get_calibration_data uses isr_backup
+	bcf		no_sensor_int		    ; normal sensor interrupt mode
+
+    clrf	CCP1CON					; stop PWM
+	bcf		PORTC,2					; Pull PWM output to GND
+	call	TFT_boot                ; Initialize TFT (includes clear screen)
+	WIN_TOP		.0
+	WIN_LEFT	.0
+	WIN_FONT 	FT_SMALL
+	WIN_INVERT	.0					    ; Init new Wordprocessor
+	call    TFT_standard_color
+    call    TFT_Display_FadeIn
+
+ 	clrf	timeout_counter2
+	clrf 	timeout_counter3
+	bcf		premenu						; clear premenu flag
+	bcf		menubit						; clear menu flag
+
+	bcf		switch_left
+	bcf		switch_right
+
+testloop2_loop:
+    btfss	onesecupdate				; do every second tasks?
+	bra		testloop2_loop2				; no, loop
+
+; One Second tasks
+    call    TFT_update_raw_data2
+	movlw	.240
+    call	timeout_testmode			; check timeout
+
+	bcf		onesecupdate				; every second tasks done
+
+testloop2_loop2:
+; Tasks approx. every 50ms for all modes
+    bcf     LEDg
+    btfsc   vusb_in
+    bsf     LEDg
+
+; Mode tasks
+    btfsc   switch_left
+   	goto	surfloop    				; Exit
+
+    btfsc	sleepmode					; Sleepmode active?
+	goto	sleeploop					; Yes, switch into sleepmode!
+
+	bra		testloop2_loop				; loop testmode
 
 
     global  compass_calibration_loop
