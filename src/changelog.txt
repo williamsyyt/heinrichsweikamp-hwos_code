@@ -1,5 +1,6 @@
 New in 1.12:
 BUGFIX: Maintain last selected customview in surface mode
+BUGFIX: Set Day for months <31 days
 
 New in 1.11:
 NEW: allow logbook erase from reset menu

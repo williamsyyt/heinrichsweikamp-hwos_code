@@ -477,6 +477,7 @@ menu_draw_line_option:
 
         movff   option_item+0,FSR0L     ; Retrieve option handle.
         movff   option_item+1,FSR0H
+        btfss   settime_setdate         ; Not in Time/Date menu...
         call    option_draw
         bra     menu_draw_line_none
 

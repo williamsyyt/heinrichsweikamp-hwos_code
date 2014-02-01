@@ -410,9 +410,6 @@ option_draw_uint8:
         output_8
         clrf    INDF2               ; Make sure to close string...
 
-		btfsc	settime_setdate		; In the Set Time or Set Date menu?
-		return                      ; Yes, ignore the rest
-
         movf    opt_unit+0,W        ; Is there a unit to append ?
         iorwf   opt_unit+1,W
         rcall   option_draw_unit
