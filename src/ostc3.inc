@@ -96,7 +96,8 @@
 ; better_gas_window <= minimum_change_depth !
 ; minimum_change_depth >=5 !
 #DEFINE	minimum_change_depth	.3 			; [m]
-#DEFINE	better_gas_window		.3			; [m]
+#DEFINE	better_gas_window_neg   .3			; [m] (Depth above change depth)
+#DEFINE	better_gas_window_pos   .1			; [m] (Depth below change depth, if ppO2<opt_ppO2_max)
 
 ; Dive mode limits and thresholds
 #DEFINE	start_dive_threshold 	.100	; [cm]
@@ -170,7 +171,7 @@
 #DEFINE	ambient_light_min_high		.40
 #DEFINE	ambient_light_max_medium 	.135
 #DEFINE	ambient_light_min_medium 	.30
-#DEFINE	ambient_light_max_eco		.100
+#DEFINE	ambient_light_max_eco		.90
 #DEFINE	ambient_light_min_eco		.15         ; Must be the lowest value!
 
 ; IR Link timeout

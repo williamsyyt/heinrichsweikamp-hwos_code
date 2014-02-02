@@ -100,7 +100,8 @@ comm_mode4:
 	call	rs232_get_byte
 
     btfss   vusb_in                     ; USB plugged in?
-    bra     comm_service_exit_nousb     ; Disconnected -> Exit
+    bra     comm_service_exit_nousb_delay   ; Disconnected -> Exit
+comm_mode4a:
 
 	btfsc	switch_right				; Abort with right
 	bra		comm_service_exit
@@ -149,6 +150,13 @@ comm_mode2b:
 	STRCPY_TEXT_PRINT	tUsbServiceMode	; Service mode enabled
     bsf     comm_service_enabled
 	bra		comm_download_mode0		; Startbyte for download mode found
+
+
+comm_service_exit_nousb_delay:
+    WAITMS  d'200'
+    btfss   vusb_in                     ; USB plugged in?
+    bra     comm_service_exit_nousb     ; Disconnected -> Exit
+    bra     comm_mode4a                 ; (Still) connected, return
 
 comm_service_exit_nousb:                ; Disconnected -> Exit
 	WIN_SMALL	comm_status3_column, comm_status3_row

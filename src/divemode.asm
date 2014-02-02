@@ -1002,14 +1002,77 @@ check_gas_common2:
 	return                          ; No, Change depth not deep enough, skip!
 	movf	xC+0,W					; load depth in m into WREG
 	cpfsgt	lo  					; gas_change_depth < current depth?
-    return                          ; No, check next gas
+    bra     check_gas_common3       ; No, check if we are within the better_gas_window_pos window
 	incf    hi,W                    ; 1-5
 	movwf	better_gas_number		; number (1-5) of the "better gas" in divemode, =0: no better gas available
-	movlw	better_gas_window
-	subwf	lo,W                    ; Change depth-better_gas_window
-	cpfslt	xC+0					; current depth<Change depth-better_gas_window?
+	movlw	better_gas_window_neg
+	subwf	lo,W                    ; Change depth-better_gas_window_neg
+	cpfslt	xC+0					; current depth<Change depth-better_gas_window_neg?
 	bsf		better_gas_available	;=1: A better gas is available and a gas change is advised in divemode
     return
+
+check_gas_common3:
+	incf    hi,W                    ; 1-5
+	movwf	better_gas_number		; number (1-5) of the "better gas" in divemode, =0: no better gas available
+	movlw	better_gas_window_pos
+	addwf	lo,W                    ; Change depth+better_gas_window_pos
+	cpfsgt	xC+0					; current depth>Change depth+better_gas_window_pos?
+    bra     check_gas_common4       ; Ok, now check the better gas ppO2<opt_ppO2_max
+    return
+
+check_gas_common4:
+    movf    hi,W                    ; 0-4
+    lfsr    FSR1,char_I_deco_N2_ratio
+    movff   PLUSW1,lo               ; N2 ratio into lo
+    lfsr    FSR1,char_I_deco_He_ratio
+    movff   PLUSW1,xB+0             ; He ratio into xB+0
+    movf    xB+0,W
+    addwf   lo,F
+    movlw   .101
+    bcf     STATUS,C
+    subfwb  lo,F                    ; O2 ratio in lo
+
+    SAFE_2BYTE_COPY amb_pressure, xA
+	movlw	d'10'
+	movwf	xB+0
+	clrf	xB+1
+	call	div16x16				; xC=p_amb/10
+	movff	xC+0,xA+0
+	movff	xC+1,xA+1
+    movff   lo,xB+0                 ; =O2 ratio
+	clrf	xB+1
+	call	mult16x16               ; lo * p_amb/10
+
+    ; Check very high ppO2 manually
+	tstfsz	xC+2				; char_I_O2_ratio * p_amb/10 > 65536, ppO2>6,55bar?
+	return                      ; Done.
+    ; Check if ppO2>3,30bar
+	btfsc   xC+1,7
+	return                      ; Done.
+
+;    ; Check for low ppo2
+;    movff	xC+0,sub_b+0
+;	movff	xC+1,sub_b+1
+;    movff   opt_ppO2_min,WREG
+;	mullw	d'100'				; opt_ppO2_min*100
+;	movff	PRODL,sub_a+0
+;	movff	PRODH,sub_a+1
+;	call	subU16
+;	btfss	neg_flag
+;    return                      ; Done (Too low).
+
+;check if we are within our warning thresholds!
+	movff	xC+0,sub_b+0
+	movff	xC+1,sub_b+1
+	movff	opt_ppO2_max,WREG	; PPO2 Max for MOD calculation and color coding in divemode
+    addlw   .1                  ; e.g. >1.60
+	mullw	d'100'				; opt_ppO2_max*100
+	movff	PRODL,sub_a+0
+	movff	PRODH,sub_a+1
+	call	subU16
+	btfss	neg_flag
+	bsf		better_gas_available	;=1: A better gas is available and a gas change is advised in divemode
+    return                      ; Done.
 
 check_dil_common:                   ; With Dil 0-4 in WREG
     btfsc   better_gas_available	; Better Diluent already found?
@@ -1037,9 +1100,9 @@ check_dil_common2:
 	incf    hi,W                    ; 1-5
     addlw   .5                      ; 6-10
 	movwf	better_gas_number		; number (1-5) of the "better gas" in divemode, =0: no better gas available
-	movlw	better_gas_window
-	subwf	lo,W                    ; Change depth-better_gas_window
-	cpfslt	xC+0					; current depth<Change depth-better_gas_window?
+	movlw	better_gas_window_neg
+	subwf	lo,W                    ; Change depth-better_gas_window_neg
+	cpfslt	xC+0					; current depth<Change depth-better_gas_window_neg?
 	bsf		better_gas_available	;=1: A better gas is available and a gas change is advised in divemode
     return
 
@@ -1309,6 +1372,7 @@ check_ppO2_0:
 	movff	xC+0,sub_b+0
 	movff	xC+1,sub_b+1
 	movff	opt_ppO2_max,WREG	; PPO2 Max for MOD calculation and color coding in divemode
+    addlw   .1                  ; e.g. >1.60
 	mullw	d'100'				; opt_ppO2_max*100
 	movff	PRODL,sub_a+0
 	movff	PRODH,sub_a+1
