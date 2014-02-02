@@ -1,6 +1,11 @@
 New in 1.12:
 BUGFIX: Maintain last selected customview in surface mode
 BUGFIX: Set Day for months <31 days
+CHANGE: Some French Translations
+CHANGE: Default Future TTS=0 (Disabled)
+NEW: Expand "gas change window" up to 1m below programmed
+    change depth (If ppO2 within user-set max. threshold)
+BUGFIX: Intermittent USB connection on MAC
 
 New in 1.11:
 NEW: allow logbook erase from reset menu

@@ -541,14 +541,14 @@ option_table_begin:
         OPTION_UINT8p10 oPPO2Min,       .16, ppo2_warning_low, .19,   0,         .16,    opt_ppO2_min
         OPTION_UINT8    oaGF_low,      .60,  .100, .60,  tPercent,  .17,    opt_aGF_low
         OPTION_UINT8    oaGF_high,     .70,  .120, .85, tPercent,   .18,    opt_aGF_high
-        OPTION_BOOL     oEnable_aGF,    1,                          .19,    opt_enable_aGF              ; =1: aGF can be selected underwater
+        OPTION_BOOL     oEnable_aGF,    0,                          .19,    opt_enable_aGF              ; =1: aGF can be selected underwater
         OPTION_UINT8    oCompassGain,   0,  7,  6,       tcharx,    .20,    opt_compass_gain            ; 0-7 (230LSB/Gauss to 1370LSB/Gaus)
         OPTION_ENUM8    oSamplingRate,  2,  0,  tSampling2s,        .21,    opt_sampling_rate           ; =1: 10s, =0: 2s
 
 ;=============================================================================
 ; Managing Settings
         extern          char_I_extra_time
-        OPTION_UINT8    oExtraTime,     0,  .9,   5,tMinutes,   .22,    char_I_extra_time
+        OPTION_UINT8    oExtraTime,     0,  .9,   0,tMinutes,   .22,    char_I_extra_time
         OPTION_ENUM8    oBrightness,    3,  0,  tEco,           .23,    opt_brightness
         OPTION_UINT8    oDiveSalinity,  0,  4, 0,  tPercent,    .24,    opt_salinity
         OPTION_ENUM8    oCCRMode,    2,  0,  tCCRModeFixedSP,   .25,    opt_ccr_mode
