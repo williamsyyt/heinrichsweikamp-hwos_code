@@ -1,4 +1,4 @@
-;=============================================================================   >> OCTC3 V1.13a > ClaudeDive update proposed. 
+;=============================================================================   >> OCTC3 V1.13b > ClaudeDive update proposed. 
 ;
 ;    File text_french.asm   
 ;
@@ -41,13 +41,13 @@
 	TCODE	tDiveModeMenu,"Menu Déco"	; Deco Mode
 	TCODE	tInfoMenu,	"Informations"	; Information
     TCODE   tCCRSetup,  "Paramètres CCR"     ; CCR Setup
-    TCODE   tDiluentSetup,"Liste Diluant"   ; Diluent Setup > Diluent List
+    TCODE   tDiluentSetup,"Liste Diluant"   ; Diluent Setup
     TCODE   tFixedSetpoints,"Setpoints fixes" ; Fixed Setpoints
     TCODE   tCCRSensor, "Cellules CCR"    ; CCR Sensor
 
 ; Gas menu
     TCODE   tGaslist,   "Liste Gaz OC"		  ; OC Gas List
-    TCODE   tGasEdit,   "Préfér. Gaz OC"     ; Edit OC Gas
+    TCODE   tGasEdit,   "Préférence Gaz"     ; Edit Gas
     TCODE   tType,      "Type: "
     TCODE   tGasDisabled,"Désactivé"  ; Disabled
     TCODE   tGasFirst,   "Premier"     ; First
@@ -68,7 +68,7 @@
     TCODE   tDepthPlus, "Prof. +"
     TCODE   tDepthMinus,"Prof. -"
     TCODE   tDepthReset,"MOD par défaut:"
-    TCODE   tOCSetup_mix, "Config. Gaz OC"            ; OC Setup mix
+    TCODE   tSetup_mix, "Config. Gaz"         ; Setup mix
     TCODE   tCCRMode,   "Mode CCR:"             ; CCR Mode:
     TCODE   tCCRModeFixedSP,  "SP Fixe"        ; Fixed SP
     TCODE   tCCRModeSensor,   "Cellule"          ; Sensor
@@ -102,7 +102,7 @@
     TCODE   tDvMode,    "Mode:"
     TCODE   tDvOC,      "OC"
     TCODE   tDvCC,      "CC"
-    TCODE   tDvGauge,   "Profondi."
+    TCODE   tDvGauge,   "Profondi."  
     TCODE   tDvApnea,   "Apnée"
     TCODE   tDkMode,    "Modèle:"
     TCODE   tZHL16,     "ZH-L16"
@@ -136,7 +136,7 @@
     TCODE   tGerman,    "Allemand"
     TCODE   tFrench,    "Français"
     TCODE   tItalian,   "Italien"
-    TCODE   tCompassCalib,"Calibration Compas"  ; Compass Calibration
+    TCODE   tCompassMenu,"Calibration Compas"  ; Compass Calibration
     TCODE   tCompassGain,"Sensibilité"          ; Compass Gain
     TCODE   tcharx,     "x"
 
@@ -285,7 +285,7 @@
 ; Color Scheme menu
     TCODE   tColorScheme,   "Jeu de Couleurs"   ; Colour scheme
     TCODE   tColorSetDive,  "Mode Plongée:"     ; Divemode:
-    TCODE   tColorSetName0, "Blanc"             ; Standard > White
+    TCODE   tColorSetName0, "Blanc"             ; White
     TCODE   tColorSetName1, "Rouge"             ; Red
     TCODE   tColorSetName2, "Vert"              ; Green
     TCODE   tColorSetName3, "Bleu"              ; Blue
