@@ -1,8 +1,8 @@
-;=============================================================================
+;=============================================================================   >> OCTC3 V1.13a > ClaudeDive update proposed. 
 ;
-;    File text_french.asm
+;    File text_french.asm   
 ;
-;    French texts translation file.
+;    French texts translation file. 
 ;
 ;   Copyright (c) 2011, JD Gascuel, HeinrichsWeikamp, all right reserved.
 ;=============================================================================
@@ -14,23 +14,23 @@
 ; Surface-mode texts
     TCODE   tBeta,      "béta"          ; beta
 	TCODE	tMenu,		"<Menu"			; <Menu
-    TCODE   tView,      "vues>"         ; View>
+    TCODE   tView,      "Vues>"         ; View>
     TCODE   tHeading,   "Cap:"      ; Heading:
 
 ; Divemode Menu
-    TCODE   tDivemenu_Gaslist,  "Liste Gaz"      ; Gaslist
+    TCODE   tDivemenu_Gaslist,  "Liste Gaz"      ; Gas List
     TCODE   tDivemenu_ResetAvr, "RaZChrono"    ; Reset Avr.
     TCODE   tDivemenu_Setpoint, "Setpoint"      ; Setpoint
     TCODE   tDivemenu_UseSensor,"Cellules"    ; Use Sensor
     TCODE   tDivemenu_ToggleGF, "Bascul.GF"     ; Toggle GF
 
 ; Main menu
-    TCODE   tNext,      "<Suiv."        ; <Next
+    TCODE   tNext,      "<Suivant"        ; <Next
     TCODE   tEnter,     "Entrer>"        ; Enter>
 
-    TCODE   tMainMenu,  "Menu Principal"; MainMenu
+    TCODE   tMainMenu,  "Menu Principal"; Main Menu
     TCODE   tLogbook,   "Carnet de Plongée" ; Logbook
-    TCODE   tGasSetup,  "Configuration Gaz OC"  ; OC Gas Setup
+    TCODE   tGasSetup,  "Paramètres Gaz OC"  ; OC Gas Setup
     TCODE   tSimulator, "Simulateur"    ; Simulator
     TCODE   tSetTime,   "Réglage Heure"	; Set Time
 	TCODE	tSetDate,	"Réglage Date"	; Set Date
@@ -41,13 +41,13 @@
 	TCODE	tDiveModeMenu,"Menu Déco"	; Deco Mode
 	TCODE	tInfoMenu,	"Informations"	; Information
     TCODE   tCCRSetup,  "Paramètres CCR"     ; CCR Setup
-    TCODE   tDiluentSetup,"Liste Diluant"   ; Diluent Setup
+    TCODE   tDiluentSetup,"Liste Diluant"   ; Diluent Setup > Diluent List
     TCODE   tFixedSetpoints,"Setpoints fixes" ; Fixed Setpoints
     TCODE   tCCRSensor, "Cellules CCR"    ; CCR Sensor
 
 ; Gas menu
-    TCODE   tGaslist,   "Liste Gaz OC"
-    TCODE   tGasEdit,   "Préférence Gaz"     ; Edit Gas
+    TCODE   tGaslist,   "Liste Gaz OC"		  ; OC Gas List
+    TCODE   tGasEdit,   "Préfér. Gaz OC"     ; Edit OC Gas
     TCODE   tType,      "Type: "
     TCODE   tGasDisabled,"Désactivé"  ; Disabled
     TCODE   tGasFirst,   "Premier"     ; First
@@ -62,13 +62,13 @@
     TCODE   tO2Minus,   "O2 -"
     TCODE   tHePlus,    "He +"
     TCODE   tHeMinus,   "He -"
-    TCODE   tMOD,       "PMU:"
-    TCODE   tEAD,       "PEA:"
+    TCODE   tMOD,       "MOD:"
+    TCODE   tEAD,       "EAD:"
     TCODE   tGasDepth,  "Prof. Changement"         ; Change Depth
     TCODE   tDepthPlus, "Prof. +"
     TCODE   tDepthMinus,"Prof. -"
-    TCODE   tDepthReset,"PMU par défaut:"
-    TCODE   tSetup_mix, "Config. Gaz"            ; Setup mix
+    TCODE   tDepthReset,"MOD par défaut:"
+    TCODE   tOCSetup_mix, "Config. Gaz OC"            ; OC Setup mix
     TCODE   tCCRMode,   "Mode CCR:"             ; CCR Mode:
     TCODE   tCCRModeFixedSP,  "SP Fixe"        ; Fixed SP
     TCODE   tCCRModeSensor,   "Cellule"          ; Sensor
@@ -92,33 +92,33 @@
 	TCODE	tUsbTitle,		"Mode USB"
 	TCODE	tUsbStarting,  	"Début..."
 	TCODE	tUsbStartDone, 	"Ok.     "
-	TCODE	tUsbServiceMode,"Mode maintenance"
-	TCODE	tUsbClosed,		"Port fermé"
+	TCODE	tUsbServiceMode,"Mode Maintenance"
+	TCODE	tUsbClosed,		"Port Fermé"
 	TCODE	tUsbExit,		"Terminé"
-	TCODE	tUsbDownloadMode,"Mode téléchargement"
-    TCODE   tUsbLlBld,      "Chargeur bas-niv."
+	TCODE	tUsbDownloadMode,"Mode Téléchargement"
+    TCODE   tUsbLlBld,      "Chargeur Bas-Niv."
 
 ; Dive Settings
     TCODE   tDvMode,    "Mode:"
     TCODE   tDvOC,      "OC"
     TCODE   tDvCC,      "CC"
     TCODE   tDvGauge,   "Profondi."
-    TCODE   tDvApnea,   "Apnee"
+    TCODE   tDvApnea,   "Apnée"
     TCODE   tDkMode,    "Modèle:"
     TCODE   tZHL16,     "ZH-L16"
     TCODE   tZHL16GF,   "ZH-L16+GF"
-    TCODE   tPPO2Max,   "ppO2 Max:"
-    TCODE   tPPO2Min,   "ppO2 Min:"
+    TCODE   tPPO2Max,   " pO2 Max:"
+    TCODE   tPPO2Min,   " pO2 Min:"
     TCODE   tLastDecostop, "Dernier Palier:"
     TCODE   tDecoparameters, "Paramètres Déco"
-    TCODE   tGF_low,    "GF bas:"
-    TCODE   tGF_high,   "GF haut:"
+    TCODE   tGF_low,    "GF Bas:"
+    TCODE   tGF_high,   "GF Haut:"
     TCODE   tSaturationMult,    "Saturation:"
     TCODE   tDesaturationMult,  "Désaturation:"
     TCODE   tFTTSMenu,  "Future DTR:"            ; Future TTS
     TCODE   taGFMenu,   "GF Alternatif"         ; Alternative GF
-    TCODE   taGF_low,   "aGF bas:"               ; aGF low
-    TCODE   taGF_high,  "aGF haut:"              ; aGF high
+    TCODE   taGF_low,   "aGF Bas:"               ; aGF Low
+    TCODE   taGF_high,  "aGF Haut:"              ; aGF High
     TCODE   taGF_enable,"aGF Possible:"        ; aGF Selectable
     TCODE   tDiveaGF_active,"aGF!"          ; aGF!
 
@@ -136,8 +136,8 @@
     TCODE   tGerman,    "Allemand"
     TCODE   tFrench,    "Français"
     TCODE   tItalian,   "Italien"
-    TCODE   tCompassMenu,"Calibration boussole"  ; Compass calibration
-    TCODE   tCompassGain,"Sensibilité"          ; Compass gain
+    TCODE   tCompassCalib,"Calibration Compas"  ; Compass Calibration
+    TCODE   tCompassGain,"Sensibilité"          ; Compass Gain
     TCODE   tcharx,     "x"
 
     TCODE   tUnits,     "Unités:"
@@ -165,12 +165,12 @@
     TCODE   tPlan,  	"Planification"     ; Deco Planner
 
 ; Decoplanner submenu
-    TCODE   tBtTm,  	"Tps. fond:"        ; Bot. Time: (10 chars)
-    TCODE   tMxDep, 	"Prof. max:"        ; Max Depth: (10 chars)
+    TCODE   tBtTm,  	"Temps Fond:"        ; Bot. Time: (10 chars)
+    TCODE   tMxDep, 	"Prof. Max:"        ; Max Depth: (10 chars)
     TCODE   tIntvl, 	"Intervalle:"       ; Interval :  (10 chars)
-    TCODE   tDeco,  	"Calcul..."         ; Calculate Deco
+    TCODE   tDeco,  	"Calcul Déco"         ; Calculate Deco
     TCODE   tDivePlan,  "Runtime:"          ; Dive Plan:
-    TCODE   tNoDeco,    "SansDéco"          ; No Deco
+    TCODE   tNoDeco,    "No Déco"          ; No Deco
     TCODE   tMore,      "Suite..."          ; More...
     TCODE   tCNS,       "CNS"               ; CNS
 
@@ -192,19 +192,19 @@
     TCODE   tSelectTx,   "Tx"               ; Tx
     TCODE   tDepth,      "Prof."            ; Depth
     TCODE   tMaxDepth,   "Prof. Max."       ; Max. Depth
-    TCODE   tDivetime,   "DuréeTot."         ; Divetime
+    TCODE   tDivetime,   "Durée Tot."         ; Divetime
     TCODE   tDiveHudMask1,   "cell. 1"
     TCODE   tDiveHudMask2,   "cell. 2"
     TCODE   tDiveHudMask3,   "cell. 3"
     TCODE   tDiveTotalAvr,  "Prof. Moy."
     TCODE   tDiveStopwatch, "Chrono"
-    TCODE   tDiveStopAvr,   "P.MoyChrono"
-    TCODE   tApnoeTotal,    "   Durée Total"; Total Divetime
-    TCODE   tApnoeMax,      "Dern.plongée"  ; Last decend
+    TCODE   tDiveStopAvr,   "P.Moy.Chrono"
+    TCODE   tApnoeTotal,    "   Durée Totale"; Total Divetime
+    TCODE   tApnoeMax,      "Dern.Plongée"  ; Last Decend
     TCODE   tApnoeSurface,  "Tps.Surface"   ; Surface Time
     TCODE   tDiveDecoplan,  "Runtime"       ; Decoplan
     TCODE   tDiveClock,     "Heure"         ; Clock
-    TCODE   tDiveEAD_END,   "PEA/END"       ; EAD/END
+    TCODE   tDiveEAD_END,   "EAD/END"       ; EAD/END
     TCODE   tDiveTissues,   "Tissus"        ; Tissues
     TCODE   tEND,           "END:"          ; END:
     TCODE   tHe,            "He"            ; He
@@ -236,14 +236,14 @@
 	TCODE	tMBAR,		"mbar"
 
 ; Logbook menu
-	TCODE	tNextLog, 	"Page suivante"
-	TCODE	tExitLog, 	"Sortir carnet"
+	TCODE	tNextLog, 	"Page Suivante"
+	TCODE	tExitLog, 	"Sortir Carnet"
 	
 ; Reset menu
 	TCODE	tReboot,	"Redémarrage"            ;Reboot
-	TCODE	tResetMenu2,"Confirmer ?"       ;Are you sure?
+	TCODE	tResetMenu2,"Confirmer ?"       ;Are You Sure?
 	TCODE	tAbort,     "Quitter"         ;Abort
-	TCODE	tResetSettings, "RaZ complète"  ;Reset all
+	TCODE	tResetSettings, "RaZ Complète"  ;Reset All
 	TCODE	tResetDeco,	"RaZ Déco"          ;Reset Deco
     TCODE	tResetBattery,	"RaZ Batterie"		;Reset Battery
     TCODE	tResetLogbook,	"RaZ Carnet"		;Reset Logbook
@@ -251,14 +251,14 @@
 ; Set Time Menu/Set Date Menu
 	TCODE	tSetHours,	"Ajust. Heures"     ; Set Hours
 	TCODE	tSetMinutes,"Ajust. Minutes"    ; Set Minutes
-	TCODE	tSetSeconds,"RaZ Secondes"      ; Clear seconds
+	TCODE	tSetSeconds,"RaZ Secondes"      ; Clear Seconds
 	TCODE	tSetDay,	"Ajust. Jours"      ; Set Day
 	TCODE	tSetMonth,	"Ajust. Mois"       ; Set Month
 	TCODE	tSetYear,	"Ajust. Année"      ; Set Year
 
 ; After update texts
-	TCODE	tNewFirmware1, "Mise a jours ok !"	; Update successful!
-	TCODE	tNewFirmware2, "Nouvelle version: "		; New Firmware: 
+	TCODE	tNewFirmware1, "Mise à Jour OK !"	; Update successful!
+	TCODE	tNewFirmware2, "Nouvelle Version: "		; New Firmware: 
 
 ; Logbook Offset Menu
 	TCODE	tLogOffset,		"Num. 1er plongée"  ; Logbook offset
@@ -268,7 +268,7 @@
 	TCODE	tLogOffsetm10,	"-10"				; -10
 
 ; Sampling rate
-    TCODE   tSamplingrate,  "Freq. Mesures:"    ; Sampling rate:
+    TCODE   tSamplingrate,  "Fréq. Mesures:"    ; Sampling rate:
     TCODE   tSampling2s,    "2s"                ; 2s
     TCODE   tSampling10s,   "10s"               ; 10s
 
@@ -284,8 +284,8 @@
 
 ; Color Scheme menu
     TCODE   tColorScheme,   "Jeu de Couleurs"   ; Colour scheme
-    TCODE   tColorSetDive,  "Mode plongée:"     ; Divemode:
-    TCODE   tColorSetName0, "Blanc"             ; Standard
+    TCODE   tColorSetDive,  "Mode Plongée:"     ; Divemode:
+    TCODE   tColorSetName0, "Blanc"             ; Standard > White
     TCODE   tColorSetName1, "Rouge"             ; Red
     TCODE   tColorSetName2, "Vert"              ; Green
     TCODE   tColorSetName3, "Bleu"              ; Blue
