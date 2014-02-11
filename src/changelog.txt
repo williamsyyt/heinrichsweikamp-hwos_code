@@ -1,3 +1,6 @@
+New in 1.20:
+Stable release
+
 New in 1.12:
 BUGFIX: Maintain last selected customview in surface mode
 BUGFIX: Set Day for months <31 days
