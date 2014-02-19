@@ -39,6 +39,8 @@ TFT_color_code macro color_code_temp
     extern  TFT_surface_compass_mask    ; Compass heading mask
     extern  TFT_surface_compass_heading ; Compass heading value
     extern  TFT_surface_decosettings    ; Show all deco settings
+    extern  TFT_cat_serial              ; Add serial to current string
+    extern  TFT_cat_firmware            ; Add firmware version to current string
 
 ; Menu
 	extern	TFT_LogOffset_Logtitle

@@ -13,7 +13,7 @@
 
 ; Surface-mode texts
     TCODE   tBeta,      "beta"         	; beta
-	TCODE	tMenu,		"<Menu"			; <Menu
+	TCODE	tMenu,		"<Menu" 		; <Menu
     TCODE   tView,      "Vedi>"         ; View>
     TCODE   tHeading,   "Direzione:"    ; Heading:
 

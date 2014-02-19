@@ -1,3 +1,10 @@
+New in 1.21:
+CHANGE: French Translations, again
+BUGFIX: Fix cursor in "New Battery" menu
+NEW: Show serial number and firmware version in main menu
+CHANGE: "Reset all" returns to surface mode
+CHANGE: Single press surfacemode menu
+
 New in 1.20:
 Stable release
 

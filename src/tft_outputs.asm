@@ -2913,7 +2913,6 @@ TFT_display_apnoe_descent:		; Descent divetime
 	output_99x
 	bcf     leftbind
 	STRCAT_PRINT ""                 ; Show seconds in small font
-
 	return
 	
 ;=============================================================================
@@ -2922,7 +2921,6 @@ TFT_display_apnoe_descent:		; Descent divetime
 	global	TFT_serial
 TFT_serial:		
     WIN_TINY	.0,.239-.14
-    
     STRCPY  "OSTC3 #"                    ; Won't translate that...
     rcall   TFT_cat_serial
     
@@ -2933,11 +2931,11 @@ TFT_serial:
         movlw   color_grey              ; Write header in blue when
         call    TFT_set_color           ; compiled in DEBUG mode...
         STRCAT_PRINT "DEBUG"    
-        call	TFT_standard_color
     else
-        call	TFT_standard_color
+        WIN_COLOR   color_greenish
         STRCAT_PRINT ""
-        
+        call	TFT_standard_color
+
         movlw	softwareversion_beta    ; =1: Beta, =0: Release
         decfsz	WREG,F
         return                          ; Release version -> Return
@@ -2945,9 +2943,8 @@ TFT_serial:
         call	TFT_warnings_color
         WIN_LEFT    .160-4*9/2          ; Right pad.
         STRCPY_TEXT_PRINT tBeta
-        call	TFT_standard_color
     endif
-
+    call	TFT_standard_color
 	return
 
 	
@@ -2959,6 +2956,7 @@ TFT_serial:
 info_menu_firmware:
     lfsr    FSR1,tFirmware
     call    strcat_text
+    global  TFT_cat_firmware
 TFT_cat_firmware:
     movlw	softwareversion_x
     movwf	lo
@@ -2978,6 +2976,7 @@ TFT_cat_firmware:
 info_menu_serial:
     lfsr    FSR1,tSerial
     call    strcat_text
+    global  TFT_cat_serial
 TFT_cat_serial:
     clrf	EEADRH
     clrf	EEADR                       ; Get Serial number LOW
