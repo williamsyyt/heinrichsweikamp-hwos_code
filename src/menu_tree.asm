@@ -345,7 +345,7 @@ do_reset_deco:
 do_reset_settings:
 	extern	option_reset_all
     call	option_reset_all        	; Reset all options to factory default.
-	goto	do_continue_main_menu		; back to menu
+	goto	restart                     ; Restart into surfacemode
 
 do_continue_menu_3stack:			; Return three levels deep
     call    menu_processor_pop
@@ -516,6 +516,8 @@ new_battery_menu:
 	movff	EEDATA,battery_gauge+4
 	read_int_eeprom 0x0C
 	movff	EEDATA,battery_gauge+5
+
+    call    menu_processor_reset    ; restart from first icon.
 
     MENU_BEGIN tNewBattTitle, .3
 		MENU_CALL   tNewBattOld,                 use_old_batteries

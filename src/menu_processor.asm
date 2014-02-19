@@ -100,6 +100,16 @@ menu_processor0:
         TEXT_TINY 	.5,       .240-.16, tNext
         TEXT_TINY	.160-6*5, .240-.16, tEnter
 
+        WIN_COLOR   color_greenish
+        ; Serial and Firmware Version
+        WIN_TINY	.57,.240-.16
+        STRCPY  "#"
+        call    TFT_cat_serial
+        STRCAT  " v"
+        call    TFT_cat_firmware
+        STRCAT_PRINT ""
+        call    TFT_standard_color
+
 menu_processor1:
 		movlw	FT_SMALL
         movff	WREG, win_font    

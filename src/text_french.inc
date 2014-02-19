@@ -13,7 +13,7 @@
 
 ; Surface-mode texts
     TCODE   tBeta,      "béta"          ; beta
-	TCODE	tMenu,		"<Menu"			; <Menu
+	TCODE	tMenu,		"<Menu" 		; <Menu
     TCODE   tView,      "Vues>"         ; View>
     TCODE   tHeading,   "Cap:"      ; Heading:
 
@@ -109,7 +109,7 @@
     TCODE   tZHL16GF,   "ZH-L16+GF"
     TCODE   tPPO2Max,   " pO2 Max:"
     TCODE   tPPO2Min,   " pO2 Min:"
-    TCODE   tLastDecostop, "Dernier Palier:"
+    TCODE   tLastDecostop, "Dern.Palier:"
     TCODE   tDecoparameters, "Paramètres Déco"
     TCODE   tGF_low,    "GF Bas:"
     TCODE   tGF_high,   "GF Haut:"

@@ -86,7 +86,6 @@ surfloop:
 
 	clrf	timeout_counter2
 	clrf 	timeout_counter3
-	bcf		premenu						; clear premenu flag
 	bcf		menubit						; clear menu flag
 	clrf	last_pressure+0
 	clrf	last_pressure+1
@@ -186,7 +185,6 @@ surfloop_loop:
 	call	timeout_surfmode			; check timeout 
 	call	get_battery_voltage			; get battery voltage
 	call	TFT_update_batt_voltage		; display battery voltage
-	call	timeout_premenu				; timeout premenu
 	call	set_dive_modes				; tests if depth>threshold
     btfss   secs,0                      ; Every two seconds...
 	call	TFT_temp_surfmode			; Displays temperature
@@ -335,28 +333,6 @@ calc_deko_surfmode:
 	banksel		common
 	return
 
-timeout_premenu:
-	btfsc	premenu					; is "<Menu" displayed?
-	bra		timeout_premenu1		; Yes
-	return
-
-timeout_premenu1:
-	incf	timeout_counter3,F		; Yes...
-	movlw	d'2'
-	cpfsgt	timeout_counter3		; ... longer then premenu_timeout
-	return							; No!
-
-	bcf		premenu					; Yes, so clear "Menu?" and clear pre_menu bit
-
-	WIN_SMALL	menu_pos_column,menu_pos_row
-    WIN_COLOR	color_lightblue
-    STRCPY_TEXT_PRINT  tMenu		; "<Menu"
-	call	TFT_standard_color
-	clrf	timeout_counter3		; Also clear timeout
-	bcf		switch_left				; and debounce switches
-	bcf		switch_right
-	return
-
 test_switches_surfmode:		; checks switches in surfacemode
 	btfsc	switch_right
 	bra		test_switches_surfmode2
@@ -368,37 +344,13 @@ test_switches_surfmode:		; checks switches in surfacemode
 
 test_switches_surfmode3:
 	bcf		switch_left
-	btfss	premenu
-	bra		test_switches_surfmode4
 	bsf		menubit					; Enter Menu!
-	return
-
-test_switches_surfmode4:
-    WIN_COLOR	color_lightblue
-	WIN_SMALL	view_column,view_row
-    STRCPY_TEXT_PRINT  tView        ;"View"
-	WIN_SMALL	menu_pos_column,menu_pos_row
-	call	TFT_standard_color
-	WIN_INVERT	.1					; Init new Wordprocessor
-	STRCPY_TEXT_PRINT  tMenu		;"<Menu"
-	WIN_INVERT	.0					; Init new Wordprocessor
-	bsf		premenu
-	clrf	timeout_counter2
 	return
 
 test_switches_surfmode2:
 	bcf		switch_right
 	bsf		toggle_customview
     clrf	timeout_counter2        ; and reset timeout
-	return
-
-test_switches_surfmode5:
-	WIN_SMALL	menu_pos_column,menu_pos_row
-    WIN_COLOR	color_lightblue
-	STRCPY_TEXT_PRINT  tMenu		;"<Menu"
-	call	TFT_standard_color
-    bcf		premenu
-	clrf	timeout_counter2
 	return
 
 	global	timeout_surfmode
