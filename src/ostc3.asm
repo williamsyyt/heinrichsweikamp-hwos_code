@@ -234,9 +234,9 @@ init_ostc3:
 ; Interrupts
 	movlw	b'11010000'
 	movwf	INTCON
-	movlw	b'10001000'			; BIT7=1: Pullup for PORTB disabled
+	movlw	b'00001000'			; BIT7=1: Pullup for PORTB disabled
 	movwf	INTCON2
-	movlw	b'00100000'
+	movlw	b'00000000'
 	movwf	INTCON3
 	movlw	b'00000001'			; Bit0: TMR1
 	movwf	PIE1

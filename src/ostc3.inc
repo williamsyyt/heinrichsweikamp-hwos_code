@@ -19,7 +19,7 @@
 #include <ports.inc>                        ; Portmap
 
 #DEFINE	softwareversion_x		d'1'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'21'		; Software version  XX.YY
+#DEFINE	softwareversion_y		d'22'		; Software version  XX.YY
 #DEFINE softwareversion_beta 	0 			; (and 0 for release)
 
 #DEFINE comm_service_key        0xABCDEF
@@ -151,8 +151,8 @@
 #DEFINE battery_show_level      .24     ; [%]
 
 ; 3,6V battery sensing data points at 55mA load
-#DEFINE lithium_36v_75          .3200   ; [mV]
-#DEFINE lithium_36v_50          .3100   ; [mV]
+#DEFINE lithium_36v_75          .3100   ; [mV]
+#DEFINE lithium_36v_50          .3000   ; [mV]
 #DEFINE lithium_36v_25          .2900   ; [mV]
 #DEFINE lithium_36v_10          .2600   ; [mV]
 
