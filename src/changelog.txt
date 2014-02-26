@@ -1,3 +1,6 @@
+New in 1.23:
+BUGFIX: Reset Logbook did not reset Logbook TOC properly
+
 New in 1.22:
 BUGFIX: Potential bug to freeze the OSTC3 after battery change or update
 
