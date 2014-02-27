@@ -474,7 +474,7 @@ comm_download_mode2:
 	movlw	"n"
 	cpfseq	RCREG1
 	bra		$+4
-	bra		comm_send_string			; Send a 15byte string to the screen
+	goto	comm_send_string			; Send a 15byte string to the screen
 	movlw	"l"
 	cpfseq	RCREG1
 	bra		$+4
@@ -483,6 +483,14 @@ comm_download_mode2:
 	cpfseq	RCREG1
 	bra		$+4
     bra     comm_read_setting           ; Read a setting (And send via USB)
+	movlw	"w"
+	cpfseq	RCREG1
+	bra		$+4
+    bra     comm_write_setting          ; Write a setting (Into RAM)
+	movlw	"x"
+	cpfseq	RCREG1
+	bra		$+4
+    bra     comm_option_reset_all       ; Reset all options to factory default.
 
 
     btfss   comm_service_enabled        ; Done for Download mode
@@ -520,10 +528,6 @@ comm_download_mode2:
 	cpfseq	RCREG1
 	bra		$+4
     goto    testloop                    ; Start raw-data testloop
-	movlw	"x"
-	cpfseq	RCREG1
-	bra		$+4
-    call	option_reset_all        	; Reset all options to factory default.
 	movlw	0xC1
 	cpfseq	RCREG1
 	bra		$+4
@@ -577,7 +581,14 @@ comm_send_headers3:
 	bra		comm_send_headers2		; continue
 
 ;-----------------------------------------------------------------------------
-;
+
+comm_option_reset_all:       ; Reset all options to factory default.
+	movlw	"x"								; send echo
+	movwf	TXREG1
+    call    option_reset_all
+    bra		comm_download_mode0             ; Done. back to loop with timeout reset
+
+;-----------------------------------------------------------------------------
 
 comm_set_time:
 	movlw	"b"								; send echo
@@ -1131,6 +1142,348 @@ comm_read_compass_gain:
     rcall   comm_read_setting_wait          ; Wait for UART
     bra		comm_download_mode0             ; Done. Loop with timeout reset
 
+;-----------------------------------------------------------------------------
+
+
+comm_write_setting:
+    movlw   "w"
+	movwf	TXREG1
+	call	rs232_get_byte
+	btfsc	rs232_recieve_overflow			; Got byte?
+	bra		comm_write_abort                 ; No, abort!
+	call	rs232_wait_tx					; Wait for UART
+    movf    RCREG1,W                        ; Copy
+    bz      comm_write_unused                ; RCREG1=0
+    dcfsnz  WREG
+    bra     comm_write_unused                ; RCREG1=1
+    dcfsnz  WREG
+    bra     comm_write_unused                ; RCREG1=2
+    dcfsnz  WREG
+    bra     comm_write_unused                ; RCREG1=3
+    dcfsnz  WREG
+    bra     comm_write_unused                ; RCREG1=4
+    dcfsnz  WREG
+    bra     comm_write_unused                ; RCREG1=5
+    dcfsnz  WREG
+    bra     comm_write_unused                ; RCREG1=6
+    dcfsnz  WREG
+    bra     comm_write_unused                ; RCREG1=7
+    dcfsnz  WREG
+    bra     comm_write_unused                ; RCREG1=8
+    dcfsnz  WREG
+    bra     comm_write_unused                ; RCREG1=9
+    dcfsnz  WREG
+    bra     comm_write_unused                ; RCREG1=10
+    dcfsnz  WREG
+    bra     comm_write_unused                ; RCREG1=11
+    dcfsnz  WREG
+    bra     comm_write_unused                ; RCREG1=12
+    dcfsnz  WREG
+    bra     comm_write_unused                ; RCREG1=13
+    dcfsnz  WREG
+    bra     comm_write_unused                ; RCREG1=14
+    dcfsnz  WREG
+    bra     comm_write_unused                ; RCREG1=15
+    dcfsnz  WREG
+    bra     comm_write_gas1                  ; RCREG1=0x10
+    dcfsnz  WREG
+    bra     comm_write_gas2                  ; RCREG1=0x11
+    dcfsnz  WREG
+    bra     comm_write_gas3                  ; RCREG1=0x12
+    dcfsnz  WREG
+    bra     comm_write_gas4                  ; RCREG1=0x13
+    dcfsnz  WREG
+    bra     comm_write_gas5                  ; RCREG1=0x14
+    dcfsnz  WREG
+    bra     comm_write_dil1                  ; RCREG1=0x15
+    dcfsnz  WREG
+    bra     comm_write_dil2                  ; RCREG1=0x16
+    dcfsnz  WREG
+    bra     comm_write_dil3                  ; RCREG1=0x17
+    dcfsnz  WREG
+    bra     comm_write_dil4                  ; RCREG1=0x18
+    dcfsnz  WREG
+    bra     comm_write_dil5                  ; RCREG1=0x19
+    dcfsnz  WREG
+    bra     comm_write_sp1                   ; RCREG1=0x1A
+    dcfsnz  WREG
+    bra     comm_write_sp2                   ; RCREG1=0x1B
+    dcfsnz  WREG
+    bra     comm_write_sp3                   ; RCREG1=0x1C
+    dcfsnz  WREG
+    bra     comm_write_sp4                   ; RCREG1=0x1D
+    dcfsnz  WREG
+    bra     comm_write_sp5                   ; RCREG1=0x1E
+    dcfsnz  WREG
+    bra     comm_write_ccr_mode              ; RCREG1=0x1F
+    dcfsnz  WREG
+    bra     comm_write_dive_mode             ; RCREG1=0x20
+    dcfsnz  WREG
+    bra     comm_write_decotype              ; RCREG1=0x21
+    dcfsnz  WREG
+    bra     comm_write_ppo2_max              ; RCREG1=0x22
+    dcfsnz  WREG
+    bra     comm_write_ppo2_min              ; RCREG1=0x23
+    dcfsnz  WREG
+    bra     comm_write_ftts                  ; RCREG1=0x24
+    dcfsnz  WREG
+    bra     comm_write_gf_low                ; RCREG1=0x25
+    dcfsnz  WREG
+    bra     comm_write_gf_high               ; RCREG1=0x26
+    dcfsnz  WREG
+    bra     comm_write_agf_low               ; RCREG1=0x27
+    dcfsnz  WREG
+    bra     comm_write_agf_high              ; RCREG1=0x28
+    dcfsnz  WREG
+    bra     comm_write_agf_selectable        ; RCREG1=0x29
+    dcfsnz  WREG
+    bra     comm_write_saturation            ; RCREG1=0x2A
+    dcfsnz  WREG
+    bra     comm_write_desaturation          ; RCREG1=0x2B
+    dcfsnz  WREG
+    bra     comm_write_last_deco             ; RCREG1=0x2C
+    dcfsnz  WREG
+    bra     comm_write_brightness            ; RCREG1=0x2D
+    dcfsnz  WREG
+    bra     comm_write_units                 ; RCREG1=0x2E
+    dcfsnz  WREG
+    bra     comm_write_samplingrate          ; RCREG1=0x2F
+    dcfsnz  WREG
+    bra     comm_write_salinity              ; RCREG1=0x30
+    dcfsnz  WREG
+    bra     comm_write_divemode_colour       ; RCREG1=0x31
+    dcfsnz  WREG
+    bra     comm_write_language              ; RCREG1=0x32
+    dcfsnz  WREG
+    bra     comm_write_date_format           ; RCREG1=0x33
+    dcfsnz  WREG
+    bra     comm_write_compass_gain          ; RCREG1=0x34
+
+comm_write_unused:
+comm_write_abort:
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+
+comm_write_gas1:
+    call	rs232_get_byte
+    movff   RCREG1,opt_gas_O2_ratio+0
+    call	rs232_get_byte
+    movff   RCREG1,opt_gas_He_ratio+0
+    call	rs232_get_byte
+    movff   RCREG1,opt_gas_type+0
+    call	rs232_get_byte
+    movff   RCREG1,char_I_deco_gas_change+0
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_gas2:
+    call	rs232_get_byte
+    movff   RCREG1,opt_gas_O2_ratio+1
+    call	rs232_get_byte
+    movff   RCREG1,opt_gas_He_ratio+1
+    call	rs232_get_byte
+    movff   RCREG1,opt_gas_type+1
+    call	rs232_get_byte
+    movff   RCREG1,char_I_deco_gas_change+1
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_gas3:
+    call	rs232_get_byte
+    movff   RCREG1,opt_gas_O2_ratio+2
+    call	rs232_get_byte
+    movff   RCREG1,opt_gas_He_ratio+2
+    call	rs232_get_byte
+    movff   RCREG1,opt_gas_type+2
+    call	rs232_get_byte
+    movff   RCREG1,char_I_deco_gas_change+2
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_gas4:
+    call	rs232_get_byte
+    movff   RCREG1,opt_gas_O2_ratio+3
+    call	rs232_get_byte
+    movff   RCREG1,opt_gas_He_ratio+3
+    call	rs232_get_byte
+    movff   RCREG1,opt_gas_type+3
+    call	rs232_get_byte
+    movff   RCREG1,char_I_deco_gas_change+3
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_gas5:
+    call	rs232_get_byte
+    movff   RCREG1,opt_gas_O2_ratio+4
+    call	rs232_get_byte
+    movff   RCREG1,opt_gas_He_ratio+4
+    call	rs232_get_byte
+    movff   RCREG1,opt_gas_type+4
+    call	rs232_get_byte
+    movff   RCREG1,char_I_deco_gas_change+4
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+
+comm_write_dil1:
+    call	rs232_get_byte
+    movff   RCREG1,opt_dil_O2_ratio+0
+    call	rs232_get_byte
+    movff   RCREG1,opt_dil_He_ratio+0
+    call	rs232_get_byte
+    movff   RCREG1,opt_dil_type+0
+    call	rs232_get_byte
+    movff   RCREG1,char_I_dil_change+0
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_dil2:
+    call	rs232_get_byte
+    movff   RCREG1,opt_dil_O2_ratio+1
+    call	rs232_get_byte
+    movff   RCREG1,opt_dil_He_ratio+1
+    call	rs232_get_byte
+    movff   RCREG1,opt_dil_type+1
+    call	rs232_get_byte
+    movff   RCREG1,char_I_dil_change+1
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_dil3:
+    call	rs232_get_byte
+    movff   RCREG1,opt_dil_O2_ratio+2
+    call	rs232_get_byte
+    movff   RCREG1,opt_dil_He_ratio+2
+    call	rs232_get_byte
+    movff   RCREG1,opt_dil_type+2
+    call	rs232_get_byte
+    movff   RCREG1,char_I_dil_change+2
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_dil4:
+    call	rs232_get_byte
+    movff   RCREG1,opt_dil_O2_ratio+3
+    call	rs232_get_byte
+    movff   RCREG1,opt_dil_He_ratio+3
+    call	rs232_get_byte
+    movff   RCREG1,opt_dil_type+3
+    call	rs232_get_byte
+    movff   RCREG1,char_I_dil_change+3
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_dil5:
+    call	rs232_get_byte
+    movff   RCREG1,opt_dil_O2_ratio+4
+    call	rs232_get_byte
+    movff   RCREG1,opt_dil_He_ratio+4
+    call	rs232_get_byte
+    movff   RCREG1,opt_dil_type+4
+    call	rs232_get_byte
+    movff   RCREG1,char_I_dil_change+4
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+
+comm_write_sp1:
+    call	rs232_get_byte
+    movff   RCREG1,char_I_setpoint_cbar+0
+    call	rs232_get_byte
+    movff   RCREG1,char_I_setpoint_change+0
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_sp2:
+    call	rs232_get_byte
+    movff   RCREG1,char_I_setpoint_cbar+1
+    call	rs232_get_byte
+    movff   RCREG1,char_I_setpoint_change+1
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_sp3:
+    call	rs232_get_byte
+    movff   RCREG1,char_I_setpoint_cbar+2
+    call	rs232_get_byte
+    movff   RCREG1,char_I_setpoint_change+2
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_sp4:
+    call	rs232_get_byte
+    movff   RCREG1,char_I_setpoint_cbar+3
+    call	rs232_get_byte
+    movff   RCREG1,char_I_setpoint_change+3
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_sp5:
+    call	rs232_get_byte
+    movff   RCREG1,char_I_setpoint_cbar+4
+    call	rs232_get_byte
+    movff   RCREG1,char_I_setpoint_change+4
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+
+comm_write_ccr_mode:
+    call	rs232_get_byte
+    movff   RCREG1, opt_ccr_mode
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_dive_mode:
+    call	rs232_get_byte
+    movff   RCREG1, opt_dive_mode
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_decotype:
+    call	rs232_get_byte
+    movff   RCREG1, char_I_deco_model
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_ppo2_max:
+    call	rs232_get_byte
+    movff   RCREG1, opt_ppO2_max
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_ppo2_min:
+    call	rs232_get_byte
+    movff   RCREG1, opt_ppO2_min
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_ftts:
+    call	rs232_get_byte
+    movff   RCREG1, char_I_extra_time
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_gf_low:
+    call	rs232_get_byte
+    movff   RCREG1, opt_GF_low
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_gf_high:
+    call	rs232_get_byte
+    movff   RCREG1, opt_GF_high
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_agf_low:
+    call	rs232_get_byte
+    movff   RCREG1, opt_aGF_low
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_agf_high:
+    call	rs232_get_byte
+    movff   RCREG1, opt_aGF_high
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_agf_selectable:
+    call	rs232_get_byte
+    movff   RCREG1, opt_enable_aGF
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_saturation:
+    call	rs232_get_byte
+    movff   RCREG1, char_I_saturation_multiplier
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_desaturation:
+    call	rs232_get_byte
+    movff   RCREG1, char_I_desaturation_multiplier
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_last_deco:
+    call	rs232_get_byte
+    movff   RCREG1, opt_last_stop
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_brightness:
+    call	rs232_get_byte
+    movff   RCREG1, opt_brightness
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_units:
+    call	rs232_get_byte
+    movff   RCREG1, opt_units
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_samplingrate:
+    call	rs232_get_byte
+    movff   RCREG1, opt_sampling_rate
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_salinity:
+    call	rs232_get_byte
+    movff   RCREG1, opt_salinity
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_divemode_colour:
+    call	rs232_get_byte
+    movff   RCREG1, opt_dive_color_scheme
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_language:
+    call	rs232_get_byte
+    movff   RCREG1, opt_language
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_date_format:
+    call	rs232_get_byte
+    movff   RCREG1, opt_dateformat
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_compass_gain:
+    call	rs232_get_byte
+    movff   RCREG1, opt_compass_gain
+    bra		comm_write_abort             ; Done. Loop with timeout reset
 
 ;-----------------------------------------------------------------------------
 
@@ -1151,7 +1504,7 @@ comm_send_string_loop:
 	bra		comm_send_string_loop
 comm_send_string_abort:
 	STRCAT_PRINT ""							; Show the text
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    goto    comm_download_mode0             ; Done. Loop with timeout reset
 
 ;-----------------------------------------------------------------------------
 
