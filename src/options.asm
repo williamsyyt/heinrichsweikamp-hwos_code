@@ -530,8 +530,8 @@ option_table_begin:
         OPTION_UINT8p3  obottomDepth,   .12,.120,    .21,    tMeters,  -1,     char_I_bottom_depth
 
         extern  char_I_deco_model, char_I_saturation_multiplier, char_I_desaturation_multiplier
-        OPTION_ENUM8    oDiveMode,      4,  0,  tDvOC,               .8,    opt_dive_mode
-        OPTION_ENUM8    oDecoMode,      2,  1,  tZHL16,              .9,    char_I_deco_model
+        OPTION_ENUM8    oDiveMode,      4,  0,  tDvOC,               .8,    opt_dive_mode               ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
+        OPTION_ENUM8    oDecoMode,      2,  1,  tZHL16,              .9,    char_I_deco_model           ; 0 = ZH-L16, 1 = ZH-L16-GF
         OPTION_UINT8p10 oPPO2Max,       .120, ppo2_warning_high, .160,   0,      .10,    opt_ppO2_max
         OPTION_UINT8    oLastDeco,      .3,  .6, .3,  tMeters,      .11,    opt_last_stop
         OPTION_UINT8    oGF_low,       .10,  .100, .30,  tPercent,  .12,    opt_GF_low
@@ -542,20 +542,20 @@ option_table_begin:
         OPTION_UINT8    oaGF_low,      .60,  .100, .60,  tPercent,  .17,    opt_aGF_low
         OPTION_UINT8    oaGF_high,     .70,  .120, .85, tPercent,   .18,    opt_aGF_high
         OPTION_BOOL     oEnable_aGF,    0,                          .19,    opt_enable_aGF              ; =1: aGF can be selected underwater
-        OPTION_UINT8    oCompassGain,   0,  7,  6,       tcharx,    .20,    opt_compass_gain            ; 0-7 (230LSB/Gauss to 1370LSB/Gaus)
+        OPTION_UINT8    oCompassGain,   0,  7,  6,       tcharx,    .20,    opt_compass_gain            ; 0-7 (230LSB/Gauss to 1370LSB/Gauss)
         OPTION_ENUM8    oSamplingRate,  2,  0,  tSampling2s,        .21,    opt_sampling_rate           ; =1: 10s, =0: 2s
 
 ;=============================================================================
 ; Managing Settings
         extern          char_I_extra_time
-        OPTION_UINT8    oExtraTime,     0,  .9,   0,tMinutes,   .22,    char_I_extra_time
-        OPTION_ENUM8    oBrightness,    3,  0,  tEco,           .23,    opt_brightness
-        OPTION_UINT8    oDiveSalinity,  0,  4, 0,  tPercent,    .24,    opt_salinity
-        OPTION_ENUM8    oCCRMode,    2,  0,  tCCRModeFixedSP,   .25,    opt_ccr_mode
+        OPTION_UINT8    oExtraTime,     0,  .9,   0,tMinutes,   .22,    char_I_extra_time               ; Future TTS
+        OPTION_ENUM8    oBrightness,    3,  0,  tEco,           .23,    opt_brightness                  ; =0: Eco, =1:Medium, =2:Full
+        OPTION_UINT8    oDiveSalinity,  0,  4, 0,  tPercent,    .24,    opt_salinity                    ; 0-5%
+        OPTION_ENUM8    oCCRMode,    2,  0,  tCCRModeFixedSP,   .25,    opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor
         extern  tDefName
-        OPTION_ENUM8    oLanguage,      4,  0,  tEnglish,   .26,    opt_language
-		OPTION_ENUM8    oDateFormat,    3,  1,  tDateformat,.27,    opt_dateformat
-        OPTION_ENUM8    oUnits,         2,  0,  tMetric,    .28,    opt_units			; 0=Meters, 1=Feets
+        OPTION_ENUM8    oLanguage,      4,  0,  tEnglish,   .26,    opt_language                        ; 0=EN, 1=DE, 2=FR, 3=SP
+		OPTION_ENUM8    oDateFormat,    3,  1,  tDateformat,.27,    opt_dateformat                      ; =0:MMDDYY, =1:DDMMYY, =2:YYMMDD
+        OPTION_ENUM8    oUnits,         2,  0,  tMetric,    .28,    opt_units                           ; 0=Meters, 1=Feets
 
 ;=============================================================================
 ; Compass calibration data

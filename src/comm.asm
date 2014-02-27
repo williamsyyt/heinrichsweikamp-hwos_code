@@ -23,6 +23,8 @@
 #include "adc_lightsensor.inc"
 
 	extern  testloop,new_battery_menu,restart,option_reset_all
+    extern  char_I_deco_gas_change, char_I_dil_change, char_I_setpoint_cbar, char_I_setpoint_change
+    extern  char_I_deco_model, char_I_extra_time, char_I_saturation_multiplier, char_I_desaturation_multiplier
 
 #DEFINE timeout_comm_pre_mode   .120        ; Pre-loop
 #DEFINE timeout_comm_mode       .120        ; Download mode
@@ -256,7 +258,9 @@ comm_reset_logbook_pointers:
 	write_int_eeprom	.5
 	write_int_eeprom	.6
 	write_int_eeprom	.2				; Also, delete total dive counter
-	write_int_eeprom	.3				
+	write_int_eeprom	.3
+    write_int_eeprom    .15
+    write_int_eeprom    .16             ; And the backup counter, too
 	call	ext_flash_erase_logbook		; And complete logbook (!)
 	bra		comm_download_mode0			; Done.
 
@@ -475,6 +479,11 @@ comm_download_mode2:
 	cpfseq	RCREG1
 	bra		$+4
     call	TFT_dump_screen             ; Dump the screen contents
+	movlw	"r"
+	cpfseq	RCREG1
+	bra		$+4
+    bra     comm_read_setting           ; Read a setting (And send via USB)
+
 
     btfss   comm_service_enabled        ; Done for Download mode
 	bra		comm_download_mode0         ; Loop with timeout reset
@@ -511,7 +520,7 @@ comm_download_mode2:
 	cpfseq	RCREG1
 	bra		$+4
     goto    testloop                    ; Start raw-data testloop
-	movlw	"r"
+	movlw	"x"
 	cpfseq	RCREG1
 	bra		$+4
     call	option_reset_all        	; Reset all options to factory default.
@@ -783,6 +792,345 @@ comm_send_dive_profile:
 	
 	call	rs232_wait_tx					; Wait for UART
 	bra		comm_download_mode0		; Done. Loop with timeout reset
+
+;-----------------------------------------------------------------------------
+
+comm_read_setting:
+    movlw   "r"
+	movwf	TXREG1
+	call	rs232_get_byte
+	btfsc	rs232_recieve_overflow			; Got byte?
+	bra		comm_read_abort                 ; No, abort!
+	call	rs232_wait_tx					; Wait for UART
+    movf    RCREG1,W                        ; Copy
+    bz      comm_read_unused                ; RCREG1=0
+    dcfsnz  WREG
+    bra     comm_read_unused                ; RCREG1=1
+    dcfsnz  WREG
+    bra     comm_read_unused                ; RCREG1=2
+    dcfsnz  WREG
+    bra     comm_read_unused                ; RCREG1=3
+    dcfsnz  WREG
+    bra     comm_read_unused                ; RCREG1=4
+    dcfsnz  WREG
+    bra     comm_read_unused                ; RCREG1=5
+    dcfsnz  WREG
+    bra     comm_read_unused                ; RCREG1=6
+    dcfsnz  WREG
+    bra     comm_read_unused                ; RCREG1=7
+    dcfsnz  WREG
+    bra     comm_read_unused                ; RCREG1=8
+    dcfsnz  WREG
+    bra     comm_read_unused                ; RCREG1=9
+    dcfsnz  WREG
+    bra     comm_read_unused                ; RCREG1=10
+    dcfsnz  WREG
+    bra     comm_read_unused                ; RCREG1=11
+    dcfsnz  WREG
+    bra     comm_read_unused                ; RCREG1=12
+    dcfsnz  WREG
+    bra     comm_read_unused                ; RCREG1=13
+    dcfsnz  WREG
+    bra     comm_read_unused                ; RCREG1=14
+    dcfsnz  WREG
+    bra     comm_read_unused                ; RCREG1=15
+    dcfsnz  WREG
+    bra     comm_read_gas1                  ; RCREG1=0x10
+    dcfsnz  WREG
+    bra     comm_read_gas2                  ; RCREG1=0x11
+    dcfsnz  WREG
+    bra     comm_read_gas3                  ; RCREG1=0x12
+    dcfsnz  WREG
+    bra     comm_read_gas4                  ; RCREG1=0x13
+    dcfsnz  WREG
+    bra     comm_read_gas5                  ; RCREG1=0x14
+    dcfsnz  WREG
+    bra     comm_read_dil1                  ; RCREG1=0x15
+    dcfsnz  WREG
+    bra     comm_read_dil2                  ; RCREG1=0x16
+    dcfsnz  WREG
+    bra     comm_read_dil3                  ; RCREG1=0x17
+    dcfsnz  WREG
+    bra     comm_read_dil4                  ; RCREG1=0x18
+    dcfsnz  WREG
+    bra     comm_read_dil5                  ; RCREG1=0x19
+    dcfsnz  WREG
+    bra     comm_read_sp1                   ; RCREG1=0x1A
+    dcfsnz  WREG
+    bra     comm_read_sp2                   ; RCREG1=0x1B
+    dcfsnz  WREG
+    bra     comm_read_sp3                   ; RCREG1=0x1C
+    dcfsnz  WREG
+    bra     comm_read_sp4                   ; RCREG1=0x1D
+    dcfsnz  WREG
+    bra     comm_read_sp5                   ; RCREG1=0x1E
+    dcfsnz  WREG
+    bra     comm_read_ccr_mode              ; RCREG1=0x1F
+    dcfsnz  WREG
+    bra     comm_read_dive_mode             ; RCREG1=0x20
+    dcfsnz  WREG
+    bra     comm_read_decotype              ; RCREG1=0x21
+    dcfsnz  WREG
+    bra     comm_read_ppo2_max              ; RCREG1=0x22
+    dcfsnz  WREG
+    bra     comm_read_ppo2_min              ; RCREG1=0x23
+    dcfsnz  WREG
+    bra     comm_read_ftts                  ; RCREG1=0x24
+    dcfsnz  WREG
+    bra     comm_read_gf_low                ; RCREG1=0x25
+    dcfsnz  WREG
+    bra     comm_read_gf_high               ; RCREG1=0x26
+    dcfsnz  WREG
+    bra     comm_read_agf_low               ; RCREG1=0x27
+    dcfsnz  WREG
+    bra     comm_read_agf_high              ; RCREG1=0x28
+    dcfsnz  WREG
+    bra     comm_read_agf_selectable        ; RCREG1=0x29
+    dcfsnz  WREG
+    bra     comm_read_saturation            ; RCREG1=0x2A
+    dcfsnz  WREG
+    bra     comm_read_desaturation          ; RCREG1=0x2B
+    dcfsnz  WREG
+    bra     comm_read_last_deco             ; RCREG1=0x2C
+    dcfsnz  WREG
+    bra     comm_read_brightness            ; RCREG1=0x2D
+    dcfsnz  WREG
+    bra     comm_read_units                 ; RCREG1=0x2E
+    dcfsnz  WREG
+    bra     comm_read_samplingrate          ; RCREG1=0x2F
+    dcfsnz  WREG
+    bra     comm_read_salinity              ; RCREG1=0x30
+    dcfsnz  WREG
+    bra     comm_read_divemode_colour       ; RCREG1=0x31
+    dcfsnz  WREG
+    bra     comm_read_language              ; RCREG1=0x32
+    dcfsnz  WREG
+    bra     comm_read_date_format           ; RCREG1=0x33
+    dcfsnz  WREG
+    bra     comm_read_compass_gain          ; RCREG1=0x34
+
+
+
+comm_read_unused:
+comm_read_abort:
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+
+comm_read_setting_wait:
+    call	rs232_wait_tx					; Wait for UART
+    return
+
+comm_read_gas1:
+    movff   opt_gas_O2_ratio+0, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_gas_He_ratio+0, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_gas_type+0, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   char_I_deco_gas_change+0,TXREG1
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_gas2:
+    movff   opt_gas_O2_ratio+1, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_gas_He_ratio+1, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_gas_type+1, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   char_I_deco_gas_change+1,TXREG1
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_gas3:
+    movff   opt_gas_O2_ratio+2, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_gas_He_ratio+2, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_gas_type+2, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   char_I_deco_gas_change+2,TXREG1
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_gas4:
+    movff   opt_gas_O2_ratio+3, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_gas_He_ratio+3, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_gas_type+3, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   char_I_deco_gas_change+3,TXREG1
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_gas5:
+    movff   opt_gas_O2_ratio+4, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_gas_He_ratio+4, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_gas_type+4, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   char_I_deco_gas_change+4,TXREG1
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+
+comm_read_dil1:
+    movff   opt_dil_O2_ratio+0, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_dil_He_ratio+0, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_dil_type+0, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   char_I_dil_change+0,TXREG1
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_dil2:
+    movff   opt_dil_O2_ratio+1, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_dil_He_ratio+1, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_dil_type+1, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   char_I_dil_change+1,TXREG1
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_dil3:
+    movff   opt_dil_O2_ratio+2, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_dil_He_ratio+2, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_dil_type+2, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   char_I_dil_change+2,TXREG1
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_dil4:
+    movff   opt_dil_O2_ratio+3, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_dil_He_ratio+3, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_dil_type+3, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   char_I_dil_change+3,TXREG1
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_dil5:
+    movff   opt_dil_O2_ratio+4, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_dil_He_ratio+4, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   opt_dil_type+4, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   char_I_dil_change+4,TXREG1
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+
+comm_read_sp1:
+    movff   char_I_setpoint_cbar+0, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   char_I_setpoint_change+0, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_sp2:
+    movff   char_I_setpoint_cbar+1, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   char_I_setpoint_change+1, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_sp3:
+    movff   char_I_setpoint_cbar+2, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   char_I_setpoint_change+2, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_sp4:
+    movff   char_I_setpoint_cbar+3, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   char_I_setpoint_change+3, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_sp5:
+    movff   char_I_setpoint_cbar+4, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    movff   char_I_setpoint_change+4, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+
+comm_read_ccr_mode:
+    movff   opt_ccr_mode, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_dive_mode:
+    movff   opt_dive_mode, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_decotype:
+    movff   char_I_deco_model, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_ppo2_max:
+    movff   opt_ppO2_max, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_ppo2_min:
+    movff   opt_ppO2_min, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_ftts:
+    movff   char_I_extra_time, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_gf_low:
+    movff   opt_GF_low, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_gf_high:
+    movff   opt_GF_high, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_agf_low:
+    movff   opt_aGF_low, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_agf_high:
+    movff   opt_aGF_high, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_agf_selectable:
+    movff   opt_enable_aGF, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_saturation:
+    movff   char_I_saturation_multiplier, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_desaturation:
+    movff   char_I_desaturation_multiplier, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_last_deco:
+    movff   opt_last_stop, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_brightness:
+    movff   opt_brightness, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_units:
+    movff   opt_units, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_samplingrate:
+    movff   opt_sampling_rate, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_salinity:
+    movff   opt_salinity, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_divemode_colour:
+    movff   opt_dive_color_scheme, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_language:
+    movff   opt_language, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_date_format:
+    movff   opt_dateformat, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_compass_gain:
+    movff   opt_compass_gain, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+
 
 ;-----------------------------------------------------------------------------
 
