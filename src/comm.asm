@@ -25,6 +25,7 @@
 	extern  testloop,new_battery_menu,restart,option_reset_all
     extern  char_I_deco_gas_change, char_I_dil_change, char_I_setpoint_cbar, char_I_setpoint_change
     extern  char_I_deco_model, char_I_extra_time, char_I_saturation_multiplier, char_I_desaturation_multiplier
+    extern  option_check_all, gaslist_cleanup_list, get_first_gas_to_WREG, get_first_dil_to_WREG
 
 #DEFINE timeout_comm_pre_mode   .120        ; Pre-loop
 #DEFINE timeout_comm_mode       .120        ; Download mode
@@ -1261,6 +1262,14 @@ comm_write_setting:
 
 comm_write_unused:
 comm_write_abort:
+    ; Check Options, gases and diluents
+    call    option_check_all                ; Check all options (and reset if not within their min/max boundaries)
+    bsf     ccr_diluent_setup               ; =1: Setting up Diluents ("Gas6-10")
+    call    gaslist_cleanup_list            ; Takes care that only one gas can be first and first has 0m change depth
+    bcf     ccr_diluent_setup               ; =1: Setting up Diluents ("Gas6-10")
+    call    gaslist_cleanup_list            ; Takes care that only one gas can be first and first has 0m change depth
+    call    get_first_gas_to_WREG           ; Makes sure at least one Gas is "First"
+    call    get_first_dil_to_WREG           ; Makes sure at least one Diluent is "First"
     bra		comm_download_mode0             ; Done. Loop with timeout reset
 
 comm_write_gas1:
