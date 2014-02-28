@@ -67,7 +67,22 @@ do_demo_planner:
 get_first_dil_to_WREG:                  ; Gets first dil (0-4) into WREG
         lfsr    FSR1,opt_dil_type       ; Point to dil types
         clrf    lo                      ; start with Gas0
-        bra     get_first_gas_to_WREG2  ; Start
+get_first_dil_to_WREG2:
+        movf    lo,W                    ;
+        movf    PLUSW1,W                ; Get Type of Dil #lo
+        sublw   .1                      ; it is = 1 (First Dil)
+        bz      get_first_dil_to_WREG3  ; Found the first dil!
+        incf    lo,F                    ; ++
+        movlw   NUM_GAS+1
+        cpfseq  lo                      ; All done?
+        bra     get_first_dil_to_WREG2  ; Not yet
+        ; No first dil found, use #1
+        movlw   .1
+        movff   WREG,opt_dil_type+0     ; Set Dil1 to First
+        return
+get_first_dil_to_WREG3:
+        movf    lo,W                    ; Put into Wreg
+        return                          ; Done
 
     global  get_first_gas_to_WREG
 get_first_gas_to_WREG:                  ; Gets first gas (0-4) into WREG
@@ -82,7 +97,10 @@ get_first_gas_to_WREG2:
         movlw   NUM_GAS+1
         cpfseq  lo                      ; All done?
         bra     get_first_gas_to_WREG2  ; Not yet
-        retlw  .1                       ; No first gas found, use #1
+        ; No first gas found, use #1
+        movlw   .1
+        movff   WREG,opt_gas_type+0     ; Set Gas1 to First
+        return
 get_first_gas_to_WREG3:
         movf    lo,W                    ; Put into Wreg
         return                          ; Done
