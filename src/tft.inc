@@ -38,7 +38,9 @@
     extern  TFT_Display_FadeOut         ; Smooth darkening
     extern  TFT_ClearScreen
     extern  TFT_box_write
+    extern  TFT_box_write_16bit_win_left; With column in PRODL:PRODH
     extern  TFT_box
+    extern  TFT_box_16bit_win_left      ; With column in PRODL:PRODH
     extern  TFT_DataWrite_PROD
     extern  TFT_set_color
 	extern	init_pixel_write
