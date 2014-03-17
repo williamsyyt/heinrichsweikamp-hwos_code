@@ -1591,9 +1591,9 @@ TFT_surface_compass_mask:
 
     global  TFT_dive_compass_mask
 TFT_dive_compass_mask:
-    WIN_TINY    dive_compass_mask_column,dive_compass_mask_row
-    call    TFT_divemask_color
-    STRCPY_TEXT_PRINT   tHeading            ; Heading:
+;    WIN_TINY    dive_compass_mask_column,dive_compass_mask_row
+;    call    TFT_divemask_color
+;    STRCPY_TEXT_PRINT   tHeading            ; Heading:
     return
 
 
@@ -1611,14 +1611,6 @@ TFT_surface_compass_heading2:
     WIN_STD   surf_compass_head_column,surf_compass_head_row
 	call	TFT_standard_color
     lfsr	FSR2,buffer
-;    movff	compass_heading+0,lo
-;    movff	compass_heading+1,hi
-;    call    TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
-;    output_8
-;    PUTC    " "
-;    movff   hi,lo
-;    output_8
-;    PUTC    " "
     movff	compass_heading+0,lo
     movff	compass_heading+1,hi
     call    TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
@@ -1639,7 +1631,7 @@ TFT_dive_compass_heading:
     movff   sensor_state_counter,lo
     movlw   .6
     cpfsgt  lo
-    return
+    bra     TFT_dive_compass_heading3       ; But update graph always in fast mode
 TFT_dive_compass_heading2:
     WIN_STD dive_compass_head_column,dive_compass_head_row
 	call	TFT_standard_color
@@ -1653,6 +1645,91 @@ TFT_dive_compass_heading2:
     STRCAT  "° "
     rcall   tft_compass_cardinal        ; Add cardinal and ordinal to POSTINC2
     STRCAT_PRINT "   "
+TFT_dive_compass_heading3:
+    movff   compass_heading+0,sub_a+0
+    movff   compass_heading+1,sub_a+1
+    movlw   .45
+    movwf   sub_b+0
+    clrf    sub_b+1
+    call    subU16                      ;  sub_c = sub_a - sub_b (with UNSIGNED values)
+    btfss   neg_flag                    ; Result <0?
+    bra     TFT_dive_compass_heading_graph1 ; No
+    ; Yes
+    movlw   LOW     .360
+    movwf   sub_a+0
+    movlw   HIGH    .360
+    movwf   sub_a+1
+    movff   sub_c+0,sub_b+0
+    movff   sub_c+1,sub_b+1
+    call    subU16                      ;  sub_c = sub_a - sub_b (with UNSIGNED values)
+
+TFT_dive_compass_heading_graph1:
+    WIN_SMALL dive_compass_head_column+.70,dive_compass_head_row
+    movff   sub_c+0,lo
+    movff   sub_c+1,hi
+	call	TFT_standard_color
+    lfsr	FSR2,buffer
+    bsf     leftbind
+    output_16
+    bcf     leftbind
+    STRCAT_PRINT "  "
+
+; Draw marks (left border of graphic is in lo)
+    movlw   b'00011111'
+    andwf   lo,F                        ; Get lowest 5bits of heading
+	movlw	d'30'
+	cpfslt	lo
+	movwf	lo							; Limit to 30
+    rlncf   lo,F                        ; x2
+; marks parameters
+    WIN_BOX_BLACK   dive_compass_graph_row,dive_compass_graph_row+dive_compass_graph_height,.0,.159
+    call	TFT_standard_color
+    WIN_SMALL .77,dive_compass_graph_row        ; Center of screen
+    STRCPY_PRINT "^"
+    call    TFT_divemask_color
+    movlw   dive_compass_graph_row
+    movff   WREG,win_top
+    movlw   dive_compass_graph_height
+    movff   WREG,win_height
+    movlw   dive_compass_graph_width
+    movff   WREG,win_width+0
+    clrf    win_width+1
+; marks draw loop
+    movlw   .6
+    movwf   hi                  ; amount of marks (max.)
+    clrf    lo_temp
+TFT_dive_compass_heading_graph2:
+    movlw   LOW      .319
+    movwf   sub_a+0
+    movlw   HIGH     .319
+    movwf   sub_a+1
+    movff   lo,sub_b+0
+    movff   lo_temp,sub_b+1
+    call    subU16
+    btfsc   neg_flag
+    bra     TFT_dive_compass_heading_graph3 ; Abort when negative
+    movff   sub_c+0,PRODL
+    movff   sub_c+1,PRODH
+    call    TFT_box_write_16bit_win_left    ; With column in PRODL:PRODH
+    ;---- Define Window ------------------------------------------------------
+	movf	win_width,W
+	bcf     STATUS,C
+	rlcf    WREG
+	movwf   win_width+0
+	movlw   0
+	rlcf    WREG
+	movwf   win_width+1
+    call    TFT_box_16bit_win_left
+    movlw   .56                             ; 60 px. space
+    addwf   lo,F
+    movlw   .0
+    addwfc  lo_temp,F
+;    movlw   .160
+;    cpfslt  lo
+;    bra     TFT_dive_compass_heading_graph3 ; Abort
+    decfsz  hi,F
+    bra     TFT_dive_compass_heading_graph2
+TFT_dive_compass_heading_graph3:
     return
 
 tft_compass_cardinal:

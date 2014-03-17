@@ -117,6 +117,7 @@ diveloop_loop4:                             ; Menu-Exit returns here...
 
     btfss   quarter_second_update
     bra     diveloop_loop4a
+
     bcf     quarter_second_update
     movlw   .6
     cpfseq  menupos3                    ; in compass view?

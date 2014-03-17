@@ -626,6 +626,8 @@ TFT_box_write:
 		movff	win_leftx2,WREG         ; Compute left = 2*leftx2 --> PROD
 		mullw	2
 
+        global  TFT_box_write_16bit_win_left
+TFT_box_write_16bit_win_left:           ; With column in PRODL:PRODH
         ;---- Normal horizontal window ---------------------------------------
         ; Output 0x35 left,
         ;        0x36 right ==  left + width - 1.
@@ -738,8 +740,10 @@ TFT_box:
 	movlw   0
 	rlcf    WREG
 	movwf   win_width+1
-	rcall   TFT_box_write
+	rcall   TFT_box_write               ; Setup box
 
+    global  TFT_box_16bit_win_left
+TFT_box_16bit_win_left:
     rrcf    win_width+1,W               ; width /= 2
     rrcf    win_width+0,W
     movwf   win_width
