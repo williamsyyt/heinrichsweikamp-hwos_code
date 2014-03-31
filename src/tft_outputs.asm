@@ -1591,9 +1591,9 @@ TFT_surface_compass_mask:
 
     global  TFT_dive_compass_mask
 TFT_dive_compass_mask:
-;    WIN_TINY    dive_compass_mask_column,dive_compass_mask_row
-;    call    TFT_divemask_color
-;    STRCPY_TEXT_PRINT   tHeading            ; Heading:
+    WIN_TINY    dive_compass_mask_column,dive_compass_mask_row
+    call    TFT_divemask_color
+    STRCPY_TEXT_PRINT   tHeading            ; Heading:
     return
 
 
@@ -1646,6 +1646,8 @@ TFT_dive_compass_heading2:
     rcall   tft_compass_cardinal        ; Add cardinal and ordinal to POSTINC2
     STRCAT_PRINT "   "
 TFT_dive_compass_heading3:
+    return              ; No graphical output (yet)
+
     movff   compass_heading+0,sub_a+0
     movff   compass_heading+1,sub_a+1
     movlw   .45
