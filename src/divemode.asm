@@ -1303,6 +1303,7 @@ check_warn_battery:
 	incf	warning_counter,F			; increase counter
     call	TFT_update_batt_percent_divemode    ; Show percent
 
+    movff   batt_percent,lo
 	movlw	color_code_battery_low+1
 	cpfslt	lo                          ;
 	return                              ; No warning
@@ -1449,7 +1450,7 @@ check_and_store_gf_violation2:
 warn_agf:
 	incf	warning_counter,F			; increase counter
 	call	TFT_warning_agf             ; Show aGF warning
-	bsf		warning_active              ; Set Warning flag
+;	bsf		warning_active              ; Set Warning flag
     return
 
 
