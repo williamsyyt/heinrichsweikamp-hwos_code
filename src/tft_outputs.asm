@@ -80,11 +80,36 @@ TFT_warnings_color:
     global  TFT_disabled_color
 TFT_disabled_color:
     movlw   color_grey          ; Default to OSTC grey (dark blue)
+    btfsc   divemode            ; in Divemode?
+    rcall   TFT_disabled_color_dive
     bra		TFT_standard_color0
+TFT_disabled_color_dive:
+    movff   opt_dive_color_scheme,WREG  ; 0-3
+    incf    WREG
+	dcfsnz	WREG
+	bra		TFT_disabled_colordive0  	;0
+	dcfsnz	WREG
+	bra		TFT_disabled_colordive1  	;1
+	dcfsnz	WREG
+	bra		TFT_disabled_colordive2  	;2
+	dcfsnz	WREG
+	bra		TFT_disabled_colordive3  	;3
+TFT_disabled_colordive0:
+    movlw   color_scheme_divemode_dis1
+    return
+TFT_disabled_colordive1:
+    movlw   color_scheme_divemode_dis2
+    return
+TFT_disabled_colordive2:
+    movlw   color_scheme_divemode_dis3
+    return
+TFT_disabled_colordive3:
+    movlw   color_scheme_divemode_dis4
+    return
 
     global  TFT_standard_color
 TFT_standard_color:
-    setf    WREG
+    setf    WREG                ; Default white
     btfsc   divemode            ; in Divemode?
     rcall   TFT_standard_color_dive
 TFT_standard_color0:
