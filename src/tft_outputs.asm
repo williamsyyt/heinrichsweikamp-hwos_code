@@ -2609,7 +2609,10 @@ TFT_update_batt_voltage:
 	bsf		leftbind
 	output_8
 	bcf		leftbind
-	STRCAT_PRINT	"%"
+	STRCAT	"% "
+	movlw	0x00
+	movff	WREG,buffer+4			; Only "xxx%"
+    STRCAT_PRINT	""
 	call	TFT_standard_color
 	WIN_TINY batt_voltage_column,batt_voltage_row
 	lfsr    FSR2,buffer
