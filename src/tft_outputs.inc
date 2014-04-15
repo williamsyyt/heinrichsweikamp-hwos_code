@@ -41,6 +41,7 @@ TFT_color_code macro color_code_temp
     extern  TFT_surface_decosettings    ; Show all deco settings
     extern  TFT_cat_serial              ; Add serial to current string
     extern  TFT_cat_firmware            ; Add firmware version to current string
+    extern  TFT_compass_show_gain       ; Show the current compass gain
 
 ; Menu
 	extern	TFT_LogOffset_Logtitle

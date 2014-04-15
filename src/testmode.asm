@@ -167,17 +167,34 @@ testloop2_loop2:
     global  compass_calibration_loop
 compass_calibration_loop:               ; Compass calibration
     bsf     no_sensor_int               ; No Sensor ISR
-    call    I2C_init_accelerometer
-    call    I2C_init_compass_fast
     call	TFT_ClearScreen
 
     ; Mask
     WIN_COLOR   color_greenish
 	WIN_SMALL	.16,.0
 	STRCPY_TEXT_PRINT	tCompassMenu
+    btfss		switch_right2           ; wait until button is released
+    bra         $-4
+
     call	TFT_standard_color
 	WIN_SMALL	.0,.215
     STRCPY_TEXT_PRINT  tExit
+    WAITMS  d'255'
+    WAITMS  d'255'
+    movlw   .8                          ; Gain init
+    movff   WREG,opt_compass_gain
+compass_calibration_gainset:            ; Reduce the gain, set bank here!
+    banksel opt_compass_gain
+    decf    opt_compass_gain,F          ; Reduce by one
+    btfsc   STATUS,N                    ; <0?
+    clrf    opt_compass_gain            ; Yes, keep at zero
+
+    banksel common
+    call    I2C_init_accelerometer
+    call    I2C_init_compass_fast
+    call    TFT_compass_show_gain       ; Show the current compass gain
+
+    WAITMS  d'100'
 
  	clrf	timeout_counter2
 	clrf 	timeout_counter3
@@ -185,6 +202,33 @@ compass_calibration_loop:               ; Compass calibration
     call	speed_fastest
     call    I2C_RX_compass              ; read compass
     call    I2C_RX_accelerometer        ; read Accelerometer
+
+    ; Test all axes for +4096 (Hi byte=16)
+    banksel compass_DX+1
+    movlw   .16
+    cpfseq  compass_DX+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    cpfseq  compass_DY+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    cpfseq  compass_DZ+1
+    bra     $+4
+    bra     compass_calibration_gainset
+
+    ; Test all axes for -4096 (Hi byte=240)
+    movlw   .240
+    cpfseq  compass_DX+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    cpfseq  compass_DY+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    cpfseq  compass_DZ+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    banksel common
+
     call    compass_filter_init         ; set DX_f values
     call	compass_reset_calibration   ; Reset CX_f values
     banksel common
@@ -199,6 +243,32 @@ compass_calibration_loop2:
     call    I2C_RX_compass              ; read compass
     call    I2C_RX_accelerometer        ; Test Accelerometer
     call    compass_filter              ; Filter compass raw data
+    banksel common
+
+    ; Test all axes for +4096 (Hi byte=16)
+    banksel compass_DX+1
+    movlw   .16
+    cpfseq  compass_DX+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    cpfseq  compass_DY+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    cpfseq  compass_DZ+1
+    bra     $+4
+    bra     compass_calibration_gainset
+
+    ; Test all axes for -4096 (Hi byte=240)
+    movlw   .240
+    cpfseq  compass_DX+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    cpfseq  compass_DY+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    cpfseq  compass_DZ+1
+    bra     $+4
+    bra     compass_calibration_gainset
     banksel common
 ;
 ;    ; Three
@@ -217,7 +287,6 @@ compass_calibration_loop2:
     banksel common
 
     call    TFT_compass_fast            ; show values
-;    btg     LEDg                       ; Show read-out interval
 
     btfsc	sleepmode					; Sleepmode active?
     bra     compass_calibration_exit    ; Yes, exit
@@ -241,7 +310,7 @@ compass_calibration_exit:
 	call	option_save_all             ; save all settings into EEPROM
     bcf     sleepmode                   ; Clear the flag before exiting to surfacemode
     movlw   .6
-    movwf   menupos3                    ; Set to compass view...
+    movwf   customview_surfmode         ; Set to compass view...
    	goto	surfloop       				; ...and exit
 
     END

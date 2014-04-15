@@ -138,7 +138,7 @@
     TCODE   tFrench,    "French"
     TCODE   tItalian,   "Italian"
     TCODE   tCompassMenu,"Compass calibration"  ; Compass calibration
-    TCODE   tCompassGain,"Compass Gain"         ; Compass gain
+    TCODE   tCompassGain,"Compass Gain:"         ; Compass gain:
     TCODE   tcharx,     "x"
 
     TCODE   tUnits,     "Units:"

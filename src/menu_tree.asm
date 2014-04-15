@@ -268,9 +268,9 @@ do_settings_menu:
     MENU_END
 
 do_compass_menu:
-    MENU_BEGIN  tSystSets, .3
+    MENU_BEGIN  tSystSets, .2
         MENU_CALL   tCompassMenu,   compass_calibration_loop
-        MENU_OPTION tCompassGain,   oCompassGain,       0
+;        MENU_OPTION tCompassGain,   oCompassGain,       0
         MENU_CALL   tExit,          do_return_settings
     MENU_END
 
