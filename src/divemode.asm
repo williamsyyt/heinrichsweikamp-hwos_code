@@ -667,6 +667,9 @@ calc_average_depth:
 	movff	xC+0,avr_rel_pressure+0
 	movff	xC+1,avr_rel_pressure+1
 
+    btfss   divemode2                   ; displayed divetime is running?
+	return                              ; No (e.g. too shallow)
+
 	; 3. Compute Total Average Depth on base of total_divetime_seconds:2
 	movff	total_divetime_seconds+0,xB+0
 	movff	total_divetime_seconds+1,xB+1		; Copy
@@ -677,35 +680,6 @@ calc_average_depth:
 	call	div32x16 	; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
 	movff	xC+0,avr_rel_pressure_total+0
 	movff	xC+1,avr_rel_pressure_total+1
-
-;	; Compute Total Average Depth on base of divemins:2 and divesecs
-;	movff	divemins+0,xA+0
-;	movff	divemins+1,xA+1
-;	movlw	d'60'
-;	movwf	xB+0
-;	clrf	xB+1
-;	call	mult16x16				; xC:4=xA:2*xB:2
-;	movf	divesecs,W
-;	addwf	xC+0,F
-;	movlw	d'0'
-;	addwfc	xC+1,F					; xC:2 holds total dive seconds
-;	movlw	d'3'					; 2+1
-;	btfss	divesecs,0				; divesecs even?
-;	movlw	d'2'					; Yes, do not add +1
-;	addwf	xC+0,F
-;	movlw	d'0'
-;	addwfc	xC+1,F
-;	; Ignore xC+2 and xC+3. Total Average will only work up to divetime=1092:16
-;	movff	xC+0,xB+0
-;	movff	xC+1,xB+1		; Copy
-;	movff	average_depth_hold_total+0,xC+0
-;	movff	average_depth_hold_total+1,xC+1
-;	movff	average_depth_hold_total+2,xC+2
-;	movff	average_depth_hold_total+3,xC+3
-;
-;	call	div32x16 	; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
-;	movff	xC+0,avr_rel_pressure_total+0
-;	movff	xC+1,avr_rel_pressure_total+1
 
 	return
 

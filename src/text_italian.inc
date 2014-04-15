@@ -47,6 +47,7 @@
 
 ; Gas menu
     TCODE   tGaslist,   "Lista Gas OC"
+    TCODE   tGaslistCC, "Lista Gas CC"   ; CC Diluents
     TCODE   tGasEdit,   "Modifica Gas"
     TCODE   tType,      "Tipo: "
     TCODE   tGasDisabled,"Disabilitato"  ; Disabled

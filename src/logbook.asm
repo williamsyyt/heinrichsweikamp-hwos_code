@@ -1450,11 +1450,20 @@ logbook_page2: ; Show more info
 	output_16							; Air pressure before dive
 	STRCAT_TEXT_PRINT    tMBAR
 
-    ; OC Gas List
-    LOG_POINT_TO    log_gas1
+    ; OC/CC Gas List
+    LOG_POINT_TO    log_divemode
+    call		ext_flash_byte_read_plus            ; 0=OC, 1=CC, 2=Gauge, 3=Apnea into temp1
     WIN_TINY	log2_title_column,log2_title_row1
     WIN_COLOR   color_greenish
+    movlw       .1
+    cpfseq      temp1       ;=CC?
+    bra         logbook_gaslist_oc
+    STRCPY_TEXT_PRINT   tGaslistCC
+    bra         logbook_gaslist_common
+logbook_gaslist_oc:
     STRCPY_TEXT_PRINT   tGaslist
+logbook_gaslist_common:
+    LOG_POINT_TO    log_gas1
     WIN_FRAME_STD   log2_title_row1-2, log2_gas_row5+.15, log2_title_column-2, .159    ; Top, Bottom, Left, Right
     bcf		leftbind
 	movlw		color_white					; Color for Gas 1
