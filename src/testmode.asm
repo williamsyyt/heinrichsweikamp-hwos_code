@@ -167,8 +167,9 @@ testloop2_loop2:
     global  compass_calibration_loop
 compass_calibration_loop:               ; Compass calibration
     bsf     no_sensor_int               ; No Sensor ISR
+    call    I2C_sleep_accelerometer     ; Stop accelerometer
+    call    I2C_sleep_compass           ; Stop compass
     call	TFT_ClearScreen
-
     ; Mask
     WIN_COLOR   color_greenish
 	WIN_SMALL	.16,.0
