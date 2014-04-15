@@ -138,7 +138,7 @@
     TCODE   tFrench,    "Francese"
     TCODE   tItalian,   "Italiano"
     TCODE   tCompassMenu,"Calibra Bussola"  ; Compass calibration
-    TCODE   tCompassGain,"Suscettibilita"   ; Compass gain
+    TCODE   tCompassGain,"Suscettibilita:"  ; Compass gain:
     TCODE   tcharx,     "x"
 
     TCODE   tUnits,     "Unita':"

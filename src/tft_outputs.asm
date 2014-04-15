@@ -1140,6 +1140,20 @@ TFT_compass_fast:
 	STRCAT_PRINT "  "
     return
 
+    global  TFT_compass_show_gain
+TFT_compass_show_gain:       ; Show the current compass gain
+    movff   opt_compass_gain,lo    ; 0-7 (230LSB/Gauss to 1370LSB/Gaus)
+    tstfsz  lo
+    return                         ; Do not show unless gain=0
+	WIN_TINY	.20,.68
+    STRCPY_TEXT  tCompassGain
+    movff   opt_compass_gain,lo    ; 0-7 (230LSB/Gauss to 1370LSB/Gaus)
+    bsf     leftbind
+    output_8
+    bcf     leftbind
+    STRCAT_PRINT "!"
+    return
+
 	global	TFT_update_raw_data
 TFT_update_raw_data:
     call	TFT_standard_color
