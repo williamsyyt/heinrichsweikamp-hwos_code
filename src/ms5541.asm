@@ -138,6 +138,37 @@ calc_loop_1:
     movlw   HIGH(.1000)
     addwfc  isr_xC+2,F
 
+    ; Add opt_pressure_adjust to result (SIGNED!)
+    movff   opt_pressure_adjust,isr_xC+0
+
+    btfss   isr_xC+0,7              ; <0?
+    bra     pressure_extra_add      ; No
+    ; Yes
+    comf    isr_xC+0,F
+    incf    isr_xC+0,F
+    ; Check for max. of 20mbar
+    movlw   .21
+    cpfslt  isr_xC+0
+    clrf    isr_xC+0
+    ; Subtract
+    movf    isr_xC+0,W
+    subwf   isr_xC+1,F
+    movlw   .0
+    subwfb  isr_xC+2,F
+    bra     pressure_extra_common
+
+pressure_extra_add:
+    ; Check for max. of 20mbar
+    movlw   .21
+    cpfslt  isr_xC+0
+    clrf    isr_xC+0
+    ; Add
+    movf    isr_xC+0,W
+    addwf   isr_xC+1,F
+    movlw   .0
+    addwfc  isr_xC+2,F
+
+pressure_extra_common:
 	banksel	common
 	btfss	simulatormode_active		; are we in simulator mode?
 	bra		calc_compensation_2			; no

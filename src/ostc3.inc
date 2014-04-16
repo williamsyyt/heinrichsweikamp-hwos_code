@@ -150,11 +150,11 @@
 #DEFINE color_code_battery_low  .10     ; [%]
 #DEFINE battery_show_level      .24     ; [%]
 
-; 3,6V battery sensing data points at 55mA load
-#DEFINE lithium_36v_75          .3100   ; [mV]
-#DEFINE lithium_36v_50          .3000   ; [mV]
-#DEFINE lithium_36v_25          .2900   ; [mV]
-#DEFINE lithium_36v_10          .2600   ; [mV]
+; 3,6V battery sensing data points at 70mA load
+#DEFINE lithium_36v_75          .3000   ; [mV]
+#DEFINE lithium_36v_50          .2900   ; [mV]
+#DEFINE lithium_36v_25          .2600   ; [mV]
+#DEFINE lithium_36v_10          .2500   ; [mV]
 
 #DEFINE	current_sleepmode           .62
 #DEFINE	current_backlight_multi     .115    ; *CCPR1L+current_backlight_offset
@@ -515,6 +515,7 @@ opt_enable_aGF          res 1   ; =1: aGF can be selected underwater
 opt_compass_gain        res 1   ; 0-7 (230LSB/Gauss to 1370LSB/Gaus)
 opt_sampling_rate       res 1   ; =1: 10s, =0: 2s
 opt_dive_color_scheme   res 1   ; 0-3
+opt_pressure_adjust     res 1   ; SIGNED int (two's complement), -20/+20mbar max.
 
 ;-----------------------------EEPROM DATA ------------------------------------
 ; Automatic reset of all options when this is changed:
