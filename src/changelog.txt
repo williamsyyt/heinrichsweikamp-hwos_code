@@ -2,6 +2,7 @@ New in 1.25:
 BUGFIX: No average depth for end-of-dive portion (<1m)
 BUGFIX: Show "CC Diluents" in logbook instead of OC Gas List
 NEW: automatic compass gain makes calibration quicker
+CHANGE: Battery percent setpoints adjusted to worst case current consumption
 
 New in 1.24:
 CHANGE: Minor french translation

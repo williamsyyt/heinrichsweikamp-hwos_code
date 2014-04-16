@@ -627,7 +627,7 @@ comm_set_time:
 	call	rs232_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	return                          		; No, abort!
-	rcall	comm_check_day                  ; Check day
+	call	comm_check_day                  ; Check day
 	call	rs232_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	return                          		; No, abort!
@@ -920,6 +920,8 @@ comm_read_setting:
     bra     comm_read_date_format           ; RCREG1=0x33
     dcfsnz  WREG
     bra     comm_read_compass_gain          ; RCREG1=0x34
+    dcfsnz  WREG
+    bra     comm_read_pressure_adjust       ; RCREG1=0x35
 
 
 
@@ -1142,6 +1144,10 @@ comm_read_compass_gain:
     movff   opt_compass_gain, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
     bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_pressure_adjust:
+    movff   opt_pressure_adjust, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
 
 ;-----------------------------------------------------------------------------
 
@@ -1259,6 +1265,8 @@ comm_write_setting:
     bra     comm_write_date_format           ; RCREG1=0x33
     dcfsnz  WREG
     bra     comm_write_compass_gain          ; RCREG1=0x34
+    dcfsnz  WREG
+    bra     comm_write_pressure_adjust       ; RCREG1=0x35
 
 comm_write_unused:
 comm_write_abort:
@@ -1492,6 +1500,10 @@ comm_write_date_format:
 comm_write_compass_gain:
     call	rs232_get_byte
     movff   RCREG1, opt_compass_gain
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_pressure_adjust:
+    call	rs232_get_byte
+    movff   RCREG1, opt_pressure_adjust
     bra		comm_write_abort             ; Done. Loop with timeout reset
 
 ;-----------------------------------------------------------------------------
