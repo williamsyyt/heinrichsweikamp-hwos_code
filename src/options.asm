@@ -253,6 +253,7 @@ option_save_all_1:
         rcall   option_save             ; Save one option.
         bra     option_save_all_1       ; and loop.
 
+        global  option_save
 option_save:
         rcall   option_read
         incf    opt_eeprom,W            ; Should we save it ?

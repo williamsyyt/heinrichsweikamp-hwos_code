@@ -188,6 +188,13 @@ check_firmware_new:
     call    TFT_Display_FadeIn          ; Display resulting surface screen.
 
 ; place "after-update reset" here...
+
+    extern  oPressureAdjust, option_reset, option_save
+    lfsr    FSR0,oPressureAdjust
+    call    option_reset            ; Reset FSR0 option to factory default.
+    lfsr    FSR0,oPressureAdjust
+    call    option_save             ; Save in EEPROM
+
 	movlw	d'1'					; store current version in EEPROM
 	movwf	EEADR
 	movlw	d'1'
