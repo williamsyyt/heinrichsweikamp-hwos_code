@@ -178,11 +178,11 @@ compass_calibration_loop:               ; Compass calibration
     bra         $-4
 
     call	TFT_standard_color
-	WIN_SMALL	.0,.215
-    STRCPY_TEXT_PRINT  tExit
+;	WIN_SMALL	.0,.215
+;    STRCPY_TEXT_PRINT  tExit
     WAITMS  d'255'
     WAITMS  d'255'
-    movlw   .8                          ; Gain init
+    movlw   .7                          ; Gain init
     movff   WREG,opt_compass_gain
 compass_calibration_gainset:            ; Reduce the gain, set bank here!
     banksel opt_compass_gain
@@ -292,14 +292,17 @@ compass_calibration_loop2:
     btfsc	sleepmode					; Sleepmode active?
     bra     compass_calibration_exit    ; Yes, exit
 
-    btfsc   switch_left                 ; Button pressed?
-    bra     compass_calibration_exit    ; Yes, exit
+;    btfsc   switch_left                 ; Button pressed?
+;    bra     compass_calibration_exit    ; Yes, exit
 
     btfss	onesecupdate				; do every second tasks?
     bra     compass_calibration_loop2   ; no, loop here
 
-	movlw	.240
+	movlw	.60
     call	timeout_testmode			; check timeout
+    movlw   .60
+    call    TFT_show_timeout_testmode   ; Show the timeout
+
     bcf     onesecupdate                ; clear flag
 
     bra     compass_calibration_loop2   ; loop here

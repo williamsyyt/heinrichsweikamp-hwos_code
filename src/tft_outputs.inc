@@ -42,7 +42,7 @@ TFT_color_code macro color_code_temp
     extern  TFT_cat_serial              ; Add serial to current string
     extern  TFT_cat_firmware            ; Add firmware version to current string
     extern  TFT_compass_show_gain       ; Show the current compass gain
-
+    extern  TFT_show_timeout_testmode   ; Show the timeout during calibration
 ; Menu
 	extern	TFT_LogOffset_Logtitle
     extern  TFT_show_color_schemes      ; Yes, update the color schemes

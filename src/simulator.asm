@@ -272,6 +272,10 @@ deco_setup_oc_gases:
         tstfsz  WREG                  ; Disabled?
         bra     $+4                   ; No
         movff   WREG,char_I_deco_gas_change+4   ; Yes, clear char_I_deco_gas_change
+        nop
+
+        movlw   .0
+        movff   WREG,char_I_const_ppO2  ; Clear constant ppO2 for OC/bailout
         return
 
 ;=============================================================================
