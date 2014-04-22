@@ -1140,12 +1140,28 @@ TFT_compass_fast:
 	STRCAT_PRINT "  "
     return
 
+    global  TFT_show_timeout_testmode
+TFT_show_timeout_testmode:              ; With timeout in WREG...
+    movwf   hi
+    WIN_TINY	.20,.68
+    STRCPY  "T:"
+    movf    timeout_counter2,W          ; current timeout
+    subwf   hi,W                        ; subtract from timeout value
+    addlw   .1                          ; +1
+    movwf   lo
+    bsf     leftbind
+    output_8                            ; Display timeout
+    bcf     leftbind
+    STRCAT_PRINT "s "
+    return
+
+
     global  TFT_compass_show_gain
 TFT_compass_show_gain:       ; Show the current compass gain
     movff   opt_compass_gain,lo    ; 0-7 (230LSB/Gauss to 1370LSB/Gaus)
     tstfsz  lo
     return                         ; Do not show unless gain=0
-	WIN_TINY	.20,.68
+	WIN_TINY	.20,.86
     STRCPY_TEXT  tCompassGain
     movff   opt_compass_gain,lo    ; 0-7 (230LSB/Gauss to 1370LSB/Gaus)
     bsf     leftbind

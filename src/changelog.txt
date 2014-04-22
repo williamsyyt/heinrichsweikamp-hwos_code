@@ -1,3 +1,7 @@
+New in 1.26:
+BUGFIX: compass calibration does now timeout automatically after 60s
+BUGFIX: decoplan re-calculation in bailout case
+
 New in 1.25:
 BUGFIX: No average depth for end-of-dive portion (<1m)
 BUGFIX: Show "CC Diluents" in logbook instead of OC Gas List
