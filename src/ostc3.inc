@@ -20,7 +20,7 @@
 
 #DEFINE	softwareversion_x		d'1'		; Software version  XX.YY
 #DEFINE	softwareversion_y		d'27'		; Software version  XX.YY
-#DEFINE softwareversion_beta 	0 			; (and 0 for release)
+#DEFINE softwareversion_beta 	1 			; (and 0 for release)
 
 #DEFINE comm_service_key        0xABCDEF
 
@@ -385,8 +385,9 @@ ambient_light			res 2			; ambient_light level
 lo_temp					res 1
 hi_temp					res 1
 desaturation_time		res 2  
-convert_value_temp      res 3   ; used in menu_battery_state_convert_date 
+convert_value_temp      res 3           ; used in menu_battery_state_convert_date
 active_gas				res 1
+active_diluent          res 1           ; As a backup when switching back from Bailout to CCR
 decoplan_page			res 1
 warning_counter			res 1			; Counts amount of warning in divemode
 warning_counter_backup	res 1			; Backup of warning_counter
@@ -496,7 +497,7 @@ opt_dive_mode           res 1   ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
 opt_ppO2_max            res 1   ; PPO2 Max for MOD calculation and color coding in divemode
 opt_ccr_mode            res 1   ; =0: Fixed SP, =1: Sensor
 opt_ppO2_min            res 1   ; PPO2 min for Sensors and color coding in divemode
-
+opt_OC_bail_gas_change  res 5   ; Gas change depths OC/Bailout
 ;---- Managing Settings
 
 opt_brightness          res 1   ; =0: Eco, =1:Medium, =2:Full

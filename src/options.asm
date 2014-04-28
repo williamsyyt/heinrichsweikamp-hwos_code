@@ -582,11 +582,11 @@ option_table_begin:
         OPTION_UINT8    oGas4He,        .1, .100,   .0,     tPercent, .47,     opt_gas_He_ratio+3
         OPTION_UINT8    oGas5O2,        .21,.100,   .21,    tPercent, .48,     opt_gas_O2_ratio+4
         OPTION_UINT8    oGas5He,        .1, .100,   .0,     tPercent, .49,     opt_gas_He_ratio+4
-        OPTION_UINT8    oGas1Depth,     .0, .100,   .0,     tMeters,  .50,     char_I_deco_gas_change+0
-        OPTION_UINT8    oGas2Depth,     .0, .100,   .0,     tMeters,  .51,     char_I_deco_gas_change+1
-        OPTION_UINT8    oGas3Depth,     .0, .100,   .0,     tMeters,  .52,     char_I_deco_gas_change+2
-        OPTION_UINT8    oGas4Depth,     .0, .100,   .0,     tMeters,  .53,     char_I_deco_gas_change+3
-        OPTION_UINT8    oGas5Depth,     .0, .100,   .0,     tMeters,  .54,     char_I_deco_gas_change+4
+        OPTION_UINT8    oGas1Depth,     .0, .100,   .0,     tMeters,  .50,     opt_OC_bail_gas_change+0
+        OPTION_UINT8    oGas2Depth,     .0, .100,   .0,     tMeters,  .51,     opt_OC_bail_gas_change+1
+        OPTION_UINT8    oGas3Depth,     .0, .100,   .0,     tMeters,  .52,     opt_OC_bail_gas_change+2
+        OPTION_UINT8    oGas4Depth,     .0, .100,   .0,     tMeters,  .53,     opt_OC_bail_gas_change+3
+        OPTION_UINT8    oGas5Depth,     .0, .100,   .0,     tMeters,  .54,     opt_OC_bail_gas_change+4
         OPTION_UINT8    oDil1O2,        .21,.100,   .21,    tPercent, .55,     opt_dil_O2_ratio+0
         OPTION_UINT8    oDil1He,        .1, .100,   .0,     tPercent, .56,     opt_dil_He_ratio+0
         OPTION_UINT8    oDil2O2,        .21,.100,   .21,    tPercent, .57,     opt_dil_O2_ratio+1

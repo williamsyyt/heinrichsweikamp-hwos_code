@@ -93,6 +93,13 @@ do_switch_sp:
     movff   PLUSW1,char_I_const_ppO2; Setup fixed Setpoint
     bsf     setpoint_changed        ; Set flag (For profile)
 
+    ; Reconfigure last diluent
+    extern  setup_dil_registers
+    bcf     is_bailout              ; =1: Bailout
+    movff   active_diluent,WREG     ; As a backup when switching back from Bailout to CCR
+    decf    WREG                    ; 0-4
+    call    setup_dil_registers     ; With WREG=Gas 0-4
+
     clrf    WREG                    ; Switch to fixed SP
     movff   WREG,opt_ccr_mode       ; =0: Fixed SP, =1: Sensor
     clrf    WREG

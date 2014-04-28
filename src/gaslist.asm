@@ -215,8 +215,12 @@ gaslist_strcat_3:
         rcall   gaslist_strcat_gas_0
 		PUTC	" "
         ; Read switch depth
+        lfsr    FSR1,char_I_dil_change-.5   ; Setup Diluents-5
+        movlw   .4
+        cpfsgt  gaslist_gas                 ; >4? (-> Diluents)
+        lfsr    FSR1,opt_OC_bail_gas_change ; Setup OC Gases
+
         movf    gaslist_gas,W           ; (0-4 for OC/Bailout, 5-9 for Diluents)
-        lfsr    FSR1,char_I_deco_gas_change
         movff   PLUSW1,lo
         rcall   gaslist_calc_mod        ; Compute MOD into WREG
         cpfsgt  lo
@@ -330,7 +334,10 @@ gaslist_cleanup_list4b:
         bra     gaslist_cleanup_list    ; Loop until only one "first gas" is left
 
 gaslist_cleanup_list5:
-        lfsr    FSR1,char_I_deco_gas_change
+        ; Read switch depth
+        lfsr    FSR1,char_I_dil_change-.5   ; Setup Diluents-5
+        btfss   ccr_diluent_setup           ; In CCR-Menu?
+        lfsr    FSR1,opt_OC_bail_gas_change ; No, setup OC Gases
         decf    lo_temp,W
         btfsc   ccr_diluent_setup       ; In CCR-Menu?
         addlw   .5                      ; Yes, adjust offset
@@ -416,8 +423,12 @@ gaslist_mHe_1:
 ; Increment/Decrement switch depth
         global  gaslist_pDepth
 gaslist_pDepth:
+        lfsr    FSR1,char_I_dil_change-.5   ; Setup Diluents-5
+        movlw   .4
+        cpfsgt  gaslist_gas                 ; >4? (-> Diluents)
+        lfsr    FSR1,opt_OC_bail_gas_change ; Setup OC Gases
+
         movf    gaslist_gas,W
-        lfsr    FSR1,char_I_deco_gas_change
         movff   PLUSW1,gaslist_O2       ; Read char_I_deco_gas_change[WREG]
 
         incf    gaslist_O2,F
@@ -433,8 +444,12 @@ gaslist_pDepth_1:
         
         global  gaslist_mDepth
 gaslist_mDepth:
+        lfsr    FSR1,char_I_dil_change-.5   ; Setup Diluents-5
+        movlw   .4
+        cpfsgt  gaslist_gas                 ; >4? (-> Diluents)
+        lfsr    FSR1,opt_OC_bail_gas_change ; Setup OC Gases
+
         movf    gaslist_gas,W
-        lfsr    FSR1,char_I_deco_gas_change
         movff   PLUSW1,gaslist_O2       ; Read char_I_deco_gas_change[WREG]
 
         decf    gaslist_O2,F
@@ -608,7 +623,9 @@ gaslist_reset_mod_title2:
         movwf   lo                      ; Copy to lo
 
         movf    gaslist_gas,W           ; Compare to switch depth
-        lfsr    FSR1,char_I_deco_gas_change
+        lfsr    FSR1,char_I_dil_change  ; Setup Diluents mH
+        btfss   ccr_diluent_setup           ; In CCR-Menu?
+        lfsr    FSR1,opt_OC_bail_gas_change ; No, setup OC Gases
         movf   	PLUSW1,W
         cpfslt  lo
         bra     gaslist_strcat_4        ; And return...
@@ -622,7 +639,11 @@ gaslist_reset_mod:
         movwf   gaslist_depth
 
         movf    gaslist_gas,W           ; Read current gas O2 ratio
-        lfsr    FSR1,char_I_deco_gas_change
+
+        lfsr    FSR1,char_I_dil_change      ; Setup Diluents mH
+        btfss   ccr_diluent_setup           ; In CCR-Menu?
+        lfsr    FSR1,opt_OC_bail_gas_change ; No, setup OC Gases
+
         movff   gaslist_depth,PLUSW1    ; And save new change depth
         return
 ;----------------------------------------------------------------------------
