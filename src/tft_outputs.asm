@@ -1138,6 +1138,25 @@ TFT_compass_fast:
     call    TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
     output_16
 	STRCAT_PRINT "  "
+
+;    WIN_TINY	.20,.86
+;    STRCPY  "DX:"
+;    movff   compass_DX_f+0,lo
+;    movff   compass_DX_f+1,hi
+;    call    TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
+;    output_16
+;    STRCAT  ", DY:"
+;    movff   compass_DY_f+0,lo
+;    movff   compass_DY_f+1,hi
+;    call    TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
+;    output_16
+;    STRCAT  ", DZ:"
+;    movff   compass_DZ_f+0,lo
+;    movff   compass_DZ_f+1,hi
+;    call    TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
+;    output_16
+;    STRCAT_PRINT  "     "
+
     return
 
     global  TFT_show_timeout_testmode

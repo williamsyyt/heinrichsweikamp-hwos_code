@@ -33,6 +33,7 @@ void compass_reset_calibration()
     Suu = Svv = Sww = Suv = Suw = Svw = 0.0;
     Suuu = Svvv = Swww = 0.0;
     Suuv = Suuw = Svvu = Svvw = Swwu = Swwv = 0.0;
+    compass_CX_f = compass_CY_f = compass_CZ_f = 0.0;
 }
 
 void compass_add_calibration()
