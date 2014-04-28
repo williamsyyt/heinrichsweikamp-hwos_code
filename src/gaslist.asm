@@ -128,12 +128,10 @@ gaslist_strcat_setpoint_0:
         bcf     leftbind
         PUTC    ":"
 gaslist_strcat_setpoint2:                   ; Short version
-        lfsr    FSR1,opt_gas_type
         btfsc   divemode
         bra     gaslist_strcat_setpoint4    ; no "*" in divemode
-        movf    gaslist_gas,W
-        decf    PLUSW1,W                    ; Type-1 into WREG
-        bnz     gaslist_strcat_setpoint3    ; Not "first"
+        movf    gaslist_gas,W               ; Number-1 into WREG
+        bnz     gaslist_strcat_setpoint3    ; Not SP1
         PUTC    "*"
         bra     gaslist_strcat_setpoint4
 gaslist_strcat_setpoint3:
