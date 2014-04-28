@@ -794,6 +794,8 @@ setup_gas_registers:                ; With WREG=Gas 0-4
 
     global  setup_dil_registers
 setup_dil_registers:                ; With WREG=dil 0-4
+    btfsc   is_bailout
+    return                          ; Ignore in bailout
     lfsr    FSR1,opt_dil_O2_ratio+0
     movff   PLUSW1,char_I_O2_ratio  ; O2 (For ppO2 calculations)
     lfsr    FSR1,opt_dil_He_ratio+0
@@ -801,6 +803,7 @@ setup_dil_registers:                ; With WREG=dil 0-4
     incf    WREG,W                  ; Gas# 1-5
 	movff	WREG,char_I_current_gas	; Set gas
 	movff	WREG,active_gas			; Set for logbook and display
+    movff   WREG,active_diluent     ; As a backup when switching back from Bailout to CCR
     banksel char_I_O2_ratio
 	movf    char_I_O2_ratio,W       ; Add O2...
     addwf   char_I_He_ratio,W       ; ...and He...
@@ -970,7 +973,7 @@ check_gas_common:                   ; With Gas 0-4 in WREG
 check_gas_common2:
     decf    WREG,W                  ; 0-4
     movwf   hi                      ; Save tested gas 0-4
-    lfsr    FSR1,char_I_deco_gas_change
+    lfsr    FSR1,opt_OC_bail_gas_change
     movff   PLUSW1,lo               ; Change depth into lo
 	movlw	minimum_change_depth
 	cpfsgt	lo  					; Change depth>minimum_change_depth?

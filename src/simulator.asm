@@ -141,10 +141,10 @@ deco_setup:
 deco_setup_dive:						; Called from divemode
         banksel common                  ; Bank1
 
-        btfss   FLAG_ccr_mode           ; =1: CCR mode (Fixed ppO2 or Sensor) active
-        rcall   deco_setup_oc_gases     ; Setup OC Gases
         btfsc   FLAG_ccr_mode           ; =1: CCR mode (Fixed ppO2 or Sensor) active
         rcall   deco_setup_cc_diluents  ; Setup CC Diluents
+        btfss   FLAG_ccr_mode           ; =1: CCR mode (Fixed ppO2 or Sensor) active
+        rcall   deco_setup_oc_gases     ; Setup OC Gases
         btfsc   is_bailout              ; =1: Bailout
         rcall   deco_setup_oc_gases     ; Setup OC/Bailout Gases
 
@@ -170,7 +170,7 @@ deco_setup_cc_diluents:
         movff   opt_dil_type+0,WREG   ; 0=Disabled, 1=First, 2=Normal
         tstfsz  WREG                  ; Disabled?
         bra     $+4                   ; No
-        movff   WREG,char_I_deco_gas_change+0   ; Yes, clear char_I_deco_gas_change
+        movff   WREG,char_I_dil_change+0   ; Yes, clear char_I_deco_gas_change
 
         movff   opt_dil_He_ratio+1,char_I_deco_He_ratio+1
         movff   char_I_deco_He_ratio+1,lo
@@ -181,7 +181,7 @@ deco_setup_cc_diluents:
         movff   opt_dil_type+1,WREG   ; 0=Disabled, 1=First, 2=Normal
         tstfsz  WREG                  ; Disabled?
         bra     $+4                   ; No
-        movff   WREG,char_I_deco_gas_change+1   ; Yes, clear char_I_deco_gas_change
+        movff   WREG,char_I_dil_change+1   ; Yes, clear char_I_dil_change
 
         movff   opt_dil_He_ratio+2,char_I_deco_He_ratio+2
         movff   char_I_deco_He_ratio+2,lo
@@ -192,7 +192,7 @@ deco_setup_cc_diluents:
         movff   opt_dil_type+2,WREG   ; 0=Disabled, 1=First, 2=Normal
         tstfsz  WREG                  ; Disabled?
         bra     $+4                   ; No
-        movff   WREG,char_I_deco_gas_change+2   ; Yes, clear char_I_deco_gas_change
+        movff   WREG,char_I_dil_change+2   ; Yes, clear char_I_dil_change
 
         movff   opt_dil_He_ratio+3,char_I_deco_He_ratio+3
         movff   char_I_deco_He_ratio+3,lo
@@ -203,7 +203,7 @@ deco_setup_cc_diluents:
         movff   opt_dil_type+3,WREG   ; 0=Disabled, 1=First, 2=Normal
         tstfsz  WREG                  ; Disabled?
         bra     $+4                   ; No
-        movff   WREG,char_I_deco_gas_change+3   ; Yes, clear char_I_deco_gas_change
+        movff   WREG,char_I_dil_change+3   ; Yes, clear char_I_dil_change
 
         movff   opt_dil_He_ratio+4,char_I_deco_He_ratio+4
         movff   char_I_deco_He_ratio+4,lo
@@ -214,7 +214,14 @@ deco_setup_cc_diluents:
         movff   opt_dil_type+4,WREG   ; 0=Disabled, 1=First, 2=Normal
         tstfsz  WREG                  ; Disabled?
         bra     $+4                   ; No
-        movff   WREG,char_I_deco_gas_change+4   ; Yes, clear char_I_deco_gas_change
+        movff   WREG,char_I_dil_change+4   ; Yes, clear char_I_dil_change
+
+        ; Setup char_I_deco_gas_change array
+        movff   char_I_dil_change+0, char_I_deco_gas_change+0
+        movff   char_I_dil_change+1, char_I_deco_gas_change+1
+        movff   char_I_dil_change+2, char_I_deco_gas_change+2
+        movff   char_I_dil_change+3, char_I_deco_gas_change+3
+        movff   char_I_dil_change+4, char_I_deco_gas_change+4
         return
 
 deco_setup_oc_gases:
@@ -227,7 +234,7 @@ deco_setup_oc_gases:
         movff   opt_gas_type+0,WREG   ; 0=Disabled, 1=First, 2=Travel, 3=Deco
         tstfsz  WREG                  ; Disabled?
         bra     $+4                   ; No
-        movff   WREG,char_I_deco_gas_change+0   ; Yes, clear char_I_deco_gas_change
+        movff   WREG,opt_OC_bail_gas_change+0   ; Yes, clear opt_OC_bail_gas_change
 
         movff   opt_gas_He_ratio+1,char_I_deco_He_ratio+1
         movff   char_I_deco_He_ratio+1,lo
@@ -238,7 +245,7 @@ deco_setup_oc_gases:
         movff   opt_gas_type+1,WREG   ; 0=Disabled, 1=First, 2=Travel, 3=Deco
         tstfsz  WREG                  ; Disabled?
         bra     $+4                   ; No
-        movff   WREG,char_I_deco_gas_change+1   ; Yes, clear char_I_deco_gas_change
+        movff   WREG,opt_OC_bail_gas_change+1   ; Yes, clear opt_OC_bail_gas_change
 
         movff   opt_gas_He_ratio+2,char_I_deco_He_ratio+2
         movff   char_I_deco_He_ratio+2,lo
@@ -249,7 +256,7 @@ deco_setup_oc_gases:
         movff   opt_gas_type+2,WREG   ; 0=Disabled, 1=First, 2=Travel, 3=Deco
         tstfsz  WREG                  ; Disabled?
         bra     $+4                   ; No
-        movff   WREG,char_I_deco_gas_change+2   ; Yes, clear char_I_deco_gas_change
+        movff   WREG,opt_OC_bail_gas_change+2   ; Yes, clear opt_OC_bail_gas_change
 
         movff   opt_gas_He_ratio+3,char_I_deco_He_ratio+3
         movff   char_I_deco_He_ratio+3,lo
@@ -260,7 +267,7 @@ deco_setup_oc_gases:
         movff   opt_gas_type+3,WREG   ; 0=Disabled, 1=First, 2=Travel, 3=Deco
         tstfsz  WREG                  ; Disabled?
         bra     $+4                   ; No
-        movff   WREG,char_I_deco_gas_change+3   ; Yes, clear char_I_deco_gas_change
+        movff   WREG,opt_OC_bail_gas_change+3   ; Yes, clear opt_OC_bail_gas_change
 
         movff   opt_gas_He_ratio+4,char_I_deco_He_ratio+4
         movff   char_I_deco_He_ratio+4,lo
@@ -271,11 +278,18 @@ deco_setup_oc_gases:
         movff   opt_gas_type+4,WREG   ; 0=Disabled, 1=First, 2=Travel, 3=Deco
         tstfsz  WREG                  ; Disabled?
         bra     $+4                   ; No
-        movff   WREG,char_I_deco_gas_change+4   ; Yes, clear char_I_deco_gas_change
+        movff   WREG,opt_OC_bail_gas_change+4   ; Yes, clear opt_OC_bail_gas_change
         nop
 
         movlw   .0
         movff   WREG,char_I_const_ppO2  ; Clear constant ppO2 for OC/bailout
+
+        ; Setup char_I_deco_gas_change array
+        movff   opt_OC_bail_gas_change+0, char_I_deco_gas_change+0
+        movff   opt_OC_bail_gas_change+1, char_I_deco_gas_change+1
+        movff   opt_OC_bail_gas_change+2, char_I_deco_gas_change+2
+        movff   opt_OC_bail_gas_change+3, char_I_deco_gas_change+3
+        movff   opt_OC_bail_gas_change+4, char_I_deco_gas_change+4
         return
 
 ;=============================================================================

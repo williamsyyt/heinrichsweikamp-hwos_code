@@ -535,7 +535,7 @@ end_dive_oc_gaslist:            	; OC Gases...
 	rcall	ghostwrite_byte_header	; %O2
 	movff	opt_gas_He_ratio+0,WREG
 	rcall	ghostwrite_byte_header	; %He
-	movff	char_I_deco_gas_change+0,WREG
+	movff	opt_OC_bail_gas_change+0,WREG
 	rcall	ghostwrite_byte_header	; Configured change depth in m
     movff   opt_gas_type+0,WREG                   
     rcall	ghostwrite_byte_header	; 0=Disabled, 1=First, 2= Travel, 3= Deco
@@ -544,7 +544,7 @@ end_dive_oc_gaslist:            	; OC Gases...
 	rcall	ghostwrite_byte_header	; %O2
 	movff	opt_gas_He_ratio+1,WREG
 	rcall	ghostwrite_byte_header	; %He
-	movff	char_I_deco_gas_change+1,WREG
+	movff	opt_OC_bail_gas_change+1,WREG
 	rcall	ghostwrite_byte_header	; Configured change depth in m
     movff   opt_gas_type+1,WREG
     rcall	ghostwrite_byte_header	; 0=Disabled, 1=First, 2= Travel, 3= Deco
@@ -553,7 +553,7 @@ end_dive_oc_gaslist:            	; OC Gases...
 	rcall	ghostwrite_byte_header	; %O2
 	movff	opt_gas_He_ratio+2,WREG
 	rcall	ghostwrite_byte_header	; %He
-	movff	char_I_deco_gas_change+2,WREG
+	movff	opt_OC_bail_gas_change+2,WREG
 	rcall	ghostwrite_byte_header	; Configured change depth in m
     movff   opt_gas_type+2,WREG
     rcall	ghostwrite_byte_header	; 0=Disabled, 1=First, 2= Travel, 3= Deco
@@ -562,7 +562,7 @@ end_dive_oc_gaslist:            	; OC Gases...
 	rcall	ghostwrite_byte_header	; %O2
 	movff	opt_gas_He_ratio+3,WREG
 	rcall	ghostwrite_byte_header	; %He
-	movff	char_I_deco_gas_change+3,WREG
+	movff	opt_OC_bail_gas_change+3,WREG
 	rcall	ghostwrite_byte_header	; Configured change depth in m
     movff   opt_gas_type+3,WREG
     rcall	ghostwrite_byte_header	; 0=Disabled, 1=First, 2= Travel, 3= Deco
@@ -571,7 +571,7 @@ end_dive_oc_gaslist:            	; OC Gases...
 	rcall	ghostwrite_byte_header	; %O2
 	movff	opt_gas_He_ratio+4,WREG
 	rcall	ghostwrite_byte_header	; %He
-	movff	char_I_deco_gas_change+4,WREG
+	movff	opt_OC_bail_gas_change+4,WREG
 	rcall	ghostwrite_byte_header	; Configured change depth in m
     movff   opt_gas_type+4,WREG
     rcall	ghostwrite_byte_header	; 0=Disabled, 1=First, 2= Travel, 3= Deco

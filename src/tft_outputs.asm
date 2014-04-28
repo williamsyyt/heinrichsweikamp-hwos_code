@@ -641,8 +641,8 @@ TFT_decoplan:
 	bra		TFT_display_deko2			; Yes
 	; No, clear output and return
 	call	TFT_standard_color
-	WIN_SMALL	decostop_4th_stop_column+.16,decostop_4th_stop_row
-	STRCPY_PRINT "---"
+	WIN_SMALL	decostop_4th_stop_column,decostop_4th_stop_row
+	STRCPY_PRINT "  ---  "
 	WIN_BOX_BLACK   decostop_2nd_stop_row, divemode_simtext_row-1, decostop_2nd_stop_column, decostop_4th_stop_column	; top, bottom, left, right
 	WIN_BOX_BLACK   decostop_5th_stop_row, divemode_simtext_row-1, decostop_5th_stop_column, decostop_6th_stop_column	; top, bottom, left, right
 	WIN_BOX_BLACK   decostop_6th_stop_row, divemode_simtext_row-1, decostop_6th_stop_column, .159	; top, bottom, left, right
@@ -1915,7 +1915,7 @@ TFT_debug_output:
     WIN_TINY   .107,.0
 	call	TFT_standard_color
 	lfsr	FSR2,buffer
-    movff   CCPR1L,lo
+    movff   active_diluent,lo
     output_8
 	STRCAT_PRINT ""
 	return

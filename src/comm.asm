@@ -23,7 +23,7 @@
 #include "adc_lightsensor.inc"
 
 	extern  testloop,new_battery_menu,restart,option_reset_all
-    extern  char_I_deco_gas_change, char_I_dil_change, char_I_setpoint_cbar, char_I_setpoint_change
+    extern  char_I_dil_change, char_I_setpoint_cbar, char_I_setpoint_change
     extern  char_I_deco_model, char_I_extra_time, char_I_saturation_multiplier, char_I_desaturation_multiplier
     extern  option_check_all, gaslist_cleanup_list, get_first_gas_to_WREG, get_first_dil_to_WREG
 
@@ -940,7 +940,7 @@ comm_read_gas1:
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   opt_gas_type+0, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
-    movff   char_I_deco_gas_change+0,TXREG1
+    movff   opt_OC_bail_gas_change+0,TXREG1
     bra		comm_download_mode0             ; Done. Loop with timeout reset
 comm_read_gas2:
     movff   opt_gas_O2_ratio+1, TXREG1
@@ -949,7 +949,7 @@ comm_read_gas2:
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   opt_gas_type+1, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
-    movff   char_I_deco_gas_change+1,TXREG1
+    movff   opt_OC_bail_gas_change+1,TXREG1
     bra		comm_download_mode0             ; Done. Loop with timeout reset
 comm_read_gas3:
     movff   opt_gas_O2_ratio+2, TXREG1
@@ -958,7 +958,7 @@ comm_read_gas3:
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   opt_gas_type+2, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
-    movff   char_I_deco_gas_change+2,TXREG1
+    movff   opt_OC_bail_gas_change+2,TXREG1
     bra		comm_download_mode0             ; Done. Loop with timeout reset
 comm_read_gas4:
     movff   opt_gas_O2_ratio+3, TXREG1
@@ -967,7 +967,7 @@ comm_read_gas4:
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   opt_gas_type+3, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
-    movff   char_I_deco_gas_change+3,TXREG1
+    movff   opt_OC_bail_gas_change+3,TXREG1
     bra		comm_download_mode0             ; Done. Loop with timeout reset
 comm_read_gas5:
     movff   opt_gas_O2_ratio+4, TXREG1
@@ -976,7 +976,7 @@ comm_read_gas5:
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   opt_gas_type+4, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
-    movff   char_I_deco_gas_change+4,TXREG1
+    movff   opt_OC_bail_gas_change+4,TXREG1
     bra		comm_download_mode0             ; Done. Loop with timeout reset
 
 comm_read_dil1:
@@ -1288,7 +1288,7 @@ comm_write_gas1:
     call	rs232_get_byte
     movff   RCREG1,opt_gas_type+0
     call	rs232_get_byte
-    movff   RCREG1,char_I_deco_gas_change+0
+    movff   RCREG1,opt_OC_bail_gas_change+0
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_gas2:
     call	rs232_get_byte
@@ -1298,7 +1298,7 @@ comm_write_gas2:
     call	rs232_get_byte
     movff   RCREG1,opt_gas_type+1
     call	rs232_get_byte
-    movff   RCREG1,char_I_deco_gas_change+1
+    movff   RCREG1,opt_OC_bail_gas_change+1
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_gas3:
     call	rs232_get_byte
@@ -1308,7 +1308,7 @@ comm_write_gas3:
     call	rs232_get_byte
     movff   RCREG1,opt_gas_type+2
     call	rs232_get_byte
-    movff   RCREG1,char_I_deco_gas_change+2
+    movff   RCREG1,opt_OC_bail_gas_change+2
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_gas4:
     call	rs232_get_byte
@@ -1318,7 +1318,7 @@ comm_write_gas4:
     call	rs232_get_byte
     movff   RCREG1,opt_gas_type+3
     call	rs232_get_byte
-    movff   RCREG1,char_I_deco_gas_change+3
+    movff   RCREG1,opt_OC_bail_gas_change+3
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_gas5:
     call	rs232_get_byte
@@ -1328,7 +1328,7 @@ comm_write_gas5:
     call	rs232_get_byte
     movff   RCREG1,opt_gas_type+4
     call	rs232_get_byte
-    movff   RCREG1,char_I_deco_gas_change+4
+    movff   RCREG1,opt_OC_bail_gas_change+4
     bra		comm_write_abort             ; Done. Loop with timeout reset
 
 comm_write_dil1:
