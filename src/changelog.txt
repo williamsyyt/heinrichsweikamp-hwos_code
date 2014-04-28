@@ -1,3 +1,6 @@
+New in 1.27:
+BUGFIX: Show "*" always in front of the initial Setpoint 1
+
 New in 1.26:
 BUGFIX: compass calibration does now timeout automatically after 60s
 BUGFIX: decoplan re-calculation in bailout case
