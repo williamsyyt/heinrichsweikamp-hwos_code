@@ -1232,6 +1232,15 @@ profile_view_get_depth_new2:
 	call		ext_flash_byte_read_plus_0x20			; Read Event byte
 	movff		temp1,EventByte				; store EventByte
 	decf		timeout_counter2,F			; reduce counter
+
+    btfss       EventByte,7                 ; Another Event byte?
+    bra         profile_no_second_eventbyte ; No
+    call		ext_flash_byte_read_plus_0x20; Read Event byte2
+    movff		temp1,EventByte2			; store EventByte2
+	decf		timeout_counter2,F			; reduce counter
+    bcf         EventByte,7                 ; Clear flag
+
+profile_no_second_eventbyte:
 ; Check Event flags in the EventByte
 	btfsc		EventByte,4					; Manual Gas Changed?
 	bra			logbook_event1				; Yes!

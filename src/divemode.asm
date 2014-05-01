@@ -768,11 +768,16 @@ gas_switched_common:
     rcall   setup_gas_registers     ; With WREG=Gas 0-4
 
     call	TFT_active_gas_divemode	; Display gas/Setpoint
-	bsf		event_occured			; Set global event byte
-	bsf		stored_gas_changed		; Set Flag for profile
     bcf     divemode_gaschange      ; Clear flag
     clrf    WREG
     movff   WREG,char_O_deco_status ; Restart decoplan computation
+
+    ; Set flags for profile recording
+	bsf		event_occured			; Set global event byte
+    btfsc   is_bailout              ; Choose OC Bailouts (OC Gases)
+    bsf     bailoutgas_event        ; Bailout gas change
+    btfss   is_bailout              ; Choose OC Bailouts (OC Gases)
+	bsf		stored_gas_changed		; OC gas change
 	return
 
     global  setup_gas_registers
@@ -1147,6 +1152,7 @@ diveloop_boot:
 	clrf 	timeout_counter2			; takes care of the timeout (High byte)
 	clrf	AlarmType					; Clear all alarms
 	bcf		event_occured				; clear flag
+    bcf     event2_occured              ; clear flag
 	clrf 	total_divetime_seconds+1
 	clrf	average_depth_hold_total+0
 	clrf	average_depth_hold_total+1
