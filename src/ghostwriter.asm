@@ -85,6 +85,7 @@ check_extended7:
 	incf    ProfileFlagByte,F	; add one byte (The EventByte)
 
 	clrf	EventByte			; reset EventByte
+    clrf	EventByte2			; reset EventByte2
 
 	movf	AlarmType,W			; Type of Alarm Bit 0-3
 	addwf	EventByte,F			; Copy to EventByte Bit 0-3
@@ -109,19 +110,36 @@ check_event3:
 	addwf	ProfileFlagByte,F	; add to ProfileFlagByte
 	bsf		EventByte,6			; Also set Flag in EventByte!
 check_event4:
+    btfss   bailoutgas_event    ; =1: bailout was selected or a gaschange during bailout
+    bra     check_event5
+	movlw	d'2'				; Information length
+	addwf	ProfileFlagByte,F	; add to ProfileFlagByte
+	bsf		EventByte2,0		; set flag in EventByte2!
+    bsf     EventByte,7			; =1: Another Eventbyte is available
+
+check_event5:
 	; more events?
-	bsf		ProfileFlagByte,7	; Set EventByte Flag in ProfileFlagByte
 
 store_dive_data3:
-	movf	ProfileFlagByte,W	; finally, write ProfileFlagByte!
-	rcall   ghostwrite_byte_profile      ; WREG -> Profile in ext. Flash
+    btfsc   EventByte,7                 ; =1: Another Eventbyte is available
+    incf    ProfileFlagByte,F           ; add one byte (The EventByte2)
 
-	btfss	event_occured		; Check global event flag (again)
-	bra		store_dive_data4	; No Event
+    btfsc	event_occured               ; Check global event flag
+	bsf		ProfileFlagByte,7           ; Set EventByte Flag in ProfileFlagByte
 
-; Store the EventByte + additional bytes now
+	movf	ProfileFlagByte,W           ; finally, write ProfileFlagByte!
+	rcall   ghostwrite_byte_profile     ; WREG -> Profile in ext. Flash
+
+	btfss	event_occured               ; Check global event flag (again)
+	bra		store_dive_data4            ; No Event
+
+; Store the EventByte(s) + additional bytes now
 	movf	EventByte,W		
 	rcall   ghostwrite_byte_profile      ; WREG -> Profile in ext. Flash
+
+    movf    EventByte2,W                ; Write second event byte...
+    btfsc   EventByte,7                 ; =1: Another Eventbyte is available
+    rcall   ghostwrite_byte_profile     ; WREG -> Profile in ext. Flash
 
 	btfss	gas6_changed       	; Check flag
 	bra		store_dive_data3b
@@ -143,6 +161,14 @@ store_dive_data3c:
 	rcall   ghostwrite_byte_profile      ; WREG -> Profile in ext. Flash
 	bcf		setpoint_changed	; Clear this event
 store_dive_data3d:
+	btfss	bailoutgas_event	; Check flag
+	bra		store_dive_data3e
+    movff   char_I_O2_ratio,WREG
+	rcall   ghostwrite_byte_profile      ; WREG -> Profile in ext. Flash
+    movff   char_I_He_ratio,WREG
+	rcall   ghostwrite_byte_profile      ; WREG -> Profile in ext. Flash
+	bcf		bailoutgas_event	; Clear this event
+store_dive_data3e:
 
 store_dive_data4:
 
@@ -194,6 +220,7 @@ store_extended7:
 
 store_dive_data5:
 	bcf		event_occured		; Clear the global event flag
+    bcf		event2_occured		; Clear the global event2 flag
 	return						; Done. (Sample with all informations written to external flash)
 	
 store_dive_cns:

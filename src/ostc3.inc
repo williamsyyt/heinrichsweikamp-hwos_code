@@ -13,7 +13,7 @@
 
         LIST      P=18F87K22	; change also: Configure->SelectDevice from Mplab
 
-;#DEFINE __DEBUG
+#DEFINE __DEBUG
 
 #include <p18f87k22.inc>
 #include <ports.inc>                        ; Portmap
@@ -426,11 +426,13 @@ decodata				res 2
 apnoe_timeout_counter 	res 1
 apnoe_surface_mins 		res 1
 apnoe_surface_secs		res 1
+tft_gaslist_temp        res 1
 
 ; Profile storing
 AlarmType			res 1
 samplesecs			res 1
 EventByte			res 1
+EventByte2			res 1
 ProfileFlagByte		res 1
 
 ; External flash
@@ -440,9 +442,6 @@ ext_flash_dive_counter  res 3   ; 24bit Counter for dive length (increased in wr
 
 ; I2C
 i2c_temp            res 1       ; Temp
-
-; MCP
-mcp_temp            res 4       ; For RX
 
 ; O2 Sensor data
 o2_mv_sensor1       res 2       ; in 0.1mV steps
@@ -598,7 +597,8 @@ opt_pressure_adjust     res 1   ; SIGNED int (two's complement), -20/+20mbar max
 
 #DEFINE compass_fast_mode       flag9,0 ; =1: The compass is in fast mode
 #DEFINE in_color_menu           flag9,1 ; =1: In the color scheme menu
-
+#DEFINE bailoutgas_event        flag9,2 ; =1: bailout was selected or a gaschange during bailout
+#DEFINE	event2_occured			flag9,3	; =1: An event in the Eventbyte2 occured, store it!
 ;=============================================================================
 ; C-code Routines
 ; PART 2

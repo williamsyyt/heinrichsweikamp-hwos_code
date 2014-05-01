@@ -773,22 +773,22 @@ TFT_dyn_gaslist:                            ; Show the dynamic gaslist
     WIN_SMALL dive_custom_dyn_mask_column1,dive_custom_dyn_mask_row1
     lfsr	FSR2,buffer
     movlw   .1
-    movwf   mcp_temp+0
+    movwf   tft_gaslist_temp+0
     rcall   TFT_dyn_gaslist_common
     WIN_SMALL dive_custom_dyn_mask_column1,dive_custom_dyn_mask_row2
     lfsr	FSR2,buffer
-    incf    mcp_temp+0,F     ; +1
-    movf    mcp_temp+0,W     ; into W
+    incf    tft_gaslist_temp+0,F     ; +1
+    movf    tft_gaslist_temp+0,W     ; into W
     rcall   TFT_dyn_gaslist_common
     WIN_SMALL dive_custom_dyn_mask_column2,dive_custom_dyn_mask_row1
     lfsr	FSR2,buffer
-    incf    mcp_temp+0,F     ; +1
-    movf    mcp_temp+0,W     ; into W
+    incf    tft_gaslist_temp+0,F     ; +1
+    movf    tft_gaslist_temp+0,W     ; into W
     rcall   TFT_dyn_gaslist_common
     WIN_SMALL dive_custom_dyn_mask_column2,dive_custom_dyn_mask_row2
     lfsr	FSR2,buffer
-    incf    mcp_temp+0,F     ; +1
-    movf    mcp_temp+0,W     ; into W
+    incf    tft_gaslist_temp+0,F     ; +1
+    movf    tft_gaslist_temp+0,W     ; into W
     rcall   TFT_dyn_gaslist_common
     bcf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
     call	TFT_standard_color
@@ -797,9 +797,9 @@ TFT_dyn_gaslist:                            ; Show the dynamic gaslist
 TFT_dyn_gaslist_common:
     cpfseq  active_gas  ;1-5
     bra     $+4
-    incf    mcp_temp+0,F     ; +1
-    movff   mcp_temp+0,lo
-    movff   mcp_temp+0,PRODL
+    incf    tft_gaslist_temp+0,F     ; +1
+    movff   tft_gaslist_temp+0,lo
+    movff   tft_gaslist_temp+0,PRODL
     decf    PRODL,F     ;-1 to have 0-4
     bsf     leftbind
     output_8            ; Gas number
@@ -2969,6 +2969,7 @@ TFT_display_apnoe_last_m_metric:
 TFT_divemins:
 	movff	divemins+0,lo
 	movff	divemins+1,hi
+    bcf		leftbind
 
 	btfsc	no_more_divesecs		; Ignore seconds?
 	bra     TFT_divemins2           ; Show minutes only
