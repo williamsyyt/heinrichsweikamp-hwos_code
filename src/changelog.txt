@@ -1,8 +1,8 @@
-New in 1.28:
-BUGFIX: Show "*" always in front of the initial Setpoint 1
+New in 1.30:
+NEW: Show event "Bailout" in internal logbook
 CHANGE: Always compute bailout plan based on all active gases
 CHANGE: Re-select last diluent when returning from bailout to OC
-NEW: Show event "Bailout" in internal logbook
+BUGFIX: Show "*" always in front of the initial Setpoint 1
 
 New in 1.26:
 BUGFIX: compass calibration does now timeout automatically after 60s
