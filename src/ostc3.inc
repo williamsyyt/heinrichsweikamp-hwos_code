@@ -13,14 +13,14 @@
 
         LIST      P=18F87K22	; change also: Configure->SelectDevice from Mplab
 
-#DEFINE __DEBUG
+;#DEFINE __DEBUG
 
 #include <p18f87k22.inc>
 #include <ports.inc>                        ; Portmap
 
 #DEFINE	softwareversion_x		d'1'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'27'		; Software version  XX.YY
-#DEFINE softwareversion_beta 	1 			; (and 0 for release)
+#DEFINE	softwareversion_y		d'28'		; Software version  XX.YY
+#DEFINE softwareversion_beta 	0 			; (and 0 for release)
 
 #DEFINE comm_service_key        0xABCDEF
 
