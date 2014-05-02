@@ -92,6 +92,7 @@ do_switch_sp:
     lfsr    FSR1,char_I_setpoint_cbar
     movff   PLUSW1,char_I_const_ppO2; Setup fixed Setpoint
     bsf     setpoint_changed        ; Set flag (For profile)
+    bsf		event_occured			; Set global event byte
 
     ; Reconfigure last diluent
     extern  setup_dil_registers

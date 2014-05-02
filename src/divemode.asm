@@ -757,6 +757,8 @@ test_switches_divemode2:
     return
 
 gas_switched_common:
+    bcf     divemode_gaschange      ; Clear flag
+
     decf    menupos,W               ; 1-5 -> 0-4
     btfss   FLAG_ccr_mode           ; Choose OC Gases
     rcall   setup_gas_registers     ; With WREG=Gas 0-4
@@ -768,7 +770,6 @@ gas_switched_common:
     rcall   setup_gas_registers     ; With WREG=Gas 0-4
 
     call	TFT_active_gas_divemode	; Display gas/Setpoint
-    bcf     divemode_gaschange      ; Clear flag
     clrf    WREG
     movff   WREG,char_O_deco_status ; Restart decoplan computation
 

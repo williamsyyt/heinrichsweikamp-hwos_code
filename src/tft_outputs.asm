@@ -3729,7 +3729,9 @@ adjust_depth_with_salinity:			; computes salinity setting into lo:hi [mbar]
 	btfsc	simulatormode_active	; Do apply salinity in Simulatormode
 	return
 
+    global  adjust_depth_with_salinity_log
     movff   opt_salinity,WREG       ; 0-5%
+adjust_depth_with_salinity_log: ; computes salinity setting (FROM WREG!) into lo:hi [mbar]
 	addlw	d'100'                  ; 1.00kg/l
 	movwf	wait_temp
 	

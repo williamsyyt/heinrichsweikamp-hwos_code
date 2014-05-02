@@ -73,6 +73,10 @@
 	#DEFINE	profile_left			.1		; Left border
 	#DEFINE	profile_top				.65		; Top border
 
+; "Bailout"
+    #DEFINE logbook_bailout_column      .124
+    #DEFINE logbook_bailout_row         .207
+
 ; Dive number
 	#DEFINE	logbook_divenumer_column	.1
 	#DEFINE	logbook_divenumer_row		.1
@@ -363,7 +367,9 @@ display_profile_or_exit2:
 	bra			display_profile				; No, show details/profile
 	goto		next_logbook2				; Next page!
 
-display_profile:	
+display_profile:
+    bcf         is_bailout
+    bcf         gas6_changed                ; Clear event flags
 	call    	speed_fastest
 	movff		menupos,logbook_menupos_temp; store current cursor position
 	bsf			return_from_profileview		; tweak search routine to exit after found
@@ -914,6 +920,24 @@ profile_display_loop3:
 display_profile_no_profile:					; No profile available for this dive!
 
 profile_display_loop_done:
+    btfss   is_bailout                          ; Bailout during the dive?
+    bra     profile_display_loop_done_nobail    ; No
+    ; Yes, show "Bailout"
+   	movlw   color_pink
+	call    TFT_set_color
+    WIN_TINY	logbook_bailout_column,logbook_bailout_row
+    STRCPY_TEXT_PRINT   tDiveBailout        ; Bailout
+profile_display_loop_done_nobail:
+    btfss   gas6_changed                         ; Gas6
+    bra     profile_display_loop_done_nogas6      ; No
+    ; Yes, show "Gas 6!"
+   	movlw   color_pink
+	call    TFT_set_color
+    WIN_TINY	logbook_bailout_column,logbook_bailout_row-.15
+    STRCPY_TEXT  tGas                       ; Gas
+    STRCAT_PRINT  " 6!"
+
+profile_display_loop_done_nogas6:
 	decf	divesecs,F		;-1
 	read_int_eeprom .2
 	movf	EEDATA,W
@@ -1074,7 +1098,7 @@ profile_display_color:
 	dcfsnz		active_gas,F
 	movlw		color_cyan      			; Color for Gas 5
 	dcfsnz		active_gas,F
-	movlw		color_cyan					; Color for Gas 6
+	movlw		color_pink					; Color for Gas 6
 	goto		TFT_set_color				; Set Color...
 
 ;=============================================================================
@@ -1229,7 +1253,9 @@ profile_view_get_depth_no_deco:
 	return
 
 profile_view_get_depth_new2:
-	call		ext_flash_byte_read_plus_0x20			; Read Event byte
+    clrf        EventByte
+    clrf        EventByte2                  ; Clear EventBytes
+	call		ext_flash_byte_read_plus_0x20 ; Read Event byte
 	movff		temp1,EventByte				; store EventByte
 	decf		timeout_counter2,F			; reduce counter
 
@@ -1242,8 +1268,12 @@ profile_view_get_depth_new2:
 
 profile_no_second_eventbyte:
 ; Check Event flags in the EventByte
+	btfsc		EventByte2,0				; Bailout?
+	bra			logbook_event2				; Yes!
 	btfsc		EventByte,4					; Manual Gas Changed?
 	bra			logbook_event1				; Yes!
+	btfsc		EventByte,6                 ; Setpoint Change?
+	bra			logbook_event3				; Yes!
 	btfss		EventByte,5					; Stored Gas Changed?
 	return									; No, return
 ; Stored Gas changed!
@@ -1253,11 +1283,28 @@ profile_no_second_eventbyte:
     rcall       profile_display_color       ; Change profile color according to gas number
 	return
 
-logbook_event1:
+logbook_event1: ; Gas6 changed
+    bsf         gas6_changed
     movlw       6                           ; Just color backup to 6
     movwf       average_depth_hold_total+3
     rcall       profile_display_color       ; Back to normal profile color.
 	return		;(The two bytes indicating the manual gas change will be ignored in the standard "ignore loop" above...)
+
+logbook_event2: ; Bailout
+    bsf         is_bailout                  ; Set flag
+    movff       average_depth_hold_total+3,total_divetime_seconds+0 ; Backup last gas color in case we return to CCR
+    movlw       6                           ; Use Gas6 color
+    movwf       average_depth_hold_total+3
+    rcall       profile_display_color       ; Back to normal profile color.
+	return		;(The two bytes indicating the bailout gas selected will be ignored in the standard "ignore loop" above...)
+
+logbook_event3: ; Setpoint change
+    btfss       is_bailout                  ; Are we in bailout?
+    return      ; No, return
+    ; We were in bailout before, restore profile color
+    movff       total_divetime_seconds+0,average_depth_hold_total+3 ; Restore color
+    rcall       profile_display_color       ; Back to normal profile color.
+    return
 
 exit_profileview:
 	call		speed_fastest
@@ -1543,6 +1590,7 @@ logbook_gaslist_common:
     bsf         leftbind
     call		ext_flash_byte_read_plus	; read salinity
     movff       temp1,lo
+    movff       temp1,total_divetime_seconds+1  ; backup for average depth display
     output_8
     STRCAT_PRINT	"%"
 
@@ -1571,6 +1619,10 @@ logbook_gaslist_common:
     movff       temp1,lo
     call		ext_flash_byte_read_plus	; read avr high
     movff       temp1,hi
+
+    movf        total_divetime_seconds+1,W         ; salinity for this dive
+    call        adjust_depth_with_salinity_log     ; computes salinity setting (FROM WREG!) into lo:hi [mbar]
+
     output_16dp .3
     STRCAT_PRINT    "m"
 
