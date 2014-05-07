@@ -1199,12 +1199,18 @@ diveloop_boot_2:
 	movwf	divisor_tank
 
 	btfss	FLAG_apnoe_mode				; In Apnoe mode?
-	bra		divemode1
+	bra		divemode_boot1
 ; Overwrite some parameters in Apnoe mode....
 	movlw	samplingrate_apnoe
 	movwf	samplesecs_value			; to avoid EEPROM access in the ISR
+divemode_boot1:
+    btfsc   FLAG_ccr_mode               ; =1: CCR mode (Fixed ppO2 or Sensor) active
+    bra     divemode_boot2
+    ; in OC Mode, disable ppO2 logging
+    movlw   .0
+    movwf   divisor_ppo2_sensors
+divemode_boot2:
 
-divemode1:
 	bcf		LEDg
 	bcf		LEDr
 	bcf		realdive
