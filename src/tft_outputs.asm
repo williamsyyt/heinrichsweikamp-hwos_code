@@ -895,6 +895,43 @@ TFT_hud_mask:
     call	TFT_standard_color
     return
 
+    global  TFT_hud_voltages
+TFT_hud_voltages:                    ; Show HUD details
+    ; The mask
+    call    TFT_divemask_color
+    WIN_TINY  .5,dive_custom_hud_row
+    STRCPY_TEXT_PRINT tDiveHudMask1
+    WIN_TINY  .55,dive_custom_hud_row
+    STRCPY_TEXT_PRINT tDiveHudMask2
+    WIN_TINY  .105,dive_custom_hud_row
+    STRCPY_TEXT_PRINT tDiveHudMask3
+    call	TFT_standard_color
+    WIN_SMALL .5,dive_hud_data_row
+    movff   o2_mv_sensor1+0,lo
+    movff   o2_mv_sensor1+1,hi
+    lfsr    FSR2,buffer
+    bsf     leftbind
+    output_16dp  .4         ; x.xx
+    bcf     leftbind
+    STRCAT_PRINT "mV  "
+    WIN_SMALL .55,dive_hud_data_row
+    movff   o2_mv_sensor2+0,lo
+    movff   o2_mv_sensor2+1,hi
+    lfsr    FSR2,buffer
+    bsf     leftbind
+    output_16dp  .4         ; x.xx
+    bcf     leftbind
+    STRCAT_PRINT "mV  "
+    WIN_SMALL .105,dive_hud_data_row
+    movff   o2_mv_sensor3+0,lo
+    movff   o2_mv_sensor3+1,hi
+    lfsr    FSR2,buffer
+    bsf     leftbind
+    output_16dp  .4         ; x.xx
+    bcf     leftbind
+    STRCAT_PRINT "mV  "
+    return
+
     global  TFT_update_hud             ; Update HUD data
 TFT_update_hud:
     ; show three sensors
@@ -3475,13 +3512,42 @@ TFT_ead_end_tissues_clock:
     ; Update clock and date
     WIN_SMALL   dive_clock_column,dive_clock_row
     call    TFT_clock2                          ; print clock
-;    WIN_SMALL   dive_date_column,dive_date_row
-;	lfsr	FSR2,buffer
-;	movff	month,convert_value_temp+0
-;	movff	day,convert_value_temp+1
-;	movff	year,convert_value_temp+2
-;    rcall    TFT_convert_date_short              ; converts into "DD/MM" or "MM/DD" or "MM/DD" in postinc2
-;	STRCAT_PRINT "."
+    WIN_SMALL   dive_endtime_column,dive_endtime_row
+	lfsr	FSR2,buffer
+
+    btfss	decostop_active             ; Already in nodeco mode ?
+	bra     TFT_ead_end_tissues_clock2  ; No, overwrite with some spaces
+
+	STRCPY  0x94					; "End of dive" icon
+    movff	hours,WREG
+    mullw   .60
+    movf    mins,W
+    addwf   PRODL
+    movlw   .0
+    addwfc  PRODH
+	movff	PRODL, lo
+	movff	PRODH, hi
+
+    ; Add TTS
+    movff	int_O_ascenttime+0,WREG     ; TTS
+    addwf   lo,F
+	movff	int_O_ascenttime+1,WREG     ; TTS is 16bits
+    addwfc  hi,F
+
+	call	convert_time				; converts hi:lo in minutes to hours (hi) and minutes (lo)
+	movf	hi,W
+	movff	lo,hi
+	movwf	lo							; exchange lo and hi
+	output_99x
+	PUTC    ':'
+	movff	hi,lo
+	output_99x
+	STRCAT_PRINT ""
+    bra     TFT_ead_end_tissues_clock3
+
+TFT_ead_end_tissues_clock2:
+    STRCPY_PRINT "      "
+TFT_ead_end_tissues_clock3:
 
     ; Show END/EAD
     WIN_SMALL   dive_ead_column,dive_ead_row

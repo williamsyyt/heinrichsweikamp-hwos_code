@@ -44,6 +44,8 @@ customview_second:
 	bra		customview_1sec_view6
 	dcfsnz	WREG,F
 	bra		customview_1sec_view7
+	dcfsnz	WREG,F
+	bra		customview_1sec_view8
 	; Menupos3=0, do nothing
 	return
 
@@ -67,6 +69,9 @@ customview_1sec_view6:
     return
 customview_1sec_view7:                      ; Dynamic gaslist
     call    TFT_dyn_gaslist                 ; Update the gaslist
+    return
+customview_1sec_view8:                      ; Sensor voltages
+    call    TFT_hud_voltages                ; Show HUD details
     return
 
 ;=============================================================================
@@ -291,7 +296,7 @@ menuview_view6:
 customview_toggle:
 	bcf		switch_right
 	incf	menupos3,F			            ; Number of customview to show
-	movlw	d'7'							; Max number of customsviews in divemode
+	movlw	d'8'							; Max number of customsviews in divemode
 	cpfsgt	menupos3			            ; Max reached?
 	bra		customview_mask		            ; No, show
 customview_toggle_reset:					; Timeout occured
@@ -379,6 +384,15 @@ customview_init_view7:                      ; Dynamic gaslist (View 7)
 	btfsc	FLAG_ccr_mode					; In CC mode?
 	bra		customview_toggle				; Yes, Call next view...
     call    TFT_dyn_gaslist                 ; Show the dyn gaslist
+    bra		customview_toggle_exit
+
+customview_init_view8:                      ; Sensor millivolts
+	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
+	bra		customview_toggle				; yes, Call next view...
+	btfss	FLAG_ccr_mode					; In CC mode?
+	bra		customview_toggle				; no, Call next view...
+    call    TFT_hud_mask                    ; Setup HUD mask
+    call    TFT_hud_voltages                ; Show HUD details
     bra		customview_toggle_exit
 
 customview_toggle_exit:

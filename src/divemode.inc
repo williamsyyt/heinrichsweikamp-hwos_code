@@ -128,8 +128,8 @@
 ; Customview clock/date, END/EAD and Tissues
 #DEFINE dive_clock_row              dive_hud_data_row
 #DEFINE dive_clock_column           .0
-#DEFINE dive_date_row               dive_clock_row+.23
-#DEFINE dive_date_column            dive_clock_column
+#DEFINE dive_endtime_row            dive_clock_row+.23
+#DEFINE dive_endtime_column         dive_clock_column
 #DEFINE dive_ead_row                dive_hud_data_row
 #DEFINE dive_ead_column             .46
 #DEFINE dive_end_row                dive_ead_row+.23

@@ -96,7 +96,7 @@ TFT_color_code macro color_code_temp
     extern  TFT_dive_compass_heading            ; Compass heading
     extern  TFT_dyn_gaslist                     ; Show the dyn gaslist
     extern  TFT_divetimeout                     ; Show timeout counter
-
+    extern  TFT_hud_voltages                    ; Show HUD details
 
 ; Misc
 	extern	TFT_standard_color
