@@ -105,7 +105,7 @@
     TCODE   tDvCC,      "CC"
     TCODE   tDvGauge,   "Gauge"
     TCODE   tDvApnea,   "Apnea"
-    TCODE   tDkMode,    "Algoritmo:"
+    TCODE   tDkMode,    "Algorit.:"
     TCODE   tZHL16,     "ZH-L16"
     TCODE   tZHL16GF,   "ZH-L16+GF"
     TCODE   tPPO2Max,   "ppO2 Max:"

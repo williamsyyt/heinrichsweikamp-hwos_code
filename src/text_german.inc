@@ -105,7 +105,7 @@
     TCODE   tDvCC,      "CC"
     TCODE   tDvGauge,   "Tiefen."
     TCODE   tDvApnea,   "Apnoe"
-    TCODE   tDkMode,    "Deko-Modus:"
+    TCODE   tDkMode,    "Dekotyp:"
     TCODE   tZHL16,     "ZH-L16"
     TCODE   tZHL16GF,   "ZH-L16+GF"
     TCODE   tPPO2Max,   "ppO2 Max:"
