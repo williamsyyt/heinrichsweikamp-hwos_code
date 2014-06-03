@@ -1976,6 +1976,7 @@ TFT_get_compass:
 
 	global	TFT_debug_output
 TFT_debug_output:
+    return
     WIN_TINY   .107,.0
 	call	TFT_standard_color
 	lfsr	FSR2,buffer
