@@ -321,6 +321,8 @@ customview_mask:
 	bra		customview_init_view6           ; Compass
 	dcfsnz	WREG,F
 	bra		customview_init_view7           ; Dynamic gaslist
+	dcfsnz	WREG,F
+	bra		customview_init_view8           ; HUD voltages
 customview_init_nocustomview:
     call    I2C_sleep_accelerometer         ; Stop accelerometer
     call    I2C_sleep_compass               ; Stop compass
