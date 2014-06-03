@@ -219,11 +219,18 @@ do_divemode_menu:
     MENU_BEGIN  tDiveModeMenu, .7
         MENU_OPTION  tDvMode,    oDiveMode,     0
         MENU_OPTION  tDkMode,    oDecoMode,     0
-		MENU_DYNAMIC divesets_ppo2_max,         do_toggle_ppo2_max
-		MENU_DYNAMIC divesets_ppo2_min,         do_toggle_ppo2_min
+        MENU_CALL    tppO2settings,          	do_ppo2_menu
+        MENU_OPTION  tsafetystopmenu,oSafetyStop,    0
         MENU_OPTION  tFTTSMenu,                 oExtraTime,0
         MENU_CALL    tDecoparameters,          	do_decoparameters_menu
         MENU_CALL    tExit,                  	do_continue_main_menu
+    MENU_END
+
+do_ppo2_menu:
+    MENU_BEGIN  tppO2settings, .3
+		MENU_DYNAMIC divesets_ppo2_max,         do_toggle_ppo2_max
+		MENU_DYNAMIC divesets_ppo2_min,         do_toggle_ppo2_min
+        MENU_CALL    tExit,                  	do_return_divemode_menu
     MENU_END
 
 do_return_decoparameters_menu:

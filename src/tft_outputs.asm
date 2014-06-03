@@ -489,6 +489,7 @@ TFT_display_velocity_clear:
 	WIN_BOX_BLACK   velocity_text_row, velocity_text_row+.22, velocity_text_column, (velocity_text_column+.7*.8)-1	; top, bottom, left, right
 	return
 
+    global  TFT_clear_decoarea
 TFT_clear_decoarea:
     WIN_BOX_BLACK   decostop_1st_stop_row, .239, decostop_1st_stop_column ,.159	; top, bottom, left, right
 	return
@@ -572,6 +573,7 @@ TFT_display_deko_mask:
     call    TFT_divemask_color
 	STRCPY_TEXT_PRINT  tTTS             ; TTS
 	call	TFT_standard_color
+    bcf		show_safety_stop            ; Clear safety stop flag
     return
 
 TFT_display_deko_output_depth:		; Outputs depth (stored in lo) to POSTINC2 with "m" or w/o (For ft)
@@ -748,6 +750,40 @@ TFT_display_deko7:
 ;	; No
 ;	bra		TFT_display_ndl_mask2	; Clear gradient factor
 ;
+
+    global  TFT_show_safety_stop
+TFT_show_safety_stop:
+	tstfsz	safety_stop_countdown			; Countdown at zero?
+	bra		TFT_show_safety_stop2			; No, show stop
+
+	bcf		show_safety_stop				; Clear flag
+
+	btfsc	safety_stop_active				; Displayed?
+    rcall	TFT_clear_decoarea				; Yes, Clear stop
+	bcf		safety_stop_active				; Clear flag
+	rcall   TFT_display_ndl_mask			; Show NDL again
+    bra     TFT_display_ndl                 ; (And return)
+
+TFT_show_safety_stop2:
+    bsf     safety_stop_active				; Set flag
+	rcall    TFT_attention_color            ; show in yellow
+    WIN_MEDIUM	safetystop_column,safetystop_row
+	lfsr	FSR2,buffer
+	decf	safety_stop_countdown,F			; Reduce countdown
+	movff	safety_stop_countdown,lo
+	clrf	hi
+	call	convert_time					; converts hi:lo in seconds to mins (hi) and seconds (lo)
+	movf	hi,W
+	movff	lo,hi
+	movwf	lo								; exchange lo and hi
+	output_99
+	PUTC    ':'
+	movff	hi,lo
+	output_99x
+	STRCAT_PRINT ""
+	WIN_FONT 	FT_SMALL
+	rcall	TFT_standard_color
+	return
 
     global  TFT_mask_avr_stopwatch             ; Show mask for average depth and stopwatch
 TFT_mask_avr_stopwatch:
