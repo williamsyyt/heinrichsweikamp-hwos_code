@@ -121,7 +121,9 @@
     TCODE   taGF_low,   "aGF low:"               ; aGF low
     TCODE   taGF_high,  "aGF high:"              ; aGF high
     TCODE   taGF_enable,"aGF Selectable:"        ; aGF Selectable
-    TCODE   tDiveaGF_active,"aGF!"          ; aGF!
+    TCODE   tDiveaGF_active,"aGF!"               ; aGF!
+    TCODE   tppO2settings,"ppO2 Settings"        ; ppO2 Settings
+    TCODE   tsafetystopmenu,"Safety Stop:"       ; Safety Stop:
 
 ; Display Settings
     TCODE   tBright,    "Brightness:"

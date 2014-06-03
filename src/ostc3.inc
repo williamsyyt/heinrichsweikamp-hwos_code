@@ -133,6 +133,11 @@
 #DEFINE no_fly_time_ratio		.60		; [%]
 #DEFINE	deco_distance			.10		; [dm]
 
+; Safety stop parameters
+#DEFINE	safety_stop_length		.180	; [s]
+#DEFINE	safety_stop_start		.510	; [mbar]
+#DEFINE	safety_stop_end			.290	; [mbar]
+#DEFINE	safety_stop_reset		.1010	; [mbar]
 
 ; Color-code parameters for the divemode
 #DEFINE	color_code_cns_high		.100	; [%]
@@ -467,6 +472,8 @@ sensor_setpoint     res 1       ; sensor ppo2 in 0.01bar for deco routine
 better_gas_number	res 1       ; number (1-5) of the "better gas" in divemode, =0: no better gas available
 customview_divemode res 1       ; keeps last custom view
 customview_surfmode res 1
+safety_stop_countdown	res 1	; counts seconds of safety stop
+
 
 ;---------------------------- TMP DATA ---------------------------------------
 ; Space for various overlayed data from color, word, menu processors, etc.
@@ -516,6 +523,7 @@ opt_compass_gain        res 1   ; 0-7 (230LSB/Gauss to 1370LSB/Gaus)
 opt_sampling_rate       res 1   ; =1: 10s, =0: 2s
 opt_dive_color_scheme   res 1   ; 0-3
 opt_pressure_adjust     res 1   ; SIGNED int (two's complement), -20/+20mbar max.
+opt_enable_safetystop   res 1   ; =1: A safety stop is shown
 
 ;-----------------------------EEPROM DATA ------------------------------------
 ; Automatic reset of all options when this is changed:
@@ -599,6 +607,8 @@ opt_pressure_adjust     res 1   ; SIGNED int (two's complement), -20/+20mbar max
 #DEFINE in_color_menu           flag9,1 ; =1: In the color scheme menu
 #DEFINE bailoutgas_event        flag9,2 ; =1: bailout was selected or a gaschange during bailout
 #DEFINE	event2_occured			flag9,3	; =1: An event in the Eventbyte2 occured, store it!
+#DEFINE show_safety_stop		flag9,4	; =1: Show the safety stop
+#DEFINE	safety_stop_active      flag9,5	; =1 The safety stop is currently displayed
 ;=============================================================================
 ; C-code Routines
 ; PART 2

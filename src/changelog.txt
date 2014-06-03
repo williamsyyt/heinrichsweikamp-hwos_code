@@ -1,6 +1,7 @@
 New in 1.31:
 NEW: Show End-of-Dive time together with clock during deco
 CHANGE: Minor language updates
+NEW: Show a Safety Stop if enabled (Menu "Deco Parameters")
 
 New in 1.30:
 NEW: Show event "Bailout" in internal logbook

@@ -70,6 +70,8 @@ diveloop_loop:		; The diveloop starts here
 	call	customview_second				; Do every-second tasks for the custom view area
 
 ; Tasks only for deco modes
+	btfsc	show_safety_stop				; Show the safety stop?
+	call	TFT_show_safety_stop			; Yes, show/delete if done.
 	call	calc_deko_divemode				; calculate decompression and display result (any two seconds)
 	bra		diveloop_loop1x					; Common Tasks
 
@@ -208,7 +210,8 @@ calc_deko_divemode:
 	; Routines used in the "other second"
 	call	calc_average_depth          ; calculate average depth
 	call	calc_velocity               ; calculate vertical velocity and display if > threshold (every two seconds)
-	call	divemode_check_for_warnings		; Check for any warnings
+	call	divemode_check_for_warnings	; Check for any warnings
+    call	set_reset_safety_stop       ; Set flags for safety stop and/or reset safety stop
 	call	TFT_debug_output
 
 	btfsc	FLAG_apnoe_mode             ; Done for Apnoe or Gauge mode
@@ -425,6 +428,75 @@ do_not_display_velocity:
 	bcf		display_velocity			; Velocity was displayed, delete velocity now
 	call	TFT_display_velocity_clear
 	return
+
+;=============================================================================
+
+set_reset_safety_stop:						; Set flags for safety stop and/or reset safety stop
+    TSTOSS  opt_enable_safetystop           ; =1: A safety stop is shown
+    bra		delete_safety_stop              ; No, don't show safety stop
+
+	btfsc	decostop_active					; Is a deco stop displayed?
+	bra		delete_safety_stop				; Yes, don't show safety stop
+	; Below "safety_stop_reset"? Set flag and reset count-down timer
+    SAFE_2BYTE_COPY rel_pressure, lo
+	call	adjust_depth_with_salinity		; computes salinity setting into lo:hi [mbar]
+	movff	lo,sub_a+0
+	movff	hi,sub_a+1
+	movlw	LOW		safety_stop_reset
+	movwf	sub_b+0
+	movlw	HIGH	safety_stop_reset
+	movwf	sub_b+1
+	call	subU16							;  sub_c = sub_a - sub_b
+	btfss	neg_flag
+	bra		reset_safety_stop				; Below 10m, reset safety stop
+
+	; Above "safety_stop_end"? Clear flag.
+    SAFE_2BYTE_COPY rel_pressure, lo
+	call	adjust_depth_with_salinity		; computes salinity setting into lo:hi [mbar]
+	movff	lo,sub_a+0
+	movff	hi,sub_a+1
+	movlw	LOW		safety_stop_end
+	movwf	sub_b+0
+	movlw	HIGH	safety_stop_end
+	movwf	sub_b+1
+	call	subU16							;  sub_c = sub_a - sub_b
+	btfsc	neg_flag
+	bra		delete_safety_stop				; Above 3m, remove safety stop
+
+	; Above "safety_stop_start"? Activate safety stop
+    SAFE_2BYTE_COPY rel_pressure, lo
+	call	adjust_depth_with_salinity		; computes salinity setting into lo:hi [mbar]
+	movff	lo,sub_a+0
+	movff	hi,sub_a+1
+ 	movlw	LOW		safety_stop_start
+    movwf	sub_b+0
+    movlw	HIGH	safety_stop_start
+	movwf	sub_b+1
+	call	subU16							;  sub_c = sub_a - sub_b
+	btfsc	neg_flag
+	bra		acivate_safety_stop				; Above 5m, activate safety stop
+	bra		reset_safety_stop2				; Pause safety stop
+
+acivate_safety_stop:
+	tstfsz	safety_stop_countdown			; Countdown at zero?
+	bsf		show_safety_stop				; No, Set flag!
+	return
+
+delete_safety_stop:
+	clrf	safety_stop_countdown			; reset timer
+	bra		reset_safety_stop2				; Remove safety stop from display
+
+reset_safety_stop:
+	movlw	safety_stop_length				;[s]
+	movwf	safety_stop_countdown			; reset timer
+reset_safety_stop2:
+	bcf		show_safety_stop				; Clear flag
+	btfss	safety_stop_active				; Safety stop shown
+	return									; No, don't delete it
+	bcf		safety_stop_active				; Clear flag
+	call	TFT_display_ndl_mask			; Show NDL again
+    call    TFT_display_ndl
+    return
 
 ;=============================================================================
 
@@ -1146,6 +1218,9 @@ diveloop_boot:
 
 	bcf		better_gas_available        ;=1: A better gas is available and a gas change is advised in divemode
 	clrf	better_gas_number           ; Clear better gas register
+
+	bcf		show_safety_stop			;=1: Show the safety stop
+	clrf	safety_stop_countdown		; Clear count-down
 
  	clrf	samplesecs
 	clrf	apnoe_timeout_counter		; timeout in minutes

@@ -97,6 +97,8 @@ TFT_color_code macro color_code_temp
     extern  TFT_dyn_gaslist                     ; Show the dyn gaslist
     extern  TFT_divetimeout                     ; Show timeout counter
     extern  TFT_hud_voltages                    ; Show HUD details
+    extern  TFT_show_safety_stop                ; Show the safety stop
+    extern  TFT_clear_decoarea                  ; Cleanup deco area on screen
 
 ; Misc
 	extern	TFT_standard_color
