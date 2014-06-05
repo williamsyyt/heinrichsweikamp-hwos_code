@@ -1,0 +1,117 @@
+New in 1.31:
+CHANGE: Minor language updates
+NEW: Show a Safety Stop if enabled (Menu "Deco Parameters")
+BUGFIX: dive profile recording issue in OC mode
+
+New in 1.30:
+NEW: Show event "Bailout" in internal logbook
+CHANGE: Always compute bailout plan based on all active gases
+CHANGE: Re-select last diluent when returning from bailout to OC
+BUGFIX: Show "*" always in front of the initial Setpoint 1
+
+New in 1.26:
+BUGFIX: compass calibration does now timeout automatically after 60s
+BUGFIX: decoplan re-calculation in bailout case
+
+New in 1.25:
+BUGFIX: No average depth for end-of-dive portion (<1m)
+BUGFIX: Show "CC Diluents" in logbook instead of OC Gas List
+NEW: automatic compass gain makes calibration quicker
+CHANGE: Battery percent setpoints adjusted to worst case current consumption
+
+New in 1.24:
+CHANGE: Minor french translation
+CHANGE: No warning sign for selected aGF
+CHANGE: Show battery warning sign for less then 10% battery capacity only
+CHANGE: Color schemes improved
+
+New in 1.23:
+BUGFIX: Reset Logbook did not reset Logbook TOC properly
+
+New in 1.22:
+BUGFIX: Potential bug to freeze the OSTC3 after battery change or update
+
+New in 1.21:
+CHANGE: French Translations, again
+BUGFIX: Fix cursor in "New Battery" menu
+NEW: Show serial number and firmware version in main menu
+CHANGE: "Reset all" returns to surface mode
+CHANGE: Single press surfacemode menu
+
+New in 1.20:
+Stable release
+
+New in 1.12:
+BUGFIX: Maintain last selected customview in surface mode
+BUGFIX: Set Day for months <31 days
+CHANGE: Some French Translations
+CHANGE: Default Future TTS=0 (Disabled)
+NEW: Expand "gas change window" up to 1m below programmed
+    change depth (If ppO2 within user-set max. threshold)
+BUGFIX: Intermittent USB connection on MAC
+
+New in 1.11:
+NEW: allow logbook erase from reset menu
+NEW: show battery voltage in info menu
+
+New in 1.10:
+Stable release
+
+New in 1.04:
+NEW: 1.6 hardware support
+CHANGE: Backlight level in eco mode
+BUGFIX: Display Desat.-Time >100 hours
+
+New in 1.03:
+NEW: user-selectable color schemes
+BUGFIX: div. language corrections
+NEW: Dynamic Gaslist in OC mode (Divemode, Customview 7)
+CHANGE: Change "O2" warning to "ppO2"
+NEW: "End-of-Dive" countdown when surfaced
+
+New in 1.02:
+CHANGE: Time and Date in normal (Not tiny) font
+BUGFIX: Minor french language fix
+
+New in 1.01:
+BUGFIX: deco gas init in OC planner
+
+New in 1.00:
+BUGFIX: Percent display with 1,5V batteries
+
+New in 0.99:
+BUGFIX: alternating brightness at very low ambient light
+CHANGE: GF high lowest setting 60%
+BUGFIX: NOAA tables for CNS are in ATA, not bar
+CHANGE: change apnea timeout, do no longer store apnea dives in logbook
+BUGFIX: Simulator in CC mode
+BUGFIX: Apnea total divetime
+BUGFIX: Battery percent value with 3,6V battery
+NEW: Surface customview with important deco settings
+
+New in 0.98:
+New: Add cardinal (and ordinal) directions for the compass
+
+New in 0.97:
+NEW: compass gain option to work with more magnetic battery types
+BUGFIX: fix imperial units in logbook
+
+New in 0.96:
+NEW: calm compass reading for minor heading changes
+NEW: reduce eco low brightness threshold (for cave diving)
+
+New in 0.95:
+BUGFIX: Show "MOD:" instead of "EAD:" in gas setup
+
+New in 0.94:
+CHANGE: Show Max. Depth with 0.1m precision
+
+New in 0.91:
+BUGFIX: Battery percents in cold water
+
+New in 0.93:
+BUGFIX: Custom text <60 chars
+BUGFIX: Logbook PC protocol
+Italian language updates
+BUGFIX: Timeout in decoplanner result page
+
