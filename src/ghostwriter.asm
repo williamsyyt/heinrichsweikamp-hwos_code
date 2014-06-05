@@ -876,6 +876,8 @@ ghostwriter_short_header:	; Write short header with divenumber into profile memo
 	movlw	infolength_ppo2_sensors
     rcall	ghostwrite_byte_profile 	; WREG -> Profile in ext. flash
 	movlw	div_ppo2_sensors            ; Divisor ppO2
+    btfss   FLAG_ccr_mode               ; =1: CCR mode (Fixed ppO2 or Sensor) active
+    movlw   .0                          ; No ppO2 data in OC mode
     rcall	ghostwrite_byte_profile 	; WREG -> Profile in ext. flash
 
     movlw   .4                          ; Type
