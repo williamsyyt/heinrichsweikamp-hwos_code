@@ -170,6 +170,10 @@ option_check:
         xorlw   2
         bz      option_check_string     ; String: Do not reset strings
 
+        movf    opt_type,W              ; Type == ENUM8 ?
+        xorlw   1
+        bz      option_check_enum8      ; ENUM8: Check if lower then max. value only
+
         movf    opt_min,W
         cpfsgt  INDF1                   ; bigger then opt_min?
         bra     option_check_reset      ; No, reset option
@@ -184,6 +188,12 @@ option_check_reset:
 
 option_check_string:
         return
+
+option_check_enum8:
+        movf    INDF1,W
+        cpfsgt  opt_max                 ; bigger then INDF1?
+        bra     option_check_reset      ; No, reset option
+        return                          ; in range, return
 
 ;=============================================================================
 ; Reset an option to its default value.
