@@ -922,6 +922,8 @@ comm_read_setting:
     bra     comm_read_compass_gain          ; RCREG1=0x34
     dcfsnz  WREG
     bra     comm_read_pressure_adjust       ; RCREG1=0x35
+    dcfsnz  WREG
+    bra     comm_read_safety_stop           ; RCREG1=0x36
 
 
 
@@ -1148,6 +1150,11 @@ comm_read_pressure_adjust:
     movff   opt_pressure_adjust, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
     bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_read_safety_stop:
+    movff   opt_enable_safetystop, TXREG1
+    rcall   comm_read_setting_wait          ; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+
 
 ;-----------------------------------------------------------------------------
 
@@ -1267,6 +1274,8 @@ comm_write_setting:
     bra     comm_write_compass_gain          ; RCREG1=0x34
     dcfsnz  WREG
     bra     comm_write_pressure_adjust       ; RCREG1=0x35
+    dcfsnz  WREG
+    bra     comm_write_safety_stop           ; RCREG1=0x36
 
 comm_write_unused:
 comm_write_abort:
@@ -1504,6 +1513,10 @@ comm_write_compass_gain:
 comm_write_pressure_adjust:
     call	rs232_get_byte
     movff   RCREG1, opt_pressure_adjust
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_safety_stop:
+    call	rs232_get_byte
+    movff   RCREG1, opt_enable_safetystop
     bra		comm_write_abort             ; Done. Loop with timeout reset
 
 ;-----------------------------------------------------------------------------
