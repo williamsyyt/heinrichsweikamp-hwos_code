@@ -218,6 +218,7 @@ static float		float_desaturation_multiplier;  // new in v.101
 static float		float_deco_distance;            // new in v.101
 
 static unsigned char    deco_gas_change[NUM_GAS];       // new in v.109
+static unsigned char	internal_deco_gas  [NUM_STOPS];
 
 //---- Bank 7 parameters -----------------------------------------------------
 #ifndef UNIX
@@ -599,7 +600,7 @@ static void copy_deco_table(void)
 {
     // Copy depth of the first (deepest) stop, because when reversing
     // order, it will be hard to find...
-    char_O_first_deco_depth = internal_deco_depth[0] & 0x7F;
+    char_O_first_deco_depth = internal_deco_depth[0];
     char_O_first_deco_time  = internal_deco_time [0];
 
     {
@@ -609,6 +610,7 @@ static void copy_deco_table(void)
         {
             char_O_deco_depth[x] = internal_deco_depth[x];
             char_O_deco_time [x] = internal_deco_time [x];
+            char_O_deco_gas  [x] = internal_deco_gas  [x];
         }
 
         //Now fill the char_O_deco_time_for_log array
@@ -629,6 +631,7 @@ static void copy_deco_table(void)
         for(y++; y<NUM_STOPS; y++)
         {
             char_O_deco_time_for_log [y] = 0;
+            char_O_deco_gas  [y] = 0;
         }
     }
 }
@@ -1613,9 +1616,9 @@ static unsigned char update_deco_table()
     for(x=0; x<NUM_STOPS; ++x)
     {
         // Make sure deco-stops are recorded in order:
-        assert( !internal_deco_depth[x] || temp_depth_limit <= (internal_deco_depth[x]& 0x7F) );
+        assert( !internal_deco_depth[x] || temp_depth_limit <= internal_deco_depth[x] );
 
-        if( (internal_deco_depth[x] & 0x7F) == temp_depth_limit )
+        if( internal_deco_depth[x]== temp_depth_limit )
         {
             // Do not overflow (max 255')
             if( internal_deco_time[x] < 255 )
@@ -1631,6 +1634,7 @@ static unsigned char update_deco_table()
             internal_deco_depth[x] = temp_depth_limit;
 
             internal_deco_time[x]  = 1;
+            internal_deco_gas[x] = sim_gas_last_used;
             return 1;
         }
     }
@@ -2047,22 +2051,21 @@ void deco_calc_CNS_planning(void)
         //---- Do all further stops ------------------------------------------
         for(i=0; i<NUM_STOPS; ++i)
         {
-            overlay unsigned char switch_gas;
+            overlay unsigned char stop_gas;
 
             //---- Get next stop, possibly in reverse order ------------------
             {
                 time             = char_O_deco_time[(NUM_STOPS-1)-i];
                 temp_depth_limit = char_O_deco_depth[(NUM_STOPS-1)-i];
+                stop_gas         = char_O_deco_gas[(NUM_STOPS-1)-i];
             }
             if( time == 0 ) continue;
 
             //---- Gas Switch ? ----------------------------------------------
-            switch_gas = temp_depth_limit & 0x80;   // Switch flag.
-            temp_depth_limit &= 0x7F;               // True stop depth.
-
-            if( switch_gas )
+            if( stop_gas != sim_gas_last_used )
             {
-                gas_switch_deepest();
+                sim_gas_last_depth = deco_gas_change[stop_gas-1];
+                sim_gas_last_used  = stop_gas;
                 gas_switch_set();
             }
 
@@ -2186,14 +2189,14 @@ void deco_gas_volumes(void)
             time = char_O_deco_time[i];
             if( time == 0 ) break;          // End of table: done.
 
-             newDepth  = char_O_deco_depth[i] & 0x7F;
+             newDepth  = char_O_deco_depth[i];
         }
         else
         {
             time = char_O_deco_time[31-i];
             if( time == 0 ) continue;       // not yet: still search table.
 
-            newDepth = char_O_deco_depth[31-i] & 0x7F;
+            newDepth = char_O_deco_depth[31-i];
         }
 
         //---- Gas switch during this step -----------------------------------

@@ -356,7 +356,7 @@ deco_planer_loop:
         movf    char_I_bottom_time,W    ; Finished ?
         xorwf   int_I_divemins,W
         bz      deco_planer_endloop     ; YES
-    
+
         call	deco_calc_tissue	    ; JUST calc tissue (faster).
         call	deco_calc_CNS_fraction  ; Also calculate CNS (in 1min loop)
         bra     deco_planer_loop

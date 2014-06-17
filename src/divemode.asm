@@ -233,7 +233,21 @@ calc_deko_divemode:
 
     global  set_actual_ppo2
 set_actual_ppo2:                        ; calculate ppO2 in 0.01bar (e.g. 150 = 1.50 bar ppO2)
+    btfsc   divemode                    ; in divemode
+    bra     set_actual_ppo2_dive        ; Yes
+    ; No, use simulated ambient pressure for char_I_actual_ppO2
+    movff   char_I_bottom_depth,WREG
+    mullw   .100
+    movlw   LOW(.1000)
+    addwf   PRODL,W
+    movwf   xA+0
+    movlw   HIGH(.1000)
+    addwfc  PRODH,W
+    movwf   xA+1                        ; P_amb in millibar (1000 = 1.00 bar).
+    bra     set_actual_ppo2_common
+set_actual_ppo2_dive:
     SAFE_2BYTE_COPY amb_pressure, xA    ; P_amb in millibar (1000 = 1.00 bar).
+set_actual_ppo2_common:
 	movlw		d'10'
 	movwf		xB+0
 	clrf		xB+1

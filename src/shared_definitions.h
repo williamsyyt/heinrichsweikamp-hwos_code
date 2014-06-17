@@ -112,6 +112,7 @@ VAR_UCHAR (char_O_first_deco_depth);        // Depth of first stop.
 VAR_UCHAR (char_O_first_deco_time) ;        // Duration of first stop.
 TAB_UCHAR (char_O_deco_depth, NUM_STOPS);   // Fusionned decompression table:
 TAB_UCHAR (char_O_deco_time,  NUM_STOPS);   // Both ZH-L16 and L16-GF models.
+TAB_UCHAR (char_O_deco_gas,   NUM_STOPS);   // Both ZH-L16 and L16-GF models.
 TAB_UCHAR (char_O_deco_time_for_log, NUM_STOPS); // For logging the full decoplan
 
 TAB_UCHAR (char_O_tissue_N2_saturation, NUM_COMP); // Nitrogen compartiment desaturation time, in min.

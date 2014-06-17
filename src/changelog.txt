@@ -1,8 +1,9 @@
-New in 1.31:
+New in 1.40:
 CHANGE: Minor language updates
 NEW: Show a Safety Stop if enabled (Menu "Deco Parameters")
 BUGFIX: dive profile recording issue in OC mode
 BUGFIX: OSTC settings via USB issues
+BUGFIX: CNS in deco planner
 
 New in 1.30:
 NEW: Show event "Bailout" in internal logbook
