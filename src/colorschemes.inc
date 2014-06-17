@@ -8,7 +8,7 @@
 ; Standard
 #DEFINE color_scheme_divemode_mask1     color_green
 #DEFINE color_scheme_divemode_std1      color_white
-#DEFINE color_scheme_divemode_dis1      color_grey
+#DEFINE color_scheme_divemode_dis1      color_lightblue     ;color_grey
 
 ; Redish
 #DEFINE color_scheme_divemode_mask2     color_red

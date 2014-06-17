@@ -19,8 +19,8 @@
 #include <ports.inc>                        ; Portmap
 
 #DEFINE	softwareversion_x		d'1'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'31'		; Software version  XX.YY
-#DEFINE softwareversion_beta 	1 			; (and 0 for release)
+#DEFINE	softwareversion_y		d'40'		; Software version  XX.YY
+#DEFINE softwareversion_beta 	0 			; (and 0 for release)
 
 #DEFINE comm_service_key        0xABCDEF
 
@@ -161,7 +161,7 @@
 #DEFINE lithium_36v_25          .2600   ; [mV]
 #DEFINE lithium_36v_10          .2500   ; [mV]
 
-#DEFINE	current_sleepmode           .62
+#DEFINE	current_sleepmode           .10
 #DEFINE	current_backlight_multi     .115    ; *CCPR1L+current_backlight_offset
 #DEFINE	current_backlight_offset    .216
 #DEFINE	current_speed_eco           .1914
