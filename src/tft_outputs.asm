@@ -2332,15 +2332,14 @@ TFT_active_gas_divemode2:
 	return
 
 	global	TFT_display_decotype_surface
-    global  TFT_display_decotype_surface1   ; Used from logbook!
 TFT_display_decotype_surface:
 	WIN_STD  surf_decotype_column,surf_decotype_row
     WIN_COLOR	color_lightblue
     lfsr	FSR2,buffer
     movff   opt_dive_mode,lo        ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
-TFT_display_decotype_surface1:  ; Used from logbook!
     tstfsz  lo
     bra     TFT_display_decotype_surface2
+TFT_display_decotype_surface0:
     STRCAT_TEXT_PRINT	tDvOC	; OC
     bra     TFT_display_decotype_exit
 TFT_display_decotype_surface2:
@@ -2363,6 +2362,7 @@ TFT_display_decotype_cc_common:
 TFT_display_decotype_surface3:
     decfsz  lo,F
     bra     TFT_display_decotype_surface4
+TFT_display_decotype_surface3_1:
     STRCAT_TEXT_PRINT	tDvGauge	; Gauge
     bra     TFT_display_decotype_exit
 TFT_display_decotype_surface4:
@@ -2370,6 +2370,20 @@ TFT_display_decotype_surface4:
 TFT_display_decotype_exit:
     call	TFT_standard_color
     return
+
+    global  TFT_display_decotype_surface1   ; Used from logbook!
+TFT_display_decotype_surface1:  ; Used from logbook!
+    tstfsz  lo
+    bra     TFT_display_decotype_surface1_2
+    bra     TFT_display_decotype_surface0   ;OC
+TFT_display_decotype_surface1_2:
+    decfsz  lo,F
+    bra     TFT_display_decotype_surface1_3
+    STRCAT_TEXT_PRINT   tDvCC               ; CC (w/o Sensor/Fixed Display)
+TFT_display_decotype_surface1_3:
+    decfsz  lo,F
+    bra     TFT_display_decotype_surface4   ; Apnea
+    bra     TFT_display_decotype_surface3_1 ; Gauge
 
 ;=============================================================================
 
