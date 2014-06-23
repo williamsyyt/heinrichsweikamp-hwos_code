@@ -65,14 +65,36 @@ return_ccr_menu:
         call    menu_processor_pop      ; back to last gas.
 
 do_ccr_menu:
-    bcf     menu_show_sensors           ; Set flag
-    MENU_BEGIN  tCCRSetup, .5
+    bcf     menu_show_sensors           ; Clear flag
+    bcf     menu_show_sensors2          ; Clear flag
+    MENU_BEGIN  tCCRSetup, .6
         MENU_OPTION     tCCRMode,    oCCRMode,    0
         MENU_CALL       tCCRSensor,             do_ccr_sensor
+        MENU_CALL       tCalibrateMenu,         do_calibrate_menu
         MENU_CALL       tDiluentSetup,          do_diluent_setup
         MENU_CALL       tFixedSetpoints,        do_fixed_setpoints
         MENU_CALL       tExit,                  do_continue_main_menu
     MENU_END
+
+do_calibrate_menu:
+    btfss   c3_hardware
+    bra     return_ccr_menu             ; Not for normal OSTC3 hardware
+    call    enable_ir                   ; Enable IR-Port
+    bsf     menu_show_sensors2          ; Set flag
+do_calibrate_menu2:
+	MENU_BEGIN  tCalibrateMenu, .6
+	    MENU_CALL       tDiveHudMask1,       0
+        MENU_CALL       tDiveHudMask2,       0
+        MENU_CALL       tDiveHudMask3,       0
+        MENU_OPTION     tCalibrationGas,oCalGasO2,  0
+        MENU_CALL       tCalibrate,                 do_calibrate_mix
+        MENU_CALL       tExit,                      return_ccr_menu
+    MENU_END
+
+do_calibrate_mix:
+    extern  calibrate_mix
+    call    calibrate_mix               ; Calibrate with opt_calibration_O2_ratio, also calibrate S8 HUD if connected
+    goto    restart                     ; Restart into surface mode
 
 do_ccr_sensor:
     call    enable_ir                   ; Enable IR-Port

@@ -44,6 +44,9 @@
     TCODE   tDiluentSetup,"Liste Diluant"   ; Diluent Setup
     TCODE   tFixedSetpoints,"Setpoints fixes" ; Fixed Setpoints
     TCODE   tCCRSensor, "Cellules CCR"    ; CCR Sensor
+    TCODE   tCalibrateMenu, "Calibration"   ; Calibration
+    TCODE   tCalibrationGas, "Cal. Gas O2:"  ; Cal. Gas O2:
+    TCODE   tCalibrate, "Calibrate"     ; Calibrate
 
 ; Gas menu
     TCODE   tGaslist,   "Liste Gaz OC"		  ; OC Gas List

@@ -36,10 +36,6 @@ HighInt:
         movff   PRODL,isr_prod+0
         movff   PRODH,isr_prod+1
 
-; Pressure sensor and others
-		btfsc	PIR5,TMR7IF				; Timer 7
-		rcall	isr_tmr7        		; Every 62,5ms
-
 ; Buttons
 		btfsc	PIR1,TMR1IF             ; Timer1 INT (Button hold-down Timer)
 		rcall	timer1int
@@ -49,10 +45,18 @@ HighInt:
 		rcall	isr_switch_left
 
 ; IR-Link
-		btfsc	PIR2,TMR3IF				; Timer 3
-		rcall	isr_timer3				; IR-Link Timeout
         btfsc   PIR3,RC2IF              ; UART2
         rcall   isr_uart2               ; IR-Link
+		btfsc	PIR2,TMR3IF				; Timer 3
+		rcall	isr_timer3				; IR-Link Timeout
+
+; Pressure sensor and others
+		btfsc	PIR5,TMR7IF				; Timer 7
+		rcall	isr_tmr7        		; Every 62,5ms
+
+;; IR-Link (again)
+;        btfsc   PIR3,RC2IF              ; UART2
+;        rcall   isr_uart2               ; IR-Link
 
 ; RTCC
 		btfsc	PIR3,RTCCIF				; Real-time-clock interrupt
@@ -105,6 +109,11 @@ isr_uart2:               ; IR-Link
         movwf    ir_buffer+.14
         dcfsnz  isr1_temp,F
         movwf    ir_buffer+.15
+        dcfsnz  isr1_temp,F
+        movwf    ir_buffer+.16
+        dcfsnz  isr1_temp,F
+        movwf    ir_buffer+.17
+
         clrf    TMR3L                   ; Preload timer
         movlw   .253
         movwf   TMR3H
@@ -113,19 +122,26 @@ isr_uart2:               ; IR-Link
 
 isr_timer3:             ; IR-Link Timeout
 		bcf		T3CON,TMR3ON			; Stop Timer3
+        movff   ir_counter,char_I_extra_time
     	banksel isr_backup              ; Select Bank0 for ISR data.
         movlw   .15
         cpfseq  ir_counter              ; Got exact 15bytes?
         bra     isr_timer3_1            ; No, test for 16bytes
-        bra     isr_timer3_2            ; Got 15 bytes, compute local checksum
+        bra     isr_timer3_ir           ; Got 15 bytes, compute local checksum
 isr_timer3_1:
         movlw   .16
         cpfseq  ir_counter              ; Got exact 16bytes?
-        bra     isr_timer3_exit         ; No, exit
+        bra     isr_timer3_2            ; No, test for 17bytes
         tstfsz  ir_buffer+.15           ; Last byte=0x00
         bra     isr_timer3_exit         ; No, exit
-
+        bra     isr_timer3_ir           ; Got 16 bytes, compute local checksum
 isr_timer3_2:
+        movlw   .17
+        cpfseq  ir_counter              ; Got exact 17bytes?
+        bra     isr_timer3_exit         ; No, exit
+        bra     isr_timer3_s8           ; S8 data
+
+isr_timer3_ir:  ; IR input
         movff   ir_buffer+.0,PRODL
         clrf    PRODH
         movf    ir_buffer+.1,W
@@ -189,6 +205,60 @@ isr_timer3_checksum:
         addwfc  PRODH,F
         return
 
+isr_timer3_s8:  ; IR input
+        movff   ir_buffer+.0,PRODL
+        clrf    PRODH
+        movf    ir_buffer+.1,W
+        rcall   isr_timer3_checksum
+        movf    ir_buffer+.2,W
+        rcall   isr_timer3_checksum
+        movf    ir_buffer+.3,W
+        rcall   isr_timer3_checksum
+        movf    ir_buffer+.4,W
+        rcall   isr_timer3_checksum
+        movf    ir_buffer+.5,W
+        rcall   isr_timer3_checksum
+        movf    ir_buffer+.6,W
+        rcall   isr_timer3_checksum
+        movf    ir_buffer+.7,W
+        rcall   isr_timer3_checksum
+        movf    ir_buffer+.8,W
+        rcall   isr_timer3_checksum
+        movf    ir_buffer+.9,W
+        rcall   isr_timer3_checksum
+        movf    ir_buffer+.10,W
+        rcall   isr_timer3_checksum
+        movf    ir_buffer+.11,W
+        rcall   isr_timer3_checksum
+        movf    ir_buffer+.12,W
+        rcall   isr_timer3_checksum
+        movf    ir_buffer+.13,W
+        rcall   isr_timer3_checksum
+        movf    ir_buffer+.14,W
+        rcall   isr_timer3_checksum
+
+            ; Compare checksum
+        movf    ir_buffer+.15,W
+        cpfseq  PRODL                   ; Checksum ok?
+        bra     isr_timer3_exit         ; No, exit
+        movf    ir_buffer+.16,W
+        cpfseq  PRODH                   ; Checksum ok?
+        bra     isr_timer3_exit         ; No, exit
+
+           ; Checksum OK, copy results
+        movff   ir_buffer+.3,hud_status_byte
+        movff   ir_buffer+.13,hud_battery_mv+0
+        movff   ir_buffer+.14,hud_battery_mv+1
+
+        banksel common
+        bsf     new_s8_data_available       ; set flag
+        banksel ir_timeout
+
+        movlw   ir_timeout_value        ; multiples of 62,5ms
+        movwf   ir_timeout              ; Reload timeout
+        bra     isr_timer3_exit         ; Exit
+
+
 ;=============================================================================
 
 isr_tmr7:       						; each 62,5ms
@@ -211,6 +281,11 @@ isr_tmr7:       						; each 62,5ms
         movwf   ir_timeout              ; Reload timeout
 
         banksel common
+        btfss   c3_hardware
+        bra     isr_tmr7_1a             ; Always with normal ostc3 hardware
+        btfss   s8_digital
+        bra     isr_tmr7_2              ; only when digital
+isr_tmr7_1a:
         clrf    o2_mv_sensor1+0
         clrf    o2_mv_sensor1+1
         clrf    o2_mv_sensor2+0

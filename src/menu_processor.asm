@@ -22,6 +22,7 @@
 #include "tft_outputs.inc"
 #include "eeprom_rs232.inc"
 #include "adc_lightsensor.inc"
+#include "calibrate.inc"
 
 ;NOTE: should be idenric in .inc and .asm !
 #define MENU_LINES_MAX  .7              ; Number of lines per screen?
@@ -320,15 +321,25 @@ menu_line_loop:
         btfsc   switch_left
         bra     next_line_menu
 
+        btfss	quarter_second_update   ; 1/4 second?
+        bra     menu_line_loop1         ; Not yet...
+
+        call    compute_ppo2			; compute mv_sensorX and ppo2_sensorX arrays
+        btfsc   menu_show_sensors2      ; In the "Calibrate" menu?
+        call    TFT_menu_hud2           ; Yes, update mV data
+        bcf     quarter_second_update   ; Clear flag
+
+menu_line_loop1:
 		btfss	onesecupdate			; New second
 		bra		menu_line_loop2			; not yet...
 
 		call	timeout_surfmode		; timeout
 		call	set_dive_modes			; check, if divemode must be entered
-        call	get_battery_voltage			; gets battery voltage
+        call	get_battery_voltage		; gets battery voltage
 		
 		btfsc	settime_setdate			; In the Set Time or Set Date menu?
 		call	TFT_show_time_date_menu	; Yes, update clock
+
         btfsc   menu_show_sensors       ; In the "Sensors" menu?
         call    TFT_menu_hud            ; Yes, update HUD data
 
@@ -343,7 +354,7 @@ menu_line_loop2:
         btfsc   enable_screen_dumps         ; =1: Ignore vin_usb, wait for "l" command (Screen dump)
         bra     menu_line_loop3
         btfsc   vusb_in                     ; USB plugged in?
-        goto    comm_mode                   ; Start COMM mode
+        call    comm_mode                   ; Start COMM mode
         bra     menu_line_loop4
 menu_line_loop3:
         btfss   vusb_in                     ; USB (still) plugged in?

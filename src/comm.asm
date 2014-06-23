@@ -53,6 +53,13 @@ comm code
 	; test for comm
 	global	comm_mode
 comm_mode:
+    WAITMS d'1'
+    btfss   vusb_in                     ; USB plugged in?
+    return                              ; No, it was only a glitch
+    WAITMS d'1'
+    btfss   vusb_in                     ; USB plugged in?
+    return                              ; No, it was only a glitch
+
     call    TFT_ClearScreen
     WIN_COLOR   color_greenish
 	WIN_SMALL	comm_title_column, comm_title_row

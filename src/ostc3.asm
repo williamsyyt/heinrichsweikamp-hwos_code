@@ -54,7 +54,7 @@ init_ostc3:
 
 	movlw	b'11000000'			; ANSEL, AN7 and AN6 -> Analog inputs, PORTA is digital.
 	movwf	ANCON0
-	movlw	b'00000000'			; ANSEL
+	movlw	b'00000111'			; ANSEL, AN8, AN9, AN10 -> Analog in
 	movwf	ANCON1
 	movlw	b'00000010'			; ANSEL, AN17 -> Analog input
 	movwf	ANCON2
@@ -66,9 +66,9 @@ init_ostc3:
 	movlw	b'00000000'			; Init port
 	movwf	PORTA
 
-	movlw	b'00001011'			; 1= Input, (RB0, RB1) -> Switches, RB2 -> Power_MCP, RB3 -> lf_data, RB4 -> LED_green, RB5 -> /TFT_POWER
+	movlw	b'00000011'			; 1= Input, (RB0, RB1) -> Switches, RB2 -> Power_MCP, RB3 -> s8_npower, RB4 -> LED_green, RB5 -> /TFT_POWER
 	movwf	TRISB
-	movlw	b'00100000'			; Init port
+	movlw	b'00101000'			; Init port
 	movwf	PORTB
 
     movlw	b'10011010'			; 1= Input, (RC0, RC1) -> SOSC, RC2 -> TFT_LED_PWM, (RC3,RC4) -> I²C, RC5 -> MOSI_MS5541, (RC6, RC7) -> UART1
@@ -86,14 +86,14 @@ init_ostc3:
 	movlw	b'00010000'			; Init port
 	movwf	PORTE
 
-	movlw	b'00000110'			; 1= Input, (RF1, RF2) -> Analog
+	movlw	b'00111110'			; 1= Input, (RF1, RF2, RF3, RF4, RF5) -> Analog
 	movwf	TRISF
 	movlw	b'00000000'			; Init port
 	movwf	PORTF
 
-	movlw	b'00001111'			; 1= Input, <7:6> not implemented, RG0 -> SCLK_MCP, RG2 -> RX2, RG3 -> AN17_RSSI, RG4 -> SOSC_OUT, RG5 -> /RESET
+	movlw	b'00001110'			; 1= Input, <7:6> not implemented, RG0 -> TX3_PIEZO_CFG, RG2 -> RX2, RG3 -> AN17_RSSI, RG4 -> SOSC_OUT, RG5 -> /RESET
 	movwf	TRISG
-	movlw	b'00000000'			; Init port
+	movlw	b'00000001'			; Init port
 	movwf	PORTG
 
 	movlw	b'00000000'			; 1= Input -> Data TFT_low
@@ -101,7 +101,7 @@ init_ostc3:
 	movlw	b'00000000'			; Init port
 	movwf	PORTH
 
-	movlw	b'10010000'			; 1= Input, RJ4 -> vusb_in, RJ5 -> power_sw2,  RJ6 -> CLK_MS5541, RJ7 -> MISO_MS5541
+	movlw	b'10010011'			; 1= Input, RJ4 -> vusb_in, RJ5 -> power_sw2,  RJ6 -> CLK_MS5541, RJ7 -> MISO_MS5541
 	movwf	TRISJ
 	movlw	b'00100000'			; Init port
 	movwf	PORTJ
@@ -163,7 +163,7 @@ init_ostc3:
 
 ;init serial port2 (TRISG2)
     banksel BAUDCON2
-	movlw	b'00100000'			; BRG16=0
+	movlw	b'00100000'			; BRG16=0           ; inverted for IR
 	movwf	BAUDCON2
 	movlw 	b'00100000'			; BRGH=0, SYNC=0
 	movwf 	TXSTA2

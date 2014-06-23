@@ -1056,7 +1056,7 @@ log_screendump_and_onesecond:    ; Check if we need to make a screenshot and che
     btfsc       enable_screen_dumps         ; =1: Ignore vin_usb, wait for "l" command (Screen dump)
     bra         log_screendump_and_onesecond2
     btfsc       vusb_in                     ; USB plugged in?
-    goto        comm_mode                   ; Start COMM mode
+    call        comm_mode                   ; Start COMM mode
     return
 log_screendump_and_onesecond2:
     btfss       vusb_in                     ; USB (still) plugged in?

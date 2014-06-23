@@ -23,6 +23,7 @@
 #include	"adc_lightsensor.inc"
 #include	"ghostwriter.inc"
 #include    "i2c.inc"
+#include    "calibrate.inc"
 
 gui     CODE
 
@@ -100,6 +101,8 @@ diveloop_loop1x:
 
 ;    btfsc   FLAG_ccr_mode                   ; In CCR mode
 ;    call    TFT_active_gas_divemode         ; Update Setpoint every second
+
+    call    compute_ppo2                    ; compute mv_sensorX and ppo2_sensorX arrays
 
 	bcf		onesecupdate					; one seconds update done
 
@@ -248,7 +251,7 @@ set_actual_ppo2:                        ; calculate ppO2 in 0.01bar (e.g. 150 = 
 set_actual_ppo2_dive:
     SAFE_2BYTE_COPY amb_pressure, xA    ; P_amb in millibar (1000 = 1.00 bar).
 set_actual_ppo2_common:
-	movlw		d'10'
+ 	movlw		d'10'
 	movwf		xB+0
 	clrf		xB+1
 	call		div16x16				; xC=p_amb/10 (100 = 1.00 bar).
@@ -367,7 +370,7 @@ divemode_setup_sensor_values:
     clrf    xB+1
     clrf    xA+0
     clrf    xA+1
-    btfss   hud_status_byte,3               ; Sensor1 active?
+    btfss   sensor1_active                  ; Sensor1 active?
     bra     divemode_setup_sensor_values2   ; No
     movf    o2_ppo2_sensor1,W
     addwf   xA+0
@@ -375,7 +378,7 @@ divemode_setup_sensor_values:
     addwfc  xA+1                            ; Add into xA:2
     incf    xB+0,F                          ; Add a sensor
 divemode_setup_sensor_values2:
-    btfss   hud_status_byte,4               ; Sensor2 active?
+    btfss   sensor2_active                  ; Sensor2 active?
     bra     divemode_setup_sensor_values3   ; No
     movf    o2_ppo2_sensor2,W
     addwf   xA+0
@@ -383,7 +386,7 @@ divemode_setup_sensor_values2:
     addwfc  xA+1                            ; Add into xA:2
     incf    xB+0,F                          ; Add a sensor
 divemode_setup_sensor_values3:
-    btfss   hud_status_byte,5               ; Sensor3 active?
+    btfss   sensor3_active                  ; Sensor3 active?
     bra     divemode_setup_sensor_values4   ; No
     movf    o2_ppo2_sensor3,W
     addwf   xA+0

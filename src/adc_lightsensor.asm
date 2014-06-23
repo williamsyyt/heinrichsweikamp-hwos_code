@@ -12,6 +12,7 @@
 #include "math.inc"
 #include "wait.inc"
 #include "eeprom_rs232.inc"
+#include "i2c.inc"
 
 sensors CODE
 
@@ -26,6 +27,14 @@ wait_adc2:
 
 	global	get_battery_voltage
 get_battery_voltage:			; starts ADC and waits until fnished
+    btfss   c3_hardware
+    bra     get_battery_voltage1     ; Normal ostc3 hardware
+
+    call    lt2942_get_accumulated_charge
+    call    lt2942_get_voltage
+    return
+
+get_battery_voltage1:
     bsf     adc_running         ; =1: The ADC is in use
 	movlw	b'00100000'			; 2.048V Vref+ -> 1LSB = 500µV
 	movwf	ADCON1
@@ -186,6 +195,14 @@ get_ambient_level:              ; starts ADC and waits until finished
     btfsc   adc_running         ; ADC in use?
     return                      ; Yes, return
 
+    btfss   c3_hardware
+    bra     get_ambient_level1  ; Normal ostc3 hardware
+    movlw   .250
+    movwf   ambient_light+0
+    clrf    ambient_light+1     ; Set to max
+    bra     get_ambient_level2  ; Continue as normal
+
+get_ambient_level1:
 	movlw	b'00000000'         ; Vref+ = Vdd
 	movwf	ADCON1
 	movlw	b'00011101'			; power on ADC, select AN7
@@ -266,22 +283,91 @@ get_ambient_level2:
 	movff	ambient_light+0,max_CCPR1L	; Store value for dimming in TMR7 interrupt
 	return
 
-	global	get_rssi_level
-get_rssi_level:			; starts ADC and waits until fnished
+	global	get_analog_inputs
+get_analog_inputs:			; starts ADC and waits until finished
     bsf     adc_running         ; =1: The ADC is in use
+    btfsc   TFT_PWM
+    bra     get_analog_inputs   ; Wait for PWM low
+    movlw	b'00100000'			; 2.048V Vref+ -> 1LSB = 500µV
+	movwf	ADCON1
+	movlw	b'00100001'			; power on ADC, select AN8
+	rcall   wait_adc
+    bcf     STATUS,C
+    rrcf    ADRESH,F                    ; /2
+    rrcf    ADRESL,F
+	movff	ADRESL,o2_mv_sensor1+0      ; in 0.1mV steps
+    movff	ADRESH,o2_mv_sensor1+1
+    bcf     STATUS,C
+    rlcf    ADRESL,F
+    rlcf    ADRESH,F
 	movlw	b'00100000'			; 2.048V Vref+
 	movwf	ADCON1
-	movlw	b'01000101'			; power on ADC, select AN17
+	movlw	b'00100101'			; power on ADC, select AN9
 	rcall   wait_adc
-
-	movff	ADRESL,rssi_value
+    bcf     STATUS,C
+    rrcf    ADRESH,F                    ; /2
+    rrcf    ADRESL,F
+	movff	ADRESL,o2_mv_sensor2+0      ; in 0.1mV steps
+    movff	ADRESH,o2_mv_sensor2+1
+	movlw	b'00100000'			; 2.048V Vref+
+	movwf	ADCON1
+	movlw	b'00101001'			; power on ADC, select AN10
+	rcall   wait_adc
+    bcf     STATUS,C
+    rrcf    ADRESH,F                    ; /2
+    rrcf    ADRESL,F
+	movff	ADRESL,o2_mv_sensor3+0      ; in 0.1mV steps
+    movff	ADRESH,o2_mv_sensor3+1
 	bcf		ADCON0,0			; power off ADC
     bcf     adc_running         ; =1: The ADC is in use
     return
 
+    global  piezo_config            ; Sets up piezo sensitivity of heinrichs weikamp Piezo buttons (~30ms)
+piezo_config:
+    movlw   .20
+    rcall   piezo_config_tx         ; Send one byte
+    movlw   .20
+    rcall   piezo_config_tx         ; Send one byte
+    movlw   .100
+    rcall   piezo_config_tx         ; Send one byte
+    movlw   .200
+    rcall   piezo_config_tx         ; Send one byte
+    return
+
+piezo_config_tx:
+    movwf   uart1_temp              ; Store byte
+    movlw   .8
+    movwf   uart2_temp              ; Bit counter
+    bcf     TX3_PIEZO_CFG           ; Startbit
+    rcall   piezo_config_wait_bit
+piezo_config_tx_loop:
+    btfss   uart1_temp,0            ; LSB first
+    bcf     TX3_PIEZO_CFG
+    btfsc   uart1_temp,0            ; LSB first
+    bsf     TX3_PIEZO_CFG
+    rcall   piezo_config_wait_bit
+    rrncf   uart1_temp,F
+    decfsz  uart2_temp,F
+    bra     piezo_config_tx_loop
+    bsf     TX3_PIEZO_CFG           ; Stopbit
+    rcall   piezo_config_wait_bit
+    return
+
+piezo_config_wait_bit:
+    setf	TMR5H
+	movlw	.255-.26 			;26 x 31,5µs = 819us
+	movwf	TMR5L
+	bcf		PIR5,TMR5IF			; Clear flag
+piezo_config_wait_bit3:
+    btfss	PIR5,TMR5IF
+	bra		piezo_config_wait_bit3			; Wait loop
+	return
+
     global  reset_battery_pointer
 reset_battery_pointer:       ; Resets battery pointer 0x07-0x0C and battery_gauge:5
-	clrf	EEADRH
+	extern  lt2942_charge_done
+    call    lt2942_charge_done                 ; Reset accumulating registers to 0xFFFF
+    clrf	EEADRH
 	clrf	EEDATA					; Delete to zero
 	write_int_eeprom 0x07
 	write_int_eeprom 0x08

@@ -34,6 +34,7 @@ TFT_color_code macro color_code_temp
 ;	extern	TFT_user_image
 ;    extern  TFT_clear_customview_surfacemode
     extern  TFT_menu_hud                ; Update HUD data in menu (including mV)
+    extern  TFT_menu_hud2               ; Update mV data in menu
     extern  TFT_custom_text             ; The custom text
     extern  TFT_surface_tissues         ; Show Tissue diagram in surface mode
     extern  TFT_surface_compass_mask    ; Compass heading mask

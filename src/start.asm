@@ -23,6 +23,8 @@
 #include	"convert.inc"
 #include	"strings.inc"
 #include	"tft_outputs.inc"
+#include    "adc_lightsensor.inc"
+#include    "i2c.inc"
 
         extern  init_ostc3
         extern  option_restore_all
@@ -59,6 +61,7 @@ clear_rambank:
 	banksel common                  ; get_calibration_data uses isr_backup
 	bcf		no_sensor_int		    ; normal sensor interrupt mode
 
+    call    piezo_config
     call	TFT_DisplayOff			; display off
     bsf     LEDr                    ; Status LED
 	bcf		pressure_refresh
@@ -237,7 +240,12 @@ restart:
     clrf	flag7
     clrf	flag8
     clrf    flag9
+    clrf    flag10
 	bsf		tft_is_dimming	; TFT is dimming up (soon), ignore ambient sensor!
+
+    call    lt2942_get_status       ; Check for gauge IC
+    btfsc   c3_hardware             ; C3 hardware?
+    call    lt2942_init             ; Yes, init battery gauge IC
 
 	; Select high altitude (Fly) mode?
 	movff	last_surfpressure_30min+0,sub_b+0

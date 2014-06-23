@@ -19,8 +19,8 @@
 #include <ports.inc>                        ; Portmap
 
 #DEFINE	softwareversion_x		d'1'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'40'		; Software version  XX.YY
-#DEFINE softwareversion_beta 	0 			; (and 0 for release)
+#DEFINE	softwareversion_y		d'41'		; Software version  XX.YY
+#DEFINE softwareversion_beta 	1 			; (and 0 for release)
 
 #DEFINE comm_service_key        0xABCDEF
 
@@ -71,6 +71,9 @@
 #DEFINE	warn_ppo2_hud       .8
 #DEFINE warn_battery        .9
 
+; External O2 cell input parameters
+#DEFINE	min_mv				.80			; = 8mV
+#DEFINE	min_mv_in_o2		.380		; = 38mV
 
 ; Profile recording parameters
 #DEFINE	logbook_profile_version	0x23
@@ -172,7 +175,8 @@
 
 ; Brightness thresholds (between zero (off) and 255 (max. power))
 #DEFINE	ambient_light_max_high_36V	.175		; When used with a 3,6V battery
-#DEFINE	ambient_light_max_high		.150
+#DEFINE	ambient_light_max_high  	.240		; For rechargeable battery
+;#DEFINE	ambient_light_max_high		.150
 #DEFINE	ambient_light_min_high		.40
 #DEFINE	ambient_light_max_medium 	.135
 #DEFINE	ambient_light_min_medium 	.30
@@ -261,7 +265,7 @@ max_CCPR1L		res	1			; Max. brightness value for CCPR1L
 battery_gauge	res	6			; 48Bit -> 78Ah max...
 
 ; IR-Link
-ir_buffer           res .16
+ir_buffer           res .18
 ir_counter          res 1
 ir_timeout          res 1       ; Timeout for valid data
 
@@ -324,6 +328,7 @@ flag6           		res 1
 flag7           		res 1
 flag8           		res 1
 flag9           		res 1
+flag10           		res 1
 
 temp1			res 1
 temp2			res 1
@@ -397,7 +402,6 @@ decoplan_page			res 1
 warning_counter			res 1			; Counts amount of warning in divemode
 warning_counter_backup	res 1			; Backup of warning_counter
 warning_page            res 1           ; current # of warning page
-rssi_value              res 1           ; Current RSSI level
 
 ; Remind history for menu processor (and such):
 menustack               res 5           ; menu stack
@@ -446,7 +450,7 @@ ext_flash_log_pointer	res 3	; 24bit Address for logbook profile storing
 ext_flash_dive_counter  res 3   ; 24bit Counter for dive length (increased in write_byte_ext_flash_plus)
 
 ; I2C
-i2c_temp            res 1       ; Temp
+i2c_temp            res 2       ; Temp
 
 ; O2 Sensor data
 o2_mv_sensor1       res 2       ; in 0.1mV steps
@@ -461,9 +465,9 @@ hud_status_byte     res 1
 ;Bit0 = 1 -> HUD connection ok
 ;Bit1 = 1 -> HUD is calibrated
 ;Bit2 = 1 -> HUD Battery is low (<3000mV)
-;Bit3 = 1 -> Sensor 1 active
-;Bit4 = 1 -> Sensor 2 active
-;Bit5 = 1 -> Sensor 3 active
+#DEFINE	sensor1_active          hud_status_byte,3	; =1: Sensor1 is active
+#DEFINE	sensor2_active          hud_status_byte,4   ; =1: Sensor2 is active
+#DEFINE	sensor3_active          hud_status_byte,5   ;=1: Sensor3 is active
 ;Bit6 unused in stand-alone HUD
 ;Bit7 unused in stand-alone HUD
 
@@ -473,7 +477,6 @@ better_gas_number	res 1       ; number (1-5) of the "better gas" in divemode, =0
 customview_divemode res 1       ; keeps last custom view
 customview_surfmode res 1
 safety_stop_countdown	res 1	; counts seconds of safety stop
-
 
 ;---------------------------- TMP DATA ---------------------------------------
 ; Space for various overlayed data from color, word, menu processors, etc.
@@ -524,6 +527,11 @@ opt_sampling_rate       res 1   ; =1: 10s, =0: 2s
 opt_dive_color_scheme   res 1   ; 0-3
 opt_pressure_adjust     res 1   ; SIGNED int (two's complement), -20/+20mbar max.
 opt_enable_safetystop   res 1   ; =1: A safety stop is shown
+opt_calibration_O2_ratio    res 1   ; %O2 of calibration gas
+opt_x_s1                res	2	; calibration factor (Not stored in EEPROM)
+opt_x_s2                res	2	; calibration factor (Not stored in EEPROM)
+opt_x_s3                res	2	; calibration factor (Not stored in EEPROM)
+
 
 ;-----------------------------EEPROM DATA ------------------------------------
 ; Automatic reset of all options when this is changed:
@@ -609,6 +617,12 @@ opt_enable_safetystop   res 1   ; =1: A safety stop is shown
 #DEFINE	event2_occured			flag9,3	; =1: An event in the Eventbyte2 occured, store it!
 #DEFINE show_safety_stop		flag9,4	; =1: Show the safety stop
 #DEFINE	safety_stop_active      flag9,5	; =1 The safety stop is currently displayed
+#DEFINE new_s8_data_available   flag9,6 ; =1: New data frame recieved
+#DEFINE	c3_hardware             flag9,7; =1: OSTC 3C hardware
+
+#DEFINE s8_digital              flag10,0; =1: Digital I/O
+#DEFINE menu_show_sensors2      flag10,1 ; =1: Update mV data in calibration menu
+
 ;=============================================================================
 ; C-code Routines
 ; PART 2

@@ -1,3 +1,6 @@
+New in 1.41:
+NEW: Support for C3 hardware
+
 New in 1.40:
 CHANGE: Minor language updates
 NEW: Show a Safety Stop if enabled (Menu "Deco Parameters")

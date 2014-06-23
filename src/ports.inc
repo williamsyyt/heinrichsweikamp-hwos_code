@@ -18,7 +18,7 @@
 #DEFINE	switch_left1	PORTB,1	; Switch
 #DEFINE	switch_right2	PORTB,0	; Switch
 #DEFINE mcp_power		PORTB,2	; RX Power supply
-#DEFINE	mcp_lf_data		PORTB,3	; RX in
+#DEFINE	s8_npower		PORTB,3	; Powers S8 Bulkhead (inverted)
 #DEFINE	LEDg			PORTB,4	; LED green
 #DEFINE	tft_power		PORTB,5 ; via P-MOSFET (Inverted)
 #DEFINE	icsp_clk		PORTB,6	; ICSP
@@ -62,8 +62,8 @@
 ; RF1 (AN6, Batt_analog) and RF2 (AN7, Lightsensor)
 ; TRIS=b'11000000'
 
-; PORTG
-#DEFINE	mcp_clk		PORTG,0	; RX clk
+; PORTG  
+#DEFINE TX3_PIEZO_CFG   PORTG,0
 #DEFINE	RG1_blocked_by_RS232_2	PORTG,1	; unused
 #DEFINE	tsop_rx			PORTG,2	; IR (RX2)
 ; RG3 (AN17, RSSI RX)
@@ -76,8 +76,8 @@
 ; PORTJ
 #DEFINE	RJ0_unused		PORTJ,0	; unused
 #DEFINE	RJ1_unused		PORTJ,1	; unused
-#DEFINE	RJ2_unused		PORTJ,2	; unused
-#DEFINE	RJ3_unused		PORTJ,3	; unused
+#DEFINE	CHRG_OUT		PORTJ,2	; CHRG_OUT
+#DEFINE	CHRG_IN 		PORTJ,3	; CHRG_IN
 #DEFINE	vusb_in			PORTJ,4	; external power supply detect, USB enumerated
 #DEFINE	power_sw1		PORTJ,5	; Power supply for switch2 circuit
 #DEFINE	MS5541_clk		PORTJ,6	; MS5541 mH
