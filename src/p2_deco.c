@@ -823,7 +823,7 @@ static void gas_switch_set(void)
     }
 
     assert( 0.0 <= calc_N2_ratio && calc_N2_ratio <= 0.95 );
-    assert( 0.0 <= calc_He_ratio && calc_He_ratio <= 0.95 );
+    assert( 0.0 <= calc_He_ratio && calc_He_ratio <= 1.00 );
     assert( (calc_N2_ratio + calc_He_ratio) <= 1.00 );
 }
 
@@ -1064,7 +1064,7 @@ void calc_hauptroutine_update_tissues(void)
 {
     assert( 0.00 <= N2_ratio && N2_ratio <= 1.00 );
     assert( 0.00 <= He_ratio && He_ratio <= 1.00 );
-    assert( (N2_ratio + He_ratio) <= 0.95 );
+    assert( (N2_ratio + He_ratio) <= 1.00 );
     assert( 0.800 < pres_respiration && pres_respiration < 14.0 );
 
     pres_diluent = pres_respiration;
