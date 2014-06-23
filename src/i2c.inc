@@ -15,3 +15,7 @@
     extern  I2C_init_compass_fast
     extern  I2C_sleep_compass
     extern  I2C_RX_compass
+    extern  lt2942_get_voltage              ; Read battery voltage registers
+    extern  lt2942_get_accumulated_charge   ; Get battery gauge registers
+    extern  lt2942_init                     ; Init
+    extern  lt2942_get_status               ; Get status

@@ -26,5 +26,6 @@ read_int_eeprom	macro	eeprom_address
 	extern	disable_rs232
 	extern	rs232_get_byte
 	extern	rs232_wait_tx
+    extern	rs232_wait_tx2
     extern  enable_ir
     extern  disable_ir

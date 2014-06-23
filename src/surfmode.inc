@@ -77,6 +77,9 @@
 #DEFINE surf_menu_sensor3_row       surf_menu_sensor1_row+.27*.2
 #DEFINE surf_menu_sensor4_column    surf_menu_sensor1_column
 #DEFINE surf_menu_sensor4_row       surf_menu_sensor1_row+.27*.3
+#DEFINE surf_menu2_sensor1_row      .47
+#DEFINE surf_menu2_sensor2_row      surf_menu2_sensor1_row+.27*.1
+#DEFINE surf_menu2_sensor3_row      surf_menu2_sensor1_row+.27*.2
 
 #DEFINE surf_tissue_diagram_top     .66
 #DEFINE surf_tissue_diagram_bottom  tissue_diagram_top+.64

@@ -27,6 +27,7 @@
 #include    "i2c.inc"
 #include    "comm.inc"
 #include    "eeprom_rs232.inc"
+#include    "calibrate.inc"
 
 #DEFINE	menu_pos_row		.215
 #DEFINE	menu_pos_column		.0
@@ -43,6 +44,8 @@ gui     CODE
 	global	surfloop
 surfloop:
     call	speed_normal
+    btfss   c3_hardware
+    call    piezo_config            ; Configure buttons
     bcf     no_sensor_int           ; Normal pressure mode
 
     clrf	CCP1CON					; stop PWM
@@ -174,6 +177,11 @@ surfloop1:
     btfsc   enable_screen_dumps         ; =1: Ignore vin_usb, wait for "l" command (Screen dump)
     call	enable_rs232				; Also sets to speed_normal ...
 
+;    call    disable_ir
+;    bsf     mcp_power
+;    btfss   mcp_power
+;    bra $-4
+
 surfloop_loop:
 	btfss	onesecupdate				; do every second tasks?
 	bra		surfloop_loop2				; no, loop
@@ -184,6 +192,7 @@ surfloop_loop:
 	call	TFT_clock					; update clock
 	call	timeout_surfmode			; check timeout 
 	call	get_battery_voltage			; get battery voltage
+    call    compute_ppo2                ; compute mv_sensorX and ppo2_sensorX arrays
 	call	TFT_update_batt_voltage		; display battery voltage
 	call	set_dive_modes				; tests if depth>threshold
     btfss   secs,0                      ; Every two seconds...
@@ -228,7 +237,7 @@ surfloop_loop2a:
     btfsc   enable_screen_dumps         ; =1: Ignore vin_usb, wait for "l" command (Screen dump)
     bra     surfloop_loop3
     btfsc   vusb_in                     ; USB plugged in?
-    goto    comm_mode                   ; Start COMM mode
+    call    comm_mode                   ; Start COMM mode
     bra     surfloop_loop4
 surfloop_loop3:
     btfss   vusb_in                     ; USB (still) plugged in?

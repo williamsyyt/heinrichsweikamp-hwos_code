@@ -632,6 +632,7 @@ option_table_begin:
         OPTION_ENUM8    oColorSetDive,  4,  0, tColorSetName0,        .146,    opt_dive_color_scheme            ; Color scheme divemode
         OPTION_UINT8    oPressureAdjust, .0,.255,   .0,     -1,       .147,    opt_pressure_adjust              ; SIGNED int (-20/+20mbar max.)
         OPTION_BOOL     oSafetyStop,    0,                            .148,    opt_enable_safetystop            ; =1: A safety stop is shown
+        OPTION_UINT8    oCalGasO2,      .21,.100,   .21,    tPercent, .149,    opt_calibration_O2_ratio         ; Calibration gas %O2
 
 ; Set Time/Set Date
 		OPTION_UINT8    oSetHours,		.0,	.23, .0,	0, -1,		hours

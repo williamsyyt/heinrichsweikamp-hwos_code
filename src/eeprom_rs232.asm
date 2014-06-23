@@ -15,6 +15,8 @@
 #include "wait.inc"
 #include "strings.inc"
 #include "convert.inc"
+#include "adc_lightsensor.inc"
+#include "math.inc"
 
 ;=============================================================================
 eeprom   code    0xF00000+0x10
@@ -80,11 +82,19 @@ disable_ir:
 	clrf    RCSTA2
     banksel common
     bcf     ir_power                ; IR off
+    bcf     mcp_power               ; Power-down intrumentation amp
+    bsf     s8_npower               ; Power-down S8 HUD
     return
 
     global  enable_ir
 enable_ir:
 ;init serial port2 (TRISG2)
+    btfsc   c3_hardware
+    bra     enable_s8           ; Start S8
+
+    banksel BAUDCON2
+	movlw	b'00100000'			; BRG16=0           ; inverted for IR
+	movwf	BAUDCON2
     banksel TXSTA2
 	movlw 	b'00100000'			; BRGH=0, SYNC=0
 	movwf 	TXSTA2
@@ -94,9 +104,56 @@ enable_ir:
 	movlw 	b'10010000'
 	movwf 	RCSTA2
     banksel common
-    bsf     ir_power                  ; Power-up IR
+    bsf     ir_power            ; Power-up IR
     btfss   ir_power
     bra     $-6
+    return
+
+enable_s8:
+    ; Check for Digital/Analog
+    bsf     s8_npower           ; Power-down S8 HUD
+    WAITMS  d'1'                ; Very short delay
+    bsf     mcp_power           ; Power-up intrumentation amp
+    btfss   mcp_power
+    bra     $-6
+    banksel TXSTA2
+	clrf    TXSTA2
+	clrf    RCSTA2
+    banksel common
+
+    ; It may be digital, check for voltage when isolator is powered
+    bcf     s8_npower           ; Power S8 HUD
+    WAITMS  d'1'                ; Very short delay
+
+    btfsc   PORTG,2             ; RX2=1?
+    bra     enable_s8_2         ; Yes, digital
+    WAITMS  d'30'
+    btfsc   PORTG,2             ; RX2=1?
+    bra     enable_s8_2         ; Yes, digital
+    
+    ; Not found, set to analog (fail-safe)
+
+enable_s8_analog:
+    ; S8 Analog
+    bsf     s8_npower           ; Power-down S8 HUD
+    bcf     s8_digital          ; Clear flag
+    return
+
+enable_s8_2:                    ; S8 Digital
+    banksel BAUDCON2
+    movlw	b'00000000'			; BRG16=0           ; normal for S8
+	movwf	BAUDCON2
+    banksel TXSTA2
+	movlw 	b'00100000'			; BRGH=0, SYNC=0
+	movwf 	TXSTA2
+    movlw 	.25                 ; SPBRGH:SPBRG = .25   : 9615 BAUD @ 16MHz
+	movwf 	SPBRG2
+	clrf	SPBRGH2
+	movlw 	b'10010000'
+	movwf 	RCSTA2
+    banksel common
+    bcf     s8_npower               ; Power S8 HUD
+    bsf     s8_digital              ; Set flag
     return
 
 ;=============================================================================
@@ -133,14 +190,23 @@ disable_rs232:
 
 	global	rs232_wait_tx
 rs232_wait_tx:
-;	btfss	RCSTA1,SPEN			; Transmitter active?
-;	return						; No, return!
-
 	btfsc	TXSTA1,TRMT			; Transmit Shift Register empty?
 	return						; Yes, return!
 
-	btfss	TXSTA,TRMT			; RS232 Busy?
+	btfss	TXSTA1,TRMT			; RS232 Busy?
 	bra		rs232_wait_tx		; yes, wait...
+	return						; Done.
+
+    global  rs232_wait_tx2
+rs232_wait_tx2:
+    banksel TXSTA2
+	btfsc	TXSTA2,TRMT			; Transmit Shift Register empty?
+    bra     rs232_wait_tx2_2    ; Yes, return!
+
+	btfss	TXSTA2,TRMT			; RS232 Busy?
+	bra		rs232_wait_tx2		; yes, wait...
+rs232_wait_tx2_2:
+    banksel common
 	return						; Done.
 
 	global	rs232_get_byte

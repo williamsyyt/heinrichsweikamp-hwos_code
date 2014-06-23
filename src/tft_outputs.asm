@@ -1113,12 +1113,44 @@ TFT_menu_hud:            ; Yes, update HUD data
     output_16dp  .4         ; xxx.y mV
     STRCAT_PRINT "mV "
     WIN_SMALL   surf_menu_sensor4_column,surf_menu_sensor4_row
+
+    btfss   c3_hardware
+    bra     TFT_menu_hud_2  ; always for normal OSTC3
+    btfss   s8_digital
+    return                  ; Not for analog
+TFT_menu_hud_2:
     lfsr    FSR2,buffer
     STRCPY  "Batt:"
     movff   hud_battery_mv+0,lo      ; in mV
     movff   hud_battery_mv+1,hi      ; in mV
     output_16dp  .2         ; x.yyy V
     STRCAT_PRINT "V"
+    call    TFT_standard_color
+    bcf     leftbind
+    return
+
+    global  TFT_menu_hud2
+TFT_menu_hud2:            ; Yes, update mV data
+    call    TFT_attention_color         ; show in yellow
+    bsf     leftbind
+    WIN_SMALL   surf_menu_sensor1_column,surf_menu2_sensor1_row
+    lfsr    FSR2,buffer
+    movff   o2_mv_sensor1+0,lo      ; in 0.1mV steps
+    movff   o2_mv_sensor1+1,hi      ; in 0.1mV steps
+    output_16dp  .4         ; xxx.y mV
+    STRCAT_PRINT "mV  "
+    WIN_SMALL   surf_menu_sensor2_column,surf_menu2_sensor2_row
+    lfsr    FSR2,buffer
+    movff   o2_mv_sensor2+0,lo      ; in 0.1mV steps
+    movff   o2_mv_sensor2+1,hi      ; in 0.1mV steps
+    output_16dp  .4         ; xxx.y mV
+    STRCAT_PRINT "mV  "
+    WIN_SMALL   surf_menu_sensor3_column,surf_menu2_sensor3_row
+    lfsr    FSR2,buffer
+    movff   o2_mv_sensor3+0,lo      ; in 0.1mV steps
+    movff   o2_mv_sensor3+1,hi      ; in 0.1mV steps
+    output_16dp  .4         ; xxx.y mV
+    STRCAT_PRINT "mV  "
     call    TFT_standard_color
     bcf     leftbind
     return
@@ -1304,18 +1336,18 @@ TFT_update_raw_data:
     output_16
     STRCAT_PRINT " "
 
-	call	get_rssi_level              ; get rssi level
-	WIN_TINY	.0,.54
-	STRCPY  "AN17:"
-	movff	ADRESL,lo
-	movff	ADRESH,hi
-	output_16
-	STRCAT_PRINT " "
-	WIN_TINY	.80,.54
-	STRCPY  "RSSI:"
-	movff	rssi_value,lo
-    output_8
-	STRCAT_PRINT " "
+;	call	get_rssi_level              ; get rssi level
+;	WIN_TINY	.0,.54
+;	STRCPY  "AN17:"
+;	movff	ADRESL,lo
+;	movff	ADRESH,hi
+;	output_16
+;	STRCAT_PRINT " "
+;	WIN_TINY	.80,.54
+;	STRCPY  "RSSI:"
+;	movff	rssi_value,lo
+;    output_8
+;	STRCAT_PRINT " "
 
 	WIN_TINY	.0,.72
 	STRCPY  "HUD_Status:"
@@ -1329,6 +1361,11 @@ TFT_update_raw_data:
 	output_16
 	STRCAT_PRINT "mV   "
 
+;    call    disable_ir
+;    bsf     mcp_power
+;    btfss   mcp_power
+;    bra $-4
+;    call    get_analog_inputs
 	WIN_TINY	.0,.90
 	STRCPY  "Sens1.:"
     movff	o2_mv_sensor1+0,lo
@@ -1976,14 +2013,38 @@ TFT_get_compass:
 
 	global	TFT_debug_output
 TFT_debug_output:
+    btfss   c3_hardware
     return
-    WIN_TINY   .107,.0
+    WIN_TINY   .80,.0
 	call	TFT_standard_color
 	lfsr	FSR2,buffer
-    movff   char_O_ceiling+0,lo
-    movff   char_O_ceiling+1,hi
+    movff   flag10,lo
+    output_8
+	STRCAT_PRINT ""
+    return
+
+    WIN_TINY   .110,.0
+	call	TFT_standard_color
+	lfsr	FSR2,buffer
+    movff   o2_mv_sensor1+0,lo
+    movff   o2_mv_sensor1+1,hi
     output_16
 	STRCAT_PRINT ""
+
+    WIN_TINY   .110,.15
+	lfsr	FSR2,buffer
+    movff   o2_mv_sensor2+0,lo
+    movff   o2_mv_sensor2+1,hi
+    output_16
+	STRCAT_PRINT ""
+
+    WIN_TINY   .110,.30
+    lfsr	FSR2,buffer
+    movff   o2_mv_sensor3+0,lo
+    movff   o2_mv_sensor3+1,hi
+    output_16
+    STRCAT_PRINT ""
+
 	return
 
     global  TFT_divetimeout                     ; Show timeout counter
@@ -2285,7 +2346,19 @@ TFT_display_decotype_surface1:  ; Used from logbook!
 TFT_display_decotype_surface2:
     decfsz  lo,F
     bra     TFT_display_decotype_surface3
-    STRCAT_TEXT_PRINT	tDvCC	; CC
+    STRCAT_TEXT_PRINT   tDvCC	; CC
+    call	TFT_standard_color
+	WIN_TINY surf_decotype_column+.18,surf_decotype_row+.12
+
+    TSTOSS  opt_ccr_mode        ; =0: Fixed SP, =1: Sensor
+    bra     TFT_display_decotype_cc_fixed
+    ; Sensor mode
+    STRCPY_TEXT tCCRModeSensor ; Sensor
+    bra     TFT_display_decotype_cc_common
+TFT_display_decotype_cc_fixed:
+    STRCPY_TEXT tCCRModeFixedSP ; Fixed
+TFT_display_decotype_cc_common:
+    STRCAT_PRINT ""
     bra     TFT_display_decotype_exit
 TFT_display_decotype_surface3:
     decfsz  lo,F
