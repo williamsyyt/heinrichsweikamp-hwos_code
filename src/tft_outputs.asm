@@ -2013,6 +2013,7 @@ TFT_get_compass:
 
 	global	TFT_debug_output
 TFT_debug_output:
+    return
     btfss   c3_hardware
     return
     WIN_TINY   .80,.0
