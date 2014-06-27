@@ -1786,16 +1786,22 @@ TFT_surface_compass_heading:
 TFT_surface_compass_heading2:
     WIN_STD   surf_compass_head_column,surf_compass_head_row
 	call	TFT_standard_color
+TFT_surface_compass_heading_common:     ; Show "000° N"
     lfsr	FSR2,buffer
     movff	compass_heading+0,lo
     movff	compass_heading+1,hi
     call    TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
     bsf     leftbind
-    output_16
+    output_16dp .2      ; Result is "0.000"
     bcf     leftbind
+    ; rearrange figures to "000"
+    movff   buffer+2,buffer+0
+    movff   buffer+3,buffer+1
+    movff   buffer+4,buffer+2
+    lfsr	FSR2,buffer+3
     STRCAT  "° "
     rcall   tft_compass_cardinal        ; Add cardinal and ordinal to POSTINC2
-    STRCAT_PRINT "  "
+    STRCAT_PRINT " "
     return
 
     global  TFT_dive_compass_heading
@@ -1811,16 +1817,7 @@ TFT_dive_compass_heading:
 TFT_dive_compass_heading2:
     WIN_STD dive_compass_head_column,dive_compass_head_row
 	call	TFT_standard_color
-    lfsr	FSR2,buffer
-    movff	compass_heading+0,lo
-    movff	compass_heading+1,hi
-    call    TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
-    bsf     leftbind
-    output_16
-    bcf     leftbind
-    STRCAT  "° "
-    rcall   tft_compass_cardinal        ; Add cardinal and ordinal to POSTINC2
-    STRCAT_PRINT "   "
+    rcall   TFT_surface_compass_heading_common  ; Show "000° N"
 TFT_dive_compass_heading3:
     return              ; No graphical output (yet)
 
