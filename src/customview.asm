@@ -370,6 +370,11 @@ customview_init_view5:
 	bra		customview_toggle				; Yes, Call next view...
 	btfsc	FLAG_gauge_mode					; In Gauge mode?
 	bra		customview_toggle				; Yes, Call next view...
+
+    extern  char_I_deco_model
+    TSTOSS  char_I_deco_model               ; 0 = ZH-L16, 1 = ZH-L16-GF
+    bra		customview_toggle				; No GF info for non-GF modes
+
     call    TFT_gf_mask                     ; Setup Mask
     call    TFT_gf_info                     ; Show GF informations
     bra		customview_toggle_exit
