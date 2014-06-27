@@ -101,7 +101,7 @@ init_ostc3:
 	movlw	b'00000000'			; Init port
 	movwf	PORTH
 
-	movlw	b'10010011'			; 1= Input, RJ4 -> vusb_in, RJ5 -> power_sw2,  RJ6 -> CLK_MS5541, RJ7 -> MISO_MS5541
+	movlw	b'10011011'			; 1= Input, RJ4 -> vusb_in, RJ5 -> power_sw2,  RJ6 -> CLK_MS5541, RJ7 -> MISO_MS5541
 	movwf	TRISJ
 	movlw	b'00100000'			; Init port
 	movwf	PORTJ
