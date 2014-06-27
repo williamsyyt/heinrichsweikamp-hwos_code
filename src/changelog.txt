@@ -1,5 +1,6 @@
 New in 1.41:
 NEW: Support for C3 hardware
+CHANGE: Show heading with leading zeros
 
 New in 1.40:
 CHANGE: Minor language updates
