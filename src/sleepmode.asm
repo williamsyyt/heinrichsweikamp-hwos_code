@@ -116,6 +116,9 @@ onemin_sleep2:
 	return
 
 onesec_sleep:
+    btfss   c3_hardware
+    call    get_battery_voltage     ; Check for charger
+
 	incf	divemins+0,F 			; counts to #test_pressure_in_sleep (5)
 	movlw	d'5'
 	cpfsgt	divemins+0				; here: temp variable
