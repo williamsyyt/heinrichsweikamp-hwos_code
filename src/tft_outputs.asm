@@ -1706,7 +1706,7 @@ TFT_surface_decosettings:
 
     ; Display ZH-L16 sat/desat model.
     TEXT_SMALL  surf_gaslist_column,surf_gaslist_row,  tZHL16
-    WIN_TOP surf_gaslist_row+(surf_gaslist_spacing*.2)
+    WIN_TOP surf_gaslist_row+(surf_gaslist_spacing*.1)
     lfsr    FSR2,buffer
     movff   char_I_desaturation_multiplier,lo
     bsf     leftbind
@@ -1786,7 +1786,7 @@ TFT_surface_compass_heading:
 TFT_surface_compass_heading2:
     WIN_STD   surf_compass_head_column,surf_compass_head_row
 	call	TFT_standard_color
-TFT_surface_compass_heading_common:     ; Show "000° N"
+TFT_surface_compass_heading_com:     ; Show "000° N"
     lfsr	FSR2,buffer
     movff	compass_heading+0,lo
     movff	compass_heading+1,hi
@@ -1817,7 +1817,7 @@ TFT_dive_compass_heading:
 TFT_dive_compass_heading2:
     WIN_STD dive_compass_head_column,dive_compass_head_row
 	call	TFT_standard_color
-    rcall   TFT_surface_compass_heading_common  ; Show "000° N"
+    rcall   TFT_surface_compass_heading_com  ; Show "000° N"
 TFT_dive_compass_heading3:
     return              ; No graphical output (yet)
 
