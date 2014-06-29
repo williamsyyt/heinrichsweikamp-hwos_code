@@ -436,7 +436,6 @@ display_profile2:
     call        logbook_show_divenumber             ; Show the dive number in medium font
 
 	WIN_SMALL	logbook_date_column, logbook_date_row
-	lfsr		FSR2,buffer
     LOG_POINT_TO    log_date
 	call		ext_flash_byte_read_plus
 	movff		temp1,convert_value_temp+2		; Year
@@ -448,7 +447,6 @@ display_profile2:
 	STRCAT_PRINT	""
 
 	WIN_SMALL	logbook_time_column, logbook_time_row
-	lfsr		FSR2,buffer
 	call		ext_flash_byte_read_plus		; hour
 	movff		temp1,lo
 	call		ext_flash_byte_read_plus		; Minutes
@@ -521,7 +519,6 @@ display_profile2:
 
 display_profile_offset4:
 	WIN_SMALL	log_max_value_column,log_max_value_row
-	lfsr		FSR2,buffer
 
 	TSTOSS		opt_units			; 0=Meters, 1=Feets
 	bra			display_profile_offset4_metric
@@ -552,7 +549,6 @@ display_profile_offset4_common:
 	call		mult16x16				; result is in xC:2 !
 
 	WIN_SMALL	log_divetime_value_column,log_divetime_value_row
-	lfsr		FSR2,buffer
 	bsf			leftbind
 	output_16							; divetime minutes
 	movlw		LOW		d'600'
@@ -1448,7 +1444,6 @@ logbook_show_divenumber2:
 
 logbook_show_divenumber3:
 	WIN_MEDIUM	logbook_divenumer_column, logbook_divenumer_row
-	lfsr		FSR2,buffer
 	bsf			leftbind
 	output_16									; # of dive in logbook
 	bcf			leftbind
@@ -1501,7 +1496,6 @@ logbook_page2: ; Show more info
     call		ext_flash_byte_read_plus	; read surface pressure
     movff       temp1,hi
     WIN_TINY    MBAR_column,MBAR_row
-    lfsr        FSR2,buffer
 	bsf			leftbind
 	output_16							; Air pressure before dive
 	STRCAT_TEXT_PRINT    tMBAR
