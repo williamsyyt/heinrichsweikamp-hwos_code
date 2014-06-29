@@ -417,15 +417,6 @@ TFT_Display_FadeOut_0:
 
 ;=============================================================================
 
-start_common:
-        VARARGS_BEGIN
-            VARARGS_GET8    win_leftx2
-            VARARGS_GET8    win_top
-        VARARGS_END
-        return
-
-;=============================================================================
-
         global  box_std_block, box_black_block, box_color_block
 
 box_std_block:                          ; Use white color

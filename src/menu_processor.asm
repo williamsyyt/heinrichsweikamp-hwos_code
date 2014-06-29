@@ -122,10 +122,12 @@ menu_processor1:
 ; (re-)draw menu title.
 ;
 menu_processor_title:        
+        WIN_BOX_BLACK  .2,.23,.0,.160	; Clear Menu title
+        MENU_TITLE_FONT	.0, .2        	; Menu title positionning
+
         btfss   menu_flags,0            ; Static or dynmic title ?
         bra     menu_processor_static_title
 
-        lfsr    FSR2,buffer
         rcall   menu_processor_call_title ; add gas, detail and color.
         bra     menu_processor_title_1
 
@@ -135,8 +137,6 @@ menu_processor_static_title:
         call    strcpy_text
 
 menu_processor_title_1:
-        WIN_BOX_BLACK  .2,.23,.0,.160	; Clear Menu title
-        MENU_TITLE_FONT	.0, .2        	; Menu title positionning
         WIN_COLOR   color_greenish
         movf    FSR2L,W                 ; Get title length
         mullw   .9                      ; Convert to half pixels
