@@ -1533,7 +1533,6 @@ comm_send_string:
 	movwf	TXREG1
 	call	rs232_wait_tx					; Wait for UART
 	WIN_SMALL	comm_string_column, comm_string_row
-	lfsr	FSR2,buffer
 	movlw	.16
 	movwf	lo								; counter
 comm_send_string_loop:

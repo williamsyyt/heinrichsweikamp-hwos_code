@@ -303,6 +303,7 @@ start_common:
             VARARGS_GET8    win_leftx2
             VARARGS_GET8    win_top
         VARARGS_END
+        lfsr    FSR2,buffer             ; point to buffer here
         return
 
         END

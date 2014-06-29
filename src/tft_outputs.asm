@@ -340,20 +340,16 @@ TFT_show_color_schemes:         ; update the color schemes
     bsf     divemode            ; put in divemode
     call    TFT_divemask_color
     WIN_TINY  divemode_mask_depth_column,divemode_mask_depth_row+.40
-    lfsr	FSR2,buffer
     STRCAT_TEXT_PRINT	tDepth
     WIN_TINY  divemode_mask_maxdepth_column,divemode_mask_maxdepth_row+.40
-    lfsr	FSR2,buffer
     STRCAT_TEXT_PRINT	tMaxDepth
     WIN_TINY  divemode_mask_divetime_column,divemode_mask_divetime_row+.40
-    lfsr	FSR2,buffer
     STRCAT_TEXT_PRINT	tDivetime
 
     ; Show some demo screen
 
     ; Depth demo
     call	TFT_standard_color
-    lfsr	FSR2,buffer
 	WIN_MEDIUM	depth_column+.3,depth_row+.40
     movlw   LOW     .5172
     movwf   lo
@@ -369,7 +365,6 @@ TFT_show_color_schemes:         ; update the color schemes
     movwf   lo
     movlw   HIGH    .5172
     movwf   hi
-    lfsr    FSR2,buffer
 	PUTC    "."
 	movlw	d'4'
 	movwf	ignore_digits
@@ -380,7 +375,6 @@ TFT_show_color_schemes:         ; update the color schemes
 
     ; Max. Depth demo
     WIN_MEDIUM	max_depth_column,max_depth_row+.40
-	lfsr    FSR2,buffer
 	bsf     ignore_digit4			; no 0.1m
     bsf     leftbind
     movlw   LOW     .6349
@@ -392,7 +386,6 @@ TFT_show_color_schemes:         ; update the color schemes
     bcf     leftbind
 	; .1m in SMALL font
 	WIN_SMALL	max_depth_dm_column,max_depth_dm_row+.40
-    lfsr    FSR2,buffer
 	PUTC    "."
 	movlw	d'4'
 	movwf	ignore_digits
@@ -410,11 +403,9 @@ TFT_show_color_schemes:         ; update the color schemes
     movff   mins,lo
     clrf    hi
 	WIN_MEDIUM	divetime_column, divetime_row+.40
-	lfsr	FSR2,buffer
 	output_16_3                     ; displays only last three figures from a 16Bit value (0-999)
 	STRCAT_PRINT ""                 ; Show minutes in large font
 	WIN_SMALL  divetime_secs_column, divetime_secs_row+.40   		; left position for two sec figures
-	lfsr    FSR2,buffer
 	PUTC    ':'
 	bsf		leftbind
 	movff   secs,lo
@@ -429,13 +420,10 @@ TFT_show_color_schemes:         ; update the color schemes
 TFT_divemode_mask:					; Displays mask in Dive-Mode
     call    TFT_divemask_color
     WIN_TINY  divemode_mask_depth_column,divemode_mask_depth_row
-    lfsr	FSR2,buffer
     STRCAT_TEXT_PRINT	tDepth
     WIN_TINY  divemode_mask_maxdepth_column,divemode_mask_maxdepth_row
-    lfsr	FSR2,buffer
     STRCAT_TEXT_PRINT	tMaxDepth
     WIN_TINY  divemode_mask_divetime_column,divemode_mask_divetime_row
-    lfsr	FSR2,buffer
     STRCAT_TEXT_PRINT	tDivetime
     
     call	TFT_standard_color
@@ -454,7 +442,6 @@ TFT_display_velocity:						; With divA+0 = m/min
     TSTOSS  opt_units			; 0=Meters, 1=Feets
 	bra		TFT_display_velocity_metric
 ;TFT_display_velocity_imperial:
-	lfsr	FSR2,buffer
 	movff	divA+0,WREG						; divA+0 = m/min
 	mullw	.100							; PRODL:PRODH = mbar/min
 	movff	PRODL,lo
@@ -472,7 +459,6 @@ TFT_display_velocity:						; With divA+0 = m/min
     return
 
 TFT_display_velocity_metric:
-	lfsr	FSR2,buffer
 	movff	divA+0,lo						; divA+0 = m/min
 	movlw	'-'
 	btfsc	neg_flag
@@ -518,7 +504,6 @@ TFT_show_TTS_divemode:
 	movff	int_O_ascenttime+0,lo       ; TTS
 	movff	int_O_ascenttime+1,hi       ; on 16bits
 	WIN_MEDIUM  tts_value_column,tts_value_row
-	lfsr	FSR2,buffer
 	output_16_3					;Displays only 0...999
 	STRCAT_PRINT "'"
 	return
@@ -528,7 +513,6 @@ TFT_display_ndl:
     btfsc   divemode_menu               ; Is the dive mode menu shown?
     return                              ; Yes, return
 	WIN_MEDIUM	ndl_value_column,ndl_value_row
-	lfsr	FSR2,buffer
 	call	TFT_standard_color
 	movff	char_O_nullzeit,lo		; Get NDL from C-code
 	output_8
@@ -548,7 +532,6 @@ TFT_divemode_warning:
 
 ;TFT_divemode_warning_counter:
 ;    WIN_SMALL	warning_icon_column+.8,warning_icon_row+.13
-;	lfsr	FSR2,buffer
 ;    call	TFT_warnings_color
 ;    movff   warning_counter,lo
 ;    bsf     leftbind
@@ -622,7 +605,6 @@ TFT_display_deko:
     return                              ; Yes, return
 	WIN_MEDIUM	decostop_1st_stop_column,decostop_1st_stop_row
 	TFT_color_code		warn_ceiling    ; Color-code Output
-	lfsr	FSR2,buffer
 	movff	char_O_first_deco_depth,lo  ; Ceiling in m
 	rcall	TFT_display_deko_output_depth ; Outputs depth (stored in lo) to POSTINC2 with "m" or w/o (For ft)
 	movff	char_O_first_deco_time,lo   ; length of first stop in min
@@ -651,7 +633,6 @@ TFT_decoplan:
     return
 TFT_display_deko2:
 	WIN_SMALL	decostop_2nd_stop_column,decostop_2nd_stop_row
-	lfsr	FSR2,buffer
 	movff	char_O_deco_depth+1,lo  	; stop in m
 	bcf     lo,7                        ; Clear GAS_SWITCH bit
 	rcall	TFT_display_deko_output_depth ; Outputs depth (stored in lo) to POSTINC2 with "m" or w/o (For ft)
@@ -668,7 +649,6 @@ TFT_display_deko2:
 
 TFT_display_deko3:
 	WIN_SMALL	decostop_3rd_stop_column,decostop_3rd_stop_row
-	lfsr	FSR2,buffer
 	movff	char_O_deco_depth+2,lo  	; stop in m
 	bcf     lo,7                        ; Clear GAS_SWITCH bit
 	rcall	TFT_display_deko_output_depth ; Outputs depth (stored in lo) to POSTINC2 with "m" or w/o (For ft)
@@ -685,7 +665,6 @@ TFT_display_deko3:
 
 TFT_display_deko4:
 	WIN_SMALL	decostop_4th_stop_column,decostop_4th_stop_row
-	lfsr	FSR2,buffer
 	movff	char_O_deco_depth+3,lo  	; stop in m
 	bcf     lo,7                        ; Clear GAS_SWITCH bit
 	rcall	TFT_display_deko_output_depth ; Outputs depth (stored in lo) to POSTINC2 with "m" or w/o (For ft)
@@ -703,7 +682,6 @@ TFT_display_deko4:
 
 TFT_display_deko5:
 	WIN_SMALL	decostop_5th_stop_column,decostop_5th_stop_row
-	lfsr	FSR2,buffer
 	movff	char_O_deco_depth+4,lo  	; stop in m
 	bcf     lo,7                        ; Clear GAS_SWITCH bit
 	rcall	TFT_display_deko_output_depth ; Outputs depth (stored in lo) to POSTINC2 with "m" or w/o (For ft)
@@ -718,7 +696,6 @@ TFT_display_deko5:
 	return								; Done.
 TFT_display_deko6:
 	WIN_SMALL	decostop_6th_stop_column,decostop_6th_stop_row
-	lfsr	FSR2,buffer
 	movff	char_O_deco_depth+5,lo  	; stop in m
 	bcf     lo,7                        ; Clear GAS_SWITCH bit
 	rcall	TFT_display_deko_output_depth ; Outputs depth (stored in lo) to POSTINC2 with "m" or w/o (For ft)
@@ -733,7 +710,6 @@ TFT_display_deko6:
 	return								; Done.
 TFT_display_deko7:
 	WIN_SMALL	decostop_7th_stop_column,decostop_7th_stop_row
-	lfsr	FSR2,buffer
 	movff	char_O_deco_depth+6,lo  	; stop in m
 	bcf     lo,7                        ; Clear GAS_SWITCH bit
 	rcall	TFT_display_deko_output_depth ; Outputs depth (stored in lo) to POSTINC2 with "m" or w/o (For ft)
@@ -768,7 +744,6 @@ TFT_show_safety_stop2:
     bsf     safety_stop_active				; Set flag
 	rcall    TFT_attention_color            ; show in yellow
     WIN_MEDIUM	safetystop_column,safetystop_row
-	lfsr	FSR2,buffer
 	decf	safety_stop_countdown,F			; Reduce countdown
 	movff	safety_stop_countdown,lo
 	clrf	hi
@@ -807,22 +782,18 @@ TFT_dyn_gaslist:                            ; Show the dynamic gaslist
     call	TFT_standard_color
 
     WIN_SMALL dive_custom_dyn_mask_column1,dive_custom_dyn_mask_row1
-    lfsr	FSR2,buffer
     movlw   .1
     movwf   tft_gaslist_temp+0
     rcall   TFT_dyn_gaslist_common
     WIN_SMALL dive_custom_dyn_mask_column1,dive_custom_dyn_mask_row2
-    lfsr	FSR2,buffer
     incf    tft_gaslist_temp+0,F     ; +1
     movf    tft_gaslist_temp+0,W     ; into W
     rcall   TFT_dyn_gaslist_common
     WIN_SMALL dive_custom_dyn_mask_column2,dive_custom_dyn_mask_row1
-    lfsr	FSR2,buffer
     incf    tft_gaslist_temp+0,F     ; +1
     movf    tft_gaslist_temp+0,W     ; into W
     rcall   TFT_dyn_gaslist_common
     WIN_SMALL dive_custom_dyn_mask_column2,dive_custom_dyn_mask_row2
-    lfsr	FSR2,buffer
     incf    tft_gaslist_temp+0,F     ; +1
     movf    tft_gaslist_temp+0,W     ; into W
     rcall   TFT_dyn_gaslist_common
@@ -856,7 +827,6 @@ TFT_update_avr_stopwatch:
     SAFE_2BYTE_COPY  average_divesecs,lo
 	call	convert_time			; lo=secs, hi=mins
     WIN_MEDIUM  dive_avr_stop_column2,dive_avr_stop_row
-    lfsr    FSR2,buffer
     bsf     leftbind
 	movf	hi,W
 	movff	lo,hi
@@ -879,7 +849,6 @@ TFT_update_avr_stopwatch:
     call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
     call	convert_mbar_to_feet       	; convert value in lo:hi from mbar to feet
     WIN_MEDIUM  dive_avr_stop_column1,dive_avr_stop_row
-    lfsr    FSR2,buffer
     bsf     leftbind
     output_16                       ; yxz
     STRCAT_PRINT " "
@@ -889,7 +858,6 @@ TFT_update_avr_stopwatch:
     call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
     call	convert_mbar_to_feet       	; convert value in lo:hi from mbar to feet
     WIN_MEDIUM  dive_avr_stop_column3,dive_avr_stop_row
-    lfsr    FSR2,buffer
     output_16                       ; yxz
     bcf     leftbind
     STRCAT_PRINT " "
@@ -901,7 +869,6 @@ TFT_update_avr_stopwatch_metric:
     movff   avr_rel_pressure_total+1,hi
     call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
     WIN_MEDIUM  dive_avr_stop_column1,dive_avr_stop_row
-    lfsr    FSR2,buffer
     bsf     ignore_digit5         ; no cm
     output_16dp  .3               ; yxz.a
     STRCAT_PRINT ""
@@ -910,7 +877,6 @@ TFT_update_avr_stopwatch_metric:
     movff   avr_rel_pressure+1,hi
     call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
     WIN_MEDIUM  dive_avr_stop_column3,dive_avr_stop_row
-    lfsr    FSR2,buffer
     bsf     ignore_digit5         ; no cm
     output_16dp  .3               ; yxz.a
     bcf     leftbind
@@ -930,7 +896,6 @@ TFT_ceiling_mask:
 TFT_ceiling:
     call    TFT_standard_color
     WIN_MEDIUM  dive_ceiling_value_column,dive_ceiling_value_row
-    lfsr    FSR2,buffer
     movff   int_O_ceiling+0,lo
     movff   int_O_ceiling+1,hi
     call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
@@ -969,7 +934,6 @@ TFT_hud_voltages:                    ; Show HUD details
     WIN_SMALL .5,dive_hud_data_row
     movff   o2_mv_sensor1+0,lo
     movff   o2_mv_sensor1+1,hi
-    lfsr    FSR2,buffer
     bsf     leftbind
     output_16dp  .4         ; x.xx
     bcf     leftbind
@@ -977,7 +941,6 @@ TFT_hud_voltages:                    ; Show HUD details
     WIN_SMALL .55,dive_hud_data_row
     movff   o2_mv_sensor2+0,lo
     movff   o2_mv_sensor2+1,hi
-    lfsr    FSR2,buffer
     bsf     leftbind
     output_16dp  .4         ; x.xx
     bcf     leftbind
@@ -985,7 +948,6 @@ TFT_hud_voltages:                    ; Show HUD details
     WIN_SMALL .105,dive_hud_data_row
     movff   o2_mv_sensor3+0,lo
     movff   o2_mv_sensor3+1,hi
-    lfsr    FSR2,buffer
     bsf     leftbind
     output_16dp  .4         ; x.xx
     bcf     leftbind
@@ -1010,7 +972,6 @@ TFT_update_hud:
 TFT_update_hud1:
     WIN_MEDIUM dive_hud_sensor1_column,dive_hud_data_row
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
-    lfsr    FSR2,buffer
     clrf    hi
     output_16dp  .3         ; x.xx bar
     STRCAT_PRINT ""
@@ -1030,7 +991,6 @@ TFT_update_hud2:
 TFT_update_hud3:
     WIN_MEDIUM dive_hud_sensor2_column,dive_hud_data_row
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
-    lfsr    FSR2,buffer
     clrf    hi
     output_16dp  .3         ; x.xx bar
     STRCAT_PRINT ""
@@ -1050,7 +1010,6 @@ TFT_update_hud4:
 TFT_update_hud5:
     WIN_MEDIUM dive_hud_sensor3_column,dive_hud_data_row
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
-    lfsr    FSR2,buffer
     clrf    hi
     output_16dp  .3         ; x.xx bar
     STRCAT_PRINT ""
@@ -1073,7 +1032,6 @@ TFT_surface_hud:
     bra     TFT_surface_hud2 ; Skip Sensor 1
 TFT_surface_hud1:
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
-    lfsr    FSR2,buffer
     clrf    hi
     output_16dp  .3         ; x.xx bar
     STRCAT_PRINT ""
@@ -1087,7 +1045,6 @@ TFT_surface_hud2:
     bra     TFT_surface_hud4 ; Skip Sensor 2
 TFT_surface_hud3:
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
-    lfsr    FSR2,buffer
     clrf    hi
     output_16dp  .3         ; x.xx bar
     STRCAT_PRINT ""
@@ -1101,7 +1058,6 @@ TFT_surface_hud4:
     bra     TFT_surface_hud6 ; Skip Sensor 3
 TFT_surface_hud5:
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
-    lfsr    FSR2,buffer
     clrf    hi
     output_16dp  .3         ; x.xx bar
     STRCAT_PRINT ""
@@ -1115,7 +1071,6 @@ TFT_menu_hud:            ; Yes, update HUD data
     call    TFT_attention_color         ; show in yellow
     bsf     leftbind
     WIN_SMALL   surf_menu_sensor1_column,surf_menu_sensor1_row
-    lfsr    FSR2,buffer
     movff   o2_ppo2_sensor1,lo
     clrf    hi
     output_16dp  .3         ; x.xx bar
@@ -1125,7 +1080,6 @@ TFT_menu_hud:            ; Yes, update HUD data
     output_16dp  .4         ; xxx.y mV
     STRCAT_PRINT "mV "
     WIN_SMALL   surf_menu_sensor2_column,surf_menu_sensor2_row
-    lfsr    FSR2,buffer
     movff   o2_ppo2_sensor2,lo
     clrf    hi
     output_16dp  .3         ; x.xx bar
@@ -1135,7 +1089,6 @@ TFT_menu_hud:            ; Yes, update HUD data
     output_16dp  .4         ; xxx.y mV
     STRCAT_PRINT "mV "
     WIN_SMALL   surf_menu_sensor3_column,surf_menu_sensor3_row
-    lfsr    FSR2,buffer
     movff   o2_ppo2_sensor3,lo
     clrf    hi
     output_16dp  .3         ; x.xx bar
@@ -1151,7 +1104,6 @@ TFT_menu_hud:            ; Yes, update HUD data
     btfss   s8_digital
     return                  ; Not for analog
 TFT_menu_hud_2:
-    lfsr    FSR2,buffer
     STRCPY  "Batt:"
     movff   hud_battery_mv+0,lo      ; in mV
     movff   hud_battery_mv+1,hi      ; in mV
@@ -1166,19 +1118,16 @@ TFT_menu_hud2:            ; Yes, update mV data
     call    TFT_attention_color         ; show in yellow
     bsf     leftbind
     WIN_SMALL   surf_menu_sensor1_column,surf_menu2_sensor1_row
-    lfsr    FSR2,buffer
     movff   o2_mv_sensor1+0,lo      ; in 0.1mV steps
     movff   o2_mv_sensor1+1,hi      ; in 0.1mV steps
     output_16dp  .4         ; xxx.y mV
     STRCAT_PRINT "mV  "
     WIN_SMALL   surf_menu_sensor2_column,surf_menu2_sensor2_row
-    lfsr    FSR2,buffer
     movff   o2_mv_sensor2+0,lo      ; in 0.1mV steps
     movff   o2_mv_sensor2+1,hi      ; in 0.1mV steps
     output_16dp  .4         ; xxx.y mV
     STRCAT_PRINT "mV  "
     WIN_SMALL   surf_menu_sensor3_column,surf_menu2_sensor3_row
-    lfsr    FSR2,buffer
     movff   o2_mv_sensor3+0,lo      ; in 0.1mV steps
     movff   o2_mv_sensor3+1,hi      ; in 0.1mV steps
     output_16dp  .4         ; xxx.y mV
@@ -1192,7 +1141,6 @@ TFT_clock:
 	WIN_SMALL  surf_clock_column,surf_clock_row
 TFT_clock2:                         ; called from divemode clock
    	call	TFT_standard_color
-	lfsr    FSR2,buffer
 	movff	hours,lo
 	output_99
 	movlw	':'
@@ -1209,7 +1157,6 @@ TFT_show_time_date_menu:
     call    speed_fastest
 	WIN_SMALL  .15,.30
    	call	TFT_standard_color
-	lfsr    FSR2,buffer
 	movff	hours,lo
 	output_99
 	PUTC	':'
@@ -1819,7 +1766,6 @@ TFT_surface_compass_heading2:
     WIN_STD   surf_compass_head_column,surf_compass_head_row
 	call	TFT_standard_color
 TFT_surface_compass_heading_com:     ; Show "000° N"
-    lfsr	FSR2,buffer
     movff	compass_heading+0,lo
     movff	compass_heading+1,hi
     call    TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
@@ -1875,7 +1821,6 @@ TFT_dive_compass_heading_graph1:
     movff   sub_c+0,lo
     movff   sub_c+1,hi
 	call	TFT_standard_color
-    lfsr	FSR2,buffer
     bsf     leftbind
     output_16
     bcf     leftbind
@@ -2148,7 +2093,6 @@ TFT_temp_surfmode:
 	return
 
 TFT_temp_surfmode_metric:
-	lfsr	FSR2,buffer
 	call	TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
 	movlw	d'3'
 	movwf	ignore_digits
@@ -2240,7 +2184,6 @@ TFT_temp_divemode_common:
 	return                          ; Done.
 
 TFT_temp_divemode_metric:
-	lfsr	FSR2,buffer
 	call	TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
 	movlw	d'3'
 	movwf	ignore_digits
@@ -2255,7 +2198,6 @@ TFT_active_setpoint:         ; Show setpoint
     btfsc   is_bailout                  ; =1: Bailout
     bra     TFT_active_setpoint_bail    ; Show "Bailout" instead of Setpoint
 
-    lfsr	FSR2,buffer
 	movff	char_I_const_ppO2,lo
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
 	clrf	hi
@@ -2292,7 +2234,6 @@ TFT_active_setpoint_diluent:
 	return                              ; Done.
 
 TFT_show_dil_divemode2:
-	lfsr	FSR2,buffer
     call    customview_show_mix         ; Put "Nxlo", "Txlo/hi", "Air" or "O2" into Postinc2
 	STRCAT_PRINT ""
 	return
@@ -2331,7 +2272,6 @@ TFT_active_gas_divemode:				; Display gas/Setpoint
 	return                              ; Done.
 
 TFT_active_gas_divemode2:
-	lfsr	FSR2,buffer
     call    customview_show_mix         ; Put "Nxlo", "Txlo/hi", "Air" or "O2" into Postinc2
 	STRCAT_PRINT ""
 	return
@@ -2340,7 +2280,6 @@ TFT_active_gas_divemode2:
 TFT_display_decotype_surface:
 	WIN_STD  surf_decotype_column,surf_decotype_row
     WIN_COLOR	color_lightblue
-    lfsr	FSR2,buffer
     movff   opt_dive_mode,lo        ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
     tstfsz  lo
     bra     TFT_display_decotype_surface2
@@ -2398,34 +2337,29 @@ TFT_splist_surfmode:
     bsf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
     ;SP 1
     WIN_SMALL surf_gaslist_column,surf_gaslist_row
-    lfsr	FSR2,buffer
     clrf    PRODL
     call    gaslist_strcat_setpoint     ; Show SP#+1 of PRODL#
     STRCAT_PRINT ""
     ;SP 2
     WIN_SMALL surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.1)
-    lfsr	FSR2,buffer
     movlw   .1
     movwf   PRODL
     call    gaslist_strcat_setpoint     ; Show SP#+1 of PRODL#
     STRCAT_PRINT ""
     ;SP 3
     WIN_SMALL surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.2)
-    lfsr	FSR2,buffer
     movlw   .2
     movwf   PRODL
     call    gaslist_strcat_setpoint     ; Show SP#+1 of PRODL#
     STRCAT_PRINT ""
     ;SP 4
     WIN_SMALL surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.3)
-    lfsr	FSR2,buffer
     movlw   .3
     movwf   PRODL
     call    gaslist_strcat_setpoint     ; Show SP#+1 of PRODL#
     STRCAT_PRINT ""
     ;SP 5
     WIN_SMALL surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.4)
-    lfsr	FSR2,buffer
     movlw   .4
     movwf   PRODL
     call    gaslist_strcat_setpoint     ; Show SP#+1 of PRODL#
@@ -2440,35 +2374,30 @@ TFT_gaslist_surfmode:				; Displays Gas List
     extern  gaslist_strcat_gas_mod
     ;Gas 1
     WIN_SMALL surf_gaslist_column,surf_gaslist_row
-    lfsr	FSR2,buffer
     movlw   .0
     movwf   PRODL
     call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
     STRCAT_PRINT ""
     ;Gas 2
     WIN_SMALL surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.1)
-    lfsr	FSR2,buffer
     movlw   .1
     movwf   PRODL
     call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
     STRCAT_PRINT ""
     ;Gas 3
     WIN_SMALL surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.2)
-    lfsr	FSR2,buffer
     movlw   .2
     movwf   PRODL
     call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
     STRCAT_PRINT ""
     ;Gas 4
     WIN_SMALL surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.3)
-    lfsr	FSR2,buffer
     movlw   .3
     movwf   PRODL
     call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
     STRCAT_PRINT ""
     ;Gas 5
     WIN_SMALL surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.4)
-    lfsr	FSR2,buffer
     movlw   .4
     movwf   PRODL
     call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
@@ -2482,35 +2411,30 @@ TFT_dillist_surfmode:				; Displays Diluent List
     bsf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
     ;Dil 1
     WIN_SMALL surf_gaslist_column,surf_gaslist_row
-    lfsr	FSR2,buffer
     movlw   .5
     movwf   PRODL
     call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
     STRCAT_PRINT ""
     ;Dil 2
     WIN_SMALL surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.1)
-    lfsr	FSR2,buffer
     movlw   .6
     movwf   PRODL
     call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
     STRCAT_PRINT ""
     ;Dil 3
     WIN_SMALL surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.2)
-    lfsr	FSR2,buffer
     movlw   .7
     movwf   PRODL
     call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
     STRCAT_PRINT ""
     ;Dil 4
     WIN_SMALL surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.3)
-    lfsr	FSR2,buffer
     movlw   .8
     movwf   PRODL
     call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
     STRCAT_PRINT ""
     ;Dil 5
     WIN_SMALL surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.4)
-    lfsr	FSR2,buffer
     movlw   .9
     movwf   PRODL
     call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
@@ -2528,7 +2452,6 @@ TFT_depth:
 	bra		TFT_depth_metric
 ;TFT_depth_imperial
 	WIN_LARGE	depth_feet_column,depth_feet_row
-	lfsr    FSR2,buffer
 	TFT_color_code	warn_depth			; Color-code the output
 
     clrf    sub_a+1                     ; Display 0ft if lower then 30cm
@@ -2569,7 +2492,6 @@ TFT_depth_metric:
 	cpfslt	hi
     bra		depth_greater_99_84mtr
 
-	lfsr    FSR2,buffer
 	movlw	HIGH	d'1000'
 	movwf	sub_a+1
 	movlw	LOW		d'1000'
@@ -2613,7 +2535,6 @@ tft_depth3:
     SAFE_2BYTE_COPY rel_pressure, lo
 	call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
 	
-    lfsr    FSR2,buffer
 	PUTC    "."
 	movlw	HIGH	d'30'			; Display 0.0m if lower then 30cm
 	movwf	sub_a+1
@@ -2765,7 +2686,6 @@ TFT_update_surf_press:
     WIN_SMALL   surf_press_column,surf_press_row
 	call	TFT_standard_color
     SAFE_2BYTE_COPY amb_pressure, lo
-	lfsr	FSR2,buffer
 	movff	lo,sub_a+0
 	movff	hi,sub_a+1
 	movff	last_surfpressure_30min+0,sub_b+0
@@ -2812,7 +2732,6 @@ TFT_update_batt_voltage:
     movff   batt_percent,lo         ; Get battery percent
     TFT_color_code		warn_battery; Color-code battery percent
 	WIN_TINY batt_percent_column,batt_percent_row
-	lfsr    FSR2,buffer
 	bsf		leftbind
 	output_8
 	bcf		leftbind
@@ -2822,7 +2741,6 @@ TFT_update_batt_voltage:
     STRCAT_PRINT	""
 	call	TFT_standard_color
 	WIN_TINY batt_voltage_column,batt_voltage_row
-	lfsr    FSR2,buffer
 	movff	batt_voltage+0,lo
 	movff	batt_voltage+1,hi
 	bsf		leftbind
@@ -2838,7 +2756,6 @@ TFT_update_batt_voltage:
 ;update_battery_debug:
 ;	call	TFT_standard_color
 ;	WIN_TINY .70,.0
-;	lfsr    FSR2,buffer
 ;	movff	battery_gauge+5,xC+3
 ;	movff	battery_gauge+4,xC+2
 ;	movff	battery_gauge+3,xC+1
@@ -2968,7 +2885,6 @@ TFT_convert_date_short1:
 TFT_date:
     WIN_SMALL  surf_date_column,surf_date_row				; Init new Wordprocessor
 	call	TFT_standard_color
-	lfsr	FSR2,buffer
 	movff	month,convert_value_temp+0
 	movff	day,convert_value_temp+1
 	movff	year,convert_value_temp+2
@@ -2991,7 +2907,6 @@ TFT_max_pressure3:
 ;TFT_max_pressure2_imperial
 	call	convert_mbar_to_feet              	; convert value in lo:hi from mbar to feet
 	WIN_MEDIUM	max_depth_feet_column,max_depth_feet_row
-	lfsr	FSR2,buffer
 	call	TFT_standard_color
 	output_16_3
 	STRCAT_PRINT ""
@@ -3012,7 +2927,6 @@ TFT_max_pressure2_metric:
 	cpfslt	hi
     bra		max_depth_greater_99_84mtr
 
-	lfsr    FSR2,buffer
 	movlw	HIGH	d'1000'
 	movwf	sub_a+1
 	movlw	LOW		d'1000'
@@ -3056,7 +2970,6 @@ tft_max_depth3:
     SAFE_2BYTE_COPY max_pressure, lo
 	call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
 
-    lfsr    FSR2,buffer
 	PUTC    "."
 
 	movlw	d'4'
@@ -3109,14 +3022,12 @@ TFT_display_apnoe_last_max:
 ;TFT_display_apnoe_last_max_imperial
 	call	convert_mbar_to_feet              	; convert value in lo:hi from mbar to feet
 	WIN_MEDIUM	apnoe_last_max_depth_column,apnoe_last_max_depth_row
-	lfsr	FSR2,buffer
 	output_16
 	STRCAT_PRINT ""
 	return
 
 TFT_display_apnoe_last_m_metric:
 	WIN_MEDIUM	apnoe_last_max_depth_column,apnoe_last_max_depth_row
-	lfsr	FSR2,buffer
 	bsf		ignore_digit5		; do not display 1cm depth
 	output_16dp	d'3'
 	STRCAT_PRINT ""
@@ -3143,13 +3054,11 @@ TFT_divemins:
 
 TFT_divemins1:
 	WIN_MEDIUM	divetime_column, divetime_row
-	lfsr	FSR2,buffer
 	output_16_3                     ; displays only last three figures from a 16Bit value (0-999)
 	call	TFT_standard_color
 	STRCAT_PRINT ""                 ; Show minutes in large font
 
 	WIN_SMALL  divetime_secs_column, divetime_secs_row   		; left position for two sec figures
-	lfsr    FSR2,buffer
 	PUTC    ':'
 	bsf		leftbind
 	movff   divesecs,lo
@@ -3160,7 +3069,6 @@ TFT_divemins1:
 
 TFT_divemins2:
 	WIN_MEDIUM	divetime_minsonly_column, divetime_row
-	lfsr	FSR2,buffer
 	output_16
 	call	TFT_standard_color
 	STRCAT_PRINT ""                 ; Show minutes in large font
@@ -3176,7 +3084,6 @@ TFT_display_apnoe_surface:
 	call	TFT_standard_color
 	WIN_MEDIUM	surface_time_apnoe_column, surface_time_apnoe_row
 	movff	apnoe_surface_mins,lo
-	lfsr	FSR2,buffer
 	output_8
     PUTC    ':'
 	movff	apnoe_surface_secs,lo
@@ -3195,12 +3102,10 @@ TFT_display_apnoe_descent:		; Descent divetime
 	movff	apnoe_mins,lo
     clrf    hi
 	WIN_MEDIUM	divetime_column, divetime_row
-	lfsr	FSR2,buffer
 	output_16_3                     ; displays only last three figures from a 16Bit value (0-999)
 	call	TFT_standard_color
 	STRCAT_PRINT ""                 ; Show minutes in large font
 	WIN_SMALL  divetime_secs_column, divetime_secs_row   		; left position for two sec figures
-	lfsr    FSR2,buffer
 	PUTC    ':'
 	bsf		leftbind
 	movff	apnoe_secs,lo
@@ -3216,12 +3121,10 @@ TFT_display_apnoe_descent:		; Descent divetime
 	movff	divemins,lo
     clrf    hi
 	WIN_MEDIUM	apnoe_total_divetime_column, apnoe_total_divetime_row
-	lfsr	FSR2,buffer
 	output_16_3                     ; displays only last three figures from a 16Bit value (0-999)
 	call	TFT_standard_color
 	STRCAT_PRINT ""                 ; Show minutes in large font
 	WIN_SMALL  apnoe_total_divetime_secs_column, apnoe_total_divetime_secs_row   		; left position for two sec figures
-	lfsr    FSR2,buffer
 	PUTC    ':'
 	bsf		leftbind
 	movff	divesecs,lo
@@ -3567,7 +3470,6 @@ TFT_gf_mask:
     call	TFT_standard_color
 
     WIN_STD   dive_gf_column,dive_gf_row
-    lfsr	FSR2,buffer
     bsf     leftbind
     movff   opt_GF_low,lo
     output_8
@@ -3584,7 +3486,6 @@ TFT_gf_mask:
     call    TFT_disabled_color
 
     WIN_STD   dive_agf_column,dive_agf_row
-    lfsr	FSR2,buffer
     movff   opt_aGF_low,lo
     output_8
     PUTC    "/"
@@ -3609,7 +3510,6 @@ TFT_gf_info:
 	decfsz	hi,F		; jump over next line if char_I_deco_model == 1
 	movff	char_O_relative_gradient_GF,lo		; gradient factor relative (GF model)
     WIN_STD   dive_currentgf_column,dive_currentgf_row
-    lfsr	FSR2,buffer
     output_8
     STRCAT_PRINT   "%"
     return
@@ -3634,7 +3534,6 @@ TFT_ead_end_tissues_clock:
     WIN_SMALL   dive_clock_column,dive_clock_row
     call    TFT_clock2                          ; print clock
 ;    WIN_SMALL   dive_endtime_column,dive_endtime_row
-;	lfsr	FSR2,buffer
 ;
 ;    btfss	decostop_active             ; Already in nodeco mode ?
 ;	bra     TFT_ead_end_tissues_clock2  ; No, overwrite with some spaces
