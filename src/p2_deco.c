@@ -87,6 +87,7 @@
 // 2013/05/08: [jDG] A. Salm remark: NOAA tables for CNS are in ATA, not bar.
 // 2013/12/21: [jDG] Fix CNS calculation in decoplan w/o marked gas switch
 // 2014/06/16: [jDG] Fix Helium diluant. Fix volumes with many travel mix.
+// 2014/06/29: [mH] Compute int_O_ceiling
 //
 // TODO:
 //
@@ -941,6 +942,12 @@ static void calc_hauptroutine(void)
 
     calc_hauptroutine_update_tissues();
     calc_gradient_factor();
+
+    // Fill int_O_ceiling if ceiling is below the surface
+    if ((calc_lead_tissue_limit-pres_surface)>0)
+        int_O_ceiling = (short)((calc_lead_tissue_limit-pres_surface)*1000);
+    else
+        int_O_ceiling = 0;
 
     // toggle between calculation for nullzeit (bottom time),
     //                deco stops

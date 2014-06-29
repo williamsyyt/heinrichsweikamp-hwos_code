@@ -136,8 +136,10 @@ onesec_sleep:
 	btfsc	neg_flag				; Wake up from Sleep?
 	bra		onesec_sleep1a			; Yes, skip button checks, wake up!
 
+    btfsc   c3_hardware
+    bra     onesec_sleep1           ; No wake-up with c3 hardware
     btfsc   vusb_in                 ; USB plugged in?
-	bra		onesec_sleep1a			; Yes, skip button checks, wake up!
+ 	bra		onesec_sleep1a			; Yes, skip button checks, wake up!
 
 onesec_sleep1:
 	bcf		onesecupdate			; all done.

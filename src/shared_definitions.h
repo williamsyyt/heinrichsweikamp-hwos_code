@@ -119,7 +119,7 @@ TAB_UCHAR (char_O_tissue_N2_saturation, NUM_COMP); // Nitrogen compartiment desa
 TAB_UCHAR (char_O_tissue_He_saturation, NUM_COMP); // Helium compartiment desaturation time, in min.
 
 TAB_UINT (int_O_gas_volumes, 5);            // Volumes evaluation for each gas tank, in 0.1 liters.
-VAR_UINT (char_O_ceiling);                  // in mbar
+VAR_UINT (int_O_ceiling);                  // in mbar
 
 #ifdef __18CXX
     //---- BANK 4 DATA -------------------------------------------------------

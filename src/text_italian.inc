@@ -219,6 +219,7 @@
     TCODE   tGFactors,      "Valori GF"     ; GF Values
     TCODE   taGFactors,     "Valori aGF"    ; aGF Values
     TCODE   tGFInfo,        "Info GF"       ; GF Info
+    TCODE   tCeiling,       "Ceiling"       ; Ceiling
 
 ; Divemode menu
     TCODE   tDivePreMenu,   "Menu?"         ; Menu?

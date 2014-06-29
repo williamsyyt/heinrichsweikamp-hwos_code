@@ -105,6 +105,12 @@
 #DEFINE dive_hud_sensor2_column     .62
 #DEFINE dive_hud_sensor3_column     .118
 
+; Customview Ceiling
+#DEFINE dive_ceiling_text_row       divemode_customview_row+.1
+#DEFINE dive_ceiling_text_column    .66
+#DEFINE dive_ceiling_value_row      divemode_customview_row+.18
+#DEFINE dive_ceiling_value_column   .64
+
 ; Customview GF
 #DEFINE dive_gf_text_row            divemode_customview_row+.1
 #DEFINE dive_gf_column1             .8

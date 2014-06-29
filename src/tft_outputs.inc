@@ -100,6 +100,8 @@ TFT_color_code macro color_code_temp
     extern  TFT_hud_voltages                    ; Show HUD details
     extern  TFT_show_safety_stop                ; Show the safety stop
     extern  TFT_clear_decoarea                  ; Cleanup deco area on screen
+    extern  TFT_ceiling_mask                    ; The ceiling mask
+    extern  TFT_ceiling                         ; Ceiling
 
 ; Misc
 	extern	TFT_standard_color

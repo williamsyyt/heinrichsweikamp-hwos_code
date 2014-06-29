@@ -46,6 +46,8 @@ customview_second:
 	bra		customview_1sec_view7
 	dcfsnz	WREG,F
 	bra		customview_1sec_view8
+	dcfsnz	WREG,F
+	bra		customview_1sec_view9
 	; Menupos3=0, do nothing
 	return
 
@@ -73,6 +75,10 @@ customview_1sec_view7:                      ; Dynamic gaslist
 customview_1sec_view8:                      ; Sensor voltages
     call    TFT_hud_voltages                ; Show HUD details
     return
+customview_1sec_view9:                      ; Ceiling
+    call    TFT_ceiling                     ; Show Ceiling
+    return
+
 
 ;=============================================================================
 ; Do every-minute tasks for the custom view area
@@ -296,7 +302,7 @@ menuview_view6:
 customview_toggle:
 	bcf		switch_right
 	incf	menupos3,F			            ; Number of customview to show
-	movlw	d'8'							; Max number of customsviews in divemode
+	movlw	d'9'							; Max number of customsviews in divemode
 	cpfsgt	menupos3			            ; Max reached?
 	bra		customview_mask		            ; No, show
 customview_toggle_reset:					; Timeout occured
@@ -323,6 +329,8 @@ customview_mask:
 	bra		customview_init_view7           ; Dynamic gaslist
 	dcfsnz	WREG,F
 	bra		customview_init_view8           ; HUD voltages
+	dcfsnz	WREG,F
+	bra		customview_init_view9           ; Ceiling
 customview_init_nocustomview:
     call    I2C_sleep_accelerometer         ; Stop accelerometer
     call    I2C_sleep_compass               ; Stop compass
@@ -401,6 +409,16 @@ customview_init_view8:                      ; Sensor millivolts
     call    TFT_hud_mask                    ; Setup HUD mask
     call    TFT_hud_voltages                ; Show HUD details
     bra		customview_toggle_exit
+
+customview_init_view9:                      ; Ceiling
+	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
+	bra		customview_toggle				; yes, Call next view...
+	btfsc	FLAG_gauge_mode					; In Gauge mode?
+	bra		customview_toggle				; Yes, Call next view...
+    call    TFT_ceiling_mask                ; Setup mask
+    call    TFT_ceiling                     ; Show Ceiling
+    bra		customview_toggle_exit
+
 
 customview_toggle_exit:
 	call	TFT_standard_color
