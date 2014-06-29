@@ -918,9 +918,42 @@ TFT_update_avr_stopwatch_metric:
     STRCAT_PRINT ""
     return
 
+    global  TFT_ceiling_mask                        ; The ceiling mask
+TFT_ceiling_mask:
+    call    TFT_divemask_color
+    WIN_TINY  dive_ceiling_text_column,dive_ceiling_text_row
+    STRCPY_TEXT_PRINT tCeiling
+    call	TFT_standard_color
+    return
+
+    global  TFT_ceiling                             ; Ceiling
+TFT_ceiling:
+    call    TFT_standard_color
+    WIN_MEDIUM  dive_ceiling_value_column,dive_ceiling_value_row
+    lfsr    FSR2,buffer
+    movff   int_O_ceiling+0,lo
+    movff   int_O_ceiling+1,hi
+    call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
+    bsf     leftbind
+    TSTOSS  opt_units   			; 0=m, 1=ft
+	bra		TFT_ceiling_metric
+;TFT_ceiling_imperial
+    call	convert_mbar_to_feet       	; convert value in lo:hi from mbar to feet
+    output_16                       ; yxz
+    bcf     leftbind
+    STRCAT_PRINT " "
+    return
+
+TFT_ceiling_metric:
+    bsf     ignore_digit5         ; no cm
+    output_16dp  .3               ; yxz.a
+    bcf     leftbind
+    bcf     ignore_digit5
+    STRCAT_PRINT " "
+    return
+
     global  TFT_hud_mask                        ; The HUD mask
 TFT_hud_mask:
-    ; The mask
     call    TFT_divemask_color
     WIN_TINY  dive_custom_hud_column1,dive_custom_hud_row
     STRCPY_TEXT_PRINT tDiveHudMask1
@@ -933,7 +966,6 @@ TFT_hud_mask:
 
     global  TFT_hud_voltages
 TFT_hud_voltages:                    ; Show HUD details
-    call	TFT_standard_color
     WIN_SMALL .5,dive_hud_data_row
     movff   o2_mv_sensor1+0,lo
     movff   o2_mv_sensor1+1,hi
@@ -2011,39 +2043,14 @@ TFT_get_compass:
 	global	TFT_debug_output
 TFT_debug_output:
     return
-    btfss   c3_hardware
-    return
     WIN_TINY   .80,.0
 	call	TFT_standard_color
 	lfsr	FSR2,buffer
-    movff   flag10,lo
-    output_8
+    movff   int_O_ceiling+0,lo
+    movff   int_O_ceiling+1,hi
+    output_16
 	STRCAT_PRINT ""
     return
-
-    WIN_TINY   .110,.0
-	call	TFT_standard_color
-	lfsr	FSR2,buffer
-    movff   o2_mv_sensor1+0,lo
-    movff   o2_mv_sensor1+1,hi
-    output_16
-	STRCAT_PRINT ""
-
-    WIN_TINY   .110,.15
-	lfsr	FSR2,buffer
-    movff   o2_mv_sensor2+0,lo
-    movff   o2_mv_sensor2+1,hi
-    output_16
-	STRCAT_PRINT ""
-
-    WIN_TINY   .110,.30
-    lfsr	FSR2,buffer
-    movff   o2_mv_sensor3+0,lo
-    movff   o2_mv_sensor3+1,hi
-    output_16
-    STRCAT_PRINT ""
-
-	return
 
     global  TFT_divetimeout                     ; Show timeout counter
 TFT_divetimeout:
