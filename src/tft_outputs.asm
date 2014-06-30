@@ -2471,7 +2471,7 @@ TFT_depth:
     call    TFT_fillup_with_spaces  ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""					; Display feet
     return
-	
+
 depth_less_0.3mtr_feet:
 	STRCAT_PRINT "0  "				; manual zero
 	return
@@ -2522,7 +2522,6 @@ TFT_depth_metric:
 	bra		tft_depth3
 
 tft_depth2:
-	WIN_LARGE	depth_column,depth_row
 	STRCAT	"0"
 
 tft_depth3:
@@ -2534,7 +2533,7 @@ tft_depth3:
 
     SAFE_2BYTE_COPY rel_pressure, lo
 	call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
-	
+
 	PUTC    "."
 	movlw	HIGH	d'30'			; Display 0.0m if lower then 30cm
 	movwf	sub_a+1

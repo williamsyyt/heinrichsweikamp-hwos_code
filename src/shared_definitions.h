@@ -90,7 +90,6 @@ bank3   udata_ovr  0x300
 #define NUM_STOPS   0x20
 #define NUM_GAS     5
 
-VAR_UINT  (int_O_gtissue_limit);
 VAR_UINT  (int_O_gtissue_press);
 VAR_UINT  (int_O_desaturation_time);       // 
 VAR_UINT  (int_O_ascenttime);              // TTS (in minutes)

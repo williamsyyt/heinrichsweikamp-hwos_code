@@ -943,12 +943,6 @@ static void calc_hauptroutine(void)
     calc_hauptroutine_update_tissues();
     calc_gradient_factor();
 
-    // Fill int_O_ceiling if ceiling is below the surface
-    if ((calc_lead_tissue_limit-pres_surface)>0)
-        int_O_ceiling = (short)((calc_lead_tissue_limit-pres_surface)*1000);
-    else
-        int_O_ceiling = 0;
-
     // toggle between calculation for nullzeit (bottom time),
     //                deco stops
     //                and more deco stops (continue)
@@ -1139,7 +1133,12 @@ void calc_hauptroutine_update_tissues(void)
     // Calc limit for surface, ie. GF_high.
     calc_limit();
 
-    int_O_gtissue_limit = (short)(calc_lead_tissue_limit * 1000);
+    // Fill int_O_ceiling if ceiling is below the surface
+    if ((calc_lead_tissue_limit-pres_surface)>0)
+        int_O_ceiling = (short)((calc_lead_tissue_limit-pres_surface)*1000);
+    else
+        int_O_ceiling = 0;
+
     int_O_gtissue_press = (short)((pres_tissue_N2[char_O_gtissue_no] + pres_tissue_He[char_O_gtissue_no]) * 1000);
 }
 
