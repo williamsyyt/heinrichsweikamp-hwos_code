@@ -1,8 +1,10 @@
 New in 1.41:
+- Beta Version -
 NEW: Ceiling display (GF_hi based) in divemode
 NEW: Support for C3 hardware
 CHANGE: Show heading with leading zeros
 BUGFIX: Do not show "GF info" for non-GF modes
+BUGFIX: Minor display allignment changes
 
 New in 1.40:
 CHANGE: Minor language updates
