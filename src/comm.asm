@@ -605,39 +605,39 @@ comm_set_time:
 	call	rs232_wait_tx					; wait for UART
 	call	rs232_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
-	return                          		; No, abort!
+	bra		comm_download_mode0             ; No, abort
 	movff	RCREG1, hours
 	movlw	d'24'
 	cpfslt	hours
 	clrf	hours
 	call	rs232_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
-	return                          		; No, abort!
+	bra		comm_download_mode0             ; No, abort
 	movff	RCREG1, mins
 	movlw	d'60'
 	cpfslt	mins
 	clrf	mins
 	call	rs232_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
-	return                          		; No, abort!
+	bra		comm_download_mode0             ; No, abort
 	movff	RCREG1, secs
 	movlw	d'60'
 	cpfslt	secs
 	clrf	secs
 	call	rs232_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
-	return                          		; No, abort!
+	bra		comm_download_mode0             ; No, abort
 	movff	RCREG1, month
 	movlw	d'13'
 	cpfslt	month
 	movwf	month
 	call	rs232_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
-	return                          		; No, abort!
+	bra		comm_download_mode0             ; No, abort
 	call	comm_check_day                  ; Check day
 	call	rs232_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
-	return                          		; No, abort!
+	bra		comm_download_mode0             ; No, abort
 	movff	RCREG1, year
 	movlw	d'100'
 	cpfslt	year
