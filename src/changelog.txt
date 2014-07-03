@@ -1,3 +1,6 @@
+New in 1.42:
+- Beta Version -
+
 New in 1.41:
 - Beta Version -
 NEW: Ceiling display (GF_hi based) in divemode
