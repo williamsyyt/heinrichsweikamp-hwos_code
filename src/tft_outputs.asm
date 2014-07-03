@@ -729,6 +729,9 @@ TFT_display_deko7:
 
     global  TFT_show_safety_stop
 TFT_show_safety_stop:
+    btfsc   divemode_menu               ; Is the dive mode menu shown?
+    return                              ; Yes, return
+
 	tstfsz	safety_stop_countdown			; Countdown at zero?
 	bra		TFT_show_safety_stop2			; No, show stop
 
