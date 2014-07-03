@@ -87,8 +87,6 @@
 
 ; Gaslist management
     TCODE   tGas,       "Gaz"           ; Gas
-    TCODE   tNx,        "Nx "           ; Nx    (3 chars)
-    TCODE   tTx,        "Tx "          	; Tx   (3 chars)
     TCODE   tGasErr,    "Err"           ; Err  (3 chars)
 
 ; Communication Menu
