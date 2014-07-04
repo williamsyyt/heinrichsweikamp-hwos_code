@@ -69,6 +69,7 @@ diveloop_loop:		; The diveloop starts here
 
 	call	TFT_divemins					; Display (new) divetime!
 	call	customview_second				; Do every-second tasks for the custom view area
+    call	divemode_check_for_warnings     ; Check for any warnings
 
 ; Tasks only for deco modes
 	btfsc	show_safety_stop				; Show the safety stop?
@@ -78,14 +79,15 @@ diveloop_loop:		; The diveloop starts here
 
 diveloop_loop1b:
 ; Tasks only for Apnoe mode
-	call	divemode_apnoe_tasks			; 1 sec. Apnoe tasks
+    call	divemode_check_for_warnings     ; Check for any warnings
+	rcall	divemode_apnoe_tasks			; 1 sec. Apnoe tasks
 	bra		diveloop_loop1x					; Common Tasks
 
 diveloop_loop1x:
 ; Common 1sec. tasks for all modes
-	call	timeout_divemode				; dive finished? This routine sets the required flags
-	call	set_dive_modes                  ; tests if depth>threshold
-	call	set_min_temp                    ; store min. temp if required
+	rcall	timeout_divemode				; dive finished? This routine sets the required flags
+	rcall	set_dive_modes                  ; tests if depth>threshold
+	rcall	set_min_temp                    ; store min. temp if required
 
 	btfsc	store_sample					; store new sample?
 	call	store_dive_data					; Store profile data
@@ -213,7 +215,6 @@ calc_deko_divemode:
 	; Routines used in the "other second"
 	call	calc_average_depth          ; calculate average depth
 	call	calc_velocity               ; calculate vertical velocity and display if > threshold (every two seconds)
-	call	divemode_check_for_warnings	; Check for any warnings
     call	set_reset_safety_stop       ; Set flags for safety stop and/or reset safety stop
 	call	TFT_debug_output
 
@@ -511,8 +512,7 @@ reset_safety_stop2:
 	btfss	safety_stop_active				; Safety stop shown
 	return									; No, don't delete it
 	bcf		safety_stop_active				; Clear flag
-	call	TFT_display_ndl_mask			; Show NDL again
-    call    TFT_display_ndl
+    call    TFT_clear_safety_stop           ; Clear safety stop
     return
 
 ;=============================================================================
@@ -1323,9 +1323,16 @@ divemode_boot2:
 	return								; Done with divemode boot
 
 divemode_check_for_warnings:
-    btfss   secs,1                      ; Every four seconds
+    movlw   .2
+    cpfsgt  warning_counter						; only two warnings active?
+    bra     divemode_check_for_warnings1        ; Yes, update every second
+
+    btfss   secs,0                      ; Every two seconds...
+    return
+    btfss   secs,1                      ; Every four seconds...
     return
 
+divemode_check_for_warnings1:
 	movf	warning_counter_backup,W
 	cpfseq	warning_counter						; warning_counter_backup = warning_counter?
 	call	TFT_clear_warning_text              ; No, clear all warnings

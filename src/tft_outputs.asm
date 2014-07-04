@@ -727,34 +727,51 @@ TFT_display_deko7:
 ;	bra		TFT_display_ndl_mask2	; Clear gradient factor
 ;
 
+    global  TFT_clear_safety_stop
+TFT_clear_safety_stop:
+    WIN_BOX_BLACK   safetystop_text_row, ndl_text_row-.4, safetystop_text_column, .159	; top, bottom, left, right
+    return
+
     global  TFT_show_safety_stop
 TFT_show_safety_stop:
-    btfsc   divemode_menu               ; Is the dive mode menu shown?
-    return                              ; Yes, return
-
 	tstfsz	safety_stop_countdown			; Countdown at zero?
 	bra		TFT_show_safety_stop2			; No, show stop
 
 	bcf		show_safety_stop				; Clear flag
 
-	btfsc	safety_stop_active				; Displayed?
-    rcall	TFT_clear_decoarea				; Yes, Clear stop
+	btfss	safety_stop_active				; Displayed?
+    return                                  ; No
 	bcf		safety_stop_active				; Clear flag
-	rcall   TFT_display_ndl_mask			; Show NDL again
-    bra     TFT_display_ndl                 ; (And return)
+    btfsc   divemode_menu                   ; Is the dive mode menu shown?
+    return                                  ; Yes, return
+    rcall	TFT_clear_safety_stop           ; Yes, Clear stop
+    return
 
 TFT_show_safety_stop2:
     bsf     safety_stop_active				; Set flag
+    decf	safety_stop_countdown,F			; Reduce countdown
+
+    btfsc   divemode_menu                   ; Is the dive mode menu shown?
+    return                                  ; Yes, return
+    btfsc   menuview
+    bra     TFT_show_safety_stop3           ; No room when menuview=1...
+
+    rcall    TFT_divemask_color
+    WIN_STD safetystop_text_column,safetystop_text_row
+    STRCPY_TEXT_PRINT tDiveSafetyStop
+TFT_show_safety_stop3:
 	rcall    TFT_attention_color            ; show in yellow
     WIN_MEDIUM	safetystop_column,safetystop_row
-	decf	safety_stop_countdown,F			; Reduce countdown
+	lfsr	FSR2,buffer
 	movff	safety_stop_countdown,lo
 	clrf	hi
 	call	convert_time					; converts hi:lo in seconds to mins (hi) and seconds (lo)
 	movf	hi,W
 	movff	lo,hi
 	movwf	lo								; exchange lo and hi
-	output_99
+    bsf     leftbind
+	output_8
+    bcf     leftbind
 	PUTC    ':'
 	movff	hi,lo
 	output_99x

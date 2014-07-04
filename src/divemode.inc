@@ -162,7 +162,10 @@
 #DEFINE	decostop_1st_stop_row		.171		; In medium font...
 #DEFINE	decostop_1st_stop_column	.82
 #DEFINE	safetystop_row              .171		; In medium font...
-#DEFINE	safetystop_column           .105
+#DEFINE	safetystop_column           .118
+
+#DEFINE safetystop_text_row         .175
+#DEFINE safetystop_text_column      .70
 
 #DEFINE decoplan_title_row          .101
 #DEFINE decoplan_title_column       .65
