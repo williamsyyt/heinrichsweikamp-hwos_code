@@ -218,6 +218,7 @@
     TCODE   taGFactors,     "aGF Values"    ; aGF Values
     TCODE   tGFInfo,        "Current GF"    ; GF Info
     TCODE   tCeiling,       "Ceiling"       ; Ceiling
+    TCODE   tDiveSafetyStop," Stop"         ; Stop (Five chars, right alligned)
 
 ; Divemode menu
     TCODE   tDivePreMenu,   "Menu?"         ; Menu?
