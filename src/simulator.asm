@@ -709,15 +709,18 @@ do_demo_divemode:
 		bra		$-2
 
 		bsf		simulatormode_active				; Set Flag
-		movlw	LOW			simulator_start_depth
-		movff	WREG,rel_pressure+0
-		movlw	HIGH		simulator_start_depth
-		movff	WREG,rel_pressure+1					; Set Depth
-
-		movlw	LOW			(simulator_start_depth+.1000)
-		movff	WREG,sim_pressure+0
-		movlw	HIGH		(simulator_start_depth+.1000)
-		movff	WREG,sim_pressure+1					; Set Depth
+        ; Compute dive ambient conditions
+        banksel char_I_bottom_depth
+        movf    char_I_bottom_depth,W
+        mullw   .100
+        movff   PRODL,rel_pressure+0
+        movff   PRODH,rel_pressure+1
+        movlw   LOW(.1000)
+        addwf   PRODL,W
+        movff   WREG,sim_pressure+0
+        movlw   HIGH(.1000)
+        addwfc  PRODH,W
+        movff   WREG,sim_pressure+1
 
 		bsf		divemode
 		goto	diveloop							; Switch into Divemode!
