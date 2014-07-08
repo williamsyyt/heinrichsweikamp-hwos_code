@@ -121,7 +121,6 @@
 #DEFINE	depth_warn_mbar 		.13000	; [mbar]
 #DEFINE	wake_up_from_sleep		.1160	; [mbar]
 #DEFINE	gf_display_threshold	.20		; [%]
-#DEFINE	simulator_start_depth	.2500	; [mbar] + 1000mbar surface
 #DEFINE simulator_timeout       .15     ; [s]
 
 
