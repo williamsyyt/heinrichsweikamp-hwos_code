@@ -10,13 +10,7 @@
 ;  2011-08-06 : [mH] moving from OSTC code
 
 #include "ostc3.inc"
-#include "start.inc"
-#include "tft.inc"
 #include "wait.inc"
-#include "strings.inc"
-#include "convert.inc"
-#include "adc_lightsensor.inc"
-#include "math.inc"
 
 ;=============================================================================
 eeprom   code    0xF00000+0x10
@@ -61,7 +55,7 @@ write_eeprom:
 	bcf		EECON1,CFGS
 	bsf		EECON1,WREN
 
-	bcf		INTCON,GIE					; even the RTC will be delayed for the next 5 instructions...
+	bcf		INTCON,GIE					; Disable interrups for the next 5 instructions
 	movlw	0x55		
 	movwf	EECON2
 	movlw	0xAA
@@ -160,7 +154,6 @@ enable_s8_2:                    ; S8 Digital
 	global	enable_rs232
 enable_rs232:
 	bcf		TRISC,6					; Output
-	bsf		TRISC,7					; Input
 	call	speed_normal			; 16MHz
 enable_rs232_2:
     movlw	T2CON_NORMAL
@@ -185,7 +178,6 @@ disable_rs232:
 	clrf	RCSTA1
 	clrf	TXSTA1					; UART disable
 	bsf		TRISC,6					; Input
-	bsf		TRISC,7					; Input
 	return
 
 	global	rs232_wait_tx
@@ -211,22 +203,18 @@ rs232_wait_tx2_2:
 
 	global	rs232_get_byte
 rs232_get_byte:
- 	bcf		PIR1,RCIF		; clear flag
 	bcf		rs232_recieve_overflow		; clear flag
 	clrf 	uart1_temp
 	clrf 	uart2_temp
 rs232_get_byte2:
 	btfsc 	PIR1,RCIF		; data arrived?
     return
-;	bra     rs232_get_byte3
-
 	decfsz 	uart2_temp,F
 	bra 	rs232_get_byte2
 	decfsz 	uart1_temp,F
 	bra		rs232_get_byte2
 						; timeout occoured (about 20ms)
 	bsf		rs232_recieve_overflow		; set flag
-;rs232_get_byte3:
 	bcf		RCSTA1,CREN		; Clear receiver status
 	bsf		RCSTA1,CREN
 	return				; and return anyway

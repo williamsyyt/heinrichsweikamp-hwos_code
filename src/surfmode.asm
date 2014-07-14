@@ -304,7 +304,7 @@ surfmode_check_for_warnings2:
 
 surfmode_check_for_interval:
 	movf    	surface_interval+0,W            ; Is interval null ?
-    iorwf   	surface_interval+0,W
+    iorwf   	surface_interval+1,W
     bnz     	surfmode_check_for_interval2	; No
     return
 surfmode_check_for_interval2:

@@ -227,7 +227,7 @@ static unsigned char	internal_deco_gas  [NUM_STOPS];
 #ifndef UNIX
 #   pragma udata bank7=0x700
 #endif
-
+    // Keep order of 0x700 variables
 float  pres_tissue_N2[NUM_COMP];
 float  pres_tissue_He[NUM_COMP];
 float  sim_pres_tissue_N2[NUM_COMP];             // 16 floats = 64 bytes.
@@ -2160,6 +2160,8 @@ void deco_calc_percentage(void)
 //          CF#57 == deco liters/minutes (5 .. 50) or bar/min.
 // Output:  int_O_gas_volumes[0..4] in litters * 0.1
 //
+/*
+
 void deco_gas_volumes(void)
 {
     overlay float volumes[NUM_GAS];
@@ -2288,6 +2290,8 @@ void deco_gas_volumes(void)
 }
 
 //////////////////////////////////////////////////////////////////////////////
+
+ */
 
 void deco_push_tissues_to_vault(void)
 {

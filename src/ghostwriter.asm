@@ -13,11 +13,12 @@
 #include 	"shared_definitions.h"         ; Mailbox from/to p2_deco.c
 #include	"external_flash.inc"
 #include	"surfmode.inc"
-#include	"eeprom_rs232.inc"
+#include    "eeprom_rs232.inc"
 #include 	"strings.inc"
 #include	"isr.inc"
 #include	"tft_outputs.inc"
 #include	"divemode.inc"
+#include    "rtc.inc"
 
 ghostwriter	CODE
 
@@ -944,6 +945,7 @@ calculate_noflytime_2_final:
 
 
 divemode_store_statistics:	; Store/update statistics for this unit
+    rcall   vault_decodata_into_eeprom  ; update deco data
 	rcall	do_logoffset_common_read	; Existing logbook offset into lo:hi
 	
 	tstfsz	lo							; lo=0?
@@ -997,6 +999,124 @@ update_battery_registers:
 	write_int_eeprom 0x0C
 	bcf		onehourupdate	; Clear flag
 	return
+
+
+    global  vault_decodata_into_eeprom
+vault_decodata_into_eeprom:
+    ; Vault in EEPROM 512...1023
+    ; Write 0xAA at 512 to indicate valid data in vault
+    ; Store last time/date
+    ; Store 0x700 to 0x780 (pres_tissue_N2 and pres_tissue_He)
+    movlw   LOW  .512           ; =0
+    movwf   EEADR
+    movlw   HIGH .512           ; =2
+    movwf   EEADRH
+    movlw   0xAA
+    movwf   EEDATA
+    write_int_eeprom .0
+    ; Store date/time
+    movff   year,EEDATA
+    write_int_eeprom .1
+    movff   month,EEDATA
+    write_int_eeprom .2
+    movff   day,EEDATA
+    write_int_eeprom .3
+    movff   hours,EEDATA
+    write_int_eeprom .4
+    movff   mins,EEDATA
+    write_int_eeprom .5
+    movff   secs,EEDATA
+    write_int_eeprom .6
+
+    movff   int_O_CNS_fraction+0,EEDATA
+    write_int_eeprom .7
+    movff   int_O_CNS_fraction+1,EEDATA
+    write_int_eeprom .8
+    movff   desaturation_time+0,EEDATA
+    write_int_eeprom .9
+    movff   desaturation_time+1,EEDATA
+    write_int_eeprom .10
+    movff   surface_interval+0,EEDATA
+    write_int_eeprom .11
+    movff   surface_interval+1,EEDATA
+    write_int_eeprom .12
+    movff   char_O_gradient_factor,EEDATA
+    write_int_eeprom .13
+    movff   nofly_time+0,EEDATA
+    write_int_eeprom .14
+    movff   nofly_time+1,EEDATA
+    write_int_eeprom .15
+
+    ; Tissue data from 16 to 144
+    movlw   .16
+    movwf   EEADR
+    movlw   .128
+    movwf   lo
+    lfsr    FSR1,0x700;pres_tissue_N2+0       ; 32*4Byte Float = 128Bytes
+vault_decodata_into_eeprom2:
+    movff   POSTINC1,EEDATA
+    call    write_eeprom                ; EEDATA into EEPROM@EEADR
+    incf    EEADR,F
+    decfsz  lo,F                        ; All done?
+    bra     vault_decodata_into_eeprom2 ; No
+    clrf    EEADRH
+    return
+
+    global  restore_decodata_from_eeprom
+restore_decodata_from_eeprom:
+    movlw   LOW  .512           ; =0
+    movwf   EEADR
+    movlw   HIGH .512           ; =2
+    movwf   EEADRH
+
+    ; Restore date/time
+    read_int_eeprom .1
+    movff   EEDATA,year
+    read_int_eeprom .2
+    movff   EEDATA,month
+    read_int_eeprom .3
+    movff   EEDATA,day
+    read_int_eeprom .4
+    movff   EEDATA,hours
+    read_int_eeprom .5
+    movff   EEDATA,mins
+    read_int_eeprom .6
+    movff   EEDATA,secs
+    call    rtc_set_rtc
+
+    read_int_eeprom .7
+    movff   EEDATA,int_O_CNS_fraction+0
+    read_int_eeprom .8
+    movff   EEDATA,int_O_CNS_fraction+1
+    read_int_eeprom .9
+    movff   EEDATA,desaturation_time+0
+    read_int_eeprom .10
+    movff   EEDATA,desaturation_time+1
+    read_int_eeprom .11
+    movff   EEDATA,surface_interval+0
+    read_int_eeprom .12
+    movff   EEDATA,surface_interval+1
+    read_int_eeprom .13
+    movff   EEDATA,char_O_gradient_factor
+    read_int_eeprom .14
+    movff   EEDATA,nofly_time+0
+    read_int_eeprom .15
+    movff   EEDATA,nofly_time+1
+
+    ; Tissue data from 16 to 144
+    movlw   .16
+    movwf   EEADR
+    movlw   .128
+    movwf   lo
+    lfsr    FSR1,0x700;pres_tissue_N2+0       ; 32*4Byte Float = 128Bytes
+restore_decodata_from_eeprom2:
+    call    read_eeprom                ; EEPROM@EEADR into EEDATA
+    movff   EEDATA,POSTINC1
+    incf    EEADR,F
+    decfsz  lo,F                        ; All done?
+    bra     restore_decodata_from_eeprom2   ; No
+    clrf    EEADRH
+    return
 
 
  END

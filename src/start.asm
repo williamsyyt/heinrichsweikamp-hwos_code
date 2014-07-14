@@ -112,14 +112,29 @@ start_copy_pressure:
 
 	extern	deco_reset
 	call	deco_reset
-	call	deco_calc_desaturation_time     ; calculate desaturation time
-	banksel common
-	call	deco_calc_wo_deco_step_1_min	; calculate deco in surface mode 
-	banksel common
   	clrf	nofly_time+0	              	; Reset NoFly
   	clrf	nofly_time+1
 	clrf	desaturation_time+0				; Reset Desat
 	clrf	desaturation_time+1
+
+	call	rtc_init						; init clock
+
+    movlw   HIGH .512           ; =2
+    movwf   EEADRH
+    read_int_eeprom .0
+    clrf    EEADRH
+    movlw   0xAA
+    cpfseq  EEDATA              ; =0xAA
+    bra     no_deco_restore     ; No
+
+    extern  restore_decodata_from_eeprom
+    call    restore_decodata_from_eeprom    ; Reload deco data and date/time from eeprom
+
+no_deco_restore:
+	call	deco_calc_desaturation_time     ; calculate desaturation time
+	banksel common
+	call	deco_calc_wo_deco_step_1_min	; calculate deco in surface mode
+	banksel common
 	bcf		menubit							; clear menu flag
 ; Check for Power-on reset here
 	extern	new_battery_menu	
@@ -130,7 +145,6 @@ start_copy_pressure:
 	; "new_battery_menu" and "use_old_batteries" 'goto' back to "power_on_return"
 
     ; Yes
-	call	rtc_init						; init clock
  	goto	new_battery_menu				; show "New battery dialog"
 	; "new_battery_menu" and "use_old_batteries" 'goto' back to "power_on_return"
 
@@ -262,6 +276,8 @@ restart:
 
 	extern  testloop
 ;    goto    testloop
+
+
 
 	goto	surfloop				; Jump to Surfaceloop!
 
