@@ -239,7 +239,7 @@ option_save_all:
         movlw   LOW(eeprom_serial_save)
         movwf   EEADR
         movlw   HIGH(eeprom_serial_save)
-        movf    EEADRH
+        movwf   EEADRH
         movlw   LOW(eeprom_opt_serial)
         movwf   EEDATA
         call    write_eeprom
@@ -282,11 +282,14 @@ option_save:
 
         ; One byte to save to eeprom
         movff   INDF1,EEDATA
-        goto    write_eeprom
+        btfss   EEADRH,1                ; EEADR:EEADRH < 512?
+        call    write_eeprom            ; Yes, write
+        return
         
 option_save_string:
         movff   POSTINC1,EEDATA         ; Write one byte
-        call    write_eeprom
+        btfss   EEADRH,1                ; EEADR:EEADRH < 512?
+        call    write_eeprom            ; Yes, write
         infsnz  EEADR,F
         incf    EEADRH,F
         

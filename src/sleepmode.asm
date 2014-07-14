@@ -25,6 +25,9 @@
 #include    "i2c.inc"
 #include    "mcp.inc"
 
+
+    extern  vault_decodata_into_eeprom
+
 gui     CODE
 
 	global	sleeploop
@@ -37,6 +40,7 @@ sleeploop:							; enter sleepmode!
 	call	TFT_Display_FadeOut
 	call	TFT_DisplayOff			; display off
 	call	disable_rs232			; USB off
+    call    vault_decodata_into_eeprom  ; store deco data
     call    I2C_sleep_accelerometer
     call    I2C_sleep_compass
 	call	ext_flash_enable_protection	; enable write protection for external flash
@@ -50,6 +54,8 @@ sleeploop:							; enter sleepmode!
 sleeploop_loop:
 	btfsc	onehourupdate			; one hour in sleep?
 	call	update_battery_registers;update battery registers into EEPROM
+    btfsc	onehourupdate			; one hour in sleep?
+    call    vault_decodata_into_eeprom  ; update deco data
 
 	btfsc	oneminupdate			; one minute in sleep?
 	rcall	onemin_sleep			; do oneminute tasks, e.g. calculate desaturation
