@@ -203,7 +203,7 @@
     TCODE   tDiveTotalAvr,  "Prof. Moy."
     TCODE   tDiveStopwatch, "Chrono"
     TCODE   tDiveStopAvr,   "P.Moy.Chrono"
-    TCODE   tApnoeTotal,    "   Durée Totale"; Total Divetime
+    TCODE   tApnoeTotal,    "Totale"        ; Total (Six chars, right alligned)
     TCODE   tApnoeMax,      "Dern.Plongée"  ; Last Decend
     TCODE   tApnoeSurface,  "Tps.Surface"   ; Surface Time
     TCODE   tDiveDecoplan,  "Runtime"       ; Decoplan

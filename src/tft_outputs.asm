@@ -3132,7 +3132,6 @@ TFT_display_apnoe_descent:		; Descent divetime
 	bcf     leftbind
 	STRCAT_PRINT ""                 ; Show seconds in small font
 
-
     call    TFT_divemask_color
     WIN_TINY    total_apnoe_text_column,total_apnoe_text_row
     STRCPY_TEXT_PRINT   tApnoeTotal
@@ -3537,13 +3536,18 @@ TFT_gf_info:
 TFT_ead_end_tissues_clock_mask:
     ; The mask
     call    TFT_divemask_color
+	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
+	bra		TFT_ead_end_tissues_clock_mask2 ; Yes
+	btfsc	FLAG_gauge_mode					; In Gauge mode?
+	bra		TFT_ead_end_tissues_clock_mask2 ; Yes
     ; Put three columns at HUD positions
-    WIN_TINY  dive_custom_hud_column1,dive_custom_hud_row
-    STRCPY_TEXT_PRINT tDiveClock
     WIN_TINY  dive_custom_hud_column2,dive_custom_hud_row
     STRCPY_TEXT_PRINT tDiveEAD_END
     WIN_TINY  dive_custom_hud_column3,dive_custom_hud_row
     STRCPY_TEXT_PRINT tDiveTissues
+TFT_ead_end_tissues_clock_mask2:            ; Show only clock
+    WIN_TINY  dive_custom_hud_column1,dive_custom_hud_row
+    STRCPY_TEXT_PRINT tDiveClock
     call	TFT_standard_color
     return
 
@@ -3552,6 +3556,12 @@ TFT_ead_end_tissues_clock:
     ; Update clock and date
     WIN_SMALL   dive_clock_column,dive_clock_row
     call    TFT_clock2                          ; print clock
+
+	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
+	return                                  ; Yes, done.
+	btfsc	FLAG_gauge_mode					; In Gauge mode?
+	return                                  ; Yes, done.
+
 ;    WIN_SMALL   dive_endtime_column,dive_endtime_row
 ;
 ;    btfss	decostop_active             ; Already in nodeco mode ?

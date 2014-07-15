@@ -79,8 +79,9 @@ diveloop_loop:		; The diveloop starts here
 
 diveloop_loop1b:
 ; Tasks only for Apnoe mode
-    call	divemode_check_for_warnings     ; Check for any warnings
 	rcall	divemode_apnoe_tasks			; 1 sec. Apnoe tasks
+    call	customview_second				; Do every-second tasks for the custom view area
+ ;   call	divemode_check_for_warnings     ; Check for any warnings
 	bra		diveloop_loop1x					; Common Tasks
 
 diveloop_loop1x:
@@ -151,7 +152,7 @@ diveloop_loop6:
 
 
 divemode_apnoe_tasks:                       ; 1 sec. Apnoe tasks
-	call	TFT_display_apnoe_descent		; Show descent timer
+	call	TFT_display_apnoe_descent		; Yes, Show descent timer
 	call	TFT_max_pressure				; use normal max. depth
 
 	btfsc	divemode2						; Time running?
