@@ -203,7 +203,7 @@
     TCODE   tDiveTotalAvr,  "Total Avr"
     TCODE   tDiveStopwatch, "Stopwatch"
     TCODE   tDiveStopAvr,   "Stopped Avr"
-    TCODE   tApnoeTotal,    "Total Divetime:"; Total Divetime
+    TCODE   tApnoeTotal,    " Total"        ; Total (Six chars, right alligned)
     TCODE   tApnoeMax,      "Last Descent"  ; Last descent
     TCODE   tApnoeSurface,  "Surface Time"  ; Surface Time
     TCODE   tDiveDecoplan,  "Decoplan"      ; Decoplan

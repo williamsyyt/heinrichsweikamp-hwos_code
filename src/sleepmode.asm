@@ -52,16 +52,14 @@ sleeploop:							; enter sleepmode!
     bcf     enable_screen_dumps     ; =1: Ignore vin_usb, wait for "l" command (Screen dump)
 	clrf	ADCON0					; Power-Down ADC Module
 sleeploop_loop:
-	btfsc	onehourupdate			; one hour in sleep?
-	call	update_battery_registers;update battery registers into EEPROM
-    btfsc	onehourupdate			; one hour in sleep?
-    call    vault_decodata_into_eeprom  ; update deco data
+	btfsc	onesecupdate			; one second in sleep?
+	rcall	onesec_sleep			; check switches, check pressure sensor, etc.
 
 	btfsc	oneminupdate			; one minute in sleep?
 	rcall	onemin_sleep			; do oneminute tasks, e.g. calculate desaturation
 
-	btfsc	onesecupdate			; one second in sleep?
-	rcall	onesec_sleep			; check switches, check pressure sensor, etc.
+	btfsc	onehourupdate			; one hour in sleep?
+    rcall   onehour_sleep           ; Yes
 
 	btfss	sleepmode				; wake up? (This bit will be set in other routines)
 	goto	restart					; yes
@@ -79,6 +77,11 @@ sleeploop_loop:
 
 	bra		sleeploop_loop			; do loop until someting happens
 
+onehour_sleep:
+    call	update_battery_registers    ; update battery registers into EEPROM
+    call    vault_decodata_into_eeprom  ; update deco data
+    bcf		onehourupdate               ; all done
+    return
 
 onemin_sleep:
     ;---- adjust airpressure compensation any 15 minutes

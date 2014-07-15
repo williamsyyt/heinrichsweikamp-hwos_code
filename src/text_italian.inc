@@ -203,7 +203,7 @@
     TCODE   tDiveTotalAvr,  "Media"
     TCODE   tDiveStopwatch, "Cronometro"
     TCODE   tDiveStopAvr,   "Media Interrotta"
-    TCODE   tApnoeTotal,    "Total Divetime:"   ; Total Divetime
+    TCODE   tApnoeTotal,    "Totale"        ; Total (Six chars, right alligned)
     TCODE   tApnoeMax,      "Ultima Discesa"  ; Last decend
     TCODE   tApnoeSurface,  "Tempo Superficie"  ; Surface Time
     TCODE   tDiveDecoplan,  "Piano Deco"      ; Decoplan

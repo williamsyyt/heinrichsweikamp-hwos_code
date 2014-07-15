@@ -997,7 +997,6 @@ update_battery_registers:
 	write_int_eeprom 0x0B
 	movff	battery_gauge+5,EEDATA
 	write_int_eeprom 0x0C
-	bcf		onehourupdate	; Clear flag
 	return
 
 

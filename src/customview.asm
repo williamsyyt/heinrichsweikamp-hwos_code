@@ -365,10 +365,6 @@ customview_init_view3:
     bra		customview_toggle_exit
 
 customview_init_view4:
-	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
-	bra		customview_toggle				; Yes, Call next view...
-	btfsc	FLAG_gauge_mode					; In Gauge mode?
-	bra		customview_toggle				; Yes, Call next view...
     call    TFT_ead_end_tissues_clock_mask  ; Setup Mask
     call    TFT_ead_end_tissues_clock       ; Show EAD/END, Tissues and clock
     bra		customview_toggle_exit
