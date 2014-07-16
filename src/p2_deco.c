@@ -2160,13 +2160,13 @@ void deco_calc_percentage(void)
 //          CF#57 == deco liters/minutes (5 .. 50) or bar/min.
 // Output:  int_O_gas_volumes[0..4] in litters * 0.1
 //
-/*
+
 
 void deco_gas_volumes(void)
 {
     overlay float volumes[NUM_GAS];
     overlay float bottom_usage, deco_usage;
-    overlay unsigned char i, deepest_first;
+    overlay unsigned char i;
     overlay unsigned char gas, depth;
     overlay unsigned char lastGasStop = 255;
     RESET_C_STACK
@@ -2186,7 +2186,6 @@ void deco_gas_volumes(void)
             * bottom_usage;                             // In liter/minutes.
 
     //---- Ascent usage ------------------------------------------------------
-    deepest_first = 0;
     deco_usage    = 20;     // In liter/minutes.
 
     depth = char_I_bottom_depth;
@@ -2195,21 +2194,9 @@ void deco_gas_volumes(void)
     {
         overlay unsigned char newDepth, time;
 
-        // Manage stops in reverse order (CF#54)
-        if( deepest_first )
-        {
-            time = char_O_deco_time[i];
-            if( time == 0 ) break;          // End of table: done.
-
-             newDepth  = char_O_deco_depth[i];
-        }
-        else
-        {
-            time = char_O_deco_time[31-i];
-            if( time == 0 ) continue;       // not yet: still search table.
-
-            newDepth = char_O_deco_depth[31-i];
-        }
+        time = char_O_deco_time[31-i];
+        if( time == 0 ) continue;       // not yet: still search table.
+        newDepth = char_O_deco_depth[31-i];
 
         //---- Gas switch during or before this stop --------------------------
         for(;;)
@@ -2291,7 +2278,7 @@ void deco_gas_volumes(void)
 
 //////////////////////////////////////////////////////////////////////////////
 
- */
+
 
 void deco_push_tissues_to_vault(void)
 {
