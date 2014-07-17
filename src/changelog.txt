@@ -1,4 +1,4 @@
-New in 1.42:
+New in 1.44:
 - Beta Version -
 NEW: Update warnings every second
 NEW: Show "Stop" in front of Safety Stop
@@ -6,6 +6,7 @@ BUGFIX: Start dive mode simulator in correct depth
 BUGFIX: Surface interval was not displayed correctly in some cases
 NEW: Store tissue load, date and time, surface interval, desat. time and nofly time every hour and reload them after battery change
 NEW: Show clock in Apnea mode, minor layout changes in Apnea mode
+NEW: Simplify gas change
 
 New in 1.41:
 - Beta Version -
