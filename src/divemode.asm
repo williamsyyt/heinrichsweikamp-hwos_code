@@ -828,6 +828,8 @@ test_switches_divemode1:
     movwf   timeout_counter3            ; Reload timeout
 	movff	menupos2,WREG               ; Menupos3 holds number of customview/divemode menu function
 	dcfsnz	WREG,F
+    bra		divemode_option_gaschange	; Switch to the indicated "better gas"
+	dcfsnz	WREG,F
     bra		divemode_option0			; Start/Setup Divemode menu
 	dcfsnz	WREG,F
 	bra		divemode_option1			; Quit Simulation?
@@ -906,6 +908,12 @@ setup_dil_registers:                ; With WREG=dil 0-4
 	sublw   .100                    ; ...subtract both from 100
 	movwf   char_I_N2_ratio         ; -> N2!
     banksel common
+    return
+
+divemode_option_gaschange:          ; Switch to the better gas
+    movff   better_gas_number,menupos; 1-5
+    bsf     divemode_gaschange      ; Change the gas in the dive mode loop...
+    call    menuview_toggle_reset   ; Reset to zero (Zero=no menuview)
     return
 
 divemode_option0:                   ; Start/Setup Divemode menu

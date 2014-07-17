@@ -244,6 +244,8 @@ menuview_mask2:
     WIN_SMALL_INVERT    divemode_simtext_column,divemode_simtext_row
 	movff	menupos2,WREG                   ; Menupos2 holds number of menu option to show
 	dcfsnz	WREG,F
+	bra		menuview_view_gaschange         ; If a better gas is indicated
+	dcfsnz	WREG,F
 	bra		menuview_view1
 	dcfsnz	WREG,F
 	bra		menuview_view2
@@ -259,6 +261,21 @@ menuview_exit:
     call	TFT_standard_color
     WIN_INVERT  .0
 	return                                  ; Menupos2 = 0, Show nothing
+
+
+menuview_view_gaschange:
+    extern  gaslist_strcat_gas_mod
+
+    btfss	better_gas_available            ; =1: A better gas is available
+	bra		menuview_toggle 				; No, call next option
+    bsf     short_gas_decriptions           ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
+    movff   better_gas_number,PRODL     	; number (1-5) of the "better gas" in divemode, =0: no better gas available
+    decf    PRODL,F
+    call    gaslist_strcat_gas_mod          ; Append gas description of gas #PRODL (0-4) to current string
+    movlw   .5
+    movwf   FSR2L                           ; Point to char 6 (5 chars gas description only)
+    STRCAT_PRINT "?"
+    bra     menuview_exit                   ; Done.
 menuview_view1:
 	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
 	bra		menuview_toggle 				; Call next option
