@@ -914,6 +914,7 @@ divemode_option_gaschange:          ; Switch to the better gas
     movff   better_gas_number,menupos; 1-5
     bsf     divemode_gaschange      ; Change the gas in the dive mode loop...
     call    menuview_toggle_reset   ; Reset to zero (Zero=no menuview)
+    bcf     better_gas_available    ; Clear flag immediately
     return
 
 divemode_option0:                   ; Start/Setup Divemode menu

@@ -265,9 +265,10 @@ menuview_exit:
 
 menuview_view_gaschange:
     extern  gaslist_strcat_gas_mod
-
     btfss	better_gas_available            ; =1: A better gas is available
 	bra		menuview_toggle 				; No, call next option
+    btfsc   divemode_gaschange              ; Skip if the last gas change is not done yet.
+    bra		menuview_toggle
     bsf     short_gas_decriptions           ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
     movff   better_gas_number,PRODL     	; number (1-5) of the "better gas" in divemode, =0: no better gas available
     decf    PRODL,F
