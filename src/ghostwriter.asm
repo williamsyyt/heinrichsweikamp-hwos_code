@@ -1006,8 +1006,6 @@ vault_decodata_into_eeprom:
     ; Write 0xAA at 512 to indicate valid data in vault
     ; Store last time/date
     ; Store 0x700 to 0x780 (pres_tissue_N2 and pres_tissue_He)
-    movlw   LOW  .512           ; =0
-    movwf   EEADR
     movlw   HIGH .512           ; =2
     movwf   EEADRH
     movlw   0xAA

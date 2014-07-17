@@ -804,6 +804,7 @@ TFT_dyn_gaslist:                            ; Show the dynamic gaslist
     WIN_SMALL dive_custom_dyn_mask_column1,dive_custom_dyn_mask_row1
     movlw   .1
     movwf   tft_gaslist_temp+0
+    bsf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
     rcall   TFT_dyn_gaslist_common
     WIN_SMALL dive_custom_dyn_mask_column1,dive_custom_dyn_mask_row2
     incf    tft_gaslist_temp+0,F     ; +1
@@ -817,7 +818,6 @@ TFT_dyn_gaslist:                            ; Show the dynamic gaslist
     incf    tft_gaslist_temp+0,F     ; +1
     movf    tft_gaslist_temp+0,W     ; into W
     rcall   TFT_dyn_gaslist_common
-    bcf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
     call	TFT_standard_color
     return
 
@@ -832,7 +832,6 @@ TFT_dyn_gaslist_common:
     output_8            ; Gas number
     bcf     leftbind
     PUTC    ":"
-    bsf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
     call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
     PUTC    " "         ; Clearing space
     movlw   0x00
@@ -1720,7 +1719,6 @@ TFT_surface_decosettings:
 TFT_surface_decosettings1:
     TEXT_SMALL  surf_gaslist_column,surf_gaslist_row,  tZHL16GF
     WIN_TOP surf_gaslist_row+(surf_gaslist_spacing*.1)
-    lfsr    FSR2,buffer
     STRCPY_TEXT tGF         ; GF:
     movff   char_I_GF_Low_percentage,lo
     output_99x
@@ -1732,7 +1730,6 @@ TFT_surface_decosettings1:
 TFT_surface_decosettings2:
     ; FTTS
     WIN_TOP surf_gaslist_row+(surf_gaslist_spacing*.2)
-    lfsr    FSR2,buffer
     STRCPY_TEXT tFTTSMenu
     movff   char_I_extra_time,lo
     bsf     leftbind
@@ -1741,7 +1738,6 @@ TFT_surface_decosettings2:
 
     ; Last Stop
     WIN_TOP surf_gaslist_row+(surf_gaslist_spacing*.3)
-    lfsr    FSR2,buffer
     STRCPY_TEXT tLastDecostop
     movff   char_I_depth_last_deco,lo
     output_8
@@ -1749,7 +1745,6 @@ TFT_surface_decosettings2:
 
     ; Salinity
     WIN_TOP surf_gaslist_row+(surf_gaslist_spacing*.4)
-    lfsr    FSR2,buffer
     STRCPY_TEXT tDvSalinity
     movff   opt_salinity,lo
     output_8
@@ -2384,7 +2379,6 @@ TFT_splist_surfmode:
     movwf   PRODL
     call    gaslist_strcat_setpoint     ; Show SP#+1 of PRODL#
     STRCAT_PRINT ""
-    bcf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
     bcf     leftbind
     return
 
@@ -2422,7 +2416,6 @@ TFT_gaslist_surfmode:				; Displays Gas List
     movwf   PRODL
     call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
     STRCAT_PRINT ""
-    bcf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
     bcf     leftbind
     return
 
@@ -2459,7 +2452,6 @@ TFT_dillist_surfmode:				; Displays Diluent List
     movwf   PRODL
     call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
     STRCAT_PRINT ""
-    bcf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
     bcf     leftbind
     return
 

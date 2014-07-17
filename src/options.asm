@@ -58,15 +58,12 @@ gui     CODE                            ; Appends to other GUI segment
 option_reset_all:
 	    clrf	EEADRH
 		read_int_eeprom	.2
-		movff	EEDATA,lo
-		read_int_eeprom	.3
-		movff	EEDATA,hi
-		tstfsz	lo							; Total dives=0?
+		tstfsz	EEDATA                      ; Total dives=0?
 		bra		option_reset_all2			; No, skip resetting logbook
-		tstfsz	hi							; Total dives=0?
+		read_int_eeprom	.3
+		tstfsz	EEDATA                      ; Total dives=0?
 		bra		option_reset_all2			; No, skip resetting logbook
 
-		clrf    EEADRH                      ; Make sure to select eeprom bank 0
 		clrf	EEDATA
 		write_int_eeprom	.4
 		write_int_eeprom	.5
@@ -526,24 +523,22 @@ lbl:    db      2, LOW(defText)         ; Type2 = STRING
         dw      register
         ENDM
 
+
 ;=============================================================================
+        extern  tPercent, tMeters, tMinutes, tGasDisabled, tbar, tcharx
+        extern  char_I_deco_gas_change, char_I_setpoint_change, char_I_setpoint_cbar, char_I_dil_change
+        extern  char_I_dive_interval, char_I_bottom_time, char_I_bottom_depth
+        extern  char_I_deco_model, char_I_saturation_multiplier, char_I_desaturation_multiplier
+        extern  char_I_extra_time
+        extern  tDefName
     ; Option table
     ; OPTION_UINT8  Label,   min,    max,    default, text-string,   EEPROM location (-1 for RAM only),   RAM location
-
-; Manage Gas List.
-        extern tPercent, tMeters, tMinutes, tGasDisabled, tbar, tcharx
-
 option_table_begin:
-        extern  char_I_deco_gas_change, char_I_setpoint_change, char_I_setpoint_cbar, char_I_dil_change
 ;=============================================================================
 ; Manage Decoplaner & Dive parameters
-
-        extern  char_I_dive_interval, char_I_bottom_time, char_I_bottom_depth
         OPTION_UINT8p10 odiveInterval,  .0, .240,   .0,     tMinutes, -1,     char_I_dive_interval
         OPTION_UINT8p2  obottomTime,    .1, .60,    .5,     tMinutes, -1,     char_I_bottom_time
         OPTION_UINT8p3  obottomDepth,   .12,.120,    .21,    tMeters,  -1,     char_I_bottom_depth
-
-        extern  char_I_deco_model, char_I_saturation_multiplier, char_I_desaturation_multiplier
         OPTION_ENUM8    oDiveMode,      4,  0,  tDvOC,               .8,    opt_dive_mode               ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
         OPTION_ENUM8    oDecoMode,      2,  1,  tZHL16,              .9,    char_I_deco_model           ; 0 = ZH-L16, 1 = ZH-L16-GF
         OPTION_UINT8p10 oPPO2Max,       .120, ppo2_warning_high, .160,   0,      .10,    opt_ppO2_max
@@ -561,12 +556,10 @@ option_table_begin:
 
 ;=============================================================================
 ; Managing Settings
-        extern          char_I_extra_time
         OPTION_UINT8    oExtraTime,     0,  .9,   0,tMinutes,   .22,    char_I_extra_time               ; Future TTS
         OPTION_ENUM8    oBrightness,    3,  0,  tEco,           .23,    opt_brightness                  ; =0: Eco, =1:Medium, =2:Full
         OPTION_UINT8    oDiveSalinity,  0,  4, 0,  tPercent,    .24,    opt_salinity                    ; 0-5%
         OPTION_ENUM8    oCCRMode,    2,  0,  tCCRModeFixedSP,   .25,    opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor
-        extern  tDefName
         OPTION_ENUM8    oLanguage,      4,  0,  tEnglish,   .26,    opt_language                        ; 0=EN, 1=DE, 2=FR, 3=SP
 		OPTION_ENUM8    oDateFormat,    3,  1,  tDateformat,.27,    opt_dateformat                      ; =0:MMDDYY, =1:DDMMYY, =2:YYMMDD
         OPTION_ENUM8    oUnits,         2,  0,  tMetric,    .28,    opt_units                           ; 0=Meters, 1=Feets
@@ -580,6 +573,8 @@ option_table_begin:
         OPTION_UINT8    oCalz0,         0,.255,.0,      0,  .33,    compass_CZ_f+0
         OPTION_UINT8    oCalz1,         0,.255,.0,      0,  .34,    compass_CZ_f+1
 
+;=============================================================================
+; Gas list
         OPTION_ENUM8    oGas1,          3,  1,  tGasDisabled,         .35,     opt_gas_type+0; 0=Disabled, 1=First, 2=Travel, 3=Deco
         OPTION_ENUM8    oGas2,          3,  0,  tGasDisabled,         .36,     opt_gas_type+1
         OPTION_ENUM8    oGas3,          3,  0,  tGasDisabled,         .37,     opt_gas_type+2
@@ -630,14 +625,20 @@ option_table_begin:
         OPTION_UINT8    oDil3Depth,     .0, .100,   .0,     tMeters,  .82,     char_I_dil_change+2
         OPTION_UINT8    oDil4Depth,     .0, .100,   .0,     tMeters,  .83,     char_I_dil_change+3
         OPTION_UINT8    oDil5Depth,     .0, .100,   .0,     tMeters,  .84,     char_I_dil_change+4
+
+;=============================================================================
+; opt_name from 85 to 145
         OPTION_STRING   oName,          opt_name_length,    tDefName, .85,     opt_name
-        ; opt_name from 85 to 145
+
+;=============================================================================
+; Misc
         OPTION_ENUM8    oColorSetDive,  4,  0, tColorSetName0,        .146,    opt_dive_color_scheme            ; Color scheme divemode
         OPTION_UINT8    oPressureAdjust, .0,.255,   .0,     -1,       .147,    opt_pressure_adjust              ; SIGNED int (-20/+20mbar max.)
         OPTION_BOOL     oSafetyStop,    0,                            .148,    opt_enable_safetystop            ; =1: A safety stop is shown
         OPTION_UINT8    oCalGasO2,      .21,.100,   .21,    tPercent, .149,    opt_calibration_O2_ratio         ; Calibration gas %O2
 
-; Set Time/Set Date
+;=============================================================================
+; Set Time/Set Date (RAM only)
 		OPTION_UINT8    oSetHours,		.0,	.23, .0,	0, -1,		hours
 		OPTION_UINT8    oSetMinutes,	.0,	.59, .0,	0, -1,		mins
 		OPTION_UINT8    oSetDay,		.1,	.31, .0,	0, -1,		day
