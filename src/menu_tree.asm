@@ -108,6 +108,7 @@ do_ccr_sensor:
 
 do_diluent_setup:
        bsf     ccr_diluent_setup       ; =1: Setting up Diluents ("Gas6-10")
+       bcf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
        call    gaslist_cleanup_list    ; Takes care that only one gas can be first and first has 0m change depth
      MENU_BEGIN  tDiluentSetup, .6
         MENU_DYNAMIC    gaslist_strcat_gas_mod, do_edit_gas_menu
@@ -123,6 +124,7 @@ do_return_fixed_setpoints:
         call    menu_processor_pop      ; back to last gas.
 
 do_fixed_setpoints:
+        bcf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
      MENU_BEGIN  tFixedSetpoints, .6
         MENU_DYNAMIC    gaslist_strcat_setpoint, do_edit_sp_menu
         MENU_DYNAMIC    gaslist_strcat_setpoint, do_edit_sp_menu
@@ -153,6 +155,7 @@ return_gas_menu:
         bra     do_diluent_setup        ; Yes.
 do_gas_menu:
         bcf     ccr_diluent_setup       ; =1: Setting up Diluents ("Gas6-10")
+        bcf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
         call    gaslist_cleanup_list    ; Takes care that only one gas can be first and first has 0m change depth
     MENU_BEGIN  tGaslist, .6
         MENU_DYNAMIC    gaslist_strcat_gas_mod, do_edit_gas_menu
@@ -378,6 +381,7 @@ do_reset_deco:
 	goto	do_return_settings				; back to menu
 
 do_reset_settings:
+    banksel common
 	extern	option_reset_all
     call	option_reset_all        	; Reset all options to factory default.
 	goto	restart                     ; Restart into surfacemode
