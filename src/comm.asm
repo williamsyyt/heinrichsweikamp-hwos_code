@@ -660,10 +660,18 @@ comm_set_custom_text:
 comm_set_ctext_loop:
     call	rs232_get_byte
     btfsc	rs232_recieve_overflow          ; Got byte?
-    bra		comm_download_mode0             ; No, loop with timeout reset
+    bra		comm_set_ctext_loop_done        ; no, abort
     movff	RCREG1,POSTINC2                 ; Store character
     decfsz	lo,F
     bra		comm_set_ctext_loop
+comm_set_ctext_loop_done:
+    tstfsz  lo                              ; Got opt_name_length bytes?
+    bra		comm_set_ctext_loop_done2       ; no, clear remaining chars
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+comm_set_ctext_loop_done2:
+    clrf    POSTINC2
+    decfsz	lo,F
+    bra		comm_set_ctext_loop_done2
     bra		comm_download_mode0             ; Done. Loop with timeout reset
 
 ;-----------------------------------------------------------------------------

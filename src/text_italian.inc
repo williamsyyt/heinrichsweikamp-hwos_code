@@ -31,7 +31,6 @@
     TCODE   tMainMenu,  "Menu Principale"     ; MainMenu
     TCODE   tLogbook,   "Logbook"       ; Logbook
     TCODE   tGasSetup,  "Imposta Gas OC"  ; OC Gas Setup
-    TCODE   tSimulator, "Simulatore"     ; Simulator
     TCODE   tSetTime,   "Imposta Ora"		; Set Time
 	TCODE	tSetDate,	"Imposta Data"		; Set Date
 	TCODE	tSetTimeDate,"Imp. Ora e Data"; Set Time & Date
@@ -165,8 +164,8 @@
 	TCODE	tDateformat2,"AAMMGG"
 
 ; Simulator menu
-    TCODE   tInter, 	"Simulatore"           ; Dive Simulator
-    TCODE   tPlan,  	"Pianifica Deco"       ; Deco Planner
+    TCODE   tInter, 	"Start Simulatore"     ; Start Simulator
+    TCODE   tPlan,  	"Simulatore"           ; Simulator
 
 ; Decoplanner submenu
     TCODE   tBtTm,  	"Tempo Fondo :"        ; Bot. Time: (10 chars)

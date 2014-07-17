@@ -274,9 +274,11 @@ get_ambient_level2:
 	incf	isr1_temp,F				; adjust 0-2 to 1-3
 
     banksel common                  ; flag is in bank1
-	movlw	ambient_light_max_high	; brightest setting
-	btfsc	battery_is_36v          ; 3,6V battery in use?
-	movlw	ambient_light_max_high_36V	; Yes...
+	movlw	ambient_light_max_high_c3; c3 hardware brightest setting
+    btfss   c3_hardware
+    movlw	ambient_light_max_high_15V; 1,5V battery brightest setting
+    btfsc	battery_is_36v          ; 3,6V battery in use?
+	movlw	ambient_light_max_high_36V	; 3,6V battery brightest setting
 	banksel isr_backup              ; Back to Bank0 ISR data
 
 	dcfsnz	isr1_temp,F

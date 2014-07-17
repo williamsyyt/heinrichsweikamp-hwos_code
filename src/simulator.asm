@@ -722,6 +722,7 @@ do_demo_divemode:
         addwfc  PRODH,W
         movff   WREG,sim_pressure+1
 
+        banksel common                  ; Bank1
 		bsf		divemode
 		goto	diveloop							; Switch into Divemode!
 

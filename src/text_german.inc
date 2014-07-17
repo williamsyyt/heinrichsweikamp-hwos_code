@@ -31,7 +31,6 @@
     TCODE   tMainMenu,  "Hauptmenü"     ; MainMenu
     TCODE   tLogbook,   "Logbuch"       ; Logbook
     TCODE   tGasSetup,  "OC Gas Setup"  ; OC Gas Setup
-    TCODE   tSimulator, "Simulator"     ; Simulator
     TCODE   tSetTime,   "Zeit stellen" ; Set Time
 	TCODE	tSetDate,	"Datum stellen"	; Set Date
 	TCODE	tSetTimeDate,"Datum & Uhrzeit"; Set Time & Date
@@ -131,7 +130,7 @@
     TCODE   tEco,       "Eco"
     TCODE   tMedium,    "Mittel"
     TCODE   tHigh,      "Hoch"
-    TCODE   tDvSalinity,"Salinity:"             ; Salinity
+    TCODE   tDvSalinity,"Salinität:"             ; Salinity
 
 ; Setup Menu
     TCODE   tSystSets,  "Konfiguration"
@@ -165,8 +164,8 @@
 	TCODE	tDateformat2,"JJMMTT"
 
 ; Simulator menu
-    TCODE   tInter, 	"Simulator"         ; Dive Simulator
-    TCODE   tPlan,  	"Deko Planer"       ; OSTC3 Decoplanner
+    TCODE   tInter, 	"Start Simulator"  ; Start Simulator
+    TCODE   tPlan,  	"Simulator"        ; Simulator
 
 ; Decoplanner submenu
     TCODE   tBtTm,  	"Grundzeit:"        ; Bot. Time: (10 chars)
@@ -196,7 +195,7 @@
     TCODE   tSelectTx,   "Tx"               ; Tx
     TCODE   tDepth,      "Tiefe"            ; Depth
     TCODE   tMaxDepth,   "Max. Tiefe"       ; Max. Depth
-    TCODE   tDivetime,   "TG-Dauer"         ; Divetime
+    TCODE   tDivetime,   "    Zeit"         ; Divetime
     TCODE   tDiveHudMask1,  "Sensor 1"
     TCODE   tDiveHudMask2,  "Sensor 2"
     TCODE   tDiveHudMask3,  "Sensor 3"

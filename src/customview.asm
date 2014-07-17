@@ -398,9 +398,13 @@ customview_init_view7:                      ; Dynamic gaslist (View 7)
     bra		customview_toggle_exit
 
 customview_init_view8:                      ; Sensor millivolts
+	btfsc	FLAG_gauge_mode					; In Gauge mode?
+	bra		customview_toggle				; Yes, Call next view...
 	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
 	bra		customview_toggle				; yes, Call next view...
 	btfss	FLAG_ccr_mode					; In CC mode?
+	bra		customview_toggle				; no, Call next view...
+    TSTOSS  opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor
 	bra		customview_toggle				; no, Call next view...
     call    TFT_hud_mask                    ; Setup HUD mask
     call    TFT_hud_voltages                ; Show HUD details
