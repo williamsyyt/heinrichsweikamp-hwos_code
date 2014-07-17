@@ -19,7 +19,7 @@
 #include <ports.inc>                        ; Portmap
 
 #DEFINE	softwareversion_x		d'1'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'42'		; Software version  XX.YY
+#DEFINE	softwareversion_y		d'44'		; Software version  XX.YY
 #DEFINE softwareversion_beta 	1 			; (and 0 for release)
 
 #DEFINE comm_service_key        0xABCDEF
@@ -173,9 +173,9 @@
 #DEFINE current_compass             .28
 
 ; Brightness thresholds (between zero (off) and 255 (max. power))
-#DEFINE	ambient_light_max_high_36V	.175		; When used with a 3,6V battery
-#DEFINE	ambient_light_max_high  	.240		; For rechargeable battery
-;#DEFINE	ambient_light_max_high		.150
+#DEFINE	ambient_light_max_high_36V	.175
+#DEFINE	ambient_light_max_high_c3  	.240
+#DEFINE	ambient_light_max_high_15V  .150
 #DEFINE	ambient_light_min_high		.40
 #DEFINE	ambient_light_max_medium 	.135
 #DEFINE	ambient_light_min_medium 	.30

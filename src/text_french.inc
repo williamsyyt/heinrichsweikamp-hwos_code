@@ -31,7 +31,6 @@
     TCODE   tMainMenu,  "Menu Principal"; Main Menu
     TCODE   tLogbook,   "Carnet de Plongée" ; Logbook
     TCODE   tGasSetup,  "Paramètres Gaz OC"  ; OC Gas Setup
-    TCODE   tSimulator, "Simulateur"    ; Simulator
     TCODE   tSetTime,   "Réglage Heure"	; Set Time
 	TCODE	tSetDate,	"Réglage Date"	; Set Date
 	TCODE	tSetTimeDate,"Date & Heure" ; Set Time & Date
@@ -165,16 +164,16 @@
 	TCODE	tDateformat2,"AAMMJJ"
 
 ; Simulator menu
-    TCODE   tInter, 	"Simulateur"        ; Dive Simulator
-    TCODE   tPlan,  	"Planification"     ; Deco Planner
+    TCODE   tInter, 	"Start Simulateur"  ; Start Simulator
+    TCODE   tPlan,  	"Simulateur"        ; Simulator
 
 ; Decoplanner submenu
-    TCODE   tBtTm,  	"Temps Fond:"        ; Bot. Time: (10 chars)
+    TCODE   tBtTm,  	"Temps Fond:"       ; Bot. Time: (10 chars)
     TCODE   tMxDep, 	"Prof. Max:"        ; Max Depth: (10 chars)
     TCODE   tIntvl, 	"Intervalle:"       ; Interval :  (10 chars)
-    TCODE   tDeco,  	"Calcul Déco"         ; Calculate Deco
+    TCODE   tDeco,  	"Calcul Déco"       ; Calculate Deco
     TCODE   tDivePlan,  "Runtime:"          ; Dive Plan:
-    TCODE   tNoDeco,    "No Déco"          ; No Deco
+    TCODE   tNoDeco,    "No Déco"           ; No Deco
     TCODE   tMore,      "Suite..."          ; More...
     TCODE   tCNS,       "CNS"               ; CNS
 
