@@ -271,6 +271,8 @@ option_save:
         addlw   LOW(eeprom_opt_backup)  ; Add offset
         movwf   EEADR
         movlw   HIGH(eeprom_opt_backup)
+        btfsc   STATUS,C                ; >256
+        addlw   .1                      ; Yes: +1
         movwf   EEADRH
 
         movf    opt_type,W              ; Option type is string ?
@@ -343,6 +345,8 @@ option_restore:
         addlw   LOW(eeprom_opt_backup)  ; Add offset
         movwf   EEADR
         movlw   HIGH(eeprom_opt_backup)
+        btfsc   STATUS,C                ; >256
+        addlw   .1                      ; Yes: +1
         movwf   EEADRH
 
         movf    opt_type,W              ; Option type is string ?
