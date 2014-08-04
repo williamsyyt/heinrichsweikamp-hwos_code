@@ -80,7 +80,7 @@ lbl:    db      2, LOW(defText)         ; Type2 = STRING
 
 
 ;=============================================================================
-        extern  tPercent, tMeters, tMinutes, tGasDisabled, tbar, tcharx
+        extern  tPercent, tMeters, tMinutes, tGasDisabled, tbar
         extern  char_I_deco_gas_change, char_I_setpoint_change, char_I_setpoint_cbar, char_I_dil_change
         extern  char_I_dive_interval, char_I_bottom_time, char_I_bottom_depth
         extern  char_I_deco_model, char_I_saturation_multiplier, char_I_desaturation_multiplier
@@ -107,7 +107,7 @@ option_table_begin:
         OPTION_UINT8    oaGF_low,      .60,  .100, .60,  tPercent,  .17,    opt_aGF_low
         OPTION_UINT8    oaGF_high,     .70,  .120, .85, tPercent,   .18,    opt_aGF_high
         OPTION_BOOL     oEnable_aGF,    0,                          .19,    opt_enable_aGF              ; =1: aGF can be selected underwater
-        OPTION_UINT8    oCompassGain,   0,  7,  6,       tcharx,    .20,    opt_compass_gain            ; 0-7 (230LSB/Gauss to 1370LSB/Gauss)
+        OPTION_UINT8    oCompassGain,   0,  7,  6,       tMinutes,  .20,    opt_compass_gain            ; 0-7 (230LSB/Gauss to 1370LSB/Gauss)
         OPTION_ENUM8    oSamplingRate,  2,  0,  tSampling2s,        .21,    opt_sampling_rate           ; =1: 10s, =0: 2s
 
 ;=============================================================================

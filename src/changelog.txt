@@ -1,3 +1,9 @@
+[1.45]
+
+- Beta Version -
+CHANGE: Minor German language update
+BUGFIX: Clock setting (Bug from 1.44beta)
+
 [1.44]
 
 - Beta Version -

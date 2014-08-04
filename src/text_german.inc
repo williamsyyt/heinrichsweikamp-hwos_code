@@ -79,7 +79,7 @@
     TCODE   tSPPlus,    "pO2+"                  ; pO2+
 
 ; New batteries menu
-	TCODE   tNewBattTitle,      "Neue Batterien?"
+	TCODE   tNewBattTitle,      "Neue Batterie?"
 	TCODE	tNewBattOld,		"Behalte alte"
 	TCODE	tNewBattNew36,		"Neue 3,6V"
 	TCODE	tNewBattNew15,		"Neue 1,5V"
@@ -141,7 +141,6 @@
     TCODE   tItalian,   "Italienisch"
     TCODE   tCompassMenu,"Kompass-kalibrierung"  ; Compass calibration
     TCODE   tCompassGain,"Empfindlichkeit:"      ; Compass gain:
-    TCODE   tcharx,     "x"
 
     TCODE   tUnits,     "Einheiten:"
     TCODE   tMetric,     " m/°C"            ; Enum menu
