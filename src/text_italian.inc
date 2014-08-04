@@ -141,7 +141,6 @@
     TCODE   tItalian,   "Italiano"
     TCODE   tCompassMenu,"Calibra Bussola"  ; Compass calibration
     TCODE   tCompassGain,"Suscettibilita:"  ; Compass gain:
-    TCODE   tcharx,     "x"
 
     TCODE   tUnits,     "Unita':"
     TCODE   tMetric,     " m/°C"            ; Enum menu
