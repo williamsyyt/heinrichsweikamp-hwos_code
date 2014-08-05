@@ -193,6 +193,7 @@ surfloop_loop:
 	call	timeout_surfmode			; check timeout 
 	call	get_battery_voltage			; get battery voltage
     call    compute_ppo2                ; compute mv_sensorX and ppo2_sensorX arrays
+    call    check_sensors               ; Set enable/disable flags
 	call	TFT_update_batt_voltage		; display battery voltage
 	call	set_dive_modes				; tests if depth>threshold
     btfss   secs,0                      ; Every two seconds...

@@ -555,20 +555,12 @@ isr_rtcc:								; each second
         tstfsz  secs                    ; Secs == 0 ?
         return                          ; No, Done.
 
-;        banksel isr_backup              ; Back to Bank0 ISR data
-;		movff	secs,isr1_temp			; Copy to Bank0
-;		movlw	d'0'
-;		cpfseq	isr1_temp               ; Secs == 0 ?
-;        return                          ; Done.
-
-;		banksel common                  ; flag1 is in Bank1
 		bsf		oneminupdate			; A new minute has begun
 
 		btfss	divemode				; In Divemode?
 		rcall	check_nofly_desat_time	; No, so reduce NoFly and Desat and increase interval
 
         ; Check if a new hour has just begun
-;		banksel common                  ; flag1 is in Bank1
 		tstfsz	mins					; mins=0?
 		bra		isr_rtcc2				; No
 		bsf		onehourupdate			; Yes, set flag

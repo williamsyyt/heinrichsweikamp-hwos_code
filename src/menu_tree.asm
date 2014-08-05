@@ -99,10 +99,11 @@ do_calibrate_mix:
 do_ccr_sensor:
     call    enable_ir                   ; Enable IR-Port
     bsf     menu_show_sensors           ; Set flag
-	MENU_BEGIN  tCCRSensor, .4
+	MENU_BEGIN  tCCRSensor, .5
 	    MENU_CALL       tDiveHudMask1,       0
         MENU_CALL       tDiveHudMask2,       0
         MENU_CALL       tDiveHudMask3,       0
+        MENU_OPTION     tSensorFallback,oSensorFallback,  0
         MENU_CALL       tExit,               return_ccr_menu
     MENU_END
 

@@ -1,3 +1,8 @@
+[1.46]
+
+- Beta Version -
+NEW: Setpoint-Fallback option for external O2 sensor failure
+
 [1.45]
 
 - Beta Version -
