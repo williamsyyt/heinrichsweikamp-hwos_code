@@ -192,7 +192,7 @@ option_table_begin:
         OPTION_UINT8    oPressureAdjust, .0,.255,   .0,     -1,       .147,    opt_pressure_adjust              ; SIGNED int (-20/+20mbar max.)
         OPTION_BOOL     oSafetyStop,    0,                            .148,    opt_enable_safetystop            ; =1: A safety stop is shown
         OPTION_UINT8    oCalGasO2,      .21,.100,   .21,    tPercent, .149,    opt_calibration_O2_ratio         ; Calibration gas %O2
-        OPTION_BOOL     oSensorFallback,0,                            .150,    opt_sensor_fallback              ; =1: Fallback to SP1 when sensor is lost
+        OPTION_BOOL     oSensorFallback,1,                            .150,    opt_sensor_fallback              ; =1: Fallback to SP1 when sensor is lost
 
 ;=============================================================================
 ; Set Time/Set Date (RAM only)
