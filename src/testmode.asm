@@ -87,7 +87,7 @@ testloop_loop:
     call    compass                     ; Do compass corrections.
     banksel common
 
-    call    TFT_update_raw_data
+;    call    TFT_update_raw_data
 	movlw	.240
     call	timeout_testmode			; check timeout
 
@@ -142,7 +142,7 @@ testloop2_loop:
 	bra		testloop2_loop2				; no, loop
 
 ; One Second tasks
-    call    TFT_update_raw_data2
+;    call    TFT_update_raw_data2
 	movlw	.240
     call	timeout_testmode			; check timeout
 

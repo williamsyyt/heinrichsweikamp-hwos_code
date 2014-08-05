@@ -106,6 +106,7 @@ diveloop_loop1x:
 ;    call    TFT_active_gas_divemode         ; Update Setpoint every second
 
     call    compute_ppo2                    ; compute mv_sensorX and ppo2_sensorX arrays
+    call    check_sensors                   ; Check O2 sensor thresholds for fallback
 
 	bcf		onesecupdate					; one seconds update done
 
@@ -283,7 +284,7 @@ set_actual_ppo2_common:
 
 
 calc_deko_divemode2:
-	bcf		twosecupdate		
+	bcf		twosecupdate
 
 	btfsc	FLAG_apnoe_mode             ; Done for Apnoe or Gauge mode
     return
@@ -293,9 +294,25 @@ calc_deko_divemode2:
 	extern	deco_setup_dive
 	call	deco_setup_dive				;  Pass all parameters to the C code
 
+    bcf     setpoint_fallback               ; =1: Fallback to SP1 due to external O2 sensor failure
+
     TSTOSS  opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor
     bra     calc_deko_divemode2a
     rcall   divemode_setup_sensor_values    ; Setup sensor values
+    movff   sensor_setpoint,char_I_const_ppO2; Copy sensor result
+
+    TSTOSS  opt_sensor_fallback             ; =1: Fallback to SP1 when sensor is lost
+    bra     calc_deko_divemode2a            ; Never fallback
+    ; Check if we should fallback to SP1
+  	btfsc	use_02_sensor1
+    bra     calc_deko_divemode2a            ; At least one sensor is active, no fallback
+	btfsc	use_02_sensor2
+	bra     calc_deko_divemode2a            ; At least one sensor is active, no fallback
+	btfsc	use_02_sensor3
+	bra     calc_deko_divemode2a            ; At least one sensor is active, no fallback
+    ; No sensor in use -> fallback
+    movff   char_I_setpoint_cbar+0,char_I_const_ppO2    ; Setup fixed Setpoint (Always fallback to SP1), overwrite sensor result
+    bsf     setpoint_fallback               ; =1: Fallback to SP1 due to external O2 sensor failure
 
 calc_deko_divemode2a:
 	SAFE_2BYTE_COPY amb_pressure,int_I_pres_respiration ; C-code needs the ambient pressure
@@ -372,7 +389,7 @@ divemode_setup_sensor_values:
     clrf    xB+1
     clrf    xA+0
     clrf    xA+1
-    btfss   sensor1_active                  ; Sensor1 active?
+    btfss   use_02_sensor1                  ; Sensor1 active?
     bra     divemode_setup_sensor_values2   ; No
     movf    o2_ppo2_sensor1,W
     addwf   xA+0
@@ -380,7 +397,7 @@ divemode_setup_sensor_values:
     addwfc  xA+1                            ; Add into xA:2
     incf    xB+0,F                          ; Add a sensor
 divemode_setup_sensor_values2:
-    btfss   sensor2_active                  ; Sensor2 active?
+    btfss   use_02_sensor2                  ; Sensor2 active?
     bra     divemode_setup_sensor_values3   ; No
     movf    o2_ppo2_sensor2,W
     addwf   xA+0
@@ -388,7 +405,7 @@ divemode_setup_sensor_values2:
     addwfc  xA+1                            ; Add into xA:2
     incf    xB+0,F                          ; Add a sensor
 divemode_setup_sensor_values3:
-    btfss   sensor3_active                  ; Sensor3 active?
+    btfss   use_02_sensor3                  ; Sensor3 active?
     bra     divemode_setup_sensor_values4   ; No
     movf    o2_ppo2_sensor3,W
     addwf   xA+0
@@ -398,7 +415,6 @@ divemode_setup_sensor_values3:
 divemode_setup_sensor_values4:
     call    div16x16						; xA/xB=xC with xA+0 as remainder
     movff   xC+0,sensor_setpoint            ; Copy result
-    movff   sensor_setpoint,char_I_const_ppO2 ; use sensor ppO2
     return
 
 calc_velocity:								; called every two seconds
@@ -1372,6 +1388,8 @@ divemode_check_for_warnings1:
     call    TFT_ftts                            ; Show @+x time
     btfsc   use_agf                             ; In aGF mode?
     rcall   warn_agf                            ; Yes, show a warning for it
+    btfsc   setpoint_fallback                   ; =1: Fallback to SP1 due to external O2 sensor failure
+    rcall   warn_fallback                       ; Show the warning
 
 divemode_check_for_warnings2:
 ; Display the warning icon?
@@ -1549,7 +1567,12 @@ check_and_store_gf_violation2:
 warn_agf:
 	incf	warning_counter,F			; increase counter
 	call	TFT_warning_agf             ; Show aGF warning
-;	bsf		warning_active              ; Set Warning flag
+    return
+
+warn_fallback:
+    incf	warning_counter,F			; increase counter
+	call	TFT_warning_fallback        ; Show fallback warning
+    bsf		warning_active              ; Set Warning flag
     return
 
 

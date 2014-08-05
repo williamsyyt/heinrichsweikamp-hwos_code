@@ -49,8 +49,8 @@ TFT_color_code macro color_code_temp
     extern  TFT_show_color_schemes      ; Yes, update the color schemes
 
 ; Debug and useless stuff
-	extern	TFT_update_raw_data
-    extern	TFT_update_raw_data2
+;	extern	TFT_update_raw_data
+;    extern	TFT_update_raw_data2
     extern  TFT_compass_fast
 
 ; Dive mode
@@ -103,6 +103,7 @@ TFT_color_code macro color_code_temp
     extern  TFT_ceiling_mask                    ; The ceiling mask
     extern  TFT_ceiling                         ; Ceiling
     extern  TFT_clear_safety_stop               ; Clear safety stop
+    extern  TFT_warning_fallback                ; Show fallback warning
 
 ; Misc
 	extern	TFT_standard_color

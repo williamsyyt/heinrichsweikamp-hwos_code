@@ -74,6 +74,7 @@
 ; External O2 cell input parameters
 #DEFINE	min_mv				.80			; = 8mV
 #DEFINE	min_mv_in_o2		.380		; = 38mV
+#DEFINE max_mv              .2500       ; = 250mV
 
 ; Profile recording parameters
 #DEFINE	logbook_profile_version	0x23
@@ -461,11 +462,11 @@ o2_ppo2_sensor3     res 1       ; Sensor3 ppO2 (in 0.01bar steps)
 hud_battery_mv      res 2
 hud_status_byte     res 1
 ;Status Byte/
-;Bit0 = 1 -> HUD connection ok
+#DEFINE hud_connection_ok       hud_status_byte,0	;Bit0 = 1 -> HUD connection ok
 ;Bit1 = 1 -> HUD is calibrated
 ;Bit2 = 1 -> HUD Battery is low (<3000mV)
-#DEFINE	sensor1_active          hud_status_byte,3	; =1: Sensor1 is active
-#DEFINE	sensor2_active          hud_status_byte,4   ; =1: Sensor2 is active
+#DEFINE	sensor1_active          hud_status_byte,3	;=1: Sensor1 is active
+#DEFINE	sensor2_active          hud_status_byte,4   ;=1: Sensor2 is active
 #DEFINE	sensor3_active          hud_status_byte,5   ;=1: Sensor3 is active
 ;Bit6 unused in stand-alone HUD
 ;Bit7 unused in stand-alone HUD
@@ -530,7 +531,7 @@ opt_calibration_O2_ratio    res 1   ; %O2 of calibration gas
 opt_x_s1                res	2	; calibration factor (Not stored in EEPROM)
 opt_x_s2                res	2	; calibration factor (Not stored in EEPROM)
 opt_x_s3                res	2	; calibration factor (Not stored in EEPROM)
-
+opt_sensor_fallback     res 1   ; =1: Fallback to SP1 when sensor is lost
 
 ;-----------------------------EEPROM DATA ------------------------------------
 ; Automatic reset of all options when this is changed:
@@ -615,13 +616,17 @@ opt_x_s3                res	2	; calibration factor (Not stored in EEPROM)
 #DEFINE bailoutgas_event        flag9,2 ; =1: bailout was selected or a gaschange during bailout
 #DEFINE	event2_occured			flag9,3	; =1: An event in the Eventbyte2 occured, store it!
 #DEFINE show_safety_stop		flag9,4	; =1: Show the safety stop
-#DEFINE	safety_stop_active      flag9,5	; =1 The safety stop is currently displayed
+#DEFINE	safety_stop_active      flag9,5	; =1: The safety stop is currently displayed
 #DEFINE new_s8_data_available   flag9,6 ; =1: New data frame recieved
-#DEFINE	c3_hardware             flag9,7; =1: OSTC 3C hardware
+#DEFINE	c3_hardware             flag9,7;  =1: OSTC 3C hardware
 
 #DEFINE s8_digital              flag10,0; =1: Digital I/O
-#DEFINE menu_show_sensors2      flag10,1 ; =1: Update mV data in calibration menu
-
+#DEFINE menu_show_sensors2      flag10,1; =1: Update mV data in calibration menu
+#DEFINE use_02_sensor1          flag10,2; =1: Use this sensor for deco
+#DEFINE use_02_sensor2          flag10,3; =1: Use this sensor for deco
+#DEFINE use_02_sensor3          flag10,4; =1: Use this sensor for deco
+#DEFINE setpoint_fallback       flag10,5; =1: Fallback to SP1 due to external O2 sensor failure
+#DEFINE	blinking_setpoint       flag10,6; =1: SP is blinking
 ;=============================================================================
 ; C-code Routines
 ; PART 2

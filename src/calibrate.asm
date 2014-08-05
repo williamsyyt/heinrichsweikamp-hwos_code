@@ -15,6 +15,84 @@
 
 calibrate     CODE
 
+    global  check_sensors           ; Check O2 sensor thresholds for fallback
+check_sensors:
+    ; Check min_mv
+	movff	o2_mv_sensor1+0, sub_a+0
+	movff	o2_mv_sensor1+1, sub_a+1
+	movlw	LOW		min_mv
+	movwf	sub_b+0
+	movlw	HIGH	min_mv
+	movwf	sub_b+1
+	call	sub16			;  sub_c = sub_a - sub_b
+    bsf     use_02_sensor1  ;=1: Use this sensor for deco
+	btfsc	neg_flag
+	bcf     use_02_sensor1  ;=1: Use this sensor for deco
+
+	movff	o2_mv_sensor2+0, sub_a+0
+	movff	o2_mv_sensor2+1, sub_a+1
+	movlw	LOW		min_mv
+	movwf	sub_b+0
+	movlw	HIGH	min_mv
+	movwf	sub_b+1
+	call	sub16			;  sub_c = sub_a - sub_b
+	bsf     use_02_sensor2  ;=1: Use this sensor for deco
+	btfsc	neg_flag
+	bcf     use_02_sensor2  ;=1: Use this sensor for deco
+
+	movff	o2_mv_sensor3+0, sub_a+0
+	movff	o2_mv_sensor3+1, sub_a+1
+	movlw	LOW		min_mv
+	movwf	sub_b+0
+	movlw	HIGH	min_mv
+	movwf	sub_b+1
+	call	sub16			;  sub_c = sub_a - sub_b
+	bsf     use_02_sensor3  ;=1: Use this sensor for deco
+	btfsc	neg_flag
+	bcf     use_02_sensor3  ;=1: Use this sensor for deco
+    ; Check max_mv
+	movff	o2_mv_sensor1+0, sub_a+0
+	movff	o2_mv_sensor1+1, sub_a+1
+	movlw	LOW		max_mv
+	movwf	sub_b+0
+	movlw	HIGH	max_mv
+	movwf	sub_b+1
+	call	sub16			;  sub_c = sub_a - sub_b
+	btfss	neg_flag
+	bcf     use_02_sensor1  ;=1: Use this sensor for deco
+
+	movff	o2_mv_sensor2+0, sub_a+0
+	movff	o2_mv_sensor2+1, sub_a+1
+	movlw	LOW		max_mv
+	movwf	sub_b+0
+	movlw	HIGH	max_mv
+	movwf	sub_b+1
+	call	sub16			;  sub_c = sub_a - sub_b
+	btfss	neg_flag
+	bcf     use_02_sensor2  ;=1: Use this sensor for deco
+
+	movff	o2_mv_sensor3+0, sub_a+0
+	movff	o2_mv_sensor3+1, sub_a+1
+	movlw	LOW		max_mv
+	movwf	sub_b+0
+	movlw	HIGH	max_mv
+	movwf	sub_b+1
+	call	sub16			;  sub_c = sub_a - sub_b
+	btfss	neg_flag
+	bcf     use_02_sensor3  ;=1: Use this sensor for deco
+
+    btfss   hud_connection_ok   ;=1: HUD connection ok
+    return      ; No HUD/Digital data
+
+    ; Copy disbale flags from digital input
+    btfss   sensor1_active
+    bcf     use_02_sensor1
+    btfss   sensor2_active
+    bcf     use_02_sensor2
+    btfss   sensor3_active
+    bcf     use_02_sensor3
+    return
+
 	global	calibrate_mix
 calibrate_mix:
     ; calibrate S8 HUD
@@ -118,9 +196,9 @@ calibrate_mix2:
 	movlw	HIGH	min_mv
 	movwf	sub_b+1
 	call	sub16			;  sub_c = sub_a - sub_b
-	bsf		sensor1_active	; Sensor active!
+	bsf		use_02_sensor1	; Sensor active!
 	btfsc	neg_flag
-	bcf		sensor1_active
+	bcf		use_02_sensor1
 
 	; Result is in 100µV
 	movff	o2_mv_sensor2+0, sub_a+0
@@ -130,9 +208,9 @@ calibrate_mix2:
 	movlw	HIGH	min_mv
 	movwf	sub_b+1
 	call	sub16			;  sub_c = sub_a - sub_b
-	bsf		sensor2_active	; Sensor active!
+	bsf		use_02_sensor2	; Sensor active!
 	btfsc	neg_flag
-	bcf		sensor2_active
+	bcf		use_02_sensor2
 
 	; Result is in 100µV
 	movff	o2_mv_sensor3+0, sub_a+0
@@ -142,20 +220,20 @@ calibrate_mix2:
 	movlw	HIGH	min_mv
 	movwf	sub_b+1
 	call	sub16			;  sub_c = sub_a - sub_b
-	bsf		sensor3_active	; Sensor active!
+	bsf		use_02_sensor3	; Sensor active!
 	btfsc	neg_flag
-	bcf		sensor3_active
+	bcf		use_02_sensor3
 
 	; When no sensor is found, enable all three to show error state
-	btfsc	sensor1_active
+	btfsc	use_02_sensor1
 	return
-	btfsc	sensor2_active
+	btfsc	use_02_sensor2
 	return
-	btfsc	sensor3_active
+	btfsc	use_02_sensor3
 	return
-	bsf		sensor1_active
-	bsf		sensor2_active
-	bsf		sensor3_active
+	bsf		use_02_sensor1
+	bsf		use_02_sensor2
+	bsf		use_02_sensor3
 	; Clear factors
     banksel opt_x_s1+0
 	clrf	opt_x_s1+0
@@ -203,9 +281,9 @@ compute_ppo2_common:
 	movff	xC+0,o2_ppo2_sensor1+0
 	movff	xC+1,o2_ppo2_sensor1+1		; result in 0.01bar
 	; Set to zero if sensor is not active!
-	btfss	sensor1_active
+	btfss	use_02_sensor1
 	clrf	o2_ppo2_sensor1+0
-	btfss	sensor1_active
+	btfss	use_02_sensor1
 	clrf	o2_ppo2_sensor1+1
 
 	; o2_mv_sensor2:2 * opt_x_s1:2 = o2_ppo2_sensor2/10000
@@ -226,9 +304,9 @@ compute_ppo2_common:
 	movff	xC+0,o2_ppo2_sensor2+0
 	movff	xC+1,o2_ppo2_sensor2+1		; result in 0.01bar
 	; Set to zero if sensor is not active!
-	btfss	sensor2_active
+	btfss	use_02_sensor2
 	clrf	o2_ppo2_sensor2+0
-	btfss	sensor2_active
+	btfss	use_02_sensor2
 	clrf	o2_ppo2_sensor2+1
 
 	; o2_mv_sensor3:2 * opt_x_s1:2 = o2_ppo2_sensor3/10000
@@ -249,9 +327,9 @@ compute_ppo2_common:
 	movff	xC+0,o2_ppo2_sensor3+0
 	movff	xC+1,o2_ppo2_sensor3+1		; result in 0.01bar
 	; Set to zero if sensor is not active!
-	btfss	sensor3_active
+	btfss	use_02_sensor3
 	clrf	o2_ppo2_sensor3+0
-	btfss	sensor3_active
+	btfss	use_02_sensor3
 	clrf	o2_ppo2_sensor3+1
 
 	return							; Done.

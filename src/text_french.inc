@@ -77,6 +77,7 @@
     TCODE   tCCRModeSensor,   "Cellule"          ; Sensor
     TCODE   tSP,            "SP"                ; SP (SetPoint)
     TCODE   tSPPlus,    "pO2+"                  ; pO2+
+    TCODE   tSensorFallback, "Fallback:"        ; Fallback:
 
 ; New batteries menu
 	TCODE   tNewBattTitle,      "Nouvelle Batterie?"
@@ -217,6 +218,7 @@
     TCODE   tGFInfo,        "   GF Info"    ; GF Info
     TCODE   tCeiling,       "Ceiling"       ; Ceiling
     TCODE   tDiveSafetyStop," Stop"         ; Stop (Five chars, right alligned)
+    TCODE   tDiveFallback,  "Fallback!"     ; Fallback! (max. nine chars)
 
 ; Divemode menu
     TCODE   tDivePreMenu,   "Menu?"         ; Menu?
