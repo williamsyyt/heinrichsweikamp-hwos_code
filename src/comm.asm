@@ -22,7 +22,7 @@
 #include "rtc.inc"
 #include "adc_lightsensor.inc"
 
-	extern  testloop,new_battery_menu,restart,option_reset_all
+	extern  new_battery_menu,restart,option_reset_all
     extern  char_I_dil_change, char_I_setpoint_cbar, char_I_setpoint_change
     extern  char_I_deco_model, char_I_extra_time, char_I_saturation_multiplier, char_I_desaturation_multiplier
     extern  option_check_all, gaslist_cleanup_list, get_first_gas_to_WREG, get_first_dil_to_WREG
@@ -532,10 +532,10 @@ comm_download_mode2:
 	cpfseq	RCREG1
 	bra		$+4
 	bra		comm_send_firmware          ; sends firmware from external flash from 0x3E0000 to 0x3FD000 (118784bytes) via comm
-	movlw	"t"
-	cpfseq	RCREG1
-	bra		$+4
-    goto    testloop                    ; Start raw-data testloop
+;	movlw	"t"
+;	cpfseq	RCREG1
+;	bra		$+4
+;    goto    testloop                    ; Start raw-data testloop
 	movlw	0xC1
 	cpfseq	RCREG1
 	bra		$+4

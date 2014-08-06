@@ -1,4 +1,12 @@
-#include "ostc3.inc"
+#include    "ostc3.inc"
+#include    "i2c.inc"
+#include    "tft_outputs.inc"
+#include    "isr.inc"
+#include	"tft.inc"
+#include	"strings.inc"
+#include 	"wait.inc"                  ; speed_*
+#include    "surfmode.inc"
+
 
 ; Make sure symbols from the .inc are available to the C code:
     ; Filtered data
@@ -17,12 +25,16 @@
     ; Result
     global compass_heading, compass_roll, compass_pitch
 
+    extern  compass
+    extern  compass_reset_calibration
+    extern  compass_add_calibration
+    extern  compass_solve_calibration
+
 compass code
 ;-----------------------------------------------------------------------------
 ; Filter compass values
 ;
 ; Apply linear filtering to input parameters.
-    global compass_filter
 
 ; Apply filtering formula:
 ;   reg_f += (reg - reg_f) / 4
@@ -51,6 +63,7 @@ FILTER16 MACRO   reg, reg_f
         addwfc  reg_f+1,F
         ENDM
 
+        global  compass_filter
 compass_filter:
         banksel   compass_DX
 
@@ -65,7 +78,6 @@ compass_filter:
 
 ;-----------------------------------------------------------------------------
 
-        global compass_filter_init
 compass_filter_init:
         movff   compass_DX+0, compass_DX_f+0
         movff   compass_DX+1, compass_DX_f+1
@@ -167,5 +179,159 @@ compass_mul_4:
         btfsc   compass_r+1,7
         bsf     compass_r+1,6
         bra     compass_mul_2
+
+    global  compass_calibration_loop
+compass_calibration_loop:               ; Compass calibration
+    bsf     no_sensor_int               ; No Sensor ISR
+    call    I2C_sleep_accelerometer     ; Stop accelerometer
+    call    I2C_sleep_compass           ; Stop compass
+    call	TFT_ClearScreen
+    ; Mask
+    WIN_COLOR   color_greenish
+	WIN_SMALL	.16,.0
+	STRCPY_TEXT_PRINT	tCompassMenu
+    btfss		switch_right2           ; wait until button is released
+    bra         $-4
+
+    call	TFT_standard_color
+;	WIN_SMALL	.0,.215
+;    STRCPY_TEXT_PRINT  tExit
+    WAITMS  d'255'
+    WAITMS  d'255'
+    movlw   .7                          ; Gain init
+    movff   WREG,opt_compass_gain
+compass_calibration_gainset:            ; Reduce the gain, set bank here!
+    banksel opt_compass_gain
+    decf    opt_compass_gain,F          ; Reduce by one
+    btfsc   STATUS,N                    ; <0?
+    clrf    opt_compass_gain            ; Yes, keep at zero
+
+    banksel common
+    call    I2C_init_accelerometer
+    call    I2C_init_compass_fast
+    call    TFT_compass_show_gain       ; Show the current compass gain
+
+    WAITMS  d'100'
+
+ 	clrf	timeout_counter2
+	clrf 	timeout_counter3
+
+    call	speed_fastest
+    call    I2C_RX_compass              ; read compass
+    call    I2C_RX_accelerometer        ; read Accelerometer
+
+    ; Test all axes for +4096 (Hi byte=16)
+    banksel compass_DX+1
+    movlw   .16
+    cpfseq  compass_DX+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    cpfseq  compass_DY+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    cpfseq  compass_DZ+1
+    bra     $+4
+    bra     compass_calibration_gainset
+
+    ; Test all axes for -4096 (Hi byte=240)
+    movlw   .240
+    cpfseq  compass_DX+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    cpfseq  compass_DY+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    cpfseq  compass_DZ+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    banksel common
+
+    rcall   compass_filter_init         ; set DX_f values
+    call	compass_reset_calibration   ; Reset CX_f values
+    banksel common
+
+compass_calibration_loop2:
+    call    I2C_RX_compass              ; read compass
+    call    I2C_RX_accelerometer        ; Test Accelerometer
+    rcall   compass_filter              ; Filter compass raw data
+    banksel common
+
+    ; Twice
+    call    I2C_RX_compass              ; read compass
+    call    I2C_RX_accelerometer        ; Test Accelerometer
+    rcall   compass_filter              ; Filter compass raw data
+    banksel common
+
+    ; Test all axes for +4096 (Hi byte=16)
+    banksel compass_DX+1
+    movlw   .16
+    cpfseq  compass_DX+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    cpfseq  compass_DY+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    cpfseq  compass_DZ+1
+    bra     $+4
+    bra     compass_calibration_gainset
+
+    ; Test all axes for -4096 (Hi byte=240)
+    movlw   .240
+    cpfseq  compass_DX+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    cpfseq  compass_DY+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    cpfseq  compass_DZ+1
+    bra     $+4
+    bra     compass_calibration_gainset
+    banksel common
+;
+;    ; Three
+;    call    I2C_RX_compass              ; read compass
+;    call    I2C_RX_accelerometer        ; Test Accelerometer
+;    call    compass_filter              ; Filter compass raw data
+;    banksel common
+;
+;    ; Four times to get cleaner values
+;    call    I2C_RX_compass              ; read compass
+;    call    I2C_RX_accelerometer        ; Test Accelerometer
+;    call    compass_filter              ; Filter compass raw data
+
+    ; And register only one value out of four:
+    call    compass_add_calibration     ; check and store new max/min values
+    banksel common
+
+    call    TFT_compass_fast            ; show values
+
+    btfsc	sleepmode					; Sleepmode active?
+    bra     compass_calibration_exit    ; Yes, exit
+
+;    btfsc   switch_left                 ; Button pressed?
+;    bra     compass_calibration_exit    ; Yes, exit
+
+    btfss	onesecupdate				; do every second tasks?
+    bra     compass_calibration_loop2   ; no, loop here
+
+	movlw	.60
+    call	timeout_testmode			; check timeout
+    movlw   .60
+    call    TFT_show_timeout_testmode   ; Show the timeout
+
+    bcf     onesecupdate                ; clear flag
+
+    bra     compass_calibration_loop2   ; loop here
+
+compass_calibration_exit:
+    call    compass_solve_calibration
+    banksel common
+    extern  option_save_all
+	call	option_save_all             ; save all settings into EEPROM
+    bcf     sleepmode                   ; Clear the flag before exiting to surfacemode
+    movlw   .6
+    movwf   customview_surfmode         ; Set to compass view...
+   	goto	surfloop       				; ...and exit
+
 
         END

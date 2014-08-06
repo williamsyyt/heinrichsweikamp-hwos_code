@@ -73,7 +73,6 @@
 
 ; External O2 cell input parameters
 #DEFINE	min_mv				.80			; = 8mV
-#DEFINE	min_mv_in_o2		.380		; = 38mV
 #DEFINE max_mv              .2500       ; = 250mV
 
 ; Profile recording parameters

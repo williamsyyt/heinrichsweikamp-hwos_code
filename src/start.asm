@@ -274,11 +274,6 @@ restart:
 
 	call	ext_flash_disable_protection	; Disable write protection for external flash
 
-	extern  testloop
-;    goto    testloop
-
-
-
 	goto	surfloop				; Jump to Surfaceloop!
 
 ;=============================================================================
