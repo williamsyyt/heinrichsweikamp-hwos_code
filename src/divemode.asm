@@ -583,9 +583,8 @@ timeout_divemode:
     endif
 	
 	bcf		divemode
-	incf	timeout_counter,F
-	movlw	d'0'
-	addwfc	timeout_counter2,F			; timeout is 15bits
+	infsnz  timeout_counter,F
+    incf    timeout_counter2,F			; timeout is 15bits
 
 	movlw	LOW		divemode_timeout
 	movwf	sub_a+0

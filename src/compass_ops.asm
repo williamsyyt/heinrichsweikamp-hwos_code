@@ -44,6 +44,13 @@ FILTER16 MACRO   reg, reg_f
         movwf   PRODL
         movf    reg_f+1,W
         subwfb  reg+1,W
+        rcall   filter_16_common
+        addwf   reg_f+0,F
+        movf    PRODH,W
+        addwfc  reg_f+1,F
+        ENDM
+
+filter_16_common:
         movwf   PRODH
 
         bcf     STATUS,C        ; Copy sign bit into carry
@@ -57,11 +64,7 @@ FILTER16 MACRO   reg, reg_f
         bsf     STATUS,C
         rrcf    PRODH,F         ; 16bit shift right
         rrcf    PRODL,W
-
-        addwf   reg_f+0,F
-        movf    PRODH,W
-        addwfc  reg_f+1,F
-        ENDM
+        return
 
         global  compass_filter
 compass_filter:

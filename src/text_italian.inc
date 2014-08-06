@@ -224,7 +224,6 @@
     TCODE   tDivePreMenu,   "Menu?"         ; Menu?
 
 ; Simulator menu
-	TCODE	tQuitApnea,	 "Uscire?"            ; Quit Apnea mode?
 	TCODE	tQuitSim,	 "Uscire?"            ; Quit Simulation?
 	TCODE	tDescent1m,	 "Sim:-1m"          ; Descent 1m
 	TCODE	tAscent1m,	 "Sim:+1m"          ; Ascent 1m

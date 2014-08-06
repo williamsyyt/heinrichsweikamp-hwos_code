@@ -493,10 +493,8 @@ do_logoffset_minus10:
 
 do_logoffset_plus1:
 	call	do_logoffset_common_read			; Read into lo:hi
-	movlw	d'1'
-	addwf	lo
-	movlw	d'0'
-	addwfc	hi
+    infsnz  lo,F
+    incf    hi,F
 	goto	do_logoffset_common_write			; Store and return
 
 do_logoffset_plus10:
