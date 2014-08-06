@@ -389,9 +389,8 @@ ghostwriter_end_dive:
 	read_int_eeprom .3
 	movff	EEDATA,hi
 	; +1                        increase total dive counter
-	incf	lo,F
-	movlw	d'0'
-	addwfc	hi,F
+    infsnz  lo,F
+	incf	hi,F
 	; Store new number in EEPROM
 	movff	lo,EEDATA
 	write_int_eeprom	.2

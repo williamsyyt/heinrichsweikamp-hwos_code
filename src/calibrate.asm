@@ -84,7 +84,7 @@ check_sensors:
     btfss   hud_connection_ok   ;=1: HUD connection ok
     return      ; No HUD/Digital data
 
-    ; Copy disbale flags from digital input
+    ; Copy disable flags from digital input
     btfss   sensor1_active
     bcf     use_02_sensor1
     btfss   sensor2_active

@@ -54,10 +54,6 @@ HighInt:
 		btfsc	PIR5,TMR7IF				; Timer 7
 		rcall	isr_tmr7        		; Every 62,5ms
 
-;; IR-Link (again)
-;        btfsc   PIR3,RC2IF              ; UART2
-;        rcall   isr_uart2               ; IR-Link
-
 ; RTCC
 		btfsc	PIR3,RTCCIF				; Real-time-clock interrupt
 		rcall	isr_rtcc                ; May return in bank common!
@@ -74,7 +70,6 @@ isr_uart2:               ; IR-Link
     	bcf		RCSTA2,CREN		; Clear receiver status
     	bsf		RCSTA2,CREN
         banksel isr_backup
-        bcf     PIR3,RC2IF              ; Clear flag
         incf    ir_counter,F            ; Increase counter
         movff   ir_counter,isr1_temp    ; Copy
         dcfsnz  isr1_temp,F
@@ -857,11 +852,9 @@ check_nofly_desat_time2:
 		movlw	d'0'
 		subwfb	desaturation_time+1,F	   	; reduce by one...
 
-	; Increase surface interval timer 
-		movlw	d'1'
-		addwf	surface_interval+0,F
-		movlw	d'0'
-		addwfc	surface_interval+1,F
+	; Increase surface interval timer
+        infsnz  surface_interval+0,F
+        incf    surface_interval+1,F
 		return								; Done
 
 check_nofly_desat_time3:
