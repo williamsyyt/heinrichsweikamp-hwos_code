@@ -305,7 +305,7 @@ menuview_view5:
 	btfsc	FLAG_active_descent				; Are we descending?
 	bra		menuview_toggle 				; Yes
 ; We are at the surface:
-	STRCPY_TEXT_PRINT	tQuitApnea			; "Quit Apnea mode?"
+	STRCPY_TEXT_PRINT	tQuitSim			; "Quit Apnea mode?"
 	bra     menuview_exit                   ; Done.
 menuview_view6:
 	btfss	FLAG_gauge_mode					; In Gauge mode?

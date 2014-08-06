@@ -39,7 +39,6 @@ gui     CODE
             decoplan_index              ; within each page
             decoplan_gindex             ; global index
             decoplan_last               ; Depth of last stop (CF#29)
-            decoplan_max                ; Number of lines per page.
             decoplan_flags              ; Various private flags.
             decoplan_CNS:2              ; Backup CNS before vault restore
             ; Reserved to tmp+0x1F...
@@ -534,17 +533,12 @@ deco_plan_show_1:
     	lfsr	FSR0,char_O_deco_depth  ; Initialize indexed addressing.
 	    lfsr	FSR1,char_O_deco_time
 
-        movlw   .8                      ; 8 lines/page in decoplan
-        btfsc   divemode
-        movlw   .6                      ; 6 lines/page in divemode.
-        movwf   decoplan_max
-
         clrf    decoplan_index          ; Start with index = 0
         clrf	win_top                 ; and row = 0
 
         ; Read stop parameters, indexed by decoplan_index and decoplan_page
         movf    decoplan_page,W         ; decoplan_gindex = 6*decoplan_page + decoplan_index
-        mulwf   decoplan_max
+        mullw   .8                      ; 8 lines/page in decoplan
         movf    decoplan_index,W
         addwf   PRODL,W
         movwf   decoplan_gindex         ; --> decoplan_gindex
@@ -572,7 +566,7 @@ deco_plan_show_2:
 	    incf	decoplan_gindex,F       ; global index += 1
 
         ; Max number of lines/page reached ?
-    	movf    decoplan_max,W          ; index+1 == max ?
+    	movlw   .8                      ; 8 lines/page in decoplan
     	cpfseq	decoplan_index
     	bra		deco_plan_show_2         ; NO: loop
 

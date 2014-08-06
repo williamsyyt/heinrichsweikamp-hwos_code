@@ -581,11 +581,8 @@ isr_battery_gauge:
 		addwfc	battery_gauge+1,F
 		movlw	.0
 		addwfc	battery_gauge+2,F
-		movlw	.0
 		addwfc	battery_gauge+3,F
-		movlw	.0
 		addwfc	battery_gauge+4,F
-		movlw	.0
 		addwfc	battery_gauge+5,F
 		return
 		
@@ -670,9 +667,8 @@ isr_divemode_1sec2:
 		btfsc		STATUS,Z
 		incf		average_divesecs+1,F	; increase stopwatch registers
 ; Increase total divetime (Regardless of start_dive_threshold)
-		incf		total_divetime_seconds+0,F
-		movlw		.0
-		addwfc		total_divetime_seconds+1,F	; Total dive time (Regardless of start_dive_threshold)
+		infsnz		total_divetime_seconds+0,F
+		incf        total_divetime_seconds+1,F	; Total dive time (Regardless of start_dive_threshold)
 	
 		btfss		divemode2				; displayed divetime is running?
 		return								; No (e.g. too shallow)
@@ -685,9 +681,8 @@ isr_divemode_1sec2:
 
 		clrf		divesecs
 		bsf			realdive				; this bit is always set (again) if the dive is longer then one minute
-		incf		divemins+0,F
-		movlw		.0
-		addwfc		divemins+1,F			; increase divemins
+		infsnz		divemins+0,F
+        incf		divemins+1,F			; increase divemins
 		
 isr_divemode_1sec2a:	
 		btfss		FLAG_apnoe_mode			; Are we in Apnoe mode?
