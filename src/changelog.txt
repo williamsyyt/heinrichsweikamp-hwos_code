@@ -1,3 +1,7 @@
+[1.50]
+
+Stable release
+
 [1.46]
 
 - Beta Version -
@@ -18,7 +22,7 @@ BUGFIX: Start dive mode simulator in correct depth
 BUGFIX: Surface interval was not displayed correctly in some cases
 NEW: Store tissue load, date and time, surface interval, desat. time and nofly time every hour and reload them after battery change
 NEW: Show clock in Apnea mode, minor layout changes in Apnea mode
-NEW: Simplify gas change
+NEW: Simplify gas change (Two button presses only)
 
 [1.41]
 
