@@ -2140,7 +2140,7 @@ TFT_depth_metric:
 	bra		tft_depth3
 
 tft_depth2:
-	STRCAT	"0"
+	STRCAT	" 0"                    ; manual zero
 
 tft_depth3:
 	STRCAT_PRINT ""					; Display full meters

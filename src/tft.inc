@@ -145,8 +145,8 @@ WIN_COLOR	macro 	win_color_input
 ;          image copyed on screen.
 ; Trashed: PROD, hi, lo
 ; 
-    extern  TFT_write_flash_image
-    extern  TFT_write_flash_image_addr
+;    extern  TFT_write_flash_image
+;    extern  TFT_write_flash_image_addr
 TFT_WRITE_FLASH_IMAGE macro cx, cy, image
     If LOW(image) != 0
         Error "Image "image" mis-aligned"
