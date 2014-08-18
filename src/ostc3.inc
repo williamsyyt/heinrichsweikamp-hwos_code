@@ -626,6 +626,7 @@ opt_sensor_fallback     res 1   ; =1: Fallback to SP1 when sensor is lost
 #DEFINE use_02_sensor3          flag10,4; =1: Use this sensor for deco
 #DEFINE setpoint_fallback       flag10,5; =1: Fallback to SP1 due to external O2 sensor failure
 #DEFINE	blinking_setpoint       flag10,6; =1: SP is blinking
+#DEFINE flip_screen             flag10,7; =1: Screen is flipped by 180°
 ;=============================================================================
 ; C-code Routines
 ; PART 2

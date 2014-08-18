@@ -146,7 +146,7 @@ enable_s8_2:                    ; S8 Digital
 	movlw 	b'10010000'
 	movwf 	RCSTA2
     banksel common
-    bcf     s8_npower               ; Power S8 HUD
+;    bcf     s8_npower               ; Power S8 HUD
     bsf     s8_digital              ; Set flag
     return
 

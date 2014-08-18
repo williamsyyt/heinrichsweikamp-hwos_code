@@ -81,127 +81,127 @@ Parameter_out	macro high_b, low_b
 
 
 basic   CODE
-
- 
-;=============================================================================
-; TFT_write_flash_image
 ;
-; Inputs:  FSR2 = EEPROM address / 256
-;          win_left, win_top : imagte CENTER position
-; Outputs: win_height, win_width.
-;          image copyed on screen.
-; Trashed: PROD, hi, lo
-; 
-	global	TFT_write_flash_image
-TFT_write_flash_image:
-    ; Get back the full 24bit EEPROM address
-    clrf    ext_flash_address+0
-    movff   FSR2L,ext_flash_address+1
-    movf    FSR2H,W
-    iorlw   0x30
-    movwf   ext_flash_address+2
-    
-    ; Read header: width and height
-    global  TFT_write_flash_image_addr
-TFT_write_flash_image_addr:    
-	call	ext_flash_read_block_start
-	movff   SSP2BUF,win_width+0 
-	movwf	SSP2BUF						; Write to buffer to initiate new read
-	btfss	SSP2STAT, BF                ; Next byte ready ?
-	bra		$-2                         ; NO: wait...
-   	movff   SSP2BUF,win_width+1
-	movwf	SSP2BUF						; Write to buffer to initiate new read
-	btfss	SSP2STAT, BF                ; Next byte ready ?
-	bra		$-2                         ; NO: wait...
-	movff   SSP2BUF,win_height  
-	movwf	SSP2BUF						; Write to buffer to initiate new read
-	btfss	SSP2STAT, BF                ; Next byte ready ?
-	bra		$-2                         ; NO: wait...
-	movff   SSP2BUF,WREG                ; drop 4th byte.
-	movwf	SSP2BUF						; Write to buffer to initiate new read
-	btfss	SSP2STAT, BF                ; Next byte ready ?
-	bra		$-2                         ; NO: wait...
-
-    ; Sanity check on header to avoid badly uploaded images.
-    iorwf   WREG                        ; Check height < 256
-    bnz     TFT_write_flash_image_failed
-    movf    win_width+1,W               ; Check width < 512
-    andlw   0xFE
-    bnz     TFT_write_flash_image_failed
-    
-    ; Center image on win_top, win_left values
-    bcf     STATUS,C                    ; Clear carry
-    rrcf    win_height,W                ; And get height/2
-    subwf   win_top,F                   ; top -= height/2
-    rrcf    win_width+1,W               ; Get 9th bit into carry
-    rrcf    win_width+0,W               ; Get width/2 (in 0..320 range)
-    bcf     STATUS,C
-    rrcf    WREG,W                      ; Get width/2 in 0..160 range
-    subwf   win_leftx2,F                ; left -= width/2
-
-	rcall	TFT_box_write		    	; Inputs : win_top, win_leftx2, win_height, win_width(in 1..320 range)
-        
-    ; Compute number of pixels to move (result on 17 bits !)
-    clrf    TBLPTRU
-    movf    win_width+0,W
-    mulwf   win_height                  ; Result in PRODL:H
-    movf    win_width+1,W
-    bz      TFT_write_flash_image_1     ; width > 8bits ?
-    movf    win_height,W                ; YES: add extra
-    addwf   PRODH,F
-    rlcf    TBLPTRU                     ; And carry into upper register.
-TFT_write_flash_image_1:
-    incf    PRODH,F                     ; Pre-condition nested loops
-    incf    TBLPTRU,F
-
-    ; Write pixels
-	Index_out 0x22						; Frame Memory Data Write start
-	RS_H								; Data
-
-TFT_write_flash_image_loop:
-	btfss	SSP2STAT, BF				; Buffer full?
-	bra		$-2                         ; NO: wait...
-	movff	SSP2BUF,PORTH			    ; Read lo
-	movwf	SSP2BUF						; Write to buffer to initiate new read
-
-	btfss	SSP2STAT, BF				; Buffer full?
-	bra		$-2                         ; NO: wait...
-	movff	SSP2BUF,PORTA               ; And read hi
-	movwf	SSP2BUF						; Write to buffer to initiate new read
-	WR_L
-	WR_H								; Write 1 Pixel
-
-	decfsz	PRODL,F
-	bra		TFT_write_flash_image_loop
-	decfsz	PRODH,F
-	bra		TFT_write_flash_image_loop
-	decfsz	TBLPTRU,F
-	bra		TFT_write_flash_image_loop
-
-	btfss	SSP2STAT, BF				; Buffer full?
-	bra		$-2	                        ; No, wait
-	movf	SSP2BUF,W                   ; Read dummy byte
-
-	bsf		flash_ncs					; CS=1
-	movlw	0x00                        ; NOP, to stop window mode
-	bra     TFT_CmdWrite				; This routine "returns"
-	
-	;---- Draw a 4x4 red square in place of missing images...
-TFT_write_flash_image_failed:
-    movlw   -1
-    addwf   win_leftx2,F
-    movlw   -2
-    addwf   win_top,F
-    movlw   2
-    movwf   win_width+0
-    clrf    win_width+1
-    movlw   4
-    movwf   win_height
-    movlw   color_red
-    rcall   TFT_set_color
-    goto    TFT_box
-
-;=============================================================================
+;
+;;=============================================================================
+;; TFT_write_flash_image
+;;
+;; Inputs:  FSR2 = EEPROM address / 256
+;;          win_left, win_top : imagte CENTER position
+;; Outputs: win_height, win_width.
+;;          image copyed on screen.
+;; Trashed: PROD, hi, lo
+;;
+;	global	TFT_write_flash_image
+;TFT_write_flash_image:
+;    ; Get back the full 24bit EEPROM address
+;    clrf    ext_flash_address+0
+;    movff   FSR2L,ext_flash_address+1
+;    movf    FSR2H,W
+;    iorlw   0x30
+;    movwf   ext_flash_address+2
+;
+;    ; Read header: width and height
+;    global  TFT_write_flash_image_addr
+;TFT_write_flash_image_addr:
+;	call	ext_flash_read_block_start
+;	movff   SSP2BUF,win_width+0
+;	movwf	SSP2BUF						; Write to buffer to initiate new read
+;	btfss	SSP2STAT, BF                ; Next byte ready ?
+;	bra		$-2                         ; NO: wait...
+;   	movff   SSP2BUF,win_width+1
+;	movwf	SSP2BUF						; Write to buffer to initiate new read
+;	btfss	SSP2STAT, BF                ; Next byte ready ?
+;	bra		$-2                         ; NO: wait...
+;	movff   SSP2BUF,win_height
+;	movwf	SSP2BUF						; Write to buffer to initiate new read
+;	btfss	SSP2STAT, BF                ; Next byte ready ?
+;	bra		$-2                         ; NO: wait...
+;	movff   SSP2BUF,WREG                ; drop 4th byte.
+;	movwf	SSP2BUF						; Write to buffer to initiate new read
+;	btfss	SSP2STAT, BF                ; Next byte ready ?
+;	bra		$-2                         ; NO: wait...
+;
+;    ; Sanity check on header to avoid badly uploaded images.
+;    iorwf   WREG                        ; Check height < 256
+;    bnz     TFT_write_flash_image_failed
+;    movf    win_width+1,W               ; Check width < 512
+;    andlw   0xFE
+;    bnz     TFT_write_flash_image_failed
+;
+;    ; Center image on win_top, win_left values
+;    bcf     STATUS,C                    ; Clear carry
+;    rrcf    win_height,W                ; And get height/2
+;    subwf   win_top,F                   ; top -= height/2
+;    rrcf    win_width+1,W               ; Get 9th bit into carry
+;    rrcf    win_width+0,W               ; Get width/2 (in 0..320 range)
+;    bcf     STATUS,C
+;    rrcf    WREG,W                      ; Get width/2 in 0..160 range
+;    subwf   win_leftx2,F                ; left -= width/2
+;
+;	rcall	TFT_box_write		    	; Inputs : win_top, win_leftx2, win_height, win_width(in 1..320 range)
+;
+;    ; Compute number of pixels to move (result on 17 bits !)
+;    clrf    TBLPTRU
+;    movf    win_width+0,W
+;    mulwf   win_height                  ; Result in PRODL:H
+;    movf    win_width+1,W
+;    bz      TFT_write_flash_image_1     ; width > 8bits ?
+;    movf    win_height,W                ; YES: add extra
+;    addwf   PRODH,F
+;    rlcf    TBLPTRU                     ; And carry into upper register.
+;TFT_write_flash_image_1:
+;    incf    PRODH,F                     ; Pre-condition nested loops
+;    incf    TBLPTRU,F
+;
+;    ; Write pixels
+;	Index_out 0x22						; Frame Memory Data Write start
+;	RS_H								; Data
+;
+;TFT_write_flash_image_loop:
+;	btfss	SSP2STAT, BF				; Buffer full?
+;	bra		$-2                         ; NO: wait...
+;	movff	SSP2BUF,PORTH			    ; Read lo
+;	movwf	SSP2BUF						; Write to buffer to initiate new read
+;
+;	btfss	SSP2STAT, BF				; Buffer full?
+;	bra		$-2                         ; NO: wait...
+;	movff	SSP2BUF,PORTA               ; And read hi
+;	movwf	SSP2BUF						; Write to buffer to initiate new read
+;	WR_L
+;	WR_H								; Write 1 Pixel
+;
+;	decfsz	PRODL,F
+;	bra		TFT_write_flash_image_loop
+;	decfsz	PRODH,F
+;	bra		TFT_write_flash_image_loop
+;	decfsz	TBLPTRU,F
+;	bra		TFT_write_flash_image_loop
+;
+;	btfss	SSP2STAT, BF				; Buffer full?
+;	bra		$-2	                        ; No, wait
+;	movf	SSP2BUF,W                   ; Read dummy byte
+;
+;	bsf		flash_ncs					; CS=1
+;	movlw	0x00                        ; NOP, to stop window mode
+;	bra     TFT_CmdWrite				; This routine "returns"
+;
+;	;---- Draw a 4x4 red square in place of missing images...
+;TFT_write_flash_image_failed:
+;    movlw   -1
+;    addwf   win_leftx2,F
+;    movlw   -2
+;    addwf   win_top,F
+;    movlw   2
+;    movwf   win_width+0
+;    clrf    win_width+1
+;    movlw   4
+;    movwf   win_height
+;    movlw   color_red
+;    rcall   TFT_set_color
+;    goto    TFT_box
+;
+;;=============================================================================
 ;
 
     global  TFT_CmdWrite
@@ -243,7 +243,7 @@ TFT_ClearScreen:
 	RD_H						; Not Read
 	RS_H						; Data
 	NCS_L						; Not CS
-	clrf	PORTA				; Data Upper
+;	clrf	PORTA				; Data Upper
 	clrf	PORTH				; Data Lower
 
 	movlw	d'10'
@@ -492,6 +492,19 @@ pixel_write:
 
 	global	pixel_write_col320
 pixel_write_col320:
+        btfss   flip_screen             ; 180° rotation?
+        bra     pixel_write_noflip_H    ; No
+
+        movf    PRODL,W                 ; 16bits 319 - PROD --> PROD
+        sublw   LOW(.319)               ; 319-W --> W
+        movwf   PRODL
+        movf    PRODH,W
+        btfss   STATUS,C                ; Borrow = /CARRY
+        incf    WREG
+        sublw   HIGH(.319)
+        movwf   PRODH
+
+pixel_write_noflip_H:
 		Index_out 0x21					; Frame Memory Vertical Address
 		bra     TFT_DataWrite_PROD
 
@@ -504,9 +517,10 @@ half_pixel_write:
     	movff  	win_top,WREG            ; d'0' ... d'239'
     ; Variant with Y position in WREG.
 half_pixel_write_1:
-	  	sublw   .239                    ; 239-Y --> Y
+    	btfss   flip_screen             ; 180° rotation?
+    	sublw   .239                    ; 239-Y --> Y
+    	mullw   1                       ; Copy row to PRODL (PRODH=0)
 
-    	mullw   1                       ; Copy row to PRODH:L
 		Index_out 0x20				; Frame Memory Horizontal Address
 		rcall   TFT_DataWrite_PROD
 
@@ -617,6 +631,9 @@ TFT_box_write:
 		movff	win_leftx2,WREG         ; Compute left = 2*leftx2 --> PROD
 		mullw	2
 
+    	btfsc  flip_screen              ; 180° rotation ?
+    	bra    DISP_box_flip_H          ; Yes
+
         global  TFT_box_write_16bit_win_left
 TFT_box_write_16bit_win_left:           ; With column in PRODL:PRODH
         ;---- Normal horizontal window ---------------------------------------
@@ -638,11 +655,68 @@ TFT_box_write_16bit_win_left:           ; With column in PRODL:PRODH
 
 		Index_out 0x53				; Window Vertical End Address
 		rcall   TFT_DataWrite_PROD
+		bra     DISP_box_noflip_H
 
+        ;---- Flipped horizontal window --------------------------------------
+DISP_box_flip_H:
+        ; Output 0x36 flipped(left)  = 319-left
+        ;        0x35 flipped(right) = 319-right = 320 - left - width
+        movf    PRODL,W                 ; 16bits 319 - PROD --> PROD
+        sublw   LOW(.319)               ; 319-W --> W
+        movwf   PRODL
+        movf    PRODH,W
+        btfss   STATUS,C                ; Borrow = /CARRY
+        incf    WREG
+        sublw   HIGH(.319)
+        movwf   PRODH
+		Index_out 0x52				; Window Vertical Start Address
+		rcall   TFT_DataWrite_PROD          ; Output left
+		Index_out 0x21				; Frame Memory Vertical Address
+		rcall   TFT_DataWrite_PROD			; Output left
+
+		movff	win_width+0,WREG	    ; right = left + width - 1
+		addwf	PRODL,F
+		movff	win_width+1,WREG
+		addwfc	PRODH,F
+		decf	PRODL,F			    ; decrement result
+		btfss   STATUS,C
+		decf	PRODH,F
+
+		Index_out 0x53				; Window Vertical End Address
+		rcall   TFT_DataWrite_PROD
+
+DISP_box_noflip_H:
+    	btfss   flip_screen             ; 180° rotation ?
+    	bra     TFT_box_flip_V          ; Yes.
+
+   ;---- Normal vertical window -----------------------------------------
+		movff   win_top,PRODL       ; Second byte
+		movff   win_height,WREG
+		addwf   PRODL,W
+		movwf   PRODH                ; First byte
+
+
+		Index_out 0x50				; Window Horizontal Start Address
+		clrf	PORTA				; Upper
+		movf	PRODH,W
+		rcall	TFT_DataWrite		; Lower (and tick)
+
+		Index_out 0x51				; Window Horizontal End Address
+		clrf	PORTA				; Upper
+		movf	PRODL,W
+		rcall	TFT_DataWrite		; Lower (and tick)
+
+		Index_out 0x20				; Frame Memory Horizontal Address
+		clrf	PORTA				; Upper
+		movf	PRODL,W
+		rcall	TFT_DataWrite		; Lower (and tick)
+		return
+
+
+TFT_box_flip_V:
         ;---- Flipped vertical window ----------------------------------------
         ; Output 0x37 flipped(bottom) = 239-bottom = 240 - top - height
         ;             flipped(top)    = 239-top
-TFT_box_flip_V:
 		movff   win_top,PRODL
 		movff   win_height,WREG
 		addwf   PRODL,W
@@ -650,7 +724,7 @@ TFT_box_flip_V:
 		movwf   PRODH                ; First byte
 
 		movf	PRODL,W
-		sublw   .239                ; 249-top
+		sublw   .239                ; 239-top
 		movwf   PRODL               ; --> second byte.
 
 		Index_out 0x50				; Window Horizontal Start Address
