@@ -1,3 +1,10 @@
+[1.46]
+
+- Beta Version -
+BUGFIX: Clear Setpoint-Fallback warning when in bailout
+NEW: 180° display rotation option
+
+
 [1.50]
 
 Stable release

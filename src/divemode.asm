@@ -303,6 +303,9 @@ calc_deko_divemode2:
 
     TSTOSS  opt_sensor_fallback             ; =1: Fallback to SP1 when sensor is lost
     bra     calc_deko_divemode2a            ; Never fallback
+
+    btfsc   is_bailout                      ; In bailout?
+    bra     calc_deko_divemode2a            ; Never fallback in bailout
     ; Check if we should fallback to SP1
   	btfsc	use_02_sensor1
     bra     calc_deko_divemode2a            ; At least one sensor is active, no fallback
