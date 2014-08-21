@@ -351,9 +351,9 @@ get_analog_inputs:			; starts ADC and waits until finished
 
     global  piezo_config            ; Sets up piezo sensitivity of heinrichs weikamp Piezo buttons (~30ms)
 piezo_config:   ; Settings between 20 and 200
-    movlw   .100                     ; right button
+    movlw   .20                     ; right button
     rcall   piezo_config_tx
-    movlw   .100                     ; left button
+    movlw   .20                     ; left button
     rcall   piezo_config_tx
     movlw   .200                    ; reserved
     rcall   piezo_config_tx

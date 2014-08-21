@@ -243,7 +243,6 @@ TFT_ClearScreen:
 	RD_H						; Not Read
 	RS_H						; Data
 	NCS_L						; Not CS
-;	clrf	PORTA				; Data Upper
 	clrf	PORTH				; Data Lower
 
 	movlw	d'10'
@@ -323,6 +322,14 @@ TFT_boot:
     movwf   TBLPTRU
     rcall   display0_init_loop
 
+    Index_out 0x03
+    btfsc   flip_screen             ; 180° rotation ?
+    bra     TFT_boot2               ; Yes
+    Parameter_out 0x50, 0x20
+    bra     TFT_boot3
+TFT_boot2:
+    Parameter_out 0x50, 0x10
+TFT_boot3:
 	Index_out 0x22
 ;	WAITMS	d'81'					; 46
 	call	TFT_ClearScreen
@@ -631,15 +638,12 @@ TFT_box_write:
 		movff	win_leftx2,WREG         ; Compute left = 2*leftx2 --> PROD
 		mullw	2
 
+        global  TFT_box_write_16bit_win_left
+TFT_box_write_16bit_win_left:           ; With column in PRODL:PRODH
     	btfsc  flip_screen              ; 180° rotation ?
     	bra    DISP_box_flip_H          ; Yes
 
-        global  TFT_box_write_16bit_win_left
-TFT_box_write_16bit_win_left:           ; With column in PRODL:PRODH
         ;---- Normal horizontal window ---------------------------------------
-        ; Output 0x35 left,
-        ;        0x36 right ==  left + width - 1.
-
 		Index_out 0x52				; Window Vertical Start Address
 		rcall   TFT_DataWrite_PROD          ; Output left
 		Index_out 0x21				; Frame Memory Vertical Address
@@ -659,8 +663,6 @@ TFT_box_write_16bit_win_left:           ; With column in PRODL:PRODH
 
         ;---- Flipped horizontal window --------------------------------------
 DISP_box_flip_H:
-        ; Output 0x36 flipped(left)  = 319-left
-        ;        0x35 flipped(right) = 319-right = 320 - left - width
         movf    PRODL,W                 ; 16bits 319 - PROD --> PROD
         sublw   LOW(.319)               ; 319-W --> W
         movwf   PRODL
@@ -669,54 +671,49 @@ DISP_box_flip_H:
         incf    WREG
         sublw   HIGH(.319)
         movwf   PRODH
-		Index_out 0x52				; Window Vertical Start Address
-		rcall   TFT_DataWrite_PROD          ; Output left
+
+		Index_out 0x53				; Window Vertical Start Address
+		rcall   TFT_DataWrite_PROD  ; Output left
 		Index_out 0x21				; Frame Memory Vertical Address
-		rcall   TFT_DataWrite_PROD			; Output left
+		rcall   TFT_DataWrite_PROD	; Output left
 
-		movff	win_width+0,WREG	    ; right = left + width - 1
-		addwf	PRODL,F
-		movff	win_width+1,WREG
-		addwfc	PRODH,F
-		decf	PRODL,F			    ; decrement result
-		btfss   STATUS,C
-		decf	PRODH,F
+        movff   win_width+0,WREG        ; 16bits PROD - width --> PROD
+        subwf   PRODL,F                 ; PRODL - WREG --> PRODL
+        movff   win_width+1,WREG
+        subwfb  PRODH,F
+        infsnz  PRODL                   ; PROD+1 --> PROD
+        incf    PRODH
 
-		Index_out 0x53				; Window Vertical End Address
+		Index_out 0x52				; Window Vertical End Address
 		rcall   TFT_DataWrite_PROD
 
 DISP_box_noflip_H:
     	btfss   flip_screen             ; 180° rotation ?
-    	bra     TFT_box_flip_V          ; Yes.
+    	bra     TFT_box_noflip_V        ; No.
 
-   ;---- Normal vertical window -----------------------------------------
-		movff   win_top,PRODL       ; Second byte
+   ;---- Flipped vertical window -----------------------------------------
+		movff	win_top,PRODH           ; top --> PRODH (first byte)
 		movff   win_height,WREG
-		addwf   PRODL,W
-		movwf   PRODH                ; First byte
-
+		addwf   PRODH,W
+        decf	WREG
+		movwf	PRODL                   ; top+height-1 --> PRODL (second byte)
 
 		Index_out 0x50				; Window Horizontal Start Address
-		clrf	PORTA				; Upper
 		movf	PRODH,W
 		rcall	TFT_DataWrite		; Lower (and tick)
 
 		Index_out 0x51				; Window Horizontal End Address
-		clrf	PORTA				; Upper
 		movf	PRODL,W
 		rcall	TFT_DataWrite		; Lower (and tick)
 
 		Index_out 0x20				; Frame Memory Horizontal Address
-		clrf	PORTA				; Upper
-		movf	PRODL,W
+		movf	PRODH,W
 		rcall	TFT_DataWrite		; Lower (and tick)
 		return
 
 
-TFT_box_flip_V:
-        ;---- Flipped vertical window ----------------------------------------
-        ; Output 0x37 flipped(bottom) = 239-bottom = 240 - top - height
-        ;             flipped(top)    = 239-top
+TFT_box_noflip_V:
+        ;---- Normal vertical window ----------------------------------------
 		movff   win_top,PRODL
 		movff   win_height,WREG
 		addwf   PRODL,W
@@ -728,17 +725,14 @@ TFT_box_flip_V:
 		movwf   PRODL               ; --> second byte.
 
 		Index_out 0x50				; Window Horizontal Start Address
-		clrf	PORTA				; Upper
 		movf	PRODH,W
 		rcall	TFT_DataWrite		; Lower (and tick)
 
 		Index_out 0x51				; Window Horizontal End Address
-		clrf	PORTA				; Upper
 		movf	PRODL,W
 		rcall	TFT_DataWrite		; Lower (and tick)
 
 		Index_out 0x20				; Frame Memory Horizontal Address
-		clrf	PORTA				; Upper
 		movf	PRODL,W
 		rcall	TFT_DataWrite		; Lower (and tick)
 		return

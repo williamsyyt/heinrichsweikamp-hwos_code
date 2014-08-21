@@ -274,7 +274,7 @@ restart:
 
 	call	ext_flash_disable_protection	; Disable write protection for external flash
 
-    bcf     flip_screen             ; Test...
+    bsf     flip_screen             ; Test...
 
 	goto	surfloop				; Jump to Surfaceloop!
 

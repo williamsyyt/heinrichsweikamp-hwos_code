@@ -715,14 +715,20 @@ isr_switch_right:						;
         bcf     INTCON,INT0IE           ; Disable INT0
 ;        bcf     power_sw2               ; Power-down switch circuity
 		banksel common                  ; flag1 is in Bank1
-		bsf		switch_right			; Set flag, button press is OK
+        btfss   flip_screen             ; 180° flipped?
+		bsf		switch_right            ; Set flag
+        btfsc   flip_screen             ; 180° flipped?
+		bsf		switch_left				; Set flag
         bra     isr_switch_common       ; Continue...
 
 isr_switch_left:						; 
         bcf     INTCON3,INT1IE          ; Disable INT1
  ;       bcf     power_sw1               ; Power-down switch circuity
 		banksel common                  ; flag1 is in Bank1
-  		bsf		switch_left				; Set flag, button press is OK
+        btfss   flip_screen             ; 180° flipped?
+		bsf		switch_left				; Set flag
+        btfsc   flip_screen             ; 180° flipped?
+		bsf		switch_right            ; Set flag
 
 isr_switch_common:
         ; load timer1 for first press
@@ -776,17 +782,19 @@ timer1int:
         bsf     INTCON3,INT1IE          ; Enable INT1
 		bcf		INTCON,INT0IF			; Clear flag
 		bcf		INTCON3,INT1IF			; Clear flag
-;		bcf		switch_left
-;        bcf		switch_right
 		return
 
 timer1int_left:
-;        bcf     power_sw1               ; Power-down switch circuity
+        btfss   flip_screen             ; 180° flipped?
 		bsf		switch_left				; (Re-)Set flag
+        btfsc   flip_screen             ; 180° flipped?
+		bsf		switch_right            ; (Re-)Set flag
         bra     timer1int_common        ; Continue
 timer1int_right:
- ;       bcf     power_sw2               ; Power-down switch circuity
-		bsf		switch_right			; (Re-)Set flag
+        btfss   flip_screen             ; 180° flipped?
+		bsf		switch_right            ; Set flag
+        btfsc   flip_screen             ; 180° flipped?
+		bsf		switch_left				; Set flag
 timer1int_common:
         ; load timer1 for next press
         clrf    TMR1L
