@@ -78,6 +78,7 @@
     TCODE   tSP,            "SP"                ; SP (SetPoint)
     TCODE   tSPPlus,    "pO2+"                  ; pO2+
     TCODE   tSensorFallback, "Fallback:"        ; Fallback:
+    TCODE   tppO2,      "ppO2:"                 ; ppO2:
 
 ; New batteries menu
 	TCODE   tNewBattTitle,      "Neue Batterie?"
