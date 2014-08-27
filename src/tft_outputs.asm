@@ -3418,7 +3418,7 @@ TFT_display_ppo2:                       ; Show ppO2 (ppO2 stored in xC, in mbar!
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
 	TFT_color_code		warn_ppo2		; Color-code output (ppO2 stored in xC)
-    STRCPY  "ppO2:"
+    STRCPY_TEXT tppO2                   ; ppO2:
 ; Check very high ppO2 manually
 	tstfsz	xC+2                        ; char_I_O2_ratio * p_amb/10 > 65536, ppO2>6,55bar?
 	bra		TFT_show_ppO2_3             ; Yes, display fixed Value!

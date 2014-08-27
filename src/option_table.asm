@@ -146,11 +146,11 @@ option_table_begin:
         OPTION_UINT8    oGas4He,        .1, .100,   .0,     tPercent, .47,     opt_gas_He_ratio+3
         OPTION_UINT8    oGas5O2,        .21,.100,   .21,    tPercent, .48,     opt_gas_O2_ratio+4
         OPTION_UINT8    oGas5He,        .1, .100,   .0,     tPercent, .49,     opt_gas_He_ratio+4
-        OPTION_UINT8    oGas1Depth,     .0, .100,   .0,     tMeters,  .50,     opt_OC_bail_gas_change+0
-        OPTION_UINT8    oGas2Depth,     .0, .100,   .0,     tMeters,  .51,     opt_OC_bail_gas_change+1
-        OPTION_UINT8    oGas3Depth,     .0, .100,   .0,     tMeters,  .52,     opt_OC_bail_gas_change+2
-        OPTION_UINT8    oGas4Depth,     .0, .100,   .0,     tMeters,  .53,     opt_OC_bail_gas_change+3
-        OPTION_UINT8    oGas5Depth,     .0, .100,   .0,     tMeters,  .54,     opt_OC_bail_gas_change+4
+        OPTION_UINT8    oGas1Depth,     .0, .99,   .0,     tMeters,  .50,     opt_OC_bail_gas_change+0
+        OPTION_UINT8    oGas2Depth,     .0, .99,   .0,     tMeters,  .51,     opt_OC_bail_gas_change+1
+        OPTION_UINT8    oGas3Depth,     .0, .99,   .0,     tMeters,  .52,     opt_OC_bail_gas_change+2
+        OPTION_UINT8    oGas4Depth,     .0, .99,   .0,     tMeters,  .53,     opt_OC_bail_gas_change+3
+        OPTION_UINT8    oGas5Depth,     .0, .99,   .0,     tMeters,  .54,     opt_OC_bail_gas_change+4
         OPTION_UINT8    oDil1O2,        .21,.100,   .21,    tPercent, .55,     opt_dil_O2_ratio+0
         OPTION_UINT8    oDil1He,        .1, .100,   .0,     tPercent, .56,     opt_dil_He_ratio+0
         OPTION_UINT8    oDil2O2,        .21,.100,   .21,    tPercent, .57,     opt_dil_O2_ratio+1
@@ -176,11 +176,11 @@ option_table_begin:
         OPTION_ENUM8    oDil3,          2,  0,  tDilDisabled,         .77,     opt_dil_type+2
         OPTION_ENUM8    oDil4,          2,  0,  tDilDisabled,         .78,     opt_dil_type+3
         OPTION_ENUM8    oDil5,          2,  0,  tDilDisabled,         .79,     opt_dil_type+4
-        OPTION_UINT8    oDil1Depth,     .0, .100,   .0,     tMeters,  .80,     char_I_dil_change+0
-        OPTION_UINT8    oDil2Depth,     .0, .100,   .0,     tMeters,  .81,     char_I_dil_change+1
-        OPTION_UINT8    oDil3Depth,     .0, .100,   .0,     tMeters,  .82,     char_I_dil_change+2
-        OPTION_UINT8    oDil4Depth,     .0, .100,   .0,     tMeters,  .83,     char_I_dil_change+3
-        OPTION_UINT8    oDil5Depth,     .0, .100,   .0,     tMeters,  .84,     char_I_dil_change+4
+        OPTION_UINT8    oDil1Depth,     .0, .99,   .0,     tMeters,  .80,     char_I_dil_change+0
+        OPTION_UINT8    oDil2Depth,     .0, .99,   .0,     tMeters,  .81,     char_I_dil_change+1
+        OPTION_UINT8    oDil3Depth,     .0, .99,   .0,     tMeters,  .82,     char_I_dil_change+2
+        OPTION_UINT8    oDil4Depth,     .0, .99,   .0,     tMeters,  .83,     char_I_dil_change+3
+        OPTION_UINT8    oDil5Depth,     .0, .99,   .0,     tMeters,  .84,     char_I_dil_change+4
 
 ;=============================================================================
 ; opt_name from 85 to 145

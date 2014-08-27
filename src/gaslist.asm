@@ -549,6 +549,49 @@ gaslist_calc_mod_divemode:
         call	TFT_color_code1             ; Color-code current row in Gaslist (%O2 in hi), opt_ppO2_max as threshold
         return
 ;----------------------------------------------------------------------------
+
+        global  gaslist_ppo2
+gaslist_ppo2:
+        STRCAT_TEXT tppO2                ; ppO2:
+        movf    gaslist_gas,W
+        lfsr    FSR1,char_I_dil_change-.5      ; Setup Diluents
+        btfss   ccr_diluent_setup           ; In CCR-Menu?
+        lfsr    FSR1,opt_OC_bail_gas_change ; No, setup OC/Bailout Gases
+        movf    PLUSW1,W
+        mullw   .10                     ; PROD=Depth in mbar/10 (100 = 1.00 bar)
+        movlw   .100
+        addwf   PRODL,F
+        movlw   .0
+        addwfc  PRODH,F                 ; add 1bar
+        movff   PRODL,xA+0
+        movff   PRODH,xA+1
+        movf    gaslist_gas,W           ; Read current gas O2 ratio
+        lfsr    FSR1,opt_dil_O2_ratio-.5   ; Read dil_gas_O2_ratio[WREG]
+        btfss   ccr_diluent_setup       ; In CCR-Menu?
+        lfsr    FSR1,opt_gas_O2_ratio   ; No, read opt_gas_O2_ratio[WREG]
+        movff   PLUSW1,xB+0
+        clrf	xB+1
+        call	mult16x16				; char_I_O2_ratio * (p_amb/10)
+        movff	xC+0,xA+0
+        movff	xC+1,xA+1
+        movlw	d'100'
+        movwf	xB+0
+        clrf	xB+1
+        call	div16x16				; xC=(char_I_O2_ratio * p_amb/10)/100
+; Check very high ppO2 manually
+        tstfsz	xC+2                       ; char_I_O2_ratio * p_amb/10 > 65536, ppO2>6,55bar?
+        bra		gaslist_ppo2_2             ; Yes, display fixed Value!
+        movff	xC+0,lo
+        movff	xC+1,hi
+        bcf		ignore_digit4
+        bsf     leftbind
+        output_16dp	d'3'                ; x.xx
+        STRCAT_TEXT tbar                ; bar
+        return
+gaslist_ppo2_2:
+        STRCAT  ">6.6"
+        return
+
         global  gaslist_MOD_END
 gaslist_MOD_END:
         rcall   gaslist_calc_mod        ; Compute MOD into WREG
@@ -623,7 +666,7 @@ gaslist_reset_mod_title2:
         movwf   lo                      ; Copy to lo
 
         movf    gaslist_gas,W           ; Compare to switch depth
-        lfsr    FSR1,char_I_dil_change  ; Setup Diluents mH
+        lfsr    FSR1,char_I_dil_change  ; Setup Diluents
         btfss   ccr_diluent_setup           ; In CCR-Menu?
         lfsr    FSR1,opt_OC_bail_gas_change ; No, setup OC Gases
         movf   	PLUSW1,W

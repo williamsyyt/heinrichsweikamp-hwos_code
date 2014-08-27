@@ -3,7 +3,7 @@
 - Beta Version -
 BUGFIX: Clear Setpoint-Fallback warning when in bailout
 NEW: 180° display rotation option
-
+NEW: Show ppO2 for change depth during gas setup
 
 [1.50]
 

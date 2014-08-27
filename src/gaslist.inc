@@ -29,5 +29,5 @@
 
     ; Depth submennu
     extern  gaslist_pDepth, gaslist_mDepth
-    extern  gaslist_MOD_END
+    extern  gaslist_MOD_END, gaslist_ppo2
     extern  gaslist_reset_mod_title,  gaslist_reset_mod

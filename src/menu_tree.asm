@@ -197,9 +197,10 @@ do_setup_mix:
 
     global  do_gas_depth_menu
 do_gas_depth_menu:
-    MENU_BEGIN  tGasEdit, .6
+    MENU_BEGIN  tGasEdit, .7
         MENU_DYNAMIC    gaslist_gastitle,       0
         MENU_DYNAMIC    gaslist_MOD_END,        0
+        MENU_DYNAMIC    gaslist_ppo2,           0               ; ppO2 at change depth
         MENU_CALL       tDepthPlus,             gaslist_pDepth
         MENU_CALL       tDepthMinus,            gaslist_mDepth
         MENU_DYNAMIC    gaslist_reset_mod_title,gaslist_reset_mod
