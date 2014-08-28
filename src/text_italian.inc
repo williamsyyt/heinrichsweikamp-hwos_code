@@ -133,7 +133,7 @@
     TCODE   tMedium,    "Media"
     TCODE   tHigh,      "Alta"
     TCODE   tDvSalinity,"Salinita':"             ; Salinity
-    TCODE   tFlip,      "Ruotare lo schermo:"    ; Rotate Screen
+    TCODE   tFlip,      "Ruotare schermo:"       ; Rotate Screen
 
 ; Setup Menu
     TCODE   tSystSets,  "Impostazioni"
