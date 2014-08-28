@@ -4,6 +4,7 @@
 BUGFIX: Clear Setpoint-Fallback warning when in bailout
 NEW: 180° display rotation option
 NEW: Show ppO2 for change depth during gas setup
+CHANGE: Re-arranged Settings Menu
 
 [1.50]
 
