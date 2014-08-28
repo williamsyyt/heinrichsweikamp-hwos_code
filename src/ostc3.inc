@@ -531,6 +531,7 @@ opt_x_s1                res	2	; calibration factor (Not stored in EEPROM)
 opt_x_s2                res	2	; calibration factor (Not stored in EEPROM)
 opt_x_s3                res	2	; calibration factor (Not stored in EEPROM)
 opt_sensor_fallback     res 1   ; =1: Fallback to SP1 when sensor is lost
+opt_flip_screen         res 1   ; =1: Flip the screen
 
 ;-----------------------------EEPROM DATA ------------------------------------
 ; Automatic reset of all options when this is changed:

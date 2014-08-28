@@ -296,9 +296,19 @@ do_settings_menu:
         MENU_CALL   tSetTimeDate,   do_date_time_menu
         MENU_CALL   tDispSets,      do_dispsets_menu
         MENU_OPTION tLanguage,      oLanguage,       0
-        MENU_CALL   tCompassMenu,   do_compass_menu
         MENU_CALL   tResetMenu,     do_reset_menu
+        MENU_CALL   tMore,          do_settings_menu_more
         MENU_CALL   tExit,          do_continue_main_menu
+    MENU_END
+
+do_settings_menu_more:
+    MENU_BEGIN  tSystSets, .6
+        MENU_CALL   tCompassMenu,   do_compass_menu
+		MENU_CALL	tLogOffset,					do_log_offset_menu
+        MENU_OPTION tUnits,    oUnits,          0
+        MENU_OPTION tSamplingrate,oSamplingRate,0
+        MENU_OPTION tDvSalinity,oDiveSalinity,  0
+        MENU_CALL   tExit,          do_return_settings
     MENU_END
 
 do_compass_menu:
@@ -512,13 +522,10 @@ do_dispsets_menu_3stack:
     call    menu_processor_pop
 
 do_dispsets_menu:
-    MENU_BEGIN  tDispSets, .7
+    MENU_BEGIN  tDispSets, .4
         MENU_OPTION tBright,    oBrightness,    0
-        MENU_OPTION tUnits,    oUnits,          0
-		MENU_CALL	tLogOffset,					do_log_offset_menu
-        MENU_OPTION tSamplingrate,oSamplingRate,0
-        MENU_OPTION tDvSalinity,oDiveSalinity,  0
         MENU_CALL   tColorScheme,               do_color_scheme
+        MENU_OPTION tFlip,     oFlipScreen,     0
         MENU_CALL   tExit,                      do_return_settings
     MENU_END
 
