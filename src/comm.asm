@@ -942,8 +942,12 @@ comm_read_setting:
     bra     comm_read_pressure_adjust       ; RCREG1=0x35
     dcfsnz  WREG
     bra     comm_read_safety_stop           ; RCREG1=0x36
-
-
+    dcfsnz  WREG
+    bra     comm_read_calibration_gas       ; RCREG1=0x37
+    dcfsnz  WREG
+    bra     comm_read_fallback              ; RCREG1=0x38
+    dcfsnz  WREG
+    bra     comm_read_flip_screen           ; RCREG1=0x39
 
 comm_read_unused:
 comm_read_abort:
@@ -953,6 +957,10 @@ comm_read_setting_wait:
     call	rs232_wait_tx					; Wait for UART
     return
 
+comm_read_done:
+    call	rs232_wait_tx					; Wait for UART
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+
 comm_read_gas1:
     movff   opt_gas_O2_ratio+0, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
@@ -961,7 +969,7 @@ comm_read_gas1:
     movff   opt_gas_type+0, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   opt_OC_bail_gas_change+0,TXREG1
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_gas2:
     movff   opt_gas_O2_ratio+1, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
@@ -970,7 +978,7 @@ comm_read_gas2:
     movff   opt_gas_type+1, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   opt_OC_bail_gas_change+1,TXREG1
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_gas3:
     movff   opt_gas_O2_ratio+2, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
@@ -979,7 +987,7 @@ comm_read_gas3:
     movff   opt_gas_type+2, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   opt_OC_bail_gas_change+2,TXREG1
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_gas4:
     movff   opt_gas_O2_ratio+3, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
@@ -988,7 +996,7 @@ comm_read_gas4:
     movff   opt_gas_type+3, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   opt_OC_bail_gas_change+3,TXREG1
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_gas5:
     movff   opt_gas_O2_ratio+4, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
@@ -997,7 +1005,7 @@ comm_read_gas5:
     movff   opt_gas_type+4, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   opt_OC_bail_gas_change+4,TXREG1
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 
 comm_read_dil1:
     movff   opt_dil_O2_ratio+0, TXREG1
@@ -1007,7 +1015,7 @@ comm_read_dil1:
     movff   opt_dil_type+0, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   char_I_dil_change+0,TXREG1
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_dil2:
     movff   opt_dil_O2_ratio+1, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
@@ -1016,7 +1024,7 @@ comm_read_dil2:
     movff   opt_dil_type+1, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   char_I_dil_change+1,TXREG1
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_dil3:
     movff   opt_dil_O2_ratio+2, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
@@ -1025,7 +1033,7 @@ comm_read_dil3:
     movff   opt_dil_type+2, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   char_I_dil_change+2,TXREG1
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_dil4:
     movff   opt_dil_O2_ratio+3, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
@@ -1034,7 +1042,7 @@ comm_read_dil4:
     movff   opt_dil_type+3, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   char_I_dil_change+3,TXREG1
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_dil5:
     movff   opt_dil_O2_ratio+4, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
@@ -1043,135 +1051,114 @@ comm_read_dil5:
     movff   opt_dil_type+4, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   char_I_dil_change+4,TXREG1
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 
 comm_read_sp1:
     movff   char_I_setpoint_cbar+0, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   char_I_setpoint_change+0, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_sp2:
     movff   char_I_setpoint_cbar+1, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   char_I_setpoint_change+1, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_sp3:
     movff   char_I_setpoint_cbar+2, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   char_I_setpoint_change+2, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_sp4:
     movff   char_I_setpoint_cbar+3, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   char_I_setpoint_change+3, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_sp5:
     movff   char_I_setpoint_cbar+4, TXREG1
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   char_I_setpoint_change+4, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
-
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_ccr_mode:
     movff   opt_ccr_mode, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_dive_mode:
     movff   opt_dive_mode, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_decotype:
     movff   char_I_deco_model, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_ppo2_max:
     movff   opt_ppO2_max, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_ppo2_min:
     movff   opt_ppO2_min, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_ftts:
     movff   char_I_extra_time, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_gf_low:
     movff   opt_GF_low, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_gf_high:
     movff   opt_GF_high, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_agf_low:
     movff   opt_aGF_low, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_agf_high:
     movff   opt_aGF_high, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_agf_selectable:
     movff   opt_enable_aGF, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_saturation:
     movff   char_I_saturation_multiplier, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_desaturation:
     movff   char_I_desaturation_multiplier, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_last_deco:
     movff   opt_last_stop, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_brightness:
     movff   opt_brightness, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_units:
     movff   opt_units, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_samplingrate:
     movff   opt_sampling_rate, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_salinity:
     movff   opt_salinity, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_divemode_colour:
     movff   opt_dive_color_scheme, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_language:
     movff   opt_language, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_date_format:
     movff   opt_dateformat, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_compass_gain:
     movff   opt_compass_gain, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_pressure_adjust:
     movff   opt_pressure_adjust, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 comm_read_safety_stop:
     movff   opt_enable_safetystop, TXREG1
-    rcall   comm_read_setting_wait          ; Wait for UART
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
+comm_read_calibration_gas:
+    movff   opt_calibration_O2_ratio, TXREG1
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
+comm_read_fallback:
+    movff   opt_sensor_fallback, TXREG1
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
+comm_read_flip_screen:
+    movff   opt_flip_screen, TXREG1
+    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 
 
 ;-----------------------------------------------------------------------------
@@ -1180,11 +1167,13 @@ comm_read_safety_stop:
 comm_write_setting:
     movlw   "w"
 	movwf	TXREG1
-	call	rs232_get_byte
-	btfsc	rs232_recieve_overflow			; Got byte?
+	rcall	comm_write_get_byte              ; "Byte 2"
+	btfsc	rs232_recieve_overflow			 ; Got byte?
 	bra		comm_write_abort                 ; No, abort!
-	call	rs232_wait_tx					; Wait for UART
-    movf    RCREG1,W                        ; Copy
+    movff   RCREG1,temp1                     ; Copy
+    rcall	comm_write_get_byte              ; "Byte 3"
+	call	rs232_wait_tx					 ; Wait for UART
+    movf    temp1,W
     bz      comm_write_unused                ; RCREG1=0
     dcfsnz  WREG
     bra     comm_write_unused                ; RCREG1=1
@@ -1294,6 +1283,12 @@ comm_write_setting:
     bra     comm_write_pressure_adjust       ; RCREG1=0x35
     dcfsnz  WREG
     bra     comm_write_safety_stop           ; RCREG1=0x36
+    dcfsnz  WREG
+    bra     comm_write_calibration_gas       ; RCREG1=0x37
+    dcfsnz  WREG
+    bra     comm_write_fallback              ; RCREG1=0x38
+    dcfsnz  WREG
+    bra     comm_write_flip_screen           ; RCREG1=0x39
 
 comm_write_unused:
 comm_write_abort:
@@ -1307,234 +1302,208 @@ comm_write_abort:
     call    get_first_dil_to_WREG           ; Makes sure at least one Diluent is "First"
     bra		comm_download_mode0             ; Done. Loop with timeout reset
 
+comm_write_get_byte:
+    call	rs232_get_byte
+    return
+
 comm_write_gas1:
-    call	rs232_get_byte
     movff   RCREG1,opt_gas_O2_ratio+0
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_gas_He_ratio+0
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_gas_type+0
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_OC_bail_gas_change+0
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_gas2:
-    call	rs232_get_byte
     movff   RCREG1,opt_gas_O2_ratio+1
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_gas_He_ratio+1
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_gas_type+1
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_OC_bail_gas_change+1
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_gas3:
-    call	rs232_get_byte
     movff   RCREG1,opt_gas_O2_ratio+2
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_gas_He_ratio+2
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_gas_type+2
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_OC_bail_gas_change+2
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_gas4:
-    call	rs232_get_byte
     movff   RCREG1,opt_gas_O2_ratio+3
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_gas_He_ratio+3
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_gas_type+3
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_OC_bail_gas_change+3
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_gas5:
-    call	rs232_get_byte
     movff   RCREG1,opt_gas_O2_ratio+4
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_gas_He_ratio+4
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_gas_type+4
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_OC_bail_gas_change+4
     bra		comm_write_abort             ; Done. Loop with timeout reset
 
 comm_write_dil1:
-    call	rs232_get_byte
     movff   RCREG1,opt_dil_O2_ratio+0
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_dil_He_ratio+0
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_dil_type+0
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,char_I_dil_change+0
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_dil2:
-    call	rs232_get_byte
     movff   RCREG1,opt_dil_O2_ratio+1
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_dil_He_ratio+1
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_dil_type+1
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,char_I_dil_change+1
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_dil3:
-    call	rs232_get_byte
     movff   RCREG1,opt_dil_O2_ratio+2
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_dil_He_ratio+2
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_dil_type+2
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,char_I_dil_change+2
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_dil4:
-    call	rs232_get_byte
     movff   RCREG1,opt_dil_O2_ratio+3
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_dil_He_ratio+3
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_dil_type+3
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,char_I_dil_change+3
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_dil5:
-    call	rs232_get_byte
     movff   RCREG1,opt_dil_O2_ratio+4
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_dil_He_ratio+4
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,opt_dil_type+4
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,char_I_dil_change+4
     bra		comm_write_abort             ; Done. Loop with timeout reset
 
 comm_write_sp1:
-    call	rs232_get_byte
     movff   RCREG1,char_I_setpoint_cbar+0
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,char_I_setpoint_change+0
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_sp2:
-    call	rs232_get_byte
     movff   RCREG1,char_I_setpoint_cbar+1
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,char_I_setpoint_change+1
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_sp3:
-    call	rs232_get_byte
     movff   RCREG1,char_I_setpoint_cbar+2
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,char_I_setpoint_change+2
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_sp4:
-    call	rs232_get_byte
     movff   RCREG1,char_I_setpoint_cbar+3
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,char_I_setpoint_change+3
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_sp5:
-    call	rs232_get_byte
     movff   RCREG1,char_I_setpoint_cbar+4
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     movff   RCREG1,char_I_setpoint_change+4
     bra		comm_write_abort             ; Done. Loop with timeout reset
 
 comm_write_ccr_mode:
-    call	rs232_get_byte
     movff   RCREG1, opt_ccr_mode
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_dive_mode:
-    call	rs232_get_byte
     movff   RCREG1, opt_dive_mode
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_decotype:
-    call	rs232_get_byte
     movff   RCREG1, char_I_deco_model
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_ppo2_max:
-    call	rs232_get_byte
     movff   RCREG1, opt_ppO2_max
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_ppo2_min:
-    call	rs232_get_byte
     movff   RCREG1, opt_ppO2_min
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_ftts:
-    call	rs232_get_byte
     movff   RCREG1, char_I_extra_time
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_gf_low:
-    call	rs232_get_byte
     movff   RCREG1, opt_GF_low
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_gf_high:
-    call	rs232_get_byte
     movff   RCREG1, opt_GF_high
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_agf_low:
-    call	rs232_get_byte
     movff   RCREG1, opt_aGF_low
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_agf_high:
-    call	rs232_get_byte
     movff   RCREG1, opt_aGF_high
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_agf_selectable:
-    call	rs232_get_byte
     movff   RCREG1, opt_enable_aGF
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_saturation:
-    call	rs232_get_byte
     movff   RCREG1, char_I_saturation_multiplier
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_desaturation:
-    call	rs232_get_byte
     movff   RCREG1, char_I_desaturation_multiplier
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_last_deco:
-    call	rs232_get_byte
     movff   RCREG1, opt_last_stop
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_brightness:
-    call	rs232_get_byte
     movff   RCREG1, opt_brightness
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_units:
-    call	rs232_get_byte
     movff   RCREG1, opt_units
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_samplingrate:
-    call	rs232_get_byte
     movff   RCREG1, opt_sampling_rate
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_salinity:
-    call	rs232_get_byte
     movff   RCREG1, opt_salinity
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_divemode_colour:
-    call	rs232_get_byte
     movff   RCREG1, opt_dive_color_scheme
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_language:
-    call	rs232_get_byte
     movff   RCREG1, opt_language
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_date_format:
-    call	rs232_get_byte
     movff   RCREG1, opt_dateformat
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_compass_gain:
-    call	rs232_get_byte
     movff   RCREG1, opt_compass_gain
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_pressure_adjust:
-    call	rs232_get_byte
     movff   RCREG1, opt_pressure_adjust
     bra		comm_write_abort             ; Done. Loop with timeout reset
 comm_write_safety_stop:
-    call	rs232_get_byte
     movff   RCREG1, opt_enable_safetystop
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_calibration_gas:
+    movff   RCREG1, opt_calibration_O2_ratio
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_fallback:
+    movff   RCREG1, opt_sensor_fallback
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_flip_screen:
+    movff   RCREG1, opt_flip_screen
     bra		comm_write_abort             ; Done. Loop with timeout reset
 
 ;-----------------------------------------------------------------------------
