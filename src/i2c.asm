@@ -124,19 +124,21 @@ I2C_RX_accelerometer:
 	rcall		WaitMSSP
 	movlw		0x38                ; address
     rcall       I2C_TX
-	movlw		0x01
+	movlw		0x00
     rcall       I2C_TX
 	bsf			SSP1CON2,RSEN		; Repeated start condition (!)
 	rcall		WaitMSSP
 	movlw		0x39                ; address
     rcall       I2C_TX
 
+    rcall       I2C_OneByteRX       ; Get Status Byte
+    movf        SSP1BUF,W
+
     ; Chip orientation on the PCB requires
     ; Original = Corrected
     ; x = -x
     ; y = -y
     ; z = -z
-
 
     rcall       I2C_TwoBytesRX_div16 ; Get two bytes and devide /16 (signed)
     comf        hi                    ; 16bit sign change.

@@ -79,7 +79,6 @@ surfloop:
 
     ;---- Do any usefull initializes that takes time -------------------------
 	call	restart_set_modes_and_flags	; Sets decomode flags
-;	call	speed_fastest
 	bcf		pressure_refresh
     call    I2C_init_compass
     call    I2C_init_accelerometer
@@ -127,16 +126,6 @@ surfloop:
     STRCPY_TEXT_PRINT  tView        ;"View>"
 	call    TFT_standard_color
 
-	call	TFT_clock					; display time
-    call    update_surfloop60
-	call	get_battery_voltage			; get battery voltage
-	call	TFT_update_batt_voltage		; display battery voltage
-	call	TFT_update_surf_press		; display surface pressure
-	call	TFT_temp_surfmode			; Displays temperature
-	call	TFT_display_decotype_surface
-    movff   customview_surfmode,menupos3    ; Reload last customview
-    call    surf_customview_mask        ; Update #menupos3 view
-
 ; Logo
     WIN_TOP     .0
     WIN_LEFT    .70
@@ -148,12 +137,16 @@ surfloop:
     movwf   TBLPTRU
     call    color_image
 
-	btfsc	FLAG_apnoe_mode				; Ignore in Apnoe mode
-	bra		surfloop1
-	btfsc	FLAG_gauge_mode				; Ignore in Gauge mode
-	bra		surfloop1
+	call	TFT_clock					; display time
+    call    update_surfloop60
+	call	get_battery_voltage			; get battery voltage
+	call	TFT_update_batt_voltage		; display battery voltage
+	call	TFT_update_surf_press		; display surface pressure
+	call	TFT_temp_surfmode			; Displays temperature
+	call	TFT_display_decotype_surface
+    movff   customview_surfmode,menupos3    ; Reload last customview
+    call    surf_customview_mask        ; Update #menupos3 view
 
-surfloop1:
     call    TFT_Display_FadeIn          ; Display resulting surface screen.
 
     ;---- Late initialisations -----------------------------------------------    
@@ -164,10 +157,7 @@ surfloop1:
 	movff	last_surfpressure_30min+0,last_surfpressure+0			; Use 30min old airpressure 
 	movff	last_surfpressure_30min+1,last_surfpressure+1			; Use 30min old airpressure
 
-    extern  do_demo_divemode
-;    goto    do_demo_divemode
-
-; Startup tasks for all modes
+    ; Startup tasks for all modes
     ; Desaturation time needs:
     ;   int_I_pres_surface
     ;   char_I_desaturation_multiplier
@@ -176,11 +166,6 @@ surfloop1:
 
     btfsc   enable_screen_dumps         ; =1: Ignore vin_usb, wait for "l" command (Screen dump)
     call	enable_rs232				; Also sets to speed_normal ...
-
-;    call    disable_ir
-;    bsf     mcp_power
-;    btfss   mcp_power
-;    bra $-4
 
 surfloop_loop:
 	btfss	onesecupdate				; do every second tasks?
