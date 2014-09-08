@@ -166,8 +166,10 @@ gaslist_strcat_setpoint5:
 gaslist_strcat_gas_better:   ; Yes, check if this is a "better gas"
         movlw   .0
         movff   WREG,win_invert
-        incf    gaslist_gas,W               ; gaslist_gas+1 -> WREG
-        cpfseq  better_gas_number           ; 1-5 for OC/Bailout and 6-10 for diluents
+        decf    better_gas_number,W         ; better_gas_number-1 -> WREG
+        btfsc   ccr_diluent_setup           ; in CCR menus?
+        addlw   .5                          ; Yes, offset to gases 5-9
+        cpfseq  gaslist_gas                 ; 0-4 for OC/Bailout, 5-9 for Diluents
         return
         call    TFT_attention_color         ; show in yellow
         movlw   .1
