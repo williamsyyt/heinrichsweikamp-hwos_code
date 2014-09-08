@@ -825,6 +825,9 @@ comm_send_dive_profile:
 
 ;-----------------------------------------------------------------------------
 
+comm_read_unused:
+    bra		comm_download_mode0             ; Done. Loop with timeout reset
+
 comm_read_setting:
     movlw   "r"
 	movwf	TXREG1
@@ -833,37 +836,37 @@ comm_read_setting:
 	bra		comm_read_abort                 ; No, abort!
 	call	rs232_wait_tx					; Wait for UART
     movf    RCREG1,W                        ; Copy
-    bz      comm_read_unused                ; RCREG1=0
+    bz      comm_read_unused                ; RCREG1=0x00
     dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=1
+    bra     comm_read_unused                ; RCREG1=0x01
     dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=2
+    bra     comm_read_unused                ; RCREG1=0x02
     dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=3
+    bra     comm_read_unused                ; RCREG1=0x03
     dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=4
+    bra     comm_read_unused                ; RCREG1=0x04
     dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=5
+    bra     comm_read_unused                ; RCREG1=0x05
     dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=6
+    bra     comm_read_unused                ; RCREG1=0x06
     dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=7
+    bra     comm_read_unused                ; RCREG1=0x07
     dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=8
+    bra     comm_read_unused                ; RCREG1=0x08
     dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=9
+    bra     comm_read_unused                ; RCREG1=0x09
     dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=10
+    bra     comm_read_unused                ; RCREG1=0x0A
     dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=11
+    bra     comm_read_unused                ; RCREG1=0x0B
     dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=12
+    bra     comm_read_unused                ; RCREG1=0x0C
     dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=13
+    bra     comm_read_unused                ; RCREG1=0x0D
     dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=14
+    bra     comm_read_unused                ; RCREG1=0x0E
     dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=15
+    bra     comm_read_unused                ; RCREG1=0x0F
     dcfsnz  WREG
     bra     comm_read_gas1                  ; RCREG1=0x10
     dcfsnz  WREG
@@ -895,61 +898,60 @@ comm_read_setting:
     dcfsnz  WREG
     bra     comm_read_sp5                   ; RCREG1=0x1E
     dcfsnz  WREG
-    bra     comm_read_ccr_mode              ; RCREG1=0x1F
+    movff   opt_ccr_mode, TXREG1            ; RCREG1=0x1F
     dcfsnz  WREG
-    bra     comm_read_dive_mode             ; RCREG1=0x20
+    movff   opt_dive_mode, TXREG1           ; RCREG1=0x20
     dcfsnz  WREG
-    bra     comm_read_decotype              ; RCREG1=0x21
+    movff   char_I_deco_model, TXREG1       ; RCREG1=0x21
     dcfsnz  WREG
-    bra     comm_read_ppo2_max              ; RCREG1=0x22
+    movff   opt_ppO2_max, TXREG1            ; RCREG1=0x22
     dcfsnz  WREG
-    bra     comm_read_ppo2_min              ; RCREG1=0x23
+    movff   opt_ppO2_min, TXREG1            ; RCREG1=0x23
     dcfsnz  WREG
-    bra     comm_read_ftts                  ; RCREG1=0x24
+    movff   char_I_extra_time, TXREG1       ; RCREG1=0x24
     dcfsnz  WREG
-    bra     comm_read_gf_low                ; RCREG1=0x25
+    movff   opt_GF_low, TXREG1              ; RCREG1=0x25
     dcfsnz  WREG
-    bra     comm_read_gf_high               ; RCREG1=0x26
+    movff   opt_GF_high, TXREG1             ; RCREG1=0x26
     dcfsnz  WREG
-    bra     comm_read_agf_low               ; RCREG1=0x27
+    movff   opt_aGF_low, TXREG1             ; RCREG1=0x27
     dcfsnz  WREG
-    bra     comm_read_agf_high              ; RCREG1=0x28
+    movff   opt_aGF_high, TXREG1            ; RCREG1=0x28
     dcfsnz  WREG
-    bra     comm_read_agf_selectable        ; RCREG1=0x29
+    movff   opt_enable_aGF, TXREG1          ; RCREG1=0x29
     dcfsnz  WREG
-    bra     comm_read_saturation            ; RCREG1=0x2A
+    movff   char_I_saturation_multiplier, TXREG1; RCREG1=0x2A
     dcfsnz  WREG
-    bra     comm_read_desaturation          ; RCREG1=0x2B
+    movff   char_I_desaturation_multiplier, TXREG1; RCREG1=0x2B
     dcfsnz  WREG
-    bra     comm_read_last_deco             ; RCREG1=0x2C
+    movff   opt_last_stop, TXREG1           ; RCREG1=0x2C
     dcfsnz  WREG
-    bra     comm_read_brightness            ; RCREG1=0x2D
+    movff   opt_brightness, TXREG1          ; RCREG1=0x2D
     dcfsnz  WREG
-    bra     comm_read_units                 ; RCREG1=0x2E
+    movff   opt_units, TXREG1               ; RCREG1=0x2E
     dcfsnz  WREG
-    bra     comm_read_samplingrate          ; RCREG1=0x2F
+    movff   opt_sampling_rate, TXREG1       ; RCREG1=0x2F
     dcfsnz  WREG
-    bra     comm_read_salinity              ; RCREG1=0x30
+    movff   opt_salinity, TXREG1            ; RCREG1=0x30
     dcfsnz  WREG
-    bra     comm_read_divemode_colour       ; RCREG1=0x31
+    movff   opt_dive_color_scheme, TXREG1   ; RCREG1=0x31
     dcfsnz  WREG
-    bra     comm_read_language              ; RCREG1=0x32
+    movff   opt_language, TXREG1            ; RCREG1=0x32
     dcfsnz  WREG
-    bra     comm_read_date_format           ; RCREG1=0x33
+    movff   opt_dateformat, TXREG1          ; RCREG1=0x33
     dcfsnz  WREG
-    bra     comm_read_compass_gain          ; RCREG1=0x34
+    movff   opt_compass_gain, TXREG1        ; RCREG1=0x34
     dcfsnz  WREG
-    bra     comm_read_pressure_adjust       ; RCREG1=0x35
+    movff   opt_pressure_adjust, TXREG1     ; RCREG1=0x35
     dcfsnz  WREG
-    bra     comm_read_safety_stop           ; RCREG1=0x36
+    movff   opt_enable_safetystop, TXREG1   ; RCREG1=0x36
     dcfsnz  WREG
-    bra     comm_read_calibration_gas       ; RCREG1=0x37
+    movff   opt_calibration_O2_ratio, TXREG1; RCREG1=0x37
     dcfsnz  WREG
-    bra     comm_read_fallback              ; RCREG1=0x38
+    movff   opt_sensor_fallback, TXREG1     ; RCREG1=0x38
     dcfsnz  WREG
-    bra     comm_read_flip_screen           ; RCREG1=0x39
+    movff   opt_flip_screen, TXREG1         ; RCREG1=0x39
 
-comm_read_unused:
 comm_read_abort:
     bra		comm_download_mode0             ; Done. Loop with timeout reset
 
@@ -1078,91 +1080,12 @@ comm_read_sp5:
     rcall   comm_read_setting_wait          ; Wait for UART
     movff   char_I_setpoint_change+4, TXREG1
     bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_ccr_mode:
-    movff   opt_ccr_mode, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_dive_mode:
-    movff   opt_dive_mode, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_decotype:
-    movff   char_I_deco_model, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_ppo2_max:
-    movff   opt_ppO2_max, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_ppo2_min:
-    movff   opt_ppO2_min, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_ftts:
-    movff   char_I_extra_time, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_gf_low:
-    movff   opt_GF_low, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_gf_high:
-    movff   opt_GF_high, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_agf_low:
-    movff   opt_aGF_low, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_agf_high:
-    movff   opt_aGF_high, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_agf_selectable:
-    movff   opt_enable_aGF, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_saturation:
-    movff   char_I_saturation_multiplier, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_desaturation:
-    movff   char_I_desaturation_multiplier, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_last_deco:
-    movff   opt_last_stop, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_brightness:
-    movff   opt_brightness, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_units:
-    movff   opt_units, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_samplingrate:
-    movff   opt_sampling_rate, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_salinity:
-    movff   opt_salinity, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_divemode_colour:
-    movff   opt_dive_color_scheme, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_language:
-    movff   opt_language, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_date_format:
-    movff   opt_dateformat, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_compass_gain:
-    movff   opt_compass_gain, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_pressure_adjust:
-    movff   opt_pressure_adjust, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_safety_stop:
-    movff   opt_enable_safetystop, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_calibration_gas:
-    movff   opt_calibration_O2_ratio, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_fallback:
-    movff   opt_sensor_fallback, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
-comm_read_flip_screen:
-    movff   opt_flip_screen, TXREG1
-    bra		comm_read_done                  ; Done. Wait for UART and loop with timeout reset
 
 
 ;-----------------------------------------------------------------------------
 
+comm_write_unused:
+    goto    comm_write_abort
 
 comm_write_setting:
     movlw   "w"
@@ -1174,37 +1097,37 @@ comm_write_setting:
     rcall	comm_write_get_byte              ; "Byte 3"
 	call	rs232_wait_tx					 ; Wait for UART
     movf    temp1,W
-    bz      comm_write_unused                ; RCREG1=0
+    bz      comm_write_unused                ; RCREG1=0x00
     dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=1
+    bra     comm_write_unused                ; RCREG1=0x01
     dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=2
+    bra     comm_write_unused                ; RCREG1=0x02
     dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=3
+    bra     comm_write_unused                ; RCREG1=0x03
     dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=4
+    bra     comm_write_unused                ; RCREG1=0x04
     dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=5
+    bra     comm_write_unused                ; RCREG1=0x05
     dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=6
+    bra     comm_write_unused                ; RCREG1=0x06
     dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=7
+    bra     comm_write_unused                ; RCREG1=0x07
     dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=8
+    bra     comm_write_unused                ; RCREG1=0x08
     dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=9
+    bra     comm_write_unused                ; RCREG1=0x09
     dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=10
+    bra     comm_write_unused                ; RCREG1=0x0A
     dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=11
+    bra     comm_write_unused                ; RCREG1=0x0B
     dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=12
+    bra     comm_write_unused                ; RCREG1=0x0C
     dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=13
+    bra     comm_write_unused                ; RCREG1=0x0D
     dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=14
+    bra     comm_write_unused                ; RCREG1=0x0E
     dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=15
+    bra     comm_write_unused                ; RCREG1=0x0F
     dcfsnz  WREG
     bra     comm_write_gas1                  ; RCREG1=0x10
     dcfsnz  WREG
@@ -1236,61 +1159,60 @@ comm_write_setting:
     dcfsnz  WREG
     bra     comm_write_sp5                   ; RCREG1=0x1E
     dcfsnz  WREG
-    bra     comm_write_ccr_mode              ; RCREG1=0x1F
+    movff   RCREG1, opt_ccr_mode             ; RCREG1=0x1F
     dcfsnz  WREG
-    bra     comm_write_dive_mode             ; RCREG1=0x20
+    movff   RCREG1, opt_dive_mode            ; RCREG1=0x20
     dcfsnz  WREG
-    bra     comm_write_decotype              ; RCREG1=0x21
+    movff   RCREG1, char_I_deco_model       ; RCREG1=0x21
     dcfsnz  WREG
-    bra     comm_write_ppo2_max              ; RCREG1=0x22
+    movff   RCREG1, opt_ppO2_max            ; RCREG1=0x22
     dcfsnz  WREG
-    bra     comm_write_ppo2_min              ; RCREG1=0x23
+    movff   RCREG1, opt_ppO2_min            ; RCREG1=0x23
     dcfsnz  WREG
-    bra     comm_write_ftts                  ; RCREG1=0x24
+    movff   RCREG1, char_I_extra_time       ; RCREG1=0x24
     dcfsnz  WREG
-    bra     comm_write_gf_low                ; RCREG1=0x25
+    movff   RCREG1, opt_GF_low              ; RCREG1=0x25
     dcfsnz  WREG
-    bra     comm_write_gf_high               ; RCREG1=0x26
+    movff   RCREG1, opt_GF_high             ; RCREG1=0x26
     dcfsnz  WREG
-    bra     comm_write_agf_low               ; RCREG1=0x27
+    movff   RCREG1, opt_aGF_low             ; RCREG1=0x27
     dcfsnz  WREG
-    bra     comm_write_agf_high              ; RCREG1=0x28
+    movff   RCREG1, opt_aGF_high            ; RCREG1=0x28
     dcfsnz  WREG
-    bra     comm_write_agf_selectable        ; RCREG1=0x29
+    movff   RCREG1, opt_enable_aGF          ; RCREG1=0x29
     dcfsnz  WREG
-    bra     comm_write_saturation            ; RCREG1=0x2A
+    movff   RCREG1, char_I_saturation_multiplier; RCREG1=0x2A
     dcfsnz  WREG
-    bra     comm_write_desaturation          ; RCREG1=0x2B
+    movff   RCREG1, char_I_desaturation_multiplier; RCREG1=0x2B
     dcfsnz  WREG
-    bra     comm_write_last_deco             ; RCREG1=0x2C
+    movff   RCREG1, opt_last_stop           ; RCREG1=0x2C
     dcfsnz  WREG
-    bra     comm_write_brightness            ; RCREG1=0x2D
+    movff   RCREG1, opt_brightness          ; RCREG1=0x2D
     dcfsnz  WREG
-    bra     comm_write_units                 ; RCREG1=0x2E
+    movff   RCREG1, opt_units               ; RCREG1=0x2E
     dcfsnz  WREG
-    bra     comm_write_samplingrate          ; RCREG1=0x2F
+    movff   RCREG1, opt_sampling_rate       ; RCREG1=0x2F
     dcfsnz  WREG
-    bra     comm_write_salinity              ; RCREG1=0x30
+    movff   RCREG1, opt_salinity            ; RCREG1=0x30
     dcfsnz  WREG
-    bra     comm_write_divemode_colour       ; RCREG1=0x31
+    movff   RCREG1, opt_dive_color_scheme   ; RCREG1=0x31
     dcfsnz  WREG
-    bra     comm_write_language              ; RCREG1=0x32
+    movff   RCREG1, opt_language            ; RCREG1=0x32
     dcfsnz  WREG
-    bra     comm_write_date_format           ; RCREG1=0x33
+    movff   RCREG1, opt_dateformat          ; RCREG1=0x33
     dcfsnz  WREG
-    bra     comm_write_compass_gain          ; RCREG1=0x34
+    movff   RCREG1, opt_compass_gain        ; RCREG1=0x34
     dcfsnz  WREG
-    bra     comm_write_pressure_adjust       ; RCREG1=0x35
+    movff   RCREG1, opt_pressure_adjust     ; RCREG1=0x35
     dcfsnz  WREG
-    bra     comm_write_safety_stop           ; RCREG1=0x36
+    movff   RCREG1, opt_enable_safetystop   ; RCREG1=0x36
     dcfsnz  WREG
-    bra     comm_write_calibration_gas       ; RCREG1=0x37
+    movff   RCREG1, opt_calibration_O2_ratio; RCREG1=0x37
     dcfsnz  WREG
-    bra     comm_write_fallback              ; RCREG1=0x38
+    movff   RCREG1, opt_sensor_fallback     ; RCREG1=0x38
     dcfsnz  WREG
-    bra     comm_write_flip_screen           ; RCREG1=0x39
+    movff   RCREG1, opt_flip_screen         ; RCREG1=0x39
 
-comm_write_unused:
 comm_write_abort:
     ; Check Options, gases and diluents
     call    option_check_all                ; Check all options (and reset if not within their min/max boundaries)
@@ -1422,88 +1344,6 @@ comm_write_sp5:
     movff   RCREG1,char_I_setpoint_cbar+4
     rcall	comm_write_get_byte
     movff   RCREG1,char_I_setpoint_change+4
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-
-comm_write_ccr_mode:
-    movff   RCREG1, opt_ccr_mode
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_dive_mode:
-    movff   RCREG1, opt_dive_mode
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_decotype:
-    movff   RCREG1, char_I_deco_model
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_ppo2_max:
-    movff   RCREG1, opt_ppO2_max
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_ppo2_min:
-    movff   RCREG1, opt_ppO2_min
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_ftts:
-    movff   RCREG1, char_I_extra_time
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_gf_low:
-    movff   RCREG1, opt_GF_low
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_gf_high:
-    movff   RCREG1, opt_GF_high
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_agf_low:
-    movff   RCREG1, opt_aGF_low
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_agf_high:
-    movff   RCREG1, opt_aGF_high
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_agf_selectable:
-    movff   RCREG1, opt_enable_aGF
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_saturation:
-    movff   RCREG1, char_I_saturation_multiplier
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_desaturation:
-    movff   RCREG1, char_I_desaturation_multiplier
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_last_deco:
-    movff   RCREG1, opt_last_stop
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_brightness:
-    movff   RCREG1, opt_brightness
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_units:
-    movff   RCREG1, opt_units
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_samplingrate:
-    movff   RCREG1, opt_sampling_rate
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_salinity:
-    movff   RCREG1, opt_salinity
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_divemode_colour:
-    movff   RCREG1, opt_dive_color_scheme
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_language:
-    movff   RCREG1, opt_language
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_date_format:
-    movff   RCREG1, opt_dateformat
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_compass_gain:
-    movff   RCREG1, opt_compass_gain
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_pressure_adjust:
-    movff   RCREG1, opt_pressure_adjust
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_safety_stop:
-    movff   RCREG1, opt_enable_safetystop
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_calibration_gas:
-    movff   RCREG1, opt_calibration_O2_ratio
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_fallback:
-    movff   RCREG1, opt_sensor_fallback
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_flip_screen:
-    movff   RCREG1, opt_flip_screen
     bra		comm_write_abort             ; Done. Loop with timeout reset
 
 ;-----------------------------------------------------------------------------
