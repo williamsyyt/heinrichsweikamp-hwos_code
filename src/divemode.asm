@@ -1049,6 +1049,7 @@ check_gas_change:					; Checks if a better gas should be selected (by user)
     bra     check_gas_change_OC_bail; Yes, check for OC or bailout
 
     ; Check Diluents
+    bsf     ccr_diluent_setup       ; in CCR menus
     movlw   .0
     rcall   check_dil_common        ; With Gas 0-4 in WREG
     movlw   .1
@@ -1062,6 +1063,7 @@ check_gas_change:					; Checks if a better gas should be selected (by user)
     bra     check_gas_change_exit
 
 check_gas_change_OC_bail:
+    bcf     ccr_diluent_setup       ; in OC menus
     movlw   .0
     rcall   check_gas_common        ; With Gas 0-4 in WREG
     movlw   .1
@@ -1199,7 +1201,6 @@ check_dil_common2:
 	cpfsgt	lo  					; gas_change_depth < current depth?
     return                          ; No, check next gas
 	incf    hi,W                    ; 1-5
-    addlw   .5                      ; 6-10
 	movwf	better_gas_number		; number (1-5) of the "better gas" in divemode, =0: no better gas available
 	movlw	better_gas_window_neg
 	subwf	lo,W                    ; Change depth-better_gas_window_neg
