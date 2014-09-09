@@ -296,6 +296,9 @@ calc_deko_divemode2:
 
     bcf     setpoint_fallback               ; =1: Fallback to SP1 due to external O2 sensor failure
 
+    btfss   FLAG_ccr_mode                   ; In CCR mode?
+    bra     calc_deko_divemode2a            ; Skip all the following if not in CCR mode
+
     TSTOSS  opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor
     bra     calc_deko_divemode2a
     rcall   divemode_setup_sensor_values    ; Setup sensor values
