@@ -1,3 +1,9 @@
+[1.52]
+
+- Beta Version -
+NEW: Safe tissue data, date and time during firmware update
+CHANGE: Postion of min. and (NEW:) max. temperature in logbook
+
 [1.51]
 
 - Beta Version -

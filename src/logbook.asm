@@ -30,7 +30,7 @@
 
    	extern   do_main_menu2,comm_mode
 
-    CBLOCK tmp+0x40		        ; Keep space for menu processor.
+    CBLOCK tmp+0x35		        ; Keep space for menu processor.
         count_temperature       ; Current sample count for temperature divisor
         count_deco              ; Current sample count for deco (ceiling) divisor
         logbook_cur_depth:2     ; Current depth, for drawing profile.
@@ -53,7 +53,9 @@
 		y_scale:2					; y-scale (The horizontal lines)
 		x_scale:2					; x-scale (The vertical lines)
 		logbook_pixel_x_pos		; x2 position of current pixel in X-direction
-		; Reserved to tmp+0x5F
+        logbook_min_temp_pos    ; lowest row in the temp graph
+        logbook_max_temp_pos    ; lowest row in the temp graph
+		;+.33, reserved to tmp+0x56
     ENDC
 
 	#DEFINE	return_from_profileview	logbook_flags,0
@@ -763,6 +765,10 @@ display_profile2f:
     setf        logbook_cur_tp+1
     clrf        logbook_last_tp             ; Also reset previous Y for Tp°
     clrf        logbook_ceiling             ; Ceiling = 0, correct value for no ceiling.
+    movlw       profile_top
+    movwf       logbook_min_temp_pos        ; Initialize for displaying the lowest temperature
+    movlw       profile_top+profile_height_pixels
+    movwf       logbook_max_temp_pos        ; Initialize for displaying the highest temperature
 
     INIT_PIXEL_WROTE logbook_pixel_x_pos       ; pixel x2			(Also sets standard Color!)
 
@@ -854,7 +860,13 @@ profile_display_skip_deco:
     bz          profile_display_temp_1      ; No: skip the vertical line.
     movwf       xC+1
 	call		profile_display_fill		; In this column between this row (xC+0) and the last row (xC+1)
-profile_display_temp_1:	
+profile_display_temp_1:
+    movf        xC+0,W                      ; current row
+    cpfsgt      logbook_min_temp_pos        ; check limit
+    movwf       logbook_min_temp_pos        ; lowest row in the temp graph
+    cpfslt      logbook_max_temp_pos        ; check limit
+    movwf       logbook_max_temp_pos        ; lowest row in the temp graph
+
     movff       xC+0,logbook_last_tp
     PIXEL_WRITE logbook_pixel_x_pos,xC+0       ; Set col(0..159) x row (0..239), put a current color pixel.
 
@@ -958,9 +970,10 @@ profile_display_loop_done_nogas6:
 	addwfc		ext_flash_address+2,F
 	; pointer at the first 0xFA of header
 
-    movlw   .2                              ; negative offset
-    addwf   logbook_last_tp,W
-    movff   WREG,win_top                    ; Line below temp
+;    movlw   .2                              ; negative offset
+;    addwf   logbook_last_tp,W
+;    movff   WREG,win_top                    ; Line below temp
+    movff   logbook_min_temp_pos,win_top     ; Y position at lowest temperature
     movff   logbook_pixel_x_pos,lo
     movlw   .130
     cpfslt  lo                              ; limit left border to 130
@@ -982,19 +995,45 @@ profile_display_loop_done_nogas6:
 	lfsr	FSR2,buffer						; Overwrite "-"
 	bsf		ignore_digit5		; Full degrees only
 	output_16
-	bcf		ignore_digit5
 	STRCAT_TEXT_PRINT  tLogTunitF
+    ; Now, the max. temperature
+    movlw   .15
+    subwf   logbook_max_temp_pos,W
+    movff   WREG,win_top        ; Y position at max temperature
+    movff   logbook_max_tp+0,lo
+	movff   logbook_max_tp+1,hi
+    lfsr    FSR2,buffer
+	call	TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
+	call	convert_celsius_to_fahrenheit	; convert value in lo:hi from celsius to fahrenheit
+	output_16
+	bcf		ignore_digit5
+	STRCAT_TEXT_PRINT    tLogTunitF
+
 	bra		logbook_show_temp_common
 
 logbook_show_temp_metric:
-	call		TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
-	movlw		d'3'
-	movwf		ignore_digits
-	bsf			leftbind
+	call	TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
+	movlw	d'3'
+	movwf	ignore_digits
+	bsf		leftbind
+	output_16dp	d'2'					; temperature
+	STRCAT_TEXT_PRINT    tLogTunitC
+    ; Now, the max. temperature
+    movlw   .15
+    subwf   logbook_max_temp_pos,W
+    movff   WREG,win_top        ; Y position at max temperature
+    movff   logbook_max_tp+0,lo
+	movff   logbook_max_tp+1,hi
+    lfsr    FSR2,buffer
+	call	TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
+	movlw	d'3'
+	movwf	ignore_digits
+	bsf		leftbind
 	output_16dp	d'2'					; temperature
 	STRCAT_TEXT_PRINT    tLogTunitC
 
 logbook_show_temp_common:
+
 	bcf		leftbind
 	call    TFT_standard_color
 
@@ -1221,7 +1260,15 @@ profile_view_get_depth_new1:
     call        sub16                       ; SIGNED sub_a - sub_b
     btfsc       neg_flag
     bra         profile_view_get_depth_no_tp
-    
+
+    ; store max. temp only below start_dive_threshold (1,0m)
+    tstfsz      logbook_cur_depth+1             ; > 2,56m?
+    bra         profile_view_compute_max_temp   ; Yes, include in max. temp measurement
+    movlw       start_dive_threshold            ; 1,0m
+    cpfsgt      logbook_cur_depth+0             ; low value
+    bra         profile_view_get_depth_no_tp    ; above 1,0m, ignore temp
+
+profile_view_compute_max_temp:
     movff       logbook_cur_tp+0,logbook_max_tp+0
     movff       logbook_cur_tp+1,logbook_max_tp+1
     

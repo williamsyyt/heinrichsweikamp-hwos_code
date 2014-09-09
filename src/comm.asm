@@ -26,6 +26,7 @@
     extern  char_I_dil_change, char_I_setpoint_cbar, char_I_setpoint_change
     extern  char_I_deco_model, char_I_extra_time, char_I_saturation_multiplier, char_I_desaturation_multiplier
     extern  option_check_all, gaslist_cleanup_list, get_first_gas_to_WREG, get_first_dil_to_WREG
+    extern  vault_decodata_into_eeprom
 
 #DEFINE timeout_comm_pre_mode   .120        ; Pre-loop
 #DEFINE timeout_comm_mode       .120        ; Download mode
@@ -245,6 +246,7 @@ comm_send_firmware_loop:
 
 	; Passed: goto second stage verification.
 	; NOTE: Bootloader is Bank0. With buffer at address 0x200.
+    call    vault_decodata_into_eeprom      ; Store last deco data (And Time/Date) into EEPROM
 	goto    0x1FDF0                         ; And pray...
 
 comm_send_firmware_failed:
