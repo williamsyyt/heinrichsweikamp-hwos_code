@@ -3,6 +3,7 @@
 - Beta Version -
 NEW: Safe tissue data, date and time during firmware update
 CHANGE: Postion of min. and (NEW:) max. temperature in logbook
+BUGFIX: Fast diluent (w/o dive mode menu) change did not work correctly
 
 [1.51]
 
