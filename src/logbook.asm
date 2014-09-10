@@ -1317,13 +1317,15 @@ profile_no_second_eventbyte:
 	bra			logbook_event1				; Yes!
 	btfsc		EventByte,6                 ; Setpoint Change?
 	bra			logbook_event3				; Yes!
-	btfss		EventByte,5					; Stored Gas Changed?
-	return									; No, return
-; Stored Gas changed!
-	call		ext_flash_byte_read_plus_0x20		; Read Gas#
-	decf		timeout_counter2,F			; reduce counter
+	btfsc		EventByte,5					; Stored Gas Changed?
+	bra			logbook_event4				; Yes!
+    return
+
+logbook_event4: ; Stored Gas changed!
+	call		ext_flash_byte_read_plus_0x20 ; Read Gas#
+	decf		timeout_counter2,F			  ; reduce counter
 	movff		temp1,average_depth_hold_total+3
-    rcall       profile_display_color       ; Change profile color according to gas number
+    rcall       profile_display_color         ; Change profile color according to gas number
 	return
 
 logbook_event1: ; Gas6 changed
