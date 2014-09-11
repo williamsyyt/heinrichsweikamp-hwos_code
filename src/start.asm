@@ -272,6 +272,10 @@ restart:
 	btfss	neg_flag				; Result negative (Ambient>880mbar)?
 	bsf		high_altitude_mode		; No, Set Flag!
 
+    btfss   c3_hardware
+    bsf     TRISB,3
+    btfss   c3_hardware
+    bsf     TRISG,0
 	call	ext_flash_disable_protection	; Disable write protection for external flash
 
     bsf     flip_screen             ; Flip 180°
