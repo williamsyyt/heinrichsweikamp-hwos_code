@@ -29,9 +29,9 @@ incf_ext_flash_address0:
 	movlw		0x40
 	cpfseq		ext_flash_address+2			; at address 40FFFF?
 	return									; No, return
-	clrf		ext_flash_address+0			; Yes, rollover to 0x000000
-	clrf		ext_flash_address+1
-	clrf		ext_flash_address+2
+;	clrf		ext_flash_address+0
+;	clrf		ext_flash_address+1
+	clrf		ext_flash_address+2			; Yes, rollover to 0x000000
 	return
 
 	global		incf_ext_flash_address0_p1_0x20
@@ -48,9 +48,9 @@ incf_ext_flash_address0_0x20:		 	; with roll-over at 0x200000 to 0x000000
 	movlw		0x20
 	cpfseq		ext_flash_address+2			; at address 0x200000?
 	return									; No, return
-	clrf		ext_flash_address+0			; Yes, rollover to 0x000000
-	clrf		ext_flash_address+1
-	clrf		ext_flash_address+2
+;	clrf		ext_flash_address+0
+;	clrf		ext_flash_address+1
+	clrf		ext_flash_address+2			; Yes, rollover to 0x000000
 	return
 
 	global	decf_ext_flash_address0
