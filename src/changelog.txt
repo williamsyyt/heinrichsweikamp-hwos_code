@@ -1,3 +1,9 @@
+[1.53]
+
+- Beta Version -
+BUGFIX: Flip compass with flipped screen, too
+BUGFIX: Surface interval was paused during simulator
+
 [1.52]
 
 - Beta Version -
