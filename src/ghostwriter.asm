@@ -332,7 +332,7 @@ ghostwriter_end_dive:
 ; In DEBUG compile, keep all simulated dives in logbook, Desat time, nofly, etc...
     ifndef __DEBUG
     	btfsc	simulatormode_active		; Are we in simulator mode?
-    	goto	ghostwriter_end_dive_common				; Yes, discard everything
+    	goto	ghostwriter_end_dive_common_sim		; Yes, discard everything
     endif
 
     btfsc	FLAG_apnoe_mode                         ; In Apnoe mode?
@@ -805,6 +805,13 @@ ghostwriter_end_dive_common:
 	endif
 	call	update_battery_registers	; update battery registers into EEPROM
 	goto	surfloop					; and return to surfaceloop
+
+ghostwriter_end_dive_common_sim:
+    movf    divemins+0,W
+    addwf   surface_interval+0,F
+    movf    divemins+1,W
+	addwfc  surface_interval+1				; Add simulated divetime to surface interval
+    bra     ghostwriter_end_dive_common
 
 	global	ghostwriter_short_header
 ghostwriter_short_header:	; Write short header with divenumber into profile memory

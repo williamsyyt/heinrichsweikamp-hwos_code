@@ -134,25 +134,39 @@ I2C_RX_accelerometer:
     rcall       I2C_OneByteRX       ; Get Status Byte
     movf        SSP1BUF,W
 
+    ; Non-flipped screen:
     ; Chip orientation on the PCB requires
     ; Original = Corrected
     ; x = -x
     ; y = -y
     ; z = -z
 
+    ; Flipped screen:
+    ; Chip orientation on the PCB requires
+    ; Original = Corrected
+    ; x = x
+    ; y = y
+    ; z = -z
+
     rcall       I2C_TwoBytesRX_div16 ; Get two bytes and devide /16 (signed)
+    btfsc       flip_screen             ; 180° rotation ?
+    bra         I2C_RX_accelerometer2   ; Yes
     comf        hi                    ; 16bit sign change.
     negf        lo
     btfsc       STATUS,C            ; Carry to propagate ?
     incf        hi,F                ; YES: do it.
+I2C_RX_accelerometer2:
     movff       lo,accel_DX+0
     movff       hi,accel_DX+1       ; Copy result
 
     rcall       I2C_TwoBytesRX_div16 ; Get two bytes and devide /16 (signed)
+    btfsc       flip_screen             ; 180° rotation ?
+    bra         I2C_RX_accelerometer3   ; Yes
     comf        hi                    ; 16bit sign change.
     negf        lo
     btfsc       STATUS,C            ; Carry to propagate ?
     incf        hi,F                ; YES: do it.
+I2C_RX_accelerometer3:
     movff       lo,accel_DY+0
     movff       hi,accel_DY+1       ; Copy result
 
@@ -207,21 +221,32 @@ I2C_RX_compass:
     ; y MSB
     ; y LSB
 
+    ; Non-flipped screen
     ; Chip orientation on the PCB requires
     ; Original = Corrected
     ; x = -y
     ; z = z
     ; y = x
 
+    ; Flipped screen
+    ; Chip orientation on the PCB requires
+    ; Original = Corrected
+    ; x = y
+    ; z = z
+    ; y = -x
+
     rcall       I2C_OneByteRX       ; Get one byte
 	movff		SSP1BUF,compass_DY+1; Data Byte
     rcall       I2C_OneByteRX       ; Get one byte
 	movff		SSP1BUF,compass_DY+0; Data Byte
+    btfsc       flip_screen         ; 180° rotation ?
+    bra         I2C_RX_compass2     ; Yes
     banksel compass_DY
     comf        compass_DY+1        ; 16bit sign change.
     negf        compass_DY+0
     btfsc       STATUS,C            ; Carry to propagate ?
     incf        compass_DY+1,F      ; YES: do it.
+I2C_RX_compass2:
     banksel common
     rcall       I2C_OneByteRX       ; Get one byte
 	movff		SSP1BUF,compass_DZ+1; Data Byte
@@ -234,6 +259,15 @@ I2C_RX_compass:
 	movff		SSP1BUF,compass_DX+0; Data Byte
 	bsf			SSP1CON2,PEN		; Stop condition
 	rcall		WaitMSSP
+    btfss       flip_screen         ; 180° rotation ?
+    return                          ; No, done.
+    ; Yes, flip X
+    banksel compass_DX
+    comf        compass_DX+1        ; 16bit sign change.
+    negf        compass_DX+0
+    btfsc       STATUS,C            ; Carry to propagate ?
+    incf        compass_DX+1,F      ; YES: do it.
+    banksel common
     return
 
     global  I2C_init_compass
