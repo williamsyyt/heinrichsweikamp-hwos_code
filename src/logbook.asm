@@ -1286,13 +1286,10 @@ profile_view_get_depth_no_tp:
 
     ;---- Read GF, if any AND divisor=0 AND bytes available ------------------
 profile_view_get_depth_no_deco:
-    movf        timeout_counter2,W          ; No more extra bytes ?
-    btfsc       STATUS,Z
-    return                                  ; No: done.
-    
     ; Then skip remaining bytes...
 	movf		timeout_counter2,W			; number of additional bytes to ignore (0-127)
-	call		incf_ext_flash_address0_0x20; increases bytes in ext_flash_address:3 with 0x200000 bank switching
+    tstfsz      timeout_counter2            ; Anything to skip?
+	call		incf_ext_flash_address0_0x20; Yes, increases bytes in ext_flash_address:3 with 0x200000 bank switching
 	return
 
 profile_view_get_depth_new2:
@@ -1311,14 +1308,14 @@ profile_view_get_depth_new2:
 
 profile_no_second_eventbyte:
 ; Check Event flags in the EventByte
-	btfsc		EventByte2,0				; Bailout?
-	bra			logbook_event2				; Yes!
 	btfsc		EventByte,4					; Manual Gas Changed?
-	bra			logbook_event1				; Yes!
-	btfsc		EventByte,6                 ; Setpoint Change?
-	bra			logbook_event3				; Yes!
+	rcall       logbook_event1				; Yes!
 	btfsc		EventByte,5					; Stored Gas Changed?
-	bra			logbook_event4				; Yes!
+	rcall       logbook_event4				; Yes!
+	btfsc		EventByte,6                 ; Setpoint Change?
+	rcall       logbook_event3				; Yes!
+	btfsc		EventByte2,0				; Bailout?
+	rcall       logbook_event2				; Yes!
     return
 
 logbook_event4: ; Stored Gas changed!
@@ -1333,7 +1330,10 @@ logbook_event1: ; Gas6 changed
     movlw       6                           ; Just color backup to 6
     movwf       average_depth_hold_total+3
     rcall       profile_display_color       ; Back to normal profile color.
-	return		;(The two bytes indicating the manual gas change will be ignored in the standard "ignore loop" above...)
+    incf_ext_flash_address_0x20  .2         ; Skip two bytes
+    decf		timeout_counter2,F			; reduce counter
+    decf		timeout_counter2,F			; reduce counter
+	return
 
 logbook_event2: ; Bailout
     bsf         is_bailout                  ; Set flag
@@ -1341,9 +1341,14 @@ logbook_event2: ; Bailout
     movlw       6                           ; Use Gas6 color
     movwf       average_depth_hold_total+3
     rcall       profile_display_color       ; Back to normal profile color.
-	return		;(The two bytes indicating the bailout gas selected will be ignored in the standard "ignore loop" above...)
+    incf_ext_flash_address_0x20  .2         ; Skip two bytes
+    decf		timeout_counter2,F			; reduce counter
+    decf		timeout_counter2,F			; reduce counter
+	return
 
 logbook_event3: ; Setpoint change
+    incf_ext_flash_address_0x20  .1         ; Skip one byte
+    decf		timeout_counter2,F			; reduce counter
     btfss       is_bailout                  ; Are we in bailout?
     return      ; No, return
     ; We were in bailout before, restore profile color
