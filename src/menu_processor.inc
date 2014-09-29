@@ -18,6 +18,8 @@
     ; Rexecute the menu block
     extern  menu_processor
 
+    extern  menu_processor_bottom_line
+
 ;=============================================================================
 ; Menus parameters
 
