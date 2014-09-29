@@ -96,7 +96,17 @@ menu_processor0:
 		bcf		PORTC,2					; Pull PWM out to GND
 		call    TFT_ClearScreen
         rcall   menu_processor_title
+        rcall   menu_processor_bottom_line
 
+menu_processor1:
+		movlw	FT_SMALL
+        movff	WREG, win_font    
+        
+        ;---- Select menu type -----------------------------------------------
+        bra     menu_vertical
+
+    global menu_processor_bottom_line
+menu_processor_bottom_line:
         ;---- Draw bottomline ------------------------------------------------
         TEXT_TINY 	.5,       .240-.16, tNext
         TEXT_TINY	.160-6*5, .240-.16, tEnter
@@ -110,13 +120,7 @@ menu_processor0:
         call    TFT_cat_firmware
         STRCAT_PRINT ""
         call    TFT_standard_color
-
-menu_processor1:
-		movlw	FT_SMALL
-        movff	WREG, win_font    
-        
-        ;---- Select menu type -----------------------------------------------
-        bra     menu_vertical
+        return
 
 ;=============================================================================
 ; (re-)draw menu title.

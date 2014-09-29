@@ -62,6 +62,7 @@
 	#DEFINE	all_dives_shown			logbook_flags,1
 	#DEFINE	logbook_page_not_empty	logbook_flags,2
 	#DEFINE	end_of_profile			logbook_flags,3
+    #DEFINE keep_cursor_new_page    logbook_flags,4
 
 	
 ; Logbook Coordinates
@@ -194,7 +195,7 @@ logbook code
 
 TFT_logbook_cursor:
 	call		speed_fastest
-    WIN_BOX_BLACK   .0, .239, logbook_list_left-.16, logbook_list_left-.1		;top, bottom, left, right
+    WIN_BOX_BLACK   .0, .240-.16, logbook_list_left-.16, logbook_list_left-.1		;top, bottom, left, right
 
 	WIN_LEFT	logbook_list_left-.16
 	WIN_FONT 	FT_SMALL
@@ -342,9 +343,16 @@ logbook_display_loop2:
 	bcf			return_from_profileview		; Do this only once while the page is loaded again!
 
 	bcf			logbook_page_not_empty			; Obviously the current page is NOT empty
-	call		TFT_logbook_cursor
+
+    movlw		d'7'						; Set cursor to position 7...
+    btfsc       keep_cursor_new_page        ; ... if we came from the "new Page" line
+    movwf       menupos						; and set menupos byte
+    bcf         keep_cursor_new_page
+
+	call		TFT_logbook_cursor          ; Show the cursor
 
     call        logbook_preloop_tasks       ; Clear some flags and set to Speed_eco
+    call        menu_processor_bottom_line  ; Show bottom line
 logbook_loop:
     btfsc		switch_left					; SET/MENU?
 	goto		next_logbook3				; adjust cursor or create new page
@@ -1386,6 +1394,7 @@ next_logbook2:
 	movlw		logbook_row_number
 	movwf		menupos
 	incf		logbook_page_number,F		; start new screen
+    bsf         keep_cursor_new_page        ; Keep cursor on "next page"
     clrf        CCP1CON                     ; stop PWM
     bcf         PORTC,2                     ; Pull PWM out to GND
 	call		TFT_ClearScreen
