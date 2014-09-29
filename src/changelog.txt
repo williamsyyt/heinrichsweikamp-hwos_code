@@ -3,6 +3,7 @@
 - Beta Version -
 BUGFIX: Flip compass with flipped screen, too
 BUGFIX: Surface interval was paused during simulator
+BUGFIX: False max. temp in Logbook, false Bailout and Gas 6 flags in logbook
 
 [1.52]
 

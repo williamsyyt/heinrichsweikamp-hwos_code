@@ -915,6 +915,10 @@ profile_display_skip_loop1:					; skips readings!
 	bra			profile_display_loop3		; check 16bit....
 
 	rcall		profile_view_get_depth		; reads depth, temp and profile data
+
+	btfsc		end_of_profile					; end-of profile reached?
+	bra			profile_display_loop_done	; Yes, skip all remaining pixels
+
 	bra			profile_display_skip_loop1
 
 profile_display_loop3:
@@ -1236,7 +1240,7 @@ profile_view_get_depth_no_line:
 
 profile_view_get_depth_new1:
 	btfsc		event_occured				; Was there an event attached to this sample?
-	rcall		profile_view_get_depth_new2	; Yes, get information about this event
+	rcall		profile_view_get_depth_events	; Yes, get information about this event(s)
     
     ;---- Read Tp°, if any AND divisor reached AND bytes available -----------
     movf        divisor_temperature,W       ; Is Tp° divisor null ?
@@ -1283,6 +1287,8 @@ profile_view_get_depth_no_tp:
 	decf        timeout_counter2,F
 	movff		temp1,logbook_ceiling
 	movff       divisor_deco,count_deco     ; Restart counter.
+    call		ext_flash_byte_read_plus_0x20   ; Skip stop length
+	decf        timeout_counter2,F
 
     ;---- Read GF, if any AND divisor=0 AND bytes available ------------------
 profile_view_get_depth_no_deco:
@@ -1292,9 +1298,8 @@ profile_view_get_depth_no_deco:
 	call		incf_ext_flash_address0_0x20; Yes, increases bytes in ext_flash_address:3 with 0x200000 bank switching
 	return
 
-profile_view_get_depth_new2:
-    clrf        EventByte
-    clrf        EventByte2                  ; Clear EventBytes
+profile_view_get_depth_events:
+    clrf        EventByte2                  ; Clear EventByte2
 	call		ext_flash_byte_read_plus_0x20 ; Read Event byte
 	movff		temp1,EventByte				; store EventByte
 	decf		timeout_counter2,F			; reduce counter
@@ -1307,7 +1312,7 @@ profile_view_get_depth_new2:
     bcf         EventByte,7                 ; Clear flag
 
 profile_no_second_eventbyte:
-; Check Event flags in the EventByte
+; Check event flags in the EventBytes
 	btfsc		EventByte,4					; Manual Gas Changed?
 	rcall       logbook_event1				; Yes!
 	btfsc		EventByte,5					; Stored Gas Changed?
