@@ -117,7 +117,6 @@ isr_uart2:               ; IR-Link
 
 isr_timer3:             ; IR-Link Timeout
 		bcf		T3CON,TMR3ON			; Stop Timer3
-        movff   ir_counter,char_I_extra_time
     	banksel isr_backup              ; Select Bank0 for ISR data.
         movlw   .15
         cpfseq  ir_counter              ; Got exact 15bytes?
