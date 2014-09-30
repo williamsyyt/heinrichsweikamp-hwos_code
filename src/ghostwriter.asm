@@ -222,7 +222,6 @@ store_extended7:
 
 store_dive_data5:
 	bcf		event_occured		; Clear the global event flag
-    bcf		event2_occured		; Clear the global event2 flag
 	clrf	EventByte			; reset EventByte
     clrf	EventByte2			; reset EventByte2
 	return						; Done. (Sample with all informations written to external flash)

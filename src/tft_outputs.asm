@@ -1351,20 +1351,47 @@ TFT_dive_compass_mask:
     global  TFT_surface_compass_heading
 TFT_surface_compass_heading:
     rcall   compass_heading_common
-    btfsc   compass_fast_mode               ; In fast mode?
-    bra     TFT_surface_compass_heading2    ; Yes
-    ; No, update 1/second max.
-    movff   sensor_state_counter,lo
-    movlw   .6
-    cpfsgt  lo
-    return
-TFT_surface_compass_heading2:
     WIN_STD   surf_compass_head_column,surf_compass_head_row
 	call	TFT_standard_color
 TFT_surface_compass_heading_com:     ; Show "000° N"
     movff	compass_heading+0,lo
     movff	compass_heading+1,hi
     call    TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
+
+    ; Shown and actual identical?
+    movff   compass_heading_shown+0,WREG
+    cpfseq  lo
+    bra     TFT_surface_compass_heading_com1    ; Not equal
+    movff   compass_heading_shown+1,WREG
+    cpfseq  hi
+    bra     TFT_surface_compass_heading_com1    ; Not equal
+    bra     TFT_surface_compass_heading_com3    ; equal, skip smoothing
+
+TFT_surface_compass_heading_com1:
+    movff   lo,sub_a+0
+    movff   hi,sub_a+1
+    movff   compass_heading_shown+0,sub_b+0
+    movff   compass_heading_shown+1,sub_b+1
+    call    subU16
+    btfsc   neg_flag
+    bra     TFT_surface_compass_heading_com2        ; shown > actual
+    ; shown < actual
+    banksel compass_heading_shown
+    infsnz  compass_heading_shown+0,F
+    incf    compass_heading_shown+1,F               ; +1
+    bra     TFT_surface_compass_heading_com3
+
+TFT_surface_compass_heading_com2:
+    banksel compass_heading_shown
+    movlw	d'1'
+	subwf	compass_heading_shown+0,F
+	movlw	d'0'
+	subwfb	compass_heading_shown+1,F               ; -1
+
+TFT_surface_compass_heading_com3:
+    banksel common
+    movff   compass_heading_shown+0,lo
+    movff   compass_heading_shown+1,hi
     bsf     leftbind
     output_16dp .2      ; Result is "0.000"
     bcf     leftbind
@@ -1381,14 +1408,6 @@ TFT_surface_compass_heading_com:     ; Show "000° N"
     global  TFT_dive_compass_heading
 TFT_dive_compass_heading:
     rcall   compass_heading_common
-    btfsc   compass_fast_mode               ; In fast mode?
-    bra     TFT_dive_compass_heading2       ; Yes
-    ; No, update 1/second max.
-    movff   sensor_state_counter,lo
-    movlw   .6
-    cpfsgt  lo
-    bra     TFT_dive_compass_heading3       ; But update graph always in fast mode
-TFT_dive_compass_heading2:
     WIN_STD dive_compass_head_column,dive_compass_head_row
 	call	TFT_standard_color
     rcall   TFT_surface_compass_heading_com  ; Show "000° N"
@@ -1571,6 +1590,15 @@ compass_heading_common:
     movlw   compass_fast_treshold
     cpfslt  sub_c+0                             ; > compass_fast_treshold?
     bsf     compass_fast_mode                   ; Yes!
+
+    btfss   compass_fast_mode               ; In fast mode?
+    return                                  ; No.
+    ; Yes.
+    movff	compass_heading+0,lo
+    movff	compass_heading+1,hi
+    call    TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
+    movff   lo,compass_heading_shown+0
+    movff   hi,compass_heading_shown+1
     return
 
 TFT_get_compass:
