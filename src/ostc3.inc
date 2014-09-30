@@ -193,7 +193,7 @@
 #DEFINE gaslist_sp_min              .50         ; Min. Setpoint [cbar]
 
 ; Compass display
-#DEFINE compass_fast_treshold       .12         ; Faster update if new and old > compass_fast_treshold
+#DEFINE compass_fast_treshold       .9         ; show new heading instantly if new and old > compass_fast_treshold
 
 ;---------------------------- Macros ------------------------------------
 
@@ -294,6 +294,7 @@ compass_CZ_f        res 2
 ; Compass more data
 compass_heading     res 2       ; Corrected heading (in 1°) : -180 .. 180
 compass_heading_old res 2       ; Old heading (For smoother display)
+compass_heading_shown res 2     ; Displayed heading
 compass_roll        res 2       ; Rotation around the X axis
 compass_pitch       res 2       ; Rotation arounf the Y axis
 
@@ -614,7 +615,7 @@ opt_flip_screen         res 1   ; =1: Flip the screen
 #DEFINE compass_fast_mode       flag9,0 ; =1: The compass is in fast mode
 #DEFINE in_color_menu           flag9,1 ; =1: In the color scheme menu
 #DEFINE bailoutgas_event        flag9,2 ; =1: bailout was selected or a gaschange during bailout
-#DEFINE	event2_occured			flag9,3	; =1: An event in the Eventbyte2 occured, store it!
+; unused
 #DEFINE show_safety_stop		flag9,4	; =1: Show the safety stop
 #DEFINE	safety_stop_active      flag9,5	; =1: The safety stop is currently displayed
 #DEFINE new_s8_data_available   flag9,6 ; =1: New data frame recieved

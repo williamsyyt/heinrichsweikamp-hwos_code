@@ -1277,7 +1277,6 @@ diveloop_boot:
 	clrf 	timeout_counter2			; takes care of the timeout (High byte)
 	clrf	AlarmType					; Clear all alarms
 	bcf		event_occured				; clear flag
-    bcf     event2_occured              ; clear flag
 	clrf 	total_divetime_seconds+1
 	clrf	average_depth_hold_total+0
 	clrf	average_depth_hold_total+1
