@@ -1,3 +1,8 @@
+[1.54]
+
+- Beta Version -
+BUGFIX: Future TTS in sensor mode
+
 [1.53]
 
 - Beta Version -
