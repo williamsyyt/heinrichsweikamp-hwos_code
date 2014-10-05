@@ -806,6 +806,13 @@ ghostwriter_end_dive_common:
 	goto	surfloop					; and return to surfaceloop
 
 ghostwriter_end_dive_common_sim:
+    tstfsz  surface_interval+0              ; Was interval zero?
+    bra     ghostwriter_end_dive_common_sim2    ; No
+    tstfsz  surface_interval+1              ; Was interval zero?
+    bra     ghostwriter_end_dive_common_sim2    ; No
+    bra     ghostwriter_end_dive_common     ; Yes, done.
+
+ghostwriter_end_dive_common_sim2:
     movf    divemins+0,W
     addwf   surface_interval+0,F
     movf    divemins+1,W

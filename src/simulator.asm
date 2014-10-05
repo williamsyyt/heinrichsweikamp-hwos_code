@@ -230,10 +230,11 @@ deco_setup_oc_gases:
         addwf   lo,W                  ; O2 + He -> WREG
         sublw   .100                  ; 100 - (O2 + He) -> WREG
         movff   WREG,char_I_deco_N2_ratio+0
-        movff   opt_gas_type+0,WREG   ; 0=Disabled, 1=First, 2=Travel, 3=Deco
-        tstfsz  WREG                  ; Disabled?
-        bra     $+4                   ; No
-        movff   WREG,opt_OC_bail_gas_change+0   ; Yes, clear opt_OC_bail_gas_change
+        banksel opt_gas_type+0
+        movlw   .3                    ; 3=Deco
+        cpfseq  opt_gas_type+0        ; Gas is deco type?
+        clrf    opt_OC_bail_gas_change+0  ; No, clear depth for 0=Disabled, 1=First and 2=Travel
+        banksel common
 
         movff   opt_gas_He_ratio+1,char_I_deco_He_ratio+1
         movff   char_I_deco_He_ratio+1,lo
@@ -241,10 +242,11 @@ deco_setup_oc_gases:
         addwf   lo,W                  ; O2 + He -> WREG
         sublw   .100                  ; 100 - (O2 + He) -> WREG
         movff   WREG,char_I_deco_N2_ratio+1
-        movff   opt_gas_type+1,WREG   ; 0=Disabled, 1=First, 2=Travel, 3=Deco
-        tstfsz  WREG                  ; Disabled?
-        bra     $+4                   ; No
-        movff   WREG,opt_OC_bail_gas_change+1   ; Yes, clear opt_OC_bail_gas_change
+        banksel opt_gas_type+1
+        movlw   .3                    ; 3=Deco
+        cpfseq  opt_gas_type+1        ; Gas is deco type?
+        clrf    opt_OC_bail_gas_change+1  ; No, clear depth for 0=Disabled, 1=First and 2=Travel
+        banksel common
 
         movff   opt_gas_He_ratio+2,char_I_deco_He_ratio+2
         movff   char_I_deco_He_ratio+2,lo
@@ -252,10 +254,11 @@ deco_setup_oc_gases:
         addwf   lo,W                  ; O2 + He -> WREG
         sublw   .100                  ; 100 - (O2 + He) -> WREG
         movff   WREG,char_I_deco_N2_ratio+2
-        movff   opt_gas_type+2,WREG   ; 0=Disabled, 1=First, 2=Travel, 3=Deco
-        tstfsz  WREG                  ; Disabled?
-        bra     $+4                   ; No
-        movff   WREG,opt_OC_bail_gas_change+2   ; Yes, clear opt_OC_bail_gas_change
+        banksel opt_gas_type+2
+        movlw   .3                    ; 3=Deco
+        cpfseq  opt_gas_type+2        ; Gas is deco type?
+        clrf    opt_OC_bail_gas_change+2  ; No, clear depth for 0=Disabled, 1=First and 2=Travel
+        banksel common
 
         movff   opt_gas_He_ratio+3,char_I_deco_He_ratio+3
         movff   char_I_deco_He_ratio+3,lo
@@ -263,10 +266,11 @@ deco_setup_oc_gases:
         addwf   lo,W                  ; O2 + He -> WREG
         sublw   .100                  ; 100 - (O2 + He) -> WREG
         movff   WREG,char_I_deco_N2_ratio+3
-        movff   opt_gas_type+3,WREG   ; 0=Disabled, 1=First, 2=Travel, 3=Deco
-        tstfsz  WREG                  ; Disabled?
-        bra     $+4                   ; No
-        movff   WREG,opt_OC_bail_gas_change+3   ; Yes, clear opt_OC_bail_gas_change
+        banksel opt_gas_type+3
+        movlw   .3                    ; 3=Deco
+        cpfseq  opt_gas_type+3        ; Gas is deco type?
+        clrf    opt_OC_bail_gas_change+3  ; No, clear depth for 0=Disabled, 1=First and 2=Travel
+        banksel common
 
         movff   opt_gas_He_ratio+4,char_I_deco_He_ratio+4
         movff   char_I_deco_He_ratio+4,lo
@@ -274,11 +278,11 @@ deco_setup_oc_gases:
         addwf   lo,W                  ; O2 + He -> WREG
         sublw   .100                  ; 100 - (O2 + He) -> WREG
         movff   WREG,char_I_deco_N2_ratio+4
-        movff   opt_gas_type+4,WREG   ; 0=Disabled, 1=First, 2=Travel, 3=Deco
-        tstfsz  WREG                  ; Disabled?
-        bra     $+4                   ; No
-        movff   WREG,opt_OC_bail_gas_change+4   ; Yes, clear opt_OC_bail_gas_change
-        nop
+        banksel opt_gas_type+4
+        movlw   .3                    ; 3=Deco
+        cpfseq  opt_gas_type+4        ; Gas is deco type?
+        clrf    opt_OC_bail_gas_change+4  ; No, clear depth for 0=Disabled, 1=First and 2=Travel
+        banksel common
 
         movlw   .0
         movff   WREG,char_I_const_ppO2  ; Clear constant ppO2 for OC/bailout

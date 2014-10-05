@@ -19,7 +19,7 @@
 #include    "shared_definitions.h"
 
         CBLOCK  tmp+0x40                ; Keep space for menu processor
-            gaslist_gas
+            gaslist_gas     ; Check ram position in menu_tree.asm, too!
             gaslist_O2
             gaslist_He
             gaslist_depth
@@ -232,6 +232,17 @@ gaslist_strcat_4:
 		TSTOSS	opt_units               ; 0=Meters, 1=Feets
 		bra		gaslist_strcat_3_metric
 ;gaslist_strcat_3_imperial:
+        btfsc   ccr_diluent_setup       ; =1: Setting up Diluents ("Gas6-10")
+        bra     gaslist_imperial_non_travel
+        movf    gaslist_gas,W
+        lfsr    FSR1,opt_gas_type       ; Read opt_gas_type[WREG]
+        movff   PLUSW1,gaslist_Type
+        movlw   .2                      ; 2=Travel
+        cpfseq  gaslist_Type
+        bra     gaslist_imperial_non_travel   ; Non-Travel Gas
+        bra     gaslist_strcat_depth_travel   ; Show "---" instead of "0m"...
+
+gaslist_imperial_non_travel:
         movf    lo,W
         mullw   .100                    ; convert meters to mbar
         movff   PRODL,lo
@@ -243,6 +254,18 @@ gaslist_strcat_4:
         return
 		
 gaslist_strcat_3_metric:
+        btfsc   ccr_diluent_setup       ; =1: Setting up Diluents ("Gas6-10")
+        bra     gaslist_metric_non_travel
+        movf    gaslist_gas,W
+        lfsr    FSR1,opt_gas_type       ; Read opt_gas_type[WREG]
+        movff   PLUSW1,gaslist_Type
+        movlw   .2                      ; 2=Travel
+        cpfseq  gaslist_Type
+        bra     gaslist_metric_non_travel   ; Non-Travel Gas
+gaslist_strcat_depth_travel:            ; Show "---" instead of "0m"...
+        STRCAT  "---"
+        return
+gaslist_metric_non_travel:
         output_99
         STRCAT_TEXT	tMeters				; "m"
         return

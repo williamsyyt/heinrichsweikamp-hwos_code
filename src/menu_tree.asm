@@ -23,6 +23,10 @@
 #include	"ghostwriter.inc"
 #include    "adc_lightsensor.inc"
 
+        CBLOCK  tmp+0x40                ; Keep space for menu processor
+            gaslist_gas ; Check ram position in gaslist.asm, too!
+        ENDC
+
 gui     CODE
 ;=============================================================================
 ; Main Menu
@@ -67,6 +71,17 @@ return_ccr_menu:
 do_ccr_menu:
     bcf     menu_show_sensors           ; Clear flag
     bcf     menu_show_sensors2          ; Clear flag
+    btfsc   c3_hardware
+    bra     do_ccr_menu_c3
+    MENU_BEGIN  tCCRSetup, .5
+        MENU_OPTION     tCCRMode,    oCCRMode,    0
+        MENU_CALL       tCCRSensor,             do_ccr_sensor
+        MENU_CALL       tDiluentSetup,          do_diluent_setup
+        MENU_CALL       tFixedSetpoints,        do_fixed_setpoints
+        MENU_CALL       tExit,                  do_continue_main_menu
+    MENU_END
+
+do_ccr_menu_c3:                         ; including "Calibrate"
     MENU_BEGIN  tCCRSetup, .6
         MENU_OPTION     tCCRMode,    oCCRMode,    0
         MENU_CALL       tCCRSensor,             do_ccr_sensor
@@ -77,8 +92,6 @@ do_ccr_menu:
     MENU_END
 
 do_calibrate_menu:
-    btfss   c3_hardware
-    bra     return_ccr_menu             ; Not for normal OSTC3 hardware
     call    enable_ir                   ; Enable IR-Port
     bsf     menu_show_sensors2          ; Set flag
 do_calibrate_menu2:
@@ -197,6 +210,15 @@ do_setup_mix:
 
     global  do_gas_depth_menu
 do_gas_depth_menu:
+    movff   gaslist_gas,WREG
+    lfsr    FSR1,opt_gas_type       ; Read opt_gas_type[WREG]
+    movff   PLUSW1,lo               ; Used as temp
+    movlw   .3                      ; 3=Deco
+    btfsc   ccr_diluent_setup       ; =1: Setting up Diluents ("Gas6-10")
+    movlw   .2                      ; 2=Normal
+    cpfseq  lo
+    bra     return_gas_depth        ; Non-Deco gas or "Normal" Diluent, Return!
+
     MENU_BEGIN  tGasEdit, .7
         MENU_DYNAMIC    gaslist_gastitle,       0
         MENU_DYNAMIC    gaslist_MOD_END,        0

@@ -1,7 +1,9 @@
 [1.54]
 
 - Beta Version -
-BUGFIX: Future TTS in sensor mode
+BUGFIX: Future TTS in sensor mode (CCR Mode)
+CHANGE: Clarify Travel Gases with "---" as change depth
+CHANGE: Enable "Change Depth" Menu only for deco gases
 
 [1.53]
 
