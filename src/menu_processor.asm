@@ -88,6 +88,13 @@ menu_processor:
         movlw   .1
         cpfsgt  menupos                 ; only if menupos=1...
         call    TFT_clear_divemode_menu ; ... Clear the menu!
+
+        ; Draw one frame around the divemode menu
+        extern  TFT_divemask_color
+        call    TFT_divemask_color
+    	WIN_FRAME_COLOR16 divemode_menu_row, divemode_menu_lower, divemode_menu_left ,divemode_menu_right	; top, bottom, left, right
+        call    TFT_standard_color
+
         bra     menu_processor1         ; Yes, skip some lines here
 
 menu_processor0:

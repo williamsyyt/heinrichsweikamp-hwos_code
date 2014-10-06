@@ -2056,37 +2056,9 @@ TFT_gaslist_surfmode:				; Displays Gas List
 	global	TFT_dillist_surfmode
 TFT_dillist_surfmode:				; Displays Diluent List
     bsf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
-    ;Dil 1
-    WIN_SMALL surf_gaslist_column,surf_gaslist_row
-    movlw   .5
-    movwf   PRODL
-    call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
-    STRCAT_PRINT ""
-    ;Dil 2
-    WIN_SMALL surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.1)
-    movlw   .6
-    movwf   PRODL
-    call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
-    STRCAT_PRINT ""
-    ;Dil 3
-    WIN_SMALL surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.2)
-    movlw   .7
-    movwf   PRODL
-    call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
-    STRCAT_PRINT ""
-    ;Dil 4
-    WIN_SMALL surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.3)
-    movlw   .8
-    movwf   PRODL
-    call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
-    STRCAT_PRINT ""
-    ;Dil 5
-    WIN_SMALL surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.4)
-    movlw   .9
-    movwf   PRODL
-    call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
-    STRCAT_PRINT ""
-    bcf     leftbind
+    bsf     ccr_diluent_setup       ; Use CCR Diluents...
+    rcall   TFT_gaslist_surfmode    ; Use OC/BAIL routine
+    bcf     ccr_diluent_setup       ; Clear flag
     return
 
 	global	TFT_depth

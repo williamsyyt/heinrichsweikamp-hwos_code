@@ -192,14 +192,14 @@
 #DEFINE divemode_menu_left          .0          ; Left
 #DEFINE divemode_menu_right         .159        ; Right
 
-#DEFINE divemode_menu_item1_row    .164
+#DEFINE divemode_menu_item1_row    .165
 #DEFINE divemode_menu_item1_column .9
 #DEFINE divemode_menu_item2_row    divemode_menu_item1_row+.24
 #DEFINE divemode_menu_item2_column divemode_menu_item1_column
 #DEFINE divemode_menu_item3_row    divemode_menu_item2_row+.24
 #DEFINE divemode_menu_item3_column divemode_menu_item1_column
 #DEFINE divemode_menu_item4_row    divemode_menu_item1_row
-#DEFINE divemode_menu_item4_column .90
+#DEFINE divemode_menu_item4_column .89
 #DEFINE divemode_menu_item5_row    divemode_menu_item4_row+.24
 #DEFINE divemode_menu_item5_column divemode_menu_item4_column
 #DEFINE divemode_menu_item6_row    divemode_menu_item5_row+.24
