@@ -428,19 +428,19 @@ isr_sensor_state2_5:
         movff   amb_pressure+1,last_pressure+1
 
 		clrf		sensor_state_counter	; Then reset State counter
+        banksel 	common                  ; flag2 is in Bank1
 		btfss		simulatormode_active	; are we in simulator mode?
 		bra			comp_air_pressure		; no
-comp_air_pressure0:	
+        ; Always set pressure_refresh flag in simulator mode
+    	bsf         pressure_refresh        ; Yes
+        banksel 	isr_backup              ; Back to Bank0 ISR data
 		movlw		LOW		d'1000'			; yes, so simulate 1000mbar surface pressure
 		movwf		last_surfpressure+0
 		movlw		HIGH	d'1000'
 		movwf		last_surfpressure+1
-        ; Always set pressure_refresh flag in simulator mode
-        banksel 	common                  ; flag1 is in Bank1
-    	bsf         pressure_refresh        ; Yes
-        banksel 	isr_backup              ; Back to Bank0 ISR data
 
 comp_air_pressure:
+        banksel 	isr_backup              ; Back to Bank0 ISR data
 		movf		last_surfpressure+0,W		; compensate airpressure
 		subwf   	amb_pressure+0,W             
 		movwf   	rel_pressure+0				; rel_pressure stores depth!
@@ -662,8 +662,7 @@ isr_divemode_1sec:
 		bsf			store_sample			; ...and set bit for profile storage
 isr_divemode_1sec2:
 ; Increase re-setable average depth divetime counter
-		incf		average_divesecs+0,F	; increase stopwatch registers
-		btfsc		STATUS,Z
+		infsnz      average_divesecs+0,F	; increase stopwatch registers
 		incf		average_divesecs+1,F	; increase stopwatch registers
 ; Increase total divetime (Regardless of start_dive_threshold)
 		infsnz		total_divetime_seconds+0,F
