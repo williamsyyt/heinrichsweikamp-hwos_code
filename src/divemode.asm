@@ -740,7 +740,7 @@ set_powersafe:
 	return							; return
 
 calc_average_depth:
-	btfsc	reset_average_depth		; Reset the Avewrage depth?
+	btfsc	reset_average_depth		; Reset the Average depth?
 	rcall	reset_average1			; Reset the resettable average depth
 
 	; 1. Add new 2xdepth to the Sum of depths registers
