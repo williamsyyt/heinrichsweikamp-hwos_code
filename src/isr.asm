@@ -362,15 +362,6 @@ isr_sensor_state2:
 		rrcf		amb_pressure_avg+1  ; amb_pressure sum / 4
 		rrcf		amb_pressure_avg+0
 
-;        ; Even more averaging
-;        movf        amb_pressure_avg+0,W
-;        addwf       amb_pressure+0
-;        movf        amb_pressure_avg+1,W
-;        addwfc      amb_pressure+1
-;		bcf			STATUS,C            ; clear carry bit
-;		rrcf		amb_pressure+1      ; amb_pressure sum / 2
-;		rrcf		amb_pressure+0
-
 		movff		amb_pressure_avg+1,amb_pressure+1	; copy into actual register
 		movff		amb_pressure_avg+0,amb_pressure+0
 

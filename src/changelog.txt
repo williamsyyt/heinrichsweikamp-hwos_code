@@ -5,6 +5,7 @@ BUGFIX: Future TTS in sensor mode (CCR Mode)
 CHANGE: Clarify Travel Gases with "---" as change depth
 CHANGE: Enable "Change Depth" Menu only for deco gases
 CHANGE: Draw a frame around the dive mode menu
+BUGFIX: Average depth computation
 
 [1.53]
 
