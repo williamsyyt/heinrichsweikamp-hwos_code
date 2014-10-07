@@ -64,6 +64,8 @@ diveloop_loop:		; The diveloop starts here
 	bra		diveloop_loop3
 
 ; tasks any new second...
+    bcf     onesecupdate					; one seconds update, clear flag here in case it's set again in ISR before all tasks are done.
+
 	btfsc	FLAG_apnoe_mode					; Only in apnoe mode
 	bra		diveloop_loop1b					; One Second Tasks in Apnoe mode
 
@@ -107,8 +109,6 @@ diveloop_loop1x:
 
     call    compute_ppo2                    ; compute mv_sensorX and ppo2_sensorX arrays
     call    check_sensors                   ; Check O2 sensor thresholds for fallback
-
-	bcf		onesecupdate					; one seconds update done
 
 diveloop_loop3:
 	rcall	test_switches_divemode			; Check switches in divemode
@@ -791,7 +791,6 @@ calc_average_depth:
 	call	div32x16 	; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
 	movff	xC+0,avr_rel_pressure_total+0
 	movff	xC+1,avr_rel_pressure_total+1
-
 	return
 
 reset_average1:

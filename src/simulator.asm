@@ -147,6 +147,9 @@ deco_setup_dive:						; Called from divemode
         btfsc   is_bailout              ; =1: Bailout
         rcall   deco_setup_oc_gases     ; Setup OC/Bailout Gases
 
+    	movff   divemins+0,int_I_divemins+0         ; Current dive time.
+    	movff   divemins+1,int_I_divemins+1
+
         movlw   deco_distance
         movff   WREG,char_I_deco_distance
         movff   opt_last_stop,char_I_depth_last_deco

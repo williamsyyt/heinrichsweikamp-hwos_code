@@ -169,10 +169,9 @@ pressure_extra_add:
     addwfc  isr_xC+2,F
 
 pressure_extra_common:
-	banksel	common
+	banksel	common                      ; flag2 is in bank 1
 	btfss	simulatormode_active		; are we in simulator mode?
 	bra		calc_compensation_2			; no
-	banksel	isr_backup
 
 	movff	sim_pressure+0,isr_xC+1	    ; override readings with simulator values
 	movff	sim_pressure+1,isr_xC+2
