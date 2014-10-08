@@ -2759,6 +2759,7 @@ TFT_serial:
     rcall   TFT_cat_serial
     
     STRCAT  " v"
+    WIN_COLOR   color_greenish
     rcall   TFT_cat_firmware
 
     ifdef __DEBUG
@@ -2766,8 +2767,8 @@ TFT_serial:
         call    TFT_set_color           ; compiled in DEBUG mode...
         STRCAT_PRINT "DEBUG"    
     else
-        WIN_COLOR   color_greenish
         STRCAT_PRINT ""
+        WIN_INVERT  0
         call	TFT_standard_color
 
         movlw	softwareversion_beta    ; =1: Beta, =0: Release
@@ -2790,6 +2791,10 @@ TFT_serial:
 info_menu_firmware:
     lfsr    FSR1,tFirmware
     call    strcat_text
+    rcall   TFT_cat_firmware
+    WIN_INVERT  0
+    return
+
     global  TFT_cat_firmware
 TFT_cat_firmware:
     movlw	softwareversion_x
@@ -2801,6 +2806,21 @@ TFT_cat_firmware:
     movwf	lo
     output_99x
     bcf		leftbind
+    ; Check firmware date
+    movlw   firmware_expire_year-.1
+    cpfsgt  year                    ; > threshold?
+    return
+    movlw   firmware_expire_month-.1
+    cpfsgt  month                   ; > threshold?
+    return
+    movlw   firmware_expire_day-.1
+    cpfsgt  day                     ; > threshold?
+    return
+
+    ; Show in "change firmware" style
+    movlw   color_yellow
+    call	TFT_set_color
+    WIN_INVERT  1
     return
 
 ;-----------------------------------------------------------------------------
