@@ -159,6 +159,10 @@ do_dive_pO2:
         decf    char_I_O2_ratio,F            ; O2-- (Unchanged)
 ;        bra     do_divemode_gaslist_more_common
 do_divemode_gaslist_more_common:
+    	movf    char_I_O2_ratio,W       ; Add O2...
+        addwf   char_I_He_ratio,W       ; ...and He...
+    	sublw   .100                    ; ...subtract both from 100
+    	movwf   char_I_N2_ratio         ; -> N2!
         banksel common
         bsf     gas6_changed                ; Set flag
         bra     do_divemode_gaslist_more
@@ -183,7 +187,6 @@ do_dive_pHe:
         movlw   .101
         cpfslt  lo                           ; O2+He<101?
         decf    char_I_He_ratio,F            ; Yes, He-- (Unchanged)
-        banksel common
         bra     do_divemode_gaslist_more_common
 
 do_dive_mHe:
