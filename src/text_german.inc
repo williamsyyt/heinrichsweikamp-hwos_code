@@ -94,7 +94,7 @@
     TCODE   tUsbMode,  "Starte USB"
 	TCODE	tUsbTitle,	"USB Modus"
 	TCODE	tUsbStarting,  "Starte....."
-	TCODE	tUsbStartDone, "Fertig.    "
+	TCODE	tUsbStartDone, "Fertig."
 	TCODE	tUsbServiceMode, "Servicemodus aktiv"
 	TCODE	tUsbClosed,		"Abgebrochen"
 	TCODE	tUsbExit,		"Beendet"

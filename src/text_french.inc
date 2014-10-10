@@ -94,7 +94,7 @@
     TCODE   tUsbMode,  "USB"
 	TCODE	tUsbTitle,		"Mode USB"
 	TCODE	tUsbStarting,  	"Début..."
-	TCODE	tUsbStartDone, 	"Ok.     "
+	TCODE	tUsbStartDone, 	"Ok."
 	TCODE	tUsbServiceMode,"Mode Maintenance"
 	TCODE	tUsbClosed,		"Port Fermé"
 	TCODE	tUsbExit,		"Terminé"
@@ -248,7 +248,7 @@
 	
 ; Reset menu
 	TCODE	tReboot,	"Redémarrage"            ;Reboot
-	TCODE	tResetMenu2,"Confirmer ?"       ;Are You Sure?
+	TCODE	tResetMenu2,"Confirmer?"       ;Are You Sure?
 	TCODE	tAbort,     "Quitter"         ;Abort
 	TCODE	tResetSettings, "RaZ Complète"  ;Reset All
 	TCODE	tResetDeco,	"RaZ Déco"          ;Reset Deco
@@ -264,7 +264,7 @@
 	TCODE	tSetYear,	"Ajust. Année"      ; Set Year
 
 ; After update texts
-	TCODE	tNewFirmware1, "Mise à Jour OK !"	; Update successful!
+	TCODE	tNewFirmware1, "Mise à Jour OK!"	; Update successful!
 	TCODE	tNewFirmware2, "Nouvelle Version: "		; New Firmware: 
 
 ; Logbook Offset Menu
