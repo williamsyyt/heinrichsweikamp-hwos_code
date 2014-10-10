@@ -142,7 +142,7 @@ do_divemode_gaslist_more:
         MENU_CALL       tO2Minus,               do_dive_mO2
         MENU_CALL       tHePlus,                do_dive_pHe
         MENU_CALL       tHeMinus,               do_dive_mHe
-        MENU_CALL       tEnter,                 do_switch_gas6
+        MENU_CALL       tExit,                  do_switch_gas6
     MENU_END
 
 do_dive_nothing:
