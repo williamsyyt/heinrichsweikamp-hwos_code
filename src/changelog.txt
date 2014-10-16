@@ -1,8 +1,12 @@
+[1.61]
+
+- Beta Version -
+BUGFIX: O2 > 99% was not configurable from the PC
+
 [1.60]
 
 - Stable Version -
 BUGFIX: END/EAD updated when adjusting current gas during the dive
-
 
 [1.54]
 
