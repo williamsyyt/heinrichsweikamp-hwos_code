@@ -302,7 +302,7 @@ menuview_view4:
 menuview_view5:
 	btfss	FLAG_apnoe_mode					; In Apnoe mode?
 	bra		menuview_toggle 				; No, call next option
-	btfsc	FLAG_active_descent				; Are we descending?
+	btfss	FLAG_active_descent				; Are we descending?
 	bra		menuview_toggle 				; Yes
 ; We are at the surface:
 	STRCPY_TEXT_PRINT	tQuitSim			; "Quit Apnea mode?"

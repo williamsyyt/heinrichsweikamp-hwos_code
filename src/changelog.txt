@@ -2,6 +2,7 @@
 
 - Beta Version -
 BUGFIX: O2 > 99% was not configurable from the PC
+BUGFIX: Quit Apnea mode on the surface manually
 
 [1.60]
 
