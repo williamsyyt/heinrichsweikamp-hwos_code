@@ -664,7 +664,7 @@ end_dive_oc_cc_common:
     movff   char_I_setpoint_change+4,WREG
     rcall	ghostwrite_byte_header	; Change depth
 
-    movff   opt_salinity,WREG       ; Salinity (0-5%)
+    movff   opt_salinity,WREG       ; Salinity (0-4%)
 	rcall	ghostwrite_byte_header	; Store Salinity to Dive
 
 	movff	int_O_CNS_fraction+0,WREG		; copy into bank1

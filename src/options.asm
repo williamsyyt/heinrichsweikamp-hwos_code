@@ -175,8 +175,9 @@ option_check:
         movf    opt_min,W
         cpfsgt  INDF1                   ; bigger then opt_min?
         bra     option_check_reset      ; No, reset option
-        movf    INDF1,W
-        cpfsgt  opt_max                 ; bigger then INDF1?
+option_check_enum8:                     ; ENUM8: Check max only
+        incf    opt_max,W
+        cpfslt  INDF1                   ; smaller then opt_max+1?
         bra     option_check_reset      ; No, reset option
         return                          ; in range, return
 
@@ -186,12 +187,6 @@ option_check_reset:
 
 option_check_string:
         return
-
-option_check_enum8:
-        movf    INDF1,W
-        cpfsgt  opt_max                 ; bigger then INDF1?
-        bra     option_check_reset      ; No, reset option
-        return                          ; in range, return
 
 ;=============================================================================
 ; Reset an option to its default value.
