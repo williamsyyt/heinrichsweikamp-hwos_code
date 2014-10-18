@@ -192,7 +192,7 @@
 
 ; Gaslist hard-coded limits
 #DEFINE gaslist_min_o2              .7          ; Minimum O2 [%]
-#DEFINE gaslist_max_change_depth    .100        ; Max. change depth [m]
+#DEFINE gaslist_max_change_depth    .99         ; Max. change depth [m]
 #DEFINE gaslist_sp_stepsize         .10         ; Steps for Setpoint Setup [cbar]
 #DEFINE gaslist_sp_max              .160        ; Max. Setpoint [cbar]
 #DEFINE gaslist_sp_min              .50         ; Min. Setpoint [cbar]
