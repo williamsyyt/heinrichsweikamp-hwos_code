@@ -44,9 +44,9 @@ HighInt:
 		btfsc	INTCON3,INT1IF			; Buttons
 		rcall	isr_switch_left
 
-; IR-Link
+; IR/S8-Link
         btfsc   PIR3,RC2IF              ; UART2
-        rcall   isr_uart2               ; IR-Link
+        rcall   isr_uart2               ; IR/S8-Link
 		btfsc	PIR2,TMR3IF				; Timer 3
 		rcall	isr_timer3				; IR-Link Timeout
 
@@ -64,50 +64,50 @@ HighInt:
 
 ;=============================================================================
 
-isr_uart2:               ; IR-Link
+isr_uart2:               ; IR/S8-Link
         banksel RCREG2
         movf    RCREG2,W
     	bcf		RCSTA2,CREN		; Clear receiver status
     	bsf		RCSTA2,CREN
         banksel isr_backup
-        incf    ir_counter,F            ; Increase counter
-        movff   ir_counter,isr1_temp    ; Copy
+        incf    ir_s8_counter,F            ; Increase counter
+        movff   ir_s8_counter,isr1_temp    ; Copy
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.0
+        movwf    ir_s8_buffer+.0
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.1
+        movwf    ir_s8_buffer+.1
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.2
+        movwf    ir_s8_buffer+.2
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.3
+        movwf    ir_s8_buffer+.3
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.4
+        movwf    ir_s8_buffer+.4
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.5
+        movwf    ir_s8_buffer+.5
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.6
+        movwf    ir_s8_buffer+.6
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.7
+        movwf    ir_s8_buffer+.7
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.8
+        movwf    ir_s8_buffer+.8
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.9
+        movwf    ir_s8_buffer+.9
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.10
+        movwf    ir_s8_buffer+.10
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.11
+        movwf    ir_s8_buffer+.11
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.12
+        movwf    ir_s8_buffer+.12
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.13
+        movwf    ir_s8_buffer+.13
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.14
+        movwf    ir_s8_buffer+.14
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.15
+        movwf    ir_s8_buffer+.15
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.16
+        movwf    ir_s8_buffer+.16
         dcfsnz  isr1_temp,F
-        movwf    ir_buffer+.17
+        movwf    ir_s8_buffer+.17
 
         clrf    TMR3L                   ; Preload timer
         movlw   .253
@@ -115,81 +115,81 @@ isr_uart2:               ; IR-Link
         bsf     T3CON,TMR3ON            ; (Re)Start Timeout counter
         return
 
-isr_timer3:             ; IR-Link Timeout
+isr_timer3:             ; IR/S8-Link Timeout
 		bcf		T3CON,TMR3ON			; Stop Timer3
     	banksel isr_backup              ; Select Bank0 for ISR data.
         movlw   .15
-        cpfseq  ir_counter              ; Got exact 15bytes?
+        cpfseq  ir_s8_counter              ; Got exact 15bytes?
         bra     isr_timer3_1            ; No, test for 16bytes
         bra     isr_timer3_ir           ; Got 15 bytes, compute local checksum
 isr_timer3_1:
         movlw   .16
-        cpfseq  ir_counter              ; Got exact 16bytes?
+        cpfseq  ir_s8_counter              ; Got exact 16bytes?
         bra     isr_timer3_2            ; No, test for 17bytes
-        tstfsz  ir_buffer+.15           ; Last byte=0x00
+        tstfsz  ir_s8_buffer+.15           ; Last byte=0x00
         bra     isr_timer3_exit         ; No, exit
         bra     isr_timer3_ir           ; Got 16 bytes, compute local checksum
 isr_timer3_2:
         movlw   .17
-        cpfseq  ir_counter              ; Got exact 17bytes?
+        cpfseq  ir_s8_counter              ; Got exact 17bytes?
         bra     isr_timer3_exit         ; No, exit
         bra     isr_timer3_s8           ; S8 data
 
 isr_timer3_ir:  ; IR input
-        movff   ir_buffer+.0,PRODL
+        movff   ir_s8_buffer+.0,PRODL
         clrf    PRODH
-        movf    ir_buffer+.1,W
+        movf    ir_s8_buffer+.1,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.2,W
+        movf    ir_s8_buffer+.2,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.3,W
+        movf    ir_s8_buffer+.3,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.4,W
+        movf    ir_s8_buffer+.4,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.5,W
+        movf    ir_s8_buffer+.5,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.6,W
+        movf    ir_s8_buffer+.6,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.7,W
+        movf    ir_s8_buffer+.7,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.8,W
+        movf    ir_s8_buffer+.8,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.9,W
+        movf    ir_s8_buffer+.9,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.10,W
+        movf    ir_s8_buffer+.10,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.11,W
+        movf    ir_s8_buffer+.11,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.12,W
+        movf    ir_s8_buffer+.12,W
         rcall   isr_timer3_checksum
 
             ; Compare checksum
-        movf    ir_buffer+.13,W
+        movf    ir_s8_buffer+.13,W
         cpfseq  PRODL                   ; Checksum ok?
         bra     isr_timer3_exit         ; No, exit
-        movf    ir_buffer+.14,W
+        movf    ir_s8_buffer+.14,W
         cpfseq  PRODH                   ; Checksum ok?
         bra     isr_timer3_exit         ; No, exit
 
            ; Checksum OK, copy results
-        movff   ir_buffer+.1,hud_status_byte
-        movff   ir_buffer+.2,o2_mv_sensor1+0
-        movff   ir_buffer+.3,o2_mv_sensor1+1
-        movff   ir_buffer+.4,o2_mv_sensor2+0
-        movff   ir_buffer+.5,o2_mv_sensor2+1
-        movff   ir_buffer+.6,o2_mv_sensor3+0
-        movff   ir_buffer+.7,o2_mv_sensor3+1
-        movff   ir_buffer+.8,o2_ppo2_sensor1
-        movff   ir_buffer+.9,o2_ppo2_sensor2
-        movff   ir_buffer+.10,o2_ppo2_sensor3
-        movff   ir_buffer+.11,hud_battery_mv+0
-        movff   ir_buffer+.12,hud_battery_mv+1
+        movff   ir_s8_buffer+.1,hud_status_byte
+        movff   ir_s8_buffer+.2,o2_mv_sensor1+0
+        movff   ir_s8_buffer+.3,o2_mv_sensor1+1
+        movff   ir_s8_buffer+.4,o2_mv_sensor2+0
+        movff   ir_s8_buffer+.5,o2_mv_sensor2+1
+        movff   ir_s8_buffer+.6,o2_mv_sensor3+0
+        movff   ir_s8_buffer+.7,o2_mv_sensor3+1
+        movff   ir_s8_buffer+.8,o2_ppo2_sensor1
+        movff   ir_s8_buffer+.9,o2_ppo2_sensor2
+        movff   ir_s8_buffer+.10,o2_ppo2_sensor3
+        movff   ir_s8_buffer+.11,hud_battery_mv+0
+        movff   ir_s8_buffer+.12,hud_battery_mv+1
 
         movlw   ir_timeout_value        ; multiples of 62,5ms
-        movwf   ir_timeout              ; Reload timeout
+        movwf   ir_S8_timeout              ; Reload timeout
  
 isr_timer3_exit:
-        clrf    ir_counter              ; Clear pointer
+        clrf    ir_s8_counter              ; Clear pointer
 	    bcf		PIR2,TMR3IF				; Clear flag
         return
 
@@ -199,57 +199,57 @@ isr_timer3_checksum:
         addwfc  PRODH,F
         return
 
-isr_timer3_s8:  ; IR input
-        movff   ir_buffer+.0,PRODL
+isr_timer3_s8:  ; S8 input
+        movff   ir_s8_buffer+.0,PRODL
         clrf    PRODH
-        movf    ir_buffer+.1,W
+        movf    ir_s8_buffer+.1,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.2,W
+        movf    ir_s8_buffer+.2,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.3,W
+        movf    ir_s8_buffer+.3,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.4,W
+        movf    ir_s8_buffer+.4,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.5,W
+        movf    ir_s8_buffer+.5,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.6,W
+        movf    ir_s8_buffer+.6,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.7,W
+        movf    ir_s8_buffer+.7,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.8,W
+        movf    ir_s8_buffer+.8,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.9,W
+        movf    ir_s8_buffer+.9,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.10,W
+        movf    ir_s8_buffer+.10,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.11,W
+        movf    ir_s8_buffer+.11,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.12,W
+        movf    ir_s8_buffer+.12,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.13,W
+        movf    ir_s8_buffer+.13,W
         rcall   isr_timer3_checksum
-        movf    ir_buffer+.14,W
+        movf    ir_s8_buffer+.14,W
         rcall   isr_timer3_checksum
 
             ; Compare checksum
-        movf    ir_buffer+.15,W
+        movf    ir_s8_buffer+.15,W
         cpfseq  PRODL                   ; Checksum ok?
         bra     isr_timer3_exit         ; No, exit
-        movf    ir_buffer+.16,W
+        movf    ir_s8_buffer+.16,W
         cpfseq  PRODH                   ; Checksum ok?
         bra     isr_timer3_exit         ; No, exit
 
            ; Checksum OK, copy results
-        movff   ir_buffer+.3,hud_status_byte
-        movff   ir_buffer+.13,hud_battery_mv+0
-        movff   ir_buffer+.14,hud_battery_mv+1
+        movff   ir_s8_buffer+.3,hud_status_byte
+        movff   ir_s8_buffer+.13,hud_battery_mv+0
+        movff   ir_s8_buffer+.14,hud_battery_mv+1
 
         banksel common
         bsf     new_s8_data_available       ; set flag
-        banksel ir_timeout
+        banksel ir_S8_timeout
 
         movlw   ir_timeout_value        ; multiples of 62,5ms
-        movwf   ir_timeout              ; Reload timeout
+        movwf   ir_S8_timeout              ; Reload timeout
         bra     isr_timer3_exit         ; Exit
 
 
@@ -267,12 +267,12 @@ isr_tmr7:       						; each 62,5ms
 		rcall	isr_dimm_tft			; No, adjust until max_CCPR1L=CCPR1L !
 
         banksel isr_backup
-        decfsz  ir_timeout,F            ; IR Data still valid?
+        decfsz  ir_S8_timeout,F            ; IR Data still valid?
         bra     isr_tmr7_2              ; Yes, continue
         ; timeout, clear IR-Data
 
         movlw   ir_timeout_value        ; multiples of 62,5ms
-        movwf   ir_timeout              ; Reload timeout
+        movwf   ir_S8_timeout              ; Reload timeout
 
         banksel common
         btfss   c3_hardware

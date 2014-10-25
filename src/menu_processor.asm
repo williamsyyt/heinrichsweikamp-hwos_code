@@ -337,7 +337,7 @@ menu_line_loop:
 
         call    compute_ppo2			; compute mv_sensorX and ppo2_sensorX arrays
         btfsc   menu_show_sensors2      ; In the "Calibrate" menu?
-        call    TFT_menu_hud2           ; Yes, update mV data
+        call    TFT_menu_calibrate      ; Yes, update mV data
         bcf     quarter_second_update   ; Clear flag
 
 menu_line_loop1:

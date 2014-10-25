@@ -1142,8 +1142,8 @@ TFT_menu_hud_2:
     bcf     leftbind
     return
 
-    global  TFT_menu_hud2
-TFT_menu_hud2:            ; Yes, update mV data
+    global  TFT_menu_calibrate
+TFT_menu_calibrate:     ; update mV data in calibration menu
     call    TFT_attention_color         ; show in yellow
     bsf     leftbind
     WIN_SMALL   surf_menu_sensor1_column,surf_menu2_sensor1_row
@@ -1161,6 +1161,12 @@ TFT_menu_hud2:            ; Yes, update mV data
     movff   o2_mv_sensor3+1,hi      ; in 0.1mV steps
     output_16dp  .4         ; xxx.y mV
     STRCAT_PRINT "mV  "
+;    WIN_SMALL   surf_menu2_ambient_column,surf_menu2_ambient_row
+;    PUTC    "@"
+;    SAFE_2BYTE_COPY amb_pressure, lo
+;    output_16
+;    STRCAT_TEXT tMBAR     ; mbar
+;    STRCAT_PRINT " "
     call    TFT_standard_color
     bcf     leftbind
     return

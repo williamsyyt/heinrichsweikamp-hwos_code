@@ -92,7 +92,7 @@ do_ccr_menu_c3:                         ; including "Calibrate"
     MENU_END
 
 do_calibrate_menu:
-    call    enable_ir                   ; Enable IR-Port
+    call    enable_ir_s8                ; Enable IR/S8-Port
     bsf     menu_show_sensors2          ; Set flag
 do_calibrate_menu2:
 	MENU_BEGIN  tCalibrateMenu, .6
@@ -110,7 +110,7 @@ do_calibrate_mix:
     goto    restart                     ; Restart into surface mode
 
 do_ccr_sensor:
-    call    enable_ir                   ; Enable IR-Port
+    call    enable_ir_s8                ; Enable IR/S8-Port
     bsf     menu_show_sensors           ; Set flag
 	MENU_BEGIN  tCCRSensor, .5
 	    MENU_CALL       tDiveHudMask1,       0

@@ -316,7 +316,7 @@ restart_set_modes_and_flags2:
     bra     restart_set_modes_and_flags3
     ; CC Mode
 	bsf     FLAG_ccr_mode               ; =1: CCR mode (Fixed ppO2 or Sensor) active
-    call    enable_ir                   ; Enable IR-Port
+    call    enable_ir_s8                ; Enable IR/S8-Port
     return
 
 restart_set_modes_and_flags3:

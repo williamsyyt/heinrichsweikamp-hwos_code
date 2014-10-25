@@ -128,13 +128,12 @@
 #DEFINE	gf_display_threshold	.20		; [%]
 #DEFINE simulator_timeout       .15     ; [s]
 
-
 ; Surface mode limits and thresholds
 #DEFINE	cns_display_surface_high .70	; [%]
 #DEFINE	high_altitude_threshold	 .880	; [mbar]
 #DEFINE	max_surfpressure		 .1080	; [mbar]
 #DEFINE	timeout_surfacemode		 .90	; [s]
-
+#DEFINE timeout_calibrate_menu   .240   ; [s]
 
 ; Decomodel paramters
 #DEFINE no_fly_time_ratio		.60		; [%]
@@ -268,10 +267,10 @@ max_CCPR1L		res	1			; Max. brightness value for CCPR1L
 ; Battery gauge (nAs, nC)
 battery_gauge	res	6			; 48Bit -> 78Ah max...
 
-; IR-Link
-ir_buffer           res .18
-ir_counter          res 1
-ir_timeout          res 1       ; Timeout for valid data
+; IR/S8-Link
+ir_s8_buffer        res .18
+ir_s8_counter       res 1
+ir_S8_timeout       res 1       ; Timeout for valid data
 
 ; Compass raw data
 compass_DX          res 2

@@ -80,8 +80,8 @@ disable_ir:
     bsf     s8_npower               ; Power-down S8 HUD
     return
 
-    global  enable_ir
-enable_ir:
+    global  enable_ir_s8
+enable_ir_s8:
 ;init serial port2 (TRISG2)
     btfsc   c3_hardware
     bra     enable_s8           ; Start S8
