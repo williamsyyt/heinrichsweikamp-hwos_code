@@ -4,6 +4,7 @@
 BUGFIX: O2 > 99% was not configurable from the PC
 BUGFIX: Quit Apnea mode on the surface manually
 BUGFIX: Check min and max values after PC configuration properly
+CHANGE: Longer timeout (4 min) for calibration menu
 
 [1.60]
 

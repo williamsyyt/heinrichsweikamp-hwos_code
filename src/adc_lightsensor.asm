@@ -324,11 +324,13 @@ get_analog_inputs:			; starts ADC and waits until finished
     rrcf    ADRESL,F
 	movff	ADRESL,o2_mv_sensor1+0      ; in 0.1mV steps
     movff	ADRESH,o2_mv_sensor1+1
-    bcf     STATUS,C
-    rlcf    ADRESL,F
-    rlcf    ADRESH,F
-	movlw	b'00100000'			; 2.048V Vref+
-	movwf	ADCON1
+    ; Ignore 1,2mV noise for not-connected inputs
+    tstfsz  o2_mv_sensor1+1     ; >25,5mV?
+    bra     get_analog_inputs2  ; Yes, skip here
+    movlw   .12
+    cpfsgt  o2_mv_sensor1+0     ; >1,2mV?
+    clrf    o2_mv_sensor1+0     ; no, clear result
+get_analog_inputs2:
 	movlw	b'00100101'			; power on ADC, select AN9
 	rcall   wait_adc
     bcf     STATUS,C
@@ -336,8 +338,13 @@ get_analog_inputs:			; starts ADC and waits until finished
     rrcf    ADRESL,F
 	movff	ADRESL,o2_mv_sensor2+0      ; in 0.1mV steps
     movff	ADRESH,o2_mv_sensor2+1
-	movlw	b'00100000'			; 2.048V Vref+
-	movwf	ADCON1
+    ; Ignore 1,2mV noise for not-connected inputs
+    tstfsz  o2_mv_sensor2+1     ; >25,5mV?
+    bra     get_analog_inputs3  ; Yes, skip here
+    movlw   .12
+    cpfsgt  o2_mv_sensor2+0     ; >1,2mV?
+    clrf    o2_mv_sensor2+0     ; no, clear result
+get_analog_inputs3:
 	movlw	b'00101001'			; power on ADC, select AN10
 	rcall   wait_adc
     bcf     STATUS,C
@@ -345,6 +352,13 @@ get_analog_inputs:			; starts ADC and waits until finished
     rrcf    ADRESL,F
 	movff	ADRESL,o2_mv_sensor3+0      ; in 0.1mV steps
     movff	ADRESH,o2_mv_sensor3+1
+    ; Ignore 1,2mV noise for not-connected inputs
+    tstfsz  o2_mv_sensor3+1     ; >25,5mV?
+    bra     get_analog_inputs4  ; Yes, skip here
+    movlw   .12
+    cpfsgt  o2_mv_sensor3+0     ; >1,2mV?
+    clrf    o2_mv_sensor3+0     ; no, clear result
+get_analog_inputs4:
 	bcf		ADCON0,0			; power off ADC
     bcf     adc_running         ; =1: The ADC is in use
     return

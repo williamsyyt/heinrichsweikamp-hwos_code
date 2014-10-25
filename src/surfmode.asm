@@ -351,6 +351,8 @@ test_switches_surfmode2:
 	global	timeout_surfmode
 timeout_surfmode:
 	movlw	timeout_surfacemode		; [s]
+    btfsc   menu_show_sensors2      ; In the "Calibrate" menu?
+    movlw   timeout_calibrate_menu  ; [s]
 	global	timeout_testmode
 timeout_testmode:
 	incf	timeout_counter2,F		; increase timeout counter
