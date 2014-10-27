@@ -4,7 +4,9 @@
 BUGFIX: O2 > 99% was not configurable from the PC
 BUGFIX: Quit Apnea mode on the surface manually
 BUGFIX: Check min and max values after PC configuration properly
-CHANGE: Longer timeout (4 min) for calibration menu
+CHANGE: Longer timeout (4 min) for calibration menu and Surface mode (CCR Modes)
+NEW: Show Bailout Gas List in Surface mode (CCR Modes)
+CHANGE: Faster update rate for sensor display in surface mode
 
 [1.60]
 

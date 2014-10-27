@@ -1048,49 +1048,49 @@ TFT_update_hud6:
    	call	TFT_standard_color
     return
 
-    global  TFT_surface_hud             ; Update HUD data in surface mode
-TFT_surface_hud:
+    global  TFT_surface_sensor             ; Update Sensor data in surface mode
+TFT_surface_sensor:
     ; show three sensors
     bsf     leftbind
     WIN_SMALL surf_hud_sensor1_column,surf_hud_sensor1_row
     movff   o2_ppo2_sensor1,lo
     tstfsz  lo              ; ppO2=0 (No data/failure)?
-    bra     TFT_surface_hud1 ; No
+    bra     TFT_surface_sensor1 ; No
    	call	TFT_standard_color
     STRCPY_PRINT "--- "
-    bra     TFT_surface_hud2 ; Skip Sensor 1
-TFT_surface_hud1:
+    bra     TFT_surface_sensor2 ; Skip Sensor 1
+TFT_surface_sensor1:
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
     clrf    hi
     output_16dp  .3         ; x.xx bar
     STRCAT_PRINT ""
-TFT_surface_hud2:
+TFT_surface_sensor2:
     WIN_SMALL surf_hud_sensor2_column,surf_hud_sensor2_row
     movff   o2_ppo2_sensor2,lo
     tstfsz  lo              ; ppO2=0 (No data/failure)?
-    bra     TFT_surface_hud3 ; No
+    bra     TFT_surface_sensor3 ; No
    	call	TFT_standard_color
     STRCPY_PRINT "--- "
-    bra     TFT_surface_hud4 ; Skip Sensor 2
-TFT_surface_hud3:
+    bra     TFT_surface_sensor4 ; Skip Sensor 2
+TFT_surface_sensor3:
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
     clrf    hi
     output_16dp  .3         ; x.xx bar
     STRCAT_PRINT ""
-TFT_surface_hud4:
+TFT_surface_sensor4:
     WIN_SMALL surf_hud_sensor3_column,surf_hud_sensor3_row
     movff   o2_ppo2_sensor3,lo
     tstfsz  lo              ; ppO2=0 (No data/failure)?
-    bra     TFT_surface_hud5 ; No
+    bra     TFT_surface_sensor5 ; No
    	call	TFT_standard_color
     STRCPY_PRINT "--- "
-    bra     TFT_surface_hud6 ; Skip Sensor 3
-TFT_surface_hud5:
+    bra     TFT_surface_sensor6 ; Skip Sensor 3
+TFT_surface_sensor5:
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
     clrf    hi
     output_16dp  .3         ; x.xx bar
     STRCAT_PRINT ""
-TFT_surface_hud6:
+TFT_surface_sensor6:
     bcf     leftbind
    	call	TFT_standard_color
     return

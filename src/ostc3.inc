@@ -134,6 +134,7 @@
 #DEFINE	max_surfpressure		 .1080	; [mbar]
 #DEFINE	timeout_surfacemode		 .90	; [s]
 #DEFINE timeout_calibrate_menu   .240   ; [s]
+#DEFINE timeout_ccr_surface      .240   ; [s]
 
 ; Decomodel paramters
 #DEFINE no_fly_time_ratio		.60		; [%]

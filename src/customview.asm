@@ -138,7 +138,9 @@ surf_customview_toggle:
     global  surf_customview_mask
 surf_customview_mask:
     WIN_BOX_BLACK    .50,surf_warning1_row-1, .0, surf_decotype_column-.1	; top, bottom, left, right
-	call	TFT_standard_color
+    ; Prepare title
+    WIN_TINY    surf_customview_title_column,surf_customview_title_row
+    WIN_COLOR   color_greenish
 	movff	menupos3,WREG                   ; Menupos3 holds number of customview function
 	dcfsnz	WREG,F
 	bra		surf_customview_init_view1      ; OC Gas list
@@ -162,12 +164,20 @@ surf_customview_mask:
 	movwf   menupos3			            ; Reset to one (Always one custom view visible)
 
 surf_customview_init_view1:                 ; View1: OC Gas list
-    btfsc   FLAG_ccr_mode
-    bra     surf_customview_toggle
     btfsc   FLAG_gauge_mode
     bra     surf_customview_toggle
     btfsc   FLAG_apnoe_mode
     bra     surf_customview_toggle
+    btfsc   FLAG_ccr_mode
+    bra     surf_customview_init_view1_bail ; Bailoutversion
+    STRCPY_TEXT_PRINT tGaslist              ; Title of customview
+    call    TFT_standard_color
+    call	TFT_gaslist_surfmode            ; Show gas list
+    bra		customview_toggle_exit          ; Done.
+
+surf_customview_init_view1_bail:
+    STRCPY_TEXT_PRINT tDiveBailout          ; Title of customview
+    call    TFT_standard_color
     call	TFT_gaslist_surfmode            ; Show gas list
     bra		customview_toggle_exit          ; Done.
 
@@ -178,6 +188,8 @@ surf_customview_init_view2:                 ; View2: CC Dil list
     bra     surf_customview_toggle
     btfsc   FLAG_apnoe_mode
     bra     surf_customview_toggle
+    STRCPY_TEXT_PRINT tGaslistCC            ; Title of customview
+    call    TFT_standard_color
     call	TFT_dillist_surfmode            ; Show diluent list
     bra		customview_toggle_exit          ; Done.
 
@@ -188,10 +200,13 @@ surf_customview_init_view3:                 ; View3: CC SP list
     bra     surf_customview_toggle
     btfsc   FLAG_apnoe_mode
     bra     surf_customview_toggle
+    STRCPY_TEXT_PRINT tFixedSetpoints       ; Title of customview
+    call    TFT_standard_color
     call	TFT_splist_surfmode             ; Show Setpoint list
     bra		customview_toggle_exit          ; Done.
 
 surf_customview_init_view4:                 ; View4: Custom text
+    call    TFT_standard_color
     call	TFT_custom_text                 ; Show the custom text
     bra		customview_toggle_exit          ; Done.
 
@@ -200,6 +215,7 @@ surf_customview_init_view5:                 ; View5: Tissue Diagram
     bra     surf_customview_toggle
     btfsc   FLAG_apnoe_mode
     bra     surf_customview_toggle
+    call    TFT_standard_color
     call	TFT_surface_tissues             ; Show Tissue diagram
     bra		customview_toggle_exit          ; Done.
 
