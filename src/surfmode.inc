@@ -50,6 +50,9 @@
 #DEFINE	surf_gaslist_column     .2
 #DEFINE surf_gaslist_spacing    .24
 
+#DEFINE surf_customview_title_row   .52
+#DEFINE surf_customview_title_column   .15
+
 #DEFINE surf_customtext_row1    .66
 #DEFINE surf_customtext_row2    surf_customtext_row1+.24
 #DEFINE surf_customtext_row3    surf_customtext_row2+.24

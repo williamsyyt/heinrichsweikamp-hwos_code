@@ -177,17 +177,12 @@ surfloop_loop:
 	call	TFT_clock					; update clock
 	call	timeout_surfmode			; check timeout 
 	call	get_battery_voltage			; get battery voltage
-    call    compute_ppo2                ; compute mv_sensorX and ppo2_sensorX arrays
-    call    check_sensors               ; Set enable/disable flags
 	call	TFT_update_batt_voltage		; display battery voltage
 	call	set_dive_modes				; tests if depth>threshold
     btfss   secs,0                      ; Every two seconds...
 	call	TFT_temp_surfmode			; Displays temperature
     btfss   secs,0                      ; Every two seconds...
     call    surfmode_check_for_warnings ; ... check for warnings (and display/update) them
-
-    btfsc   FLAG_ccr_mode               ; In CCR mode...
-    call    TFT_surface_hud             ; ...update HUD data in surface mode
 
 	bcf		onesecupdate				; every second tasks done
 	
@@ -208,9 +203,18 @@ surfloop_loop2:
 	call	TFT_update_surf_press		; display surface pressure
 	bcf		pressure_refresh			; until new pressure is available
 
+; Updates every 1/4 second
     btfss   quarter_second_update
     bra     surfloop_loop2a
+
     bcf     quarter_second_update
+    ; Update Sensors
+
+    call    compute_ppo2                ; compute mv_sensorX and ppo2_sensorX arrays
+    call    check_sensors               ; Set enable/disable flags
+    btfsc   FLAG_ccr_mode               ; In CCR mode...
+    call    TFT_surface_sensor          ; ...update sensor data in surface mode
+
     movlw   .6
     cpfseq  menupos3                    ; in compass view?
     bra     surfloop_loop2a             ; No
@@ -350,9 +354,16 @@ test_switches_surfmode2:
 
 	global	timeout_surfmode
 timeout_surfmode:
-	movlw	timeout_surfacemode		; [s]
+	movlw	timeout_surfacemode		; [s] Default timeout
     btfsc   menu_show_sensors2      ; In the "Calibrate" menu?
-    movlw   timeout_calibrate_menu  ; [s]
+    movlw   timeout_calibrate_menu  ; [s] CCR Calibrate Menu timeout
+    btfsc   menubit                 ; in Menu?
+    bra     timeout_testmode        ; No, done.
+    ; Must be in surface mode
+    btfss   FLAG_ccr_mode           ; =1: CCR mode (Fixed ppO2 or Sensor) active
+    bra     timeout_testmode        ; No, not CCR
+    movlw   timeout_ccr_surface     ; [s] CCR Surface mode timeout
+
 	global	timeout_testmode
 timeout_testmode:
 	incf	timeout_counter2,F		; increase timeout counter
