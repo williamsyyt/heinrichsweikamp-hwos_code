@@ -199,7 +199,7 @@ TFT_logbook_cursor:
 
 	WIN_LEFT	logbook_list_left-.16
 	WIN_FONT 	FT_SMALL
-	WIN_INVERT	.0					; Init new Wordprocessor
+	bcf     win_invert              ; Reset invert flag
 	call	TFT_standard_color
 
 	movff	menupos,temp1

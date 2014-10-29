@@ -164,16 +164,14 @@ gaslist_strcat_setpoint5:
 ; NOTE: used in the menu-tree for the MENU_CALLBACK entry.
 
 gaslist_strcat_gas_better:   ; Yes, check if this is a "better gas"
-        movlw   .0
-        movff   WREG,win_invert
+        bcf     win_invert
         decf    better_gas_number,W         ; better_gas_number-1 -> WREG
         btfsc   ccr_diluent_setup           ; in CCR menus?
         addlw   .5                          ; Yes, offset to gases 5-9
         cpfseq  gaslist_gas                 ; 0-4 for OC/Bailout, 5-9 for Diluents
         return
         call    TFT_attention_color         ; show in yellow
-        movlw   .1
-        movff   WREG,win_invert             ; and invert
+        bsf     win_invert                  ; And invert
         return
 
         global  gaslist_strcat_gas_mod

@@ -82,7 +82,7 @@ check_sensors:
 	bcf     use_02_sensor3  ;=1: Use this sensor for deco
 
     btfss   hud_connection_ok   ;=1: HUD connection ok
-    return      ; No HUD/Digital data
+    bra     check_sensor2       ; No HUD/Digital data
 
     ; Copy disable flags from digital input
     btfss   sensor1_active
@@ -93,12 +93,23 @@ check_sensors:
     bcf     use_02_sensor3
     return
 
+check_sensor2:
+; Copy disable flags from internal calibration routine
+    btfss   sensor1_calibrated_ok
+    bcf     use_02_sensor1
+    btfss   sensor2_calibrated_ok
+    bcf     use_02_sensor2
+    btfss   sensor3_calibrated_ok
+    bcf     use_02_sensor3
+    return
+
 	global	calibrate_mix
 calibrate_mix:
     ; calibrate S8 HUD
     btfss   s8_digital          ; S8 Digital?
     bra     calibrate_mix2      ; No
 
+    ; Yes, calibrate any S8-connected HUD
     clrf    temp1               ; Chksum
     movlw   0xAA                ; Start Byte
     addwf   temp1,F
@@ -188,41 +199,17 @@ calibrate_mix2:
 	movff	xC+0,opt_x_s3+0
 	movff	xC+1,opt_x_s3+1				; Factor for Sensor3
 
-	; Result is in 100µV
-	movff	o2_mv_sensor1+0, sub_a+0
-	movff	o2_mv_sensor1+1, sub_a+1
-	movlw	LOW		min_mv
-	movwf	sub_b+0
-	movlw	HIGH	min_mv
-	movwf	sub_b+1
-	call	sub16			;  sub_c = sub_a - sub_b
-	bsf		use_02_sensor1	; Sensor active!
-	btfsc	neg_flag
-	bcf		use_02_sensor1
-
-	; Result is in 100µV
-	movff	o2_mv_sensor2+0, sub_a+0
-	movff	o2_mv_sensor2+1, sub_a+1
-	movlw	LOW		min_mv
-	movwf	sub_b+0
-	movlw	HIGH	min_mv
-	movwf	sub_b+1
-	call	sub16			;  sub_c = sub_a - sub_b
-	bsf		use_02_sensor2	; Sensor active!
-	btfsc	neg_flag
-	bcf		use_02_sensor2
-
-	; Result is in 100µV
-	movff	o2_mv_sensor3+0, sub_a+0
-	movff	o2_mv_sensor3+1, sub_a+1
-	movlw	LOW		min_mv
-	movwf	sub_b+0
-	movlw	HIGH	min_mv
-	movwf	sub_b+1
-	call	sub16			;  sub_c = sub_a - sub_b
-	bsf		use_02_sensor3	; Sensor active!
-	btfsc	neg_flag
-	bcf		use_02_sensor3
+    bsf     sensor1_calibrated_ok
+    bsf     sensor2_calibrated_ok
+    bsf     sensor3_calibrated_ok   ; Set flags prior check
+    rcall   check_sensors           ; Check O2 sensor thresholds min_mv and max_mv and set use_02_sensorX flags
+    ; initialise internal calibration flags
+    btfss	use_02_sensor1          ; Sensor out of range?
+    bcf     sensor1_calibrated_ok   ; Yes, disable this sensor
+    btfss	use_02_sensor2          ; Sensor out of range?
+    bcf     sensor2_calibrated_ok   ; Yes, disable this sensor
+    btfss	use_02_sensor3          ; Sensor out of range?
+    bcf     sensor3_calibrated_ok   ; Yes, disable this sensor
 
 	; When no sensor is found, enable all three to show error state
 	btfsc	use_02_sensor1

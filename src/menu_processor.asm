@@ -567,8 +567,9 @@ menu_draw_line_none_divemode:
 
         call    aa_wordprocessor        ; Draw the line!
 
-        movlw   .0
-        movff   WREG,win_invert         ; Reset invert flag
+        banksel common
+        bcf     win_invert              ; Reset invert flag
+        banksel win_top
 
         movlw   .24                     ; Divemode menu spacing
         addwf   win_top,F

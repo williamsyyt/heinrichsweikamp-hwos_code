@@ -101,7 +101,7 @@ STRCAT_TEXT_PRINT macro   txt
         endm
 
 ;=============================================================================
-; A shortcut for the macros WIN_TOP + WIN_LEFT + WIN_FONT + WIN_INVERT.
+; A shortcut for the macros WIN_TOP + WIN_LEFT + WIN_FONT.
 ; The idea is to replace a 4x6=24 bytes sequence by a more compact 6bytes one.
 ;
 ; Trashed: TBLPTR, TABLAT, WREG.
@@ -112,21 +112,9 @@ WIN_TINY macro x, y
         DB      x, y
         endm
 
-        extern  start_tiny_invert_block
-WIN_TINY_INVERT macro x, y
-        call    start_tiny_invert_block
-        DB      x, y
-        endm
-
         extern  start_small_block
 WIN_SMALL macro x, y
         call    start_small_block
-        DB      x, y
-        endm
-
-        extern  start_small_invert_block
-WIN_SMALL_INVERT macro x, y
-        call    start_small_invert_block
         DB      x, y
         endm
 
@@ -136,21 +124,9 @@ WIN_STD macro x, y
         DB      x, y
         endm
 
-        extern  start_std_invert_block
-WIN_STD_INVERT macro x, y
-        call    start_std_invert_block
-        DB      x, y
-        endm
-
         extern  start_medium_block
 WIN_MEDIUM   macro   x, y
         call    start_medium_block
-        DB      x, y
-        endm
-
-        extern  start_medium_invert_block
-WIN_MEDIUM_INVERT   macro   x, y
-        call    start_medium_invert_block
         DB      x, y
         endm
 
@@ -159,12 +135,6 @@ WIN_LARGE   macro   x, y
        call    start_large_block
        DB      x, y
        endm
-
-        extern  start_large_invert_block
-WIN_LARGE_INVERT   macro   x, y
-        call    start_large_invert_block
-        DB      x, y
-        endm
 
 ;=============================================================================
 ; Shortcuts for compact display programmings.
