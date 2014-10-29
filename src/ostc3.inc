@@ -334,6 +334,7 @@ flag7           		res 1
 flag8           		res 1
 flag9           		res 1
 flag10           		res 1
+flag11           		res 1
 
 temp1			res 1
 temp2			res 1
@@ -351,7 +352,6 @@ win_bargraph    res 1
 win_color1      res 1
 win_color2      res 1
 win_font        res 1
-win_invert      res 1
 
 ;---- Draw subroutines
 tft_temp4       res 1
@@ -620,7 +620,7 @@ opt_flip_screen         res 1   ; =1: Flip the screen
 #DEFINE compass_fast_mode       flag9,0 ; =1: The compass is in fast mode
 #DEFINE in_color_menu           flag9,1 ; =1: In the color scheme menu
 #DEFINE bailoutgas_event        flag9,2 ; =1: bailout was selected or a gaschange during bailout
-; unused
+#DEFINE win_invert              flag9,3 ; =1: Invert font output
 #DEFINE show_safety_stop		flag9,4	; =1: Show the safety stop
 #DEFINE	safety_stop_active      flag9,5	; =1: The safety stop is currently displayed
 #DEFINE new_s8_data_available   flag9,6 ; =1: New data frame recieved
@@ -634,6 +634,12 @@ opt_flip_screen         res 1   ; =1: Flip the screen
 #DEFINE setpoint_fallback       flag10,5; =1: Fallback to SP1 due to external O2 sensor failure
 #DEFINE	blinking_setpoint       flag10,6; =1: SP is blinking
 #DEFINE flip_screen             flag10,7; =1: Screen is flipped by 180°
+
+#DEFINE sensor1_calibrated_ok   flag11,0; =1: This sensor has been calibrated ok
+#DEFINE sensor2_calibrated_ok   flag11,1; =1: This sensor has been calibrated ok
+#DEFINE sensor3_calibrated_ok   flag11,2; =1: This sensor has been calibrated ok
+
+
 ;=============================================================================
 ; C-code Routines
 ; PART 2

@@ -115,7 +115,7 @@ surfloop:
 	WIN_TOP		.0
 	WIN_LEFT	.0
 	WIN_FONT 	FT_SMALL
-	WIN_INVERT	.0					    ; Init new Wordprocessor
+	bcf     win_invert              ; Reset invert flag
 
 ;	call	TFT_user_image				; Show the user image/text
 	

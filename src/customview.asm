@@ -257,7 +257,8 @@ menuview_mask:
 menuview_mask2:
     movlw   color_yellow
     call	TFT_set_color
-    WIN_SMALL_INVERT    divemode_simtext_column,divemode_simtext_row
+    bsf     win_invert                  ; Set invert flag
+    WIN_SMALL   divemode_simtext_column,divemode_simtext_row
 	movff	menupos2,WREG                   ; Menupos2 holds number of menu option to show
 	dcfsnz	WREG,F
 	bra		menuview_view_gaschange         ; If a better gas is indicated
@@ -275,7 +276,7 @@ menuview_mask2:
 	bra		menuview_view6
 menuview_exit:
     call	TFT_standard_color
-    WIN_INVERT  .0
+    bcf     win_invert              ; Reset invert flag
 	return                                  ; Menupos2 = 0, Show nothing
 
 

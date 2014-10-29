@@ -341,7 +341,7 @@ aa_decode_10:
 		bz		aa_decode_13		    ; That's a 000 !
 
 		; Apply reverse video, in a reversed way
-		btfss	win_invert,0		    ; Inverse video mode ?
+		btfss	win_invert  		    ; Inverse video mode ?
 		sublw	0x80
 
 		; Move the two bits to aa_color_half and aa_color_quarter:
@@ -387,7 +387,7 @@ aa_decode_12:
 
 		; ---- Simple BLACK and WHITE cases ------------------------------
 aa_decode_13:							; Got a 1xx or a 000 code...
-		btfsc	win_invert,0		    ; Inverse video mode ?
+		btfsc	win_invert  		    ; Inverse video mode ?
 		xorlw	0x80				    ; YES: invert levels.
 		bn		aa_decode_2			    ; Then test high bit.
 

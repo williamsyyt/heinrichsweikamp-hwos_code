@@ -523,7 +523,7 @@ deco_plan_show_clear_bottom:
 ;         decoplan_page = page number.
 ;
 deco_show_plan_page:
-        WIN_INVERT 0
+        bcf     win_invert              ; Reset invert flag
 
         ;---- Is there deco stops ? ------------------------------------------
     	movff   char_O_first_deco_depth,WREG

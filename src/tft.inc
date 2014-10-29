@@ -126,11 +126,6 @@ WIN_WIDTH 	macro 	w
 			movff	WREG,win_width
 			endm
 
-WIN_INVERT	macro 	win_invert_input
-			movlw	win_invert_input
-			movff	WREG,win_invert
-			endm
-
 WIN_COLOR	macro 	win_color_input
 			movlw	win_color_input
 			call	TFT_set_color

@@ -224,80 +224,31 @@ strcat_prom_print:
 start_tiny_block:
         clrf        WREG
         movff       WREG, win_font      ; Need a bank-safe move here !
-        movff       WREG, win_invert
-        bra         start_common
-
-        global      start_tiny_invert_block
-start_tiny_invert_block:
-        clrf        WREG
-        movff       WREG, win_font      ; Need a bank-safe move here !
-        movlw       1
-        movff       WREG, win_invert
         bra         start_common
 
         global      start_small_block
 start_small_block:
         movlw       1
         movff       WREG, win_font      ; Need a bank-safe move here !
-        clrf        WREG
-        movff       WREG, win_invert
-        bra         start_common
-
-        global      start_small_invert_block
-start_small_invert_block:
-        movlw       1
-        movff       WREG, win_font      ; Need a bank-safe move here !
-        movff       WREG, win_invert
         bra         start_common
 
         global      start_std_block
 start_std_block:
         movlw       2
         movff       WREG, win_font      ; Need a bank-safe move here !
-        clrf        WREG
-        movff       WREG, win_invert
-        bra         start_common
-
-        global      start_std_invert_block
-start_std_invert_block:
-        movlw       2
-        movff       WREG, win_font      ; Need a bank-safe move here !
-        movlw       1
-        movff       WREG, win_invert
         bra         start_common
 
         global      start_medium_block
 start_medium_block:
         movlw       3
         movff       WREG, win_font      ; Need a bank-safe move here !
-        clrf        WREG
-        movff       WREG, win_invert
-        bra         start_common
-
-        global      start_medium_invert_block
-start_medium_invert_block:
-        movlw       3
-        movff       WREG, win_font      ; Need a bank-safe move here !
-        movlw       1
-        movff       WREG, win_invert
         bra         start_common
 
         global      start_large_block
 start_large_block:
         movlw       4
         movff       WREG, win_font      ; Need a bank-safe move here !
-        clrf        WREG
-        movff       WREG, win_invert
-        bra         start_common
-
-        global      start_large_invert_block
-start_large_invert_block:
-        movlw       4
-        movff       WREG, win_font      ; Need a bank-safe move here !
-        movlw       1
-        movff       WREG, win_invert
-        bra         start_common
-
+;        bra         start_common
 start_common:
         VARARGS_BEGIN
             VARARGS_GET8    win_leftx2

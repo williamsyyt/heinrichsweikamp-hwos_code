@@ -1852,7 +1852,8 @@ TFT_active_setpoint:         ; Show setpoint
 
 	movlw	color_yellow                ; Blink in yellow
     call	TFT_set_color
-    WIN_STD_INVERT  active_gas_column,active_gas_row
+    bsf     win_invert              ; Set invert flag
+    WIN_STD active_gas_column,active_gas_row
 	movff	char_I_const_ppO2,lo
 	clrf	hi
 	bsf		leftbind
@@ -1863,7 +1864,7 @@ TFT_active_setpoint:         ; Show setpoint
     bra     $+4
     PUTC    "*"
 	STRCAT_PRINT ""
-	WIN_INVERT	.0                      ; Init new Wordprocessor
+	bcf     win_invert                  ; Reset invert flag
 
 TFT_active_setpoint_diluent:
     call	TFT_standard_color
@@ -1880,11 +1881,12 @@ TFT_active_setpoint_diluent:
 
 	movlw	color_yellow                ; Blink in yellow
     call	TFT_set_color
-    WIN_SMALL_INVERT  active_dil_column,active_dil_row
+    bsf     win_invert              ; Set invert flag
+    WIN_SMALL   active_dil_column,active_dil_row
     movff   char_I_O2_ratio,lo          ; lo now stores O2 in %
     movff   char_I_He_ratio,hi          ; hi now stores He in %
 	rcall	TFT_show_dil_divemode2      ; Show gas
-	WIN_INVERT	.0                      ; Init new Wordprocessor
+	bcf     win_invert                  ; Reset invert flag
 	call	TFT_standard_color
 	return                              ; Done.
 
@@ -1918,11 +1920,12 @@ TFT_active_gas_divemode:				; Display gas/Setpoint
 	btfss	blinking_better_gas         ; blink now?
 	return                              ; No, Done.
     call    TFT_attention_color         ; blink in yellow
-    WIN_STD_INVERT active_gas_column,active_gas_row
+    bsf     win_invert                  ; Set invert flag
+    WIN_STD active_gas_column,active_gas_row
     movff   char_I_O2_ratio,lo          ; lo now stores O2 in %
     movff   char_I_He_ratio,hi          ; hi now stores He in %
 	rcall	TFT_active_gas_divemode2    ; Show gas (Non-Inverted in all cases)
-	WIN_INVERT	.0                      ; Init new Wordprocessor
+	bcf     win_invert                  ; Reset invert flag
 	call	TFT_standard_color
 	return                              ; Done.
 
@@ -2774,7 +2777,7 @@ TFT_serial:
         STRCAT_PRINT "DEBUG"    
     else
         STRCAT_PRINT ""
-        WIN_INVERT  0
+        bcf     win_invert              ; Reset invert flag
         call	TFT_standard_color
 
         movlw	softwareversion_beta    ; =1: Beta, =0: Release
@@ -2798,7 +2801,7 @@ info_menu_firmware:
     lfsr    FSR1,tFirmware
     call    strcat_text
     rcall   TFT_cat_firmware
-    WIN_INVERT  0
+    bcf     win_invert              ; Reset invert flag
     return
 
     global  TFT_cat_firmware
@@ -2826,7 +2829,7 @@ TFT_cat_firmware:
     ; Show in "change firmware" style
     movlw   color_yellow
     call	TFT_set_color
-    WIN_INVERT  1
+    bsf     win_invert              ; Set invert flag
     return
 
 ;-----------------------------------------------------------------------------

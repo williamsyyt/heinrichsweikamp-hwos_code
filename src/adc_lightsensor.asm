@@ -321,9 +321,15 @@ get_analog_inputs:			; starts ADC and waits until finished
 	rcall   wait_adc
     bcf     STATUS,C
     rrcf    ADRESH,F                    ; /2
-    rrcf    ADRESL,F
-	movff	ADRESL,o2_mv_sensor1+0      ; in 0.1mV steps
-    movff	ADRESH,o2_mv_sensor1+1
+    rrcf    ADRESL,W
+    ; add to o2_mv_sensor1:2
+    addwf   o2_mv_sensor1+0,F
+    movf    ADRESH,W
+    addwfc  o2_mv_sensor1+1,F
+    ; Devide by 2
+    bcf     STATUS,C
+    rrcf    o2_mv_sensor1+1,F           ; /2
+    rrcf    o2_mv_sensor1+0,F
     ; Ignore 1,2mV noise for not-connected inputs
     tstfsz  o2_mv_sensor1+1     ; >25,5mV?
     bra     get_analog_inputs2  ; Yes, skip here
@@ -335,9 +341,15 @@ get_analog_inputs2:
 	rcall   wait_adc
     bcf     STATUS,C
     rrcf    ADRESH,F                    ; /2
-    rrcf    ADRESL,F
-	movff	ADRESL,o2_mv_sensor2+0      ; in 0.1mV steps
-    movff	ADRESH,o2_mv_sensor2+1
+    rrcf    ADRESL,W
+    ; add to o2_mv_sensor2:2
+    addwf   o2_mv_sensor2+0,F
+    movf    ADRESH,W
+    addwfc  o2_mv_sensor2+1,F
+    ; Devide by 2
+    bcf     STATUS,C
+    rrcf    o2_mv_sensor2+1,F           ; /2
+    rrcf    o2_mv_sensor2+0,F
     ; Ignore 1,2mV noise for not-connected inputs
     tstfsz  o2_mv_sensor2+1     ; >25,5mV?
     bra     get_analog_inputs3  ; Yes, skip here
@@ -349,9 +361,15 @@ get_analog_inputs3:
 	rcall   wait_adc
     bcf     STATUS,C
     rrcf    ADRESH,F                    ; /2
-    rrcf    ADRESL,F
-	movff	ADRESL,o2_mv_sensor3+0      ; in 0.1mV steps
-    movff	ADRESH,o2_mv_sensor3+1
+    rrcf    ADRESL,W
+    ; add to o2_mv_sensor3:2
+    addwf   o2_mv_sensor3+0,F
+    movf    ADRESH,W
+    addwfc  o2_mv_sensor3+1,F
+    ; Devide by 2
+    bcf     STATUS,C
+    rrcf    o2_mv_sensor3+1,F           ; /2
+    rrcf    o2_mv_sensor3+0,F
     ; Ignore 1,2mV noise for not-connected inputs
     tstfsz  o2_mv_sensor3+1     ; >25,5mV?
     bra     get_analog_inputs4  ; Yes, skip here
