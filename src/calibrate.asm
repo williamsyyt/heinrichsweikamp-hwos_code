@@ -265,13 +265,12 @@ compute_ppo2_common:
 	addwf	xC+0,F
 	movlw	d'0'
 	addwfc	xC+1,F
-	movff	xC+0,o2_ppo2_sensor1+0
-	movff	xC+1,o2_ppo2_sensor1+1		; result in 0.01bar
-	; Set to zero if sensor is not active!
+    tstfsz  xC+1                        ; ppO2 is higher then 2.55bar?
+    setf    xC+0                        ; Yes.
+	movff	xC+0,o2_ppo2_sensor1		; result in 0.01bar
+    ; Set to zero if sensor is not active!
 	btfss	use_02_sensor1
-	clrf	o2_ppo2_sensor1+0
-	btfss	use_02_sensor1
-	clrf	o2_ppo2_sensor1+1
+	clrf	o2_ppo2_sensor1
 
 	; o2_mv_sensor2:2 * opt_x_s1:2 = o2_ppo2_sensor2/10000
 	movff	o2_mv_sensor2+0,xA+0
@@ -288,13 +287,12 @@ compute_ppo2_common:
 	addwf	xC+0,F
 	movlw	d'0'
 	addwfc	xC+1,F
-	movff	xC+0,o2_ppo2_sensor2+0
-	movff	xC+1,o2_ppo2_sensor2+1		; result in 0.01bar
+    tstfsz  xC+1                        ; ppO2 is higher then 2.55bar?
+    setf    xC+0                        ; Yes.
+	movff	xC+0,o2_ppo2_sensor2		; result in 0.01bar
 	; Set to zero if sensor is not active!
 	btfss	use_02_sensor2
-	clrf	o2_ppo2_sensor2+0
-	btfss	use_02_sensor2
-	clrf	o2_ppo2_sensor2+1
+	clrf	o2_ppo2_sensor2
 
 	; o2_mv_sensor3:2 * opt_x_s1:2 = o2_ppo2_sensor3/10000
 	movff	o2_mv_sensor3+0,xA+0
@@ -311,14 +309,12 @@ compute_ppo2_common:
 	addwf	xC+0,F
 	movlw	d'0'
 	addwfc	xC+1,F
-	movff	xC+0,o2_ppo2_sensor3+0
-	movff	xC+1,o2_ppo2_sensor3+1		; result in 0.01bar
+    tstfsz  xC+1                        ; ppO2 is higher then 2.55bar?
+    setf    xC+0                        ; Yes.
+	movff	xC+0,o2_ppo2_sensor3		; result in 0.01bar
 	; Set to zero if sensor is not active!
 	btfss	use_02_sensor3
-	clrf	o2_ppo2_sensor3+0
-	btfss	use_02_sensor3
-	clrf	o2_ppo2_sensor3+1
-
+	clrf	o2_ppo2_sensor3
 	return							; Done.
 
 
