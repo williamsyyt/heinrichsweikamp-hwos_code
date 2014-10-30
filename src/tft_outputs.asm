@@ -1572,14 +1572,14 @@ tft_compass_cardinal_NW:
     return
 
 compass_heading_common:
+	call	speed_normal
+    rcall   TFT_get_compass
+    rcall   TFT_get_compass
+    rcall   TFT_get_compass
+    rcall   TFT_get_compass
+    rcall   TFT_get_compass
+    rcall   TFT_get_compass
     extern  compass
-    extern  compass_filter
-    rcall   TFT_get_compass
-    rcall   TFT_get_compass
-    rcall   TFT_get_compass
-    rcall   TFT_get_compass
-    rcall   TFT_get_compass
-    rcall   TFT_get_compass
     call    compass                     ; Do compass corrections.
     banksel common
   
@@ -1608,9 +1608,9 @@ compass_heading_common:
     return
 
 TFT_get_compass:
-	call	speed_normal
     call    I2C_RX_compass              ; Test Compass
     call    I2C_RX_accelerometer        ; Test Accelerometer
+    extern  compass_filter
     call    compass_filter              ; Filter Raw compass + accel readings.
     banksel common
     return
