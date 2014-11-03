@@ -64,6 +64,9 @@ do_togglegf:
 do_switch_to_sensor:
     movlw   .1                      ; Switch to Sensor
     movff   WREG,opt_ccr_mode       ; =0: Fixed SP, =1: Sensor
+    bsf     voting_logic_sensor1
+    bsf     voting_logic_sensor2
+    bsf     voting_logic_sensor3
     bra     do_switch_sp2
 
 do_divemode_resetavr:
