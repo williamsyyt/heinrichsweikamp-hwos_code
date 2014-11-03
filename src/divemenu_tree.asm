@@ -67,6 +67,8 @@ do_switch_to_sensor:
     bsf     voting_logic_sensor1
     bsf     voting_logic_sensor2
     bsf     voting_logic_sensor3
+    extern  divemode_setup_sensor_values
+    call    divemode_setup_sensor_values    ; Setup sensor values
     bra     do_switch_sp2
 
 do_divemode_resetavr:

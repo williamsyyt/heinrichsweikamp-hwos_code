@@ -389,6 +389,7 @@ divemodemode_togglegf:                  ; Toggle aGF/GF
     movff   WREG,char_O_deco_status     ; Restart decoplan computation
     return
 
+    global  divemode_setup_sensor_values
 divemode_setup_sensor_values:
     ; sum up sensor values (in xA:2) and active sensors in (xB:2)
     clrf    xB+0
