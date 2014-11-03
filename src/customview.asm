@@ -58,7 +58,7 @@ customview_1sec_view2:
     call    TFT_update_avr_stopwatch        ; Update average depth and stopwatch
     return
 customview_1sec_view1:
-    call    TFT_update_hud                  ; Update HUD data
+    call    TFT_update_ppo2_sensors         ; Update Sensor data
     return
 customview_1sec_view4:
     call    TFT_ead_end_tissues_clock       ; Update EAD/END, Tissues and clock
@@ -381,7 +381,7 @@ customview_init_view1:
     bsf     dive_hud2_displayed         ; Set display flag
     bsf     dive_hud3_displayed         ; Set display flag
     call    TFT_hud_mask                ; Setup HUD mask
-    call    TFT_update_hud              ; Update HUD data
+    call    TFT_update_ppo2_sensors     ; Update Sensor data
 	bra		customview_toggle_exit	
 
 customview_init_view2:

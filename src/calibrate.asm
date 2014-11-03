@@ -15,7 +15,7 @@
 
 calibrate     CODE
 
-    global  check_sensors           ; Check O2 sensor thresholds for fallback
+    global  check_sensors           ; Check O2 sensor thresholds for fallback and voting logic
 check_sensors:
     ; Check min_mv
 	movff	o2_mv_sensor1+0, sub_a+0
@@ -25,9 +25,9 @@ check_sensors:
 	movlw	HIGH	min_mv
 	movwf	sub_b+1
 	call	sub16			;  sub_c = sub_a - sub_b
-    bsf     use_02_sensor1  ;=1: Use this sensor for deco
+    bsf     use_O2_sensor1  ;=1: Use this sensor for deco
 	btfsc	neg_flag
-	bcf     use_02_sensor1  ;=1: Use this sensor for deco
+	bcf     use_O2_sensor1  ;=1: Use this sensor for deco
 
 	movff	o2_mv_sensor2+0, sub_a+0
 	movff	o2_mv_sensor2+1, sub_a+1
@@ -36,9 +36,9 @@ check_sensors:
 	movlw	HIGH	min_mv
 	movwf	sub_b+1
 	call	sub16			;  sub_c = sub_a - sub_b
-	bsf     use_02_sensor2  ;=1: Use this sensor for deco
+	bsf     use_O2_sensor2  ;=1: Use this sensor for deco
 	btfsc	neg_flag
-	bcf     use_02_sensor2  ;=1: Use this sensor for deco
+	bcf     use_O2_sensor2  ;=1: Use this sensor for deco
 
 	movff	o2_mv_sensor3+0, sub_a+0
 	movff	o2_mv_sensor3+1, sub_a+1
@@ -47,9 +47,9 @@ check_sensors:
 	movlw	HIGH	min_mv
 	movwf	sub_b+1
 	call	sub16			;  sub_c = sub_a - sub_b
-	bsf     use_02_sensor3  ;=1: Use this sensor for deco
+	bsf     use_O2_sensor3  ;=1: Use this sensor for deco
 	btfsc	neg_flag
-	bcf     use_02_sensor3  ;=1: Use this sensor for deco
+	bcf     use_O2_sensor3  ;=1: Use this sensor for deco
     ; Check max_mv
 	movff	o2_mv_sensor1+0, sub_a+0
 	movff	o2_mv_sensor1+1, sub_a+1
@@ -59,7 +59,7 @@ check_sensors:
 	movwf	sub_b+1
 	call	sub16			;  sub_c = sub_a - sub_b
 	btfss	neg_flag
-	bcf     use_02_sensor1  ;=1: Use this sensor for deco
+	bcf     use_O2_sensor1  ;=1: Use this sensor for deco
 
 	movff	o2_mv_sensor2+0, sub_a+0
 	movff	o2_mv_sensor2+1, sub_a+1
@@ -69,7 +69,7 @@ check_sensors:
 	movwf	sub_b+1
 	call	sub16			;  sub_c = sub_a - sub_b
 	btfss	neg_flag
-	bcf     use_02_sensor2  ;=1: Use this sensor for deco
+	bcf     use_O2_sensor2  ;=1: Use this sensor for deco
 
 	movff	o2_mv_sensor3+0, sub_a+0
 	movff	o2_mv_sensor3+1, sub_a+1
@@ -79,29 +79,65 @@ check_sensors:
 	movwf	sub_b+1
 	call	sub16			;  sub_c = sub_a - sub_b
 	btfss	neg_flag
-	bcf     use_02_sensor3  ;=1: Use this sensor for deco
+	bcf     use_O2_sensor3  ;=1: Use this sensor for deco
 
     btfss   hud_connection_ok   ;=1: HUD connection ok
     bra     check_sensor2       ; No HUD/Digital data
 
     ; Copy disable flags from digital input
     btfss   sensor1_active
-    bcf     use_02_sensor1
+    bcf     use_O2_sensor1
     btfss   sensor2_active
-    bcf     use_02_sensor2
+    bcf     use_O2_sensor2
     btfss   sensor3_active
-    bcf     use_02_sensor3
-    return
+    bcf     use_O2_sensor3
+    bra     check_sensor3           ; Check for voting logic
 
 check_sensor2:
 ; Copy disable flags from internal calibration routine
     btfss   sensor1_calibrated_ok
-    bcf     use_02_sensor1
+    bcf     use_O2_sensor1
     btfss   sensor2_calibrated_ok
-    bcf     use_02_sensor2
+    bcf     use_O2_sensor2
     btfss   sensor3_calibrated_ok
-    bcf     use_02_sensor3
+    bcf     use_O2_sensor3
+check_sensor3:                      ; Check for voting logic
+    bsf     voting_logic_sensor1
+    movff   o2_ppo2_sensor1,temp1
+    rcall   check_sensor_voting_common
+    incfsz  WREG                    ; Was Wreg=255?
+    bcf     voting_logic_sensor1    ; Yes, ignore this sensor
+    bsf     voting_logic_sensor2
+    movff   o2_ppo2_sensor2,temp1
+    rcall   check_sensor_voting_common
+    incfsz  WREG                    ; Was Wreg=255?
+    bcf     voting_logic_sensor2    ; Yes, ignore this sensor
+    bsf     voting_logic_sensor3
+    movff   o2_ppo2_sensor3,temp1
+    rcall   check_sensor_voting_common
+    incfsz  WREG                    ; Was Wreg=255?
+    bcf     voting_logic_sensor3    ; Yes, ignore this sensor
     return
+
+
+check_sensor_voting_common:
+    movf    temp1,W
+    cpfsgt  sensor_setpoint
+    bra     check_sensor_voting_common2     ; temp1<sensor_setpoint
+    ; temp1>sensor_setpoint
+    movf    temp1,W
+    subwf   sensor_setpoint,W
+    movwf   temp1
+check_sensor_voting_common1:
+    movlw   sensor_voting_logic_threshold   ; Threshold in 0.01bar
+    cpfsgt  temp1
+    retlw   .255                            ; Within range
+    retlw   .0                              ; Out of range
+check_sensor_voting_common2:
+    ; temp1<sensor_setpoint
+    movf    sensor_setpoint,W
+    subwf   temp1,F
+    bra     check_sensor_voting_common1
 
 	global	calibrate_mix
 calibrate_mix:
@@ -204,23 +240,23 @@ calibrate_mix2:
     bsf     sensor3_calibrated_ok   ; Set flags prior check
     rcall   check_sensors           ; Check O2 sensor thresholds min_mv and max_mv and set use_02_sensorX flags
     ; initialise internal calibration flags
-    btfss	use_02_sensor1          ; Sensor out of range?
+    btfss	use_O2_sensor1          ; Sensor out of range?
     bcf     sensor1_calibrated_ok   ; Yes, disable this sensor
-    btfss	use_02_sensor2          ; Sensor out of range?
+    btfss	use_O2_sensor2          ; Sensor out of range?
     bcf     sensor2_calibrated_ok   ; Yes, disable this sensor
-    btfss	use_02_sensor3          ; Sensor out of range?
+    btfss	use_O2_sensor3          ; Sensor out of range?
     bcf     sensor3_calibrated_ok   ; Yes, disable this sensor
 
 	; When no sensor is found, enable all three to show error state
-	btfsc	use_02_sensor1
+	btfsc	use_O2_sensor1
 	return
-	btfsc	use_02_sensor2
+	btfsc	use_O2_sensor2
 	return
-	btfsc	use_02_sensor3
+	btfsc	use_O2_sensor3
 	return
-	bsf		use_02_sensor1
-	bsf		use_02_sensor2
-	bsf		use_02_sensor3
+	bsf		use_O2_sensor1
+	bsf		use_O2_sensor2
+	bsf		use_O2_sensor3
 	; Clear factors
     banksel opt_x_s1+0
 	clrf	opt_x_s1+0
@@ -268,9 +304,9 @@ compute_ppo2_common:
     tstfsz  xC+1                        ; ppO2 is higher then 2.55bar?
     setf    xC+0                        ; Yes.
 	movff	xC+0,o2_ppo2_sensor1		; result in 0.01bar
-    ; Set to zero if sensor is not active!
-	btfss	use_02_sensor1
-	clrf	o2_ppo2_sensor1
+;    ; Set to zero if sensor is not active!
+;	btfss	use_O2_sensor1
+;	clrf	o2_ppo2_sensor1
 
 	; o2_mv_sensor2:2 * opt_x_s1:2 = o2_ppo2_sensor2/10000
 	movff	o2_mv_sensor2+0,xA+0
@@ -290,9 +326,9 @@ compute_ppo2_common:
     tstfsz  xC+1                        ; ppO2 is higher then 2.55bar?
     setf    xC+0                        ; Yes.
 	movff	xC+0,o2_ppo2_sensor2		; result in 0.01bar
-	; Set to zero if sensor is not active!
-	btfss	use_02_sensor2
-	clrf	o2_ppo2_sensor2
+;	; Set to zero if sensor is not active!
+;	btfss	use_O2_sensor2
+;	clrf	o2_ppo2_sensor2
 
 	; o2_mv_sensor3:2 * opt_x_s1:2 = o2_ppo2_sensor3/10000
 	movff	o2_mv_sensor3+0,xA+0
@@ -312,9 +348,9 @@ compute_ppo2_common:
     tstfsz  xC+1                        ; ppO2 is higher then 2.55bar?
     setf    xC+0                        ; Yes.
 	movff	xC+0,o2_ppo2_sensor3		; result in 0.01bar
-	; Set to zero if sensor is not active!
-	btfss	use_02_sensor3
-	clrf	o2_ppo2_sensor3
+;	; Set to zero if sensor is not active!
+;	btfss	use_O2_sensor3
+;	clrf	o2_ppo2_sensor3
 	return							; Done.
 
 

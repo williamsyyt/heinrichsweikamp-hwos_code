@@ -127,6 +127,8 @@
 #DEFINE	wake_up_from_sleep		.1160	; [mbar]
 #DEFINE	gf_display_threshold	.20		; [%]
 #DEFINE simulator_timeout       .15     ; [s]
+#DEFINE sensor_voting_logic_threshold   .20 ; Threshold in 0.01bar
+
 
 ; Surface mode limits and thresholds
 #DEFINE	cns_display_surface_high .70	; [%]
@@ -628,9 +630,9 @@ opt_flip_screen         res 1   ; =1: Flip the screen
 
 #DEFINE s8_digital              flag10,0; =1: Digital I/O
 #DEFINE menu_show_sensors2      flag10,1; =1: Update mV data in calibration menu
-#DEFINE use_02_sensor1          flag10,2; =1: Use this sensor for deco
-#DEFINE use_02_sensor2          flag10,3; =1: Use this sensor for deco
-#DEFINE use_02_sensor3          flag10,4; =1: Use this sensor for deco
+#DEFINE use_O2_sensor1          flag10,2; =1: Use this sensor for deco
+#DEFINE use_O2_sensor2          flag10,3; =1: Use this sensor for deco
+#DEFINE use_O2_sensor3          flag10,4; =1: Use this sensor for deco
 #DEFINE setpoint_fallback       flag10,5; =1: Fallback to SP1 due to external O2 sensor failure
 #DEFINE	blinking_setpoint       flag10,6; =1: SP is blinking
 #DEFINE flip_screen             flag10,7; =1: Screen is flipped by 180°
@@ -638,7 +640,9 @@ opt_flip_screen         res 1   ; =1: Flip the screen
 #DEFINE sensor1_calibrated_ok   flag11,0; =1: This sensor has been calibrated ok
 #DEFINE sensor2_calibrated_ok   flag11,1; =1: This sensor has been calibrated ok
 #DEFINE sensor3_calibrated_ok   flag11,2; =1: This sensor has been calibrated ok
-
+#DEFINE voting_logic_sensor1    flag11,3; =1: This sensor is within the voting logic threshold
+#DEFINE voting_logic_sensor2    flag11,4; =1: This sensor is within the voting logic threshold
+#DEFINE voting_logic_sensor3    flag11,5; =1: This sensor is within the voting logic threshold
 
 ;=============================================================================
 ; C-code Routines

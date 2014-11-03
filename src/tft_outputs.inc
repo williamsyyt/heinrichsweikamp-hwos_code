@@ -81,7 +81,7 @@ TFT_color_code macro color_code_temp
     extern  TFT_clear_warning_text
     extern  TFT_clear_warning_text_2nd_row
     extern  TFT_warning_gf
-    extern  TFT_update_hud                      ; Update HUD data
+    extern  TFT_update_ppo2_sensors             ; Update Sensor data
     extern  TFT_hud_mask                        ; The HUD mask
     extern  TFT_mask_avr_stopwatch              ; Show mask for average depth and stopwatch
     extern  TFT_update_avr_stopwatch            ; Update average depth and stopwatch

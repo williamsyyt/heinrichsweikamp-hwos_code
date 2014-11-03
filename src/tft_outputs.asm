@@ -952,7 +952,7 @@ TFT_hud_mask:
 TFT_hud_voltages:                    ; Show HUD details
     WIN_SMALL .5,dive_hud_data_row
     call	TFT_standard_color
-    btfss   use_02_sensor1
+    btfss   use_O2_sensor1
     call    TFT_warnings_color
     movff   o2_mv_sensor1+0,lo
     movff   o2_mv_sensor1+1,hi
@@ -962,7 +962,7 @@ TFT_hud_voltages:                    ; Show HUD details
     STRCAT_PRINT "mV  "
     WIN_SMALL .55,dive_hud_data_row
     call	TFT_standard_color
-    btfss   use_02_sensor2
+    btfss   use_O2_sensor2
     call    TFT_warnings_color
     movff   o2_mv_sensor2+0,lo
     movff   o2_mv_sensor2+1,hi
@@ -972,7 +972,7 @@ TFT_hud_voltages:                    ; Show HUD details
     STRCAT_PRINT "mV  "
     WIN_SMALL .105,dive_hud_data_row
     call	TFT_standard_color
-    btfss   use_02_sensor3
+    btfss   use_O2_sensor3
     call    TFT_warnings_color
     movff   o2_mv_sensor3+0,lo
     movff   o2_mv_sensor3+1,hi
@@ -983,65 +983,80 @@ TFT_hud_voltages:                    ; Show HUD details
     call	TFT_standard_color
     return
 
-    global  TFT_update_hud             ; Update HUD data
-TFT_update_hud:
+    global  TFT_update_ppo2_sensors         ; Update Sensor data
+TFT_update_ppo2_sensors:
     ; show three sensors
     bsf     leftbind
-    movff   o2_ppo2_sensor1,lo
-    tstfsz  lo              ; ppO2=0 (No data/failure)?
-    bra     TFT_update_hud1 ; No
+    btfsc   use_O2_sensor1      ; Use Sensor 1?
+    bra     TFT_update_hud1     ; Yes
     btfss   dive_hud1_displayed         ; Was the sensor shown?
     bra     TFT_update_hud2             ; Yes, skip clear
     bcf     dive_hud1_displayed         ; No, clear display flag
-    WIN_BOX_BLACK   dive_hud_data_row, dive_hud_data_row+.30, dive_hud_sensor1_column, dive_hud_sensor2_column	; top, bottom, left, right
+    WIN_BOX_BLACK   dive_hud_data_row, dive_hud_data_row+.31, dive_hud_sensor1_column, dive_hud_sensor2_column	; top, bottom, left, right
 	WIN_STD dive_hud_sensor1_column+.7,dive_hud_data_row+.5
    	call	TFT_standard_color
     STRCPY_PRINT "---"
     bra     TFT_update_hud2 ; Skip Sensor 1
 TFT_update_hud1:
     WIN_MEDIUM dive_hud_sensor1_column,dive_hud_data_row
+    movff   o2_ppo2_sensor1,lo
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
+    btfss   voting_logic_sensor1        ; Sensor within voting logic?
+    bsf     win_invert                  ; No, invert output...
+    btfss   voting_logic_sensor1
+    call    TFT_warnings_color          ; ... and draw in red
     clrf    hi
     output_16dp  .3         ; x.xx bar
     STRCAT_PRINT ""
+    bcf     win_invert
     bsf     dive_hud1_displayed         ; Set display flag
 TFT_update_hud2:
-    movff   o2_ppo2_sensor2,lo
-    tstfsz  lo              ; ppO2=0 (No data/failure)?
-    bra     TFT_update_hud3 ; No
+    btfsc   use_O2_sensor2      ; Use Sensor 2?
+    bra     TFT_update_hud3     ; Yes
     btfss   dive_hud2_displayed         ; Was the sensor shown?
     bra     TFT_update_hud4             ; Yes, skip clear
     bcf     dive_hud2_displayed         ; No, clear display flag
-    WIN_BOX_BLACK   dive_hud_data_row, dive_hud_data_row+.30, dive_hud_sensor2_column, dive_hud_sensor3_column	; top, bottom, left, right
+    WIN_BOX_BLACK   dive_hud_data_row, dive_hud_data_row+.31, dive_hud_sensor2_column, dive_hud_sensor3_column	; top, bottom, left, right
     WIN_STD dive_hud_sensor2_column+.7,dive_hud_data_row+.5
    	call	TFT_standard_color
     STRCPY_PRINT "---"
     bra     TFT_update_hud4 ; Skip Sensor 2
 TFT_update_hud3:
     WIN_MEDIUM dive_hud_sensor2_column,dive_hud_data_row
+    movff   o2_ppo2_sensor2,lo
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
+    btfss   voting_logic_sensor2        ; Sensor within voting logic?
+    bsf     win_invert                  ; No, invert output...
+    btfss   voting_logic_sensor2
+    call    TFT_warnings_color          ; ... and draw in red
     clrf    hi
     output_16dp  .3         ; x.xx bar
     STRCAT_PRINT ""
+    bcf     win_invert
     bsf     dive_hud2_displayed         ; Set display flag
 TFT_update_hud4:
-    movff   o2_ppo2_sensor3,lo
-    tstfsz  lo              ; ppO2=0 (No data/failure)?
-    bra     TFT_update_hud5 ; No
+    btfsc   use_O2_sensor3      ; Use Sensor 3?
+    bra     TFT_update_hud5     ; Yes
     btfss   dive_hud3_displayed         ; Was the sensor shown?
     bra     TFT_update_hud6             ; Yes, skip clear
     bcf     dive_hud3_displayed         ; No, clear display flag
-    WIN_BOX_BLACK   dive_hud_data_row, dive_hud_data_row+.30, dive_hud_sensor3_column, .159 ; top, bottom, left, right
+    WIN_BOX_BLACK   dive_hud_data_row, dive_hud_data_row+.31, dive_hud_sensor3_column, .159 ; top, bottom, left, right
     WIN_STD dive_hud_sensor3_column+.7,dive_hud_data_row+.5
    	call	TFT_standard_color
     STRCPY_PRINT "---"
     bra     TFT_update_hud6 ; Skip Sensor 3
 TFT_update_hud5:
     WIN_MEDIUM dive_hud_sensor3_column,dive_hud_data_row
+    movff   o2_ppo2_sensor3,lo
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
+    btfss   voting_logic_sensor3        ; Sensor within voting logic?
+    bsf     win_invert                  ; No, invert output...
+    btfss   voting_logic_sensor3
+    call    TFT_warnings_color          ; ... and draw in red
     clrf    hi
     output_16dp  .3         ; x.xx bar
     STRCAT_PRINT ""
+    bcf     win_invert
     bsf     dive_hud3_displayed         ; Set display flag
 TFT_update_hud6:
     bcf     leftbind
@@ -1053,39 +1068,39 @@ TFT_surface_sensor:
     ; show three sensors
     bsf     leftbind
     WIN_SMALL surf_hud_sensor1_column,surf_hud_sensor1_row
-    movff   o2_ppo2_sensor1,lo
-    tstfsz  lo              ; ppO2=0 (No data/failure)?
-    bra     TFT_surface_sensor1 ; No
+    btfsc   use_O2_sensor1      ; Use Sensor 1?
+    bra     TFT_surface_sensor1 ; Yes
    	call	TFT_standard_color
     STRCPY_PRINT "--- "
     bra     TFT_surface_sensor2 ; Skip Sensor 1
 TFT_surface_sensor1:
+    movff   o2_ppo2_sensor1,lo
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
     clrf    hi
     output_16dp  .3         ; x.xx bar
     STRCAT_PRINT ""
 TFT_surface_sensor2:
     WIN_SMALL surf_hud_sensor2_column,surf_hud_sensor2_row
-    movff   o2_ppo2_sensor2,lo
-    tstfsz  lo              ; ppO2=0 (No data/failure)?
-    bra     TFT_surface_sensor3 ; No
+    btfsc   use_O2_sensor2      ; Use Sensor 2?
+    bra     TFT_surface_sensor3 ; Yes
    	call	TFT_standard_color
     STRCPY_PRINT "--- "
     bra     TFT_surface_sensor4 ; Skip Sensor 2
 TFT_surface_sensor3:
+    movff   o2_ppo2_sensor2,lo
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
     clrf    hi
     output_16dp  .3         ; x.xx bar
     STRCAT_PRINT ""
 TFT_surface_sensor4:
     WIN_SMALL surf_hud_sensor3_column,surf_hud_sensor3_row
-    movff   o2_ppo2_sensor3,lo
-    tstfsz  lo              ; ppO2=0 (No data/failure)?
-    bra     TFT_surface_sensor5 ; No
+    btfsc   use_O2_sensor3      ; Use Sensor 3?
+    bra     TFT_surface_sensor5 ; Yes
    	call	TFT_standard_color
     STRCPY_PRINT "--- "
     bra     TFT_surface_sensor6 ; Skip Sensor 3
 TFT_surface_sensor5:
+    movff   o2_ppo2_sensor3,lo
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
     clrf    hi
     output_16dp  .3         ; x.xx bar

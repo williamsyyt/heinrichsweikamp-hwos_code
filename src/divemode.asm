@@ -310,11 +310,11 @@ calc_deko_divemode2:
     btfsc   is_bailout                      ; In bailout?
     bra     calc_deko_divemode2a            ; Never fallback in bailout
     ; Check if we should fallback to SP1
-  	btfsc	use_02_sensor1
+  	btfsc	use_O2_sensor1
     bra     calc_deko_divemode2a            ; At least one sensor is active, no fallback
-	btfsc	use_02_sensor2
+	btfsc	use_O2_sensor2
 	bra     calc_deko_divemode2a            ; At least one sensor is active, no fallback
-	btfsc	use_02_sensor3
+	btfsc	use_O2_sensor3
 	bra     calc_deko_divemode2a            ; At least one sensor is active, no fallback
     ; No sensor in use -> fallback
     movff   char_I_setpoint_cbar+0,char_I_const_ppO2    ; Setup fixed Setpoint (Always fallback to SP1), overwrite sensor result
@@ -395,7 +395,9 @@ divemode_setup_sensor_values:
     clrf    xB+1
     clrf    xA+0
     clrf    xA+1
-    btfss   use_02_sensor1                  ; Sensor1 active?
+    btfss   use_O2_sensor1                  ; Sensor1 active?
+    bra     divemode_setup_sensor_values2   ; No
+    btfss   voting_logic_sensor1            ; Sensor within voting logic?
     bra     divemode_setup_sensor_values2   ; No
     movf    o2_ppo2_sensor1,W
     addwf   xA+0
@@ -403,7 +405,9 @@ divemode_setup_sensor_values:
     addwfc  xA+1                            ; Add into xA:2
     incf    xB+0,F                          ; Add a sensor
 divemode_setup_sensor_values2:
-    btfss   use_02_sensor2                  ; Sensor2 active?
+    btfss   use_O2_sensor2                  ; Sensor2 active?
+    bra     divemode_setup_sensor_values3   ; No
+    btfss   voting_logic_sensor2            ; Sensor within voting logic?
     bra     divemode_setup_sensor_values3   ; No
     movf    o2_ppo2_sensor2,W
     addwf   xA+0
@@ -411,7 +415,9 @@ divemode_setup_sensor_values2:
     addwfc  xA+1                            ; Add into xA:2
     incf    xB+0,F                          ; Add a sensor
 divemode_setup_sensor_values3:
-    btfss   use_02_sensor3                  ; Sensor3 active?
+    btfss   use_O2_sensor3                  ; Sensor3 active?
+    bra     divemode_setup_sensor_values4   ; No
+    btfss   voting_logic_sensor3            ; Sensor within voting logic?
     bra     divemode_setup_sensor_values4   ; No
     movf    o2_ppo2_sensor3,W
     addwf   xA+0
@@ -1223,7 +1229,12 @@ dive_boot_oc:
     return
 
 dive_boot_cc:
+    call    compute_ppo2                    ; compute mv_sensorX and ppo2_sensorX arrays
+    bsf     voting_logic_sensor1
+    bsf     voting_logic_sensor2
+    bsf     voting_logic_sensor3
     rcall   divemode_setup_sensor_values    ; setup sensor values
+
     TSTOSS  opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor
     movff   char_I_setpoint_cbar+0,char_I_const_ppO2    ; Setup fixed Setpoint (Always start with SP1)
     extern  get_first_dil_to_WREG
