@@ -108,7 +108,6 @@ diveloop_loop1x:
 ;    call    TFT_active_gas_divemode         ; Update Setpoint every second
 
     call    compute_ppo2                    ; compute mv_sensorX and ppo2_sensorX arrays
-    call    check_sensors                   ; Check O2 sensor thresholds for fallback
 
 diveloop_loop3:
 	rcall	test_switches_divemode			; Check switches in divemode
@@ -282,6 +281,18 @@ set_actual_ppo2_common:
     movff		char_I_const_ppO2, char_I_actual_ppO2	; ...copy last ppO2 to buffer register
     return
 
+check_fallback_clear:
+    call    check_sensors                   ; Setups "use_O2_sensorX" flags
+    ; Copy use flags to voting logic flags in case we are no longer in fallback
+    btfsc   use_O2_sensor1
+    bsf     voting_logic_sensor1
+    btfsc   use_O2_sensor2
+    bsf     voting_logic_sensor2
+    btfsc   use_O2_sensor3
+    bsf     voting_logic_sensor3
+    rcall   divemode_setup_sensor_values    ; Setup sensor values
+    call    check_sensors                   ; Check O2 sensor thresholds for fallback
+    return
 
 calc_deko_divemode2:
 	bcf		twosecupdate
@@ -294,6 +305,10 @@ calc_deko_divemode2:
 	extern	deco_setup_dive
 	call	deco_setup_dive				;  Pass all parameters to the C code
 
+
+    btfsc   setpoint_fallback               ; Are we in Fallback?
+    rcall   check_fallback_clear            ; Yes, check if we still have fallback condition
+
     bcf     setpoint_fallback               ; =1: Fallback to SP1 due to external O2 sensor failure
 
     btfss   FLAG_ccr_mode                   ; In CCR mode?
@@ -302,6 +317,7 @@ calc_deko_divemode2:
     TSTOSS  opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor
     bra     calc_deko_divemode2a
     rcall   divemode_setup_sensor_values    ; Setup sensor values
+    call    check_sensors                   ; Check O2 sensor thresholds for fallback
     movff   sensor_setpoint,char_I_const_ppO2; Copy sensor result
 
     TSTOSS  opt_sensor_fallback             ; =1: Fallback to SP1 when sensor is lost

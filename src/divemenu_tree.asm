@@ -15,6 +15,7 @@
 #include    "tft_outputs.inc"
 #include    "customview.inc"
 #include    "strings.inc"
+#include    "calibrate.inc"
 
 divegui     CODE
 ;=============================================================================
@@ -69,6 +70,7 @@ do_switch_to_sensor:
     bsf     voting_logic_sensor3
     extern  divemode_setup_sensor_values
     call    divemode_setup_sensor_values    ; Setup sensor values
+    call    check_sensors                   ; Check O2 sensor thresholds for fallback
     bra     do_switch_sp2
 
 do_divemode_resetavr:
