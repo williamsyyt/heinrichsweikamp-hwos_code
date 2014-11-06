@@ -1241,8 +1241,10 @@ dive_boot_oc:
     extern  get_first_gas_to_WREG
     call    get_first_gas_to_WREG           ; Gets first gas (0-4) into WREG
     movff   WREG,char_I_first_gas           ; Copy for compatibility
-	movff	WREG,active_gas                 ; Set for logbook and display
     rcall   setup_gas_registers             ; With WREG=Gas 0-4
+    banksel char_I_first_gas
+    incf    char_I_first_gas,F              ; 0-4 -> 1-5
+    banksel common
     return
 
 dive_boot_cc:
@@ -1257,8 +1259,10 @@ dive_boot_cc:
     extern  get_first_dil_to_WREG
     call    get_first_dil_to_WREG           ; Gets first gas (0-4) into WREG
     movff   WREG,char_I_first_gas           ; Copy for compatibility
-	movff	WREG,active_gas                 ; Set for logbook and display
     rcall   setup_dil_registers             ; With WREG=Gas 0-4
+    banksel char_I_first_gas
+    incf    char_I_first_gas,F              ; 0-4 -> 1-5
+    banksel common
     return
 
 diveloop_boot:
