@@ -130,6 +130,9 @@ deco_setup:
 
         rcall   get_first_gas_to_WREG           ; Gets first gas (0-4) into WREG
         movff   WREG,char_I_first_gas           ; Copy for compatibility
+        banksel char_I_first_gas
+        incf    char_I_first_gas,F              ; 0-4 -> 1-5
+        banksel common
         extern  setup_gas_registers
         call    setup_gas_registers             ; With WREG=Gas 0-4, set current N2/He/O2 ratios.
         extern  set_actual_ppo2
