@@ -330,6 +330,14 @@ get_analog_inputs:			; starts ADC and waits until finished
     bcf     STATUS,C
     rrcf    o2_mv_sensor1+1,F           ; /2
     rrcf    o2_mv_sensor1+0,F
+
+    movlw   HIGH    ignore_mv
+    cpfsgt  o2_mv_sensor1+1     ; >ignore_mv?
+    bra     get_analog_inputs2a ; No
+    ; Yes, ignore this reading
+    clrf    o2_mv_sensor1+1
+    clrf    o2_mv_sensor1+0
+get_analog_inputs2a:
     ; Ignore 1,2mV noise for not-connected inputs
     tstfsz  o2_mv_sensor1+1     ; >25,5mV?
     bra     get_analog_inputs2  ; Yes, skip here
@@ -350,6 +358,14 @@ get_analog_inputs2:
     bcf     STATUS,C
     rrcf    o2_mv_sensor2+1,F           ; /2
     rrcf    o2_mv_sensor2+0,F
+
+    movlw   HIGH    ignore_mv
+    cpfsgt  o2_mv_sensor2+1     ; >ignore_mv?
+    bra     get_analog_inputs3a ; No
+    ; Yes, ignore this reading
+    clrf    o2_mv_sensor2+1
+    clrf    o2_mv_sensor2+0
+get_analog_inputs3a:
     ; Ignore 1,2mV noise for not-connected inputs
     tstfsz  o2_mv_sensor2+1     ; >25,5mV?
     bra     get_analog_inputs3  ; Yes, skip here
@@ -370,6 +386,14 @@ get_analog_inputs3:
     bcf     STATUS,C
     rrcf    o2_mv_sensor3+1,F           ; /2
     rrcf    o2_mv_sensor3+0,F
+
+    movlw   HIGH    ignore_mv
+    cpfsgt  o2_mv_sensor3+1     ; >ignore_mv?
+    bra     get_analog_inputs4a ; No
+    ; Yes, ignore this reading
+    clrf    o2_mv_sensor3+1
+    clrf    o2_mv_sensor3+0
+get_analog_inputs4a:
     ; Ignore 1,2mV noise for not-connected inputs
     tstfsz  o2_mv_sensor3+1     ; >25,5mV?
     bra     get_analog_inputs4  ; Yes, skip here
