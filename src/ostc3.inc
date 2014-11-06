@@ -79,6 +79,7 @@
 ; External O2 cell input parameters
 #DEFINE	min_mv				.80			; = 8mV
 #DEFINE max_mv              .2500       ; = 250mV
+#DEFINE ignore_mv           .3500       ; = 350mV (To suppress ghost readings for long, open cables)
 
 ; Profile recording parameters
 #DEFINE	logbook_profile_version	0x23
