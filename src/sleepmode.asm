@@ -55,12 +55,6 @@ sleeploop_loop:
 	btfsc	onesecupdate			; one second in sleep?
 	rcall	onesec_sleep			; check switches, check pressure sensor, etc.
 
-	btfsc	oneminupdate			; one minute in sleep?
-	rcall	onemin_sleep			; do oneminute tasks, e.g. calculate desaturation
-
-	btfsc	onehourupdate			; one hour in sleep?
-    rcall   onehour_sleep           ; Yes
-
 	btfss	sleepmode				; wake up? (This bit will be set in other routines)
 	goto	restart					; yes
 
@@ -84,6 +78,9 @@ onehour_sleep:
     return
 
 onemin_sleep:
+	btfsc	onehourupdate			; one hour in sleep?
+    rcall   onehour_sleep           ; Yes
+
     ;---- adjust airpressure compensation any 15 minutes
 	incf	divemins+1,F			; counts to 14...
 	movlw	d'14'
@@ -125,6 +122,9 @@ onemin_sleep2:
 	return
 
 onesec_sleep:
+	btfsc	oneminupdate			; one minute in sleep?
+	rcall	onemin_sleep			; do oneminute tasks, e.g. calculate desaturation
+
     btfsc   c3_hardware
     call    get_battery_voltage     ; Check for charger
 
@@ -204,10 +204,8 @@ sleepmode_sleep:
 	clrf		T7GCON				; Reset Timer7 Gate Control register
 	movlw		b'10001101'			; 1:1 Prescaler -> 2seconds@32768Hz, not synced
 	movwf		T7CON
-    banksel 	common              ; Bank1
 	sleep
-	nop	
-	banksel 	0xF16				; Addresses, F16h through F5Fh, are also used by SFRs, but are not part of the Access RAM.
+	sleep
 	clrf		T7GCON				; Reset Timer7 Gate Control register
 	movlw		b'10001001'			; 1:1 Prescaler -> 2seconds@32768Hz, synced
 	movwf		T7CON
