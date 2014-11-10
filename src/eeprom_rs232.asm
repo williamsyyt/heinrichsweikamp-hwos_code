@@ -177,7 +177,8 @@ enable_rs232_2:
 disable_rs232:
 	clrf	RCSTA1
 	clrf	TXSTA1					; UART disable
-	bsf		TRISC,6					; Input
+    bcf     PORTC,6                 ; TX hard to GND
+;	bsf		TRISC,6					; Input
 	return
 
 	global	rs232_wait_tx

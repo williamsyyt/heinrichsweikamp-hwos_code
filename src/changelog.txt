@@ -1,3 +1,9 @@
+[1.62]
+
+- Beta Version -
+CHANGE: (Slightly) reduce current consumption in Eco and sleep mode
+NEW: Allow auto-return from setpoint fallback
+
 [1.61]
 
 - Beta Version -

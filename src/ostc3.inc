@@ -184,10 +184,10 @@
 #DEFINE	ambient_light_max_high_36V	.175
 #DEFINE	ambient_light_max_high_c3  	.240
 #DEFINE	ambient_light_max_high_15V  .150
-#DEFINE	ambient_light_min_high		.40
+#DEFINE	ambient_light_min_high		.35
 #DEFINE	ambient_light_max_medium 	.135
-#DEFINE	ambient_light_min_medium 	.30
-#DEFINE	ambient_light_max_eco		.90
+#DEFINE	ambient_light_min_medium 	.25
+#DEFINE	ambient_light_max_eco		.75
 #DEFINE	ambient_light_min_eco		.15         ; Must be the lowest value!
 
 ; IR Link timeout
