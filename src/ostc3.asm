@@ -15,7 +15,7 @@
 ;----------------------------- CONFIG ---------------------------------
     CONFIG	RETEN = OFF          ;Disabled - Controlled by SRETEN bit
     CONFIG	SOSCSEL = HIGH       ;High Power SOSC circuit selected
-    CONFIG XINST = OFF          ;Code won't excute in extended mode...
+    CONFIG  XINST = OFF          ;Code won't excute in extended mode...
     CONFIG	FOSC = INTIO2        ;Internal RC oscillator, no clock-out
     CONFIG	PLLCFG = OFF
     CONFIG	IESO = OFF           ;Disabled
@@ -43,6 +43,9 @@ init_ostc3:
 	movwf	OSCTUNE				; 4x PLL Disable (Bit6) - only works with 8 or 16MHz (=32 or 64MHz)
 	bcf		RCON,SBOREN			; Bown-Out off
 	bcf		RCON,IPEN			; Priority Interrupts off
+    banksel WDTCON
+    movlw   b'10000000'
+    movwf   WDTCON              ; Setup Watchdog 
 
 ; I/O Ports
 	banksel 0xF16				; Addresses, F16h through F5Fh, are also used by SFRs, but are not part of the Access RAM.
