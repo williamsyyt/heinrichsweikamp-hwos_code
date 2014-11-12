@@ -1143,7 +1143,7 @@ TFT_menu_hud:            ; Yes, update HUD data
     STRCAT_PRINT "mV "
     WIN_SMALL   surf_menu_sensor4_column,surf_menu_sensor4_row
 
-    btfss   c3_hardware
+    btfss   cr_hardware
     bra     TFT_menu_hud_2  ; always for normal OSTC3
     btfss   s8_digital
     return                  ; Not for analog
@@ -2778,8 +2778,15 @@ TFT_display_apnoe_descent:		; Descent divetime
 ;
 	global	TFT_serial
 TFT_serial:		
-    WIN_TINY	.0,.239-.14
-    STRCPY  "OSTC3 #"                    ; Won't translate that...
+    WIN_TINY	.0,.225
+    STRCPY  "OSTC"                    ; Won't translate that...
+    btfsc   cr_hardware
+    bra     TFT_serial2
+    STRCAT  "3 #"
+    bra     TFT_serial3
+TFT_serial2:
+    STRCAT  " cR #"
+TFT_serial3:
     rcall   TFT_cat_serial
     
     STRCAT  " v"

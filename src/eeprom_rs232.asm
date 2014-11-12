@@ -83,7 +83,7 @@ disable_ir:
     global  enable_ir_s8
 enable_ir_s8:
 ;init serial port2 (TRISG2)
-    btfsc   c3_hardware
+    btfsc   cr_hardware
     bra     enable_s8           ; Start S8
 
     banksel BAUDCON2

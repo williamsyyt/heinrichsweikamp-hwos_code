@@ -182,7 +182,7 @@
 
 ; Brightness thresholds (between zero (off) and 255 (max. power))
 #DEFINE	ambient_light_max_high_36V	.175
-#DEFINE	ambient_light_max_high_c3  	.240
+#DEFINE	ambient_light_max_high_cr  	.240
 #DEFINE	ambient_light_max_high_15V  .150
 #DEFINE	ambient_light_min_high		.35
 #DEFINE	ambient_light_max_medium 	.135
@@ -627,7 +627,7 @@ opt_flip_screen         res 1   ; =1: Flip the screen
 #DEFINE show_safety_stop		flag9,4	; =1: Show the safety stop
 #DEFINE	safety_stop_active      flag9,5	; =1: The safety stop is currently displayed
 #DEFINE new_s8_data_available   flag9,6 ; =1: New data frame recieved
-#DEFINE	c3_hardware             flag9,7;  =1: OSTC 3C hardware
+#DEFINE	cr_hardware             flag9,7;  =1: OSTC cR hardware
 
 #DEFINE s8_digital              flag10,0; =1: Digital I/O
 #DEFINE menu_show_sensors2      flag10,1; =1: Update mV data in calibration menu

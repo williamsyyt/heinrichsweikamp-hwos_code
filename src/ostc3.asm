@@ -84,7 +84,7 @@ init_ostc3:
 	movlw	b'00000000'			; Init port
 	movwf	PORTD
 
-	movlw	b'00000000'			; 1= Input, RE1 -> Power_IR, RE2 -> CS_MCP, RE3 -> LED_blue, RE4 -> power_sw1, RE5 -> Set to 1 for C3 hardware
+	movlw	b'00000000'			; 1= Input, RE1 -> Power_IR, RE2 -> CS_MCP, RE3 -> LED_blue, RE4 -> power_sw1, RE5 -> Set to 1 for cR hardware
 	movwf	TRISE
 	movlw	b'00110000'			; Init port
 	movwf	PORTE

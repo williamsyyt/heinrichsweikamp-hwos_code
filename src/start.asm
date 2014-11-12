@@ -258,7 +258,7 @@ restart:
 	bsf		tft_is_dimming	; TFT is dimming up (soon), ignore ambient sensor!
 
     call    lt2942_get_status       ; Check for gauge IC
-    btfsc   c3_hardware             ; C3 hardware?
+    btfsc   cr_hardware             ; cR hardware?
     call    lt2942_init             ; Yes, init battery gauge IC
 
 	; Select high altitude (Fly) mode?
@@ -272,9 +272,9 @@ restart:
 	btfss	neg_flag				; Result negative (Ambient>880mbar)?
 	bsf		high_altitude_mode		; No, Set Flag!
 
-    btfss   c3_hardware
+    btfss   cr_hardware
     bsf     TRISB,3
-    btfss   c3_hardware
+    btfss   cr_hardware
     bsf     TRISG,0
 	call	ext_flash_disable_protection	; Disable write protection for external flash
 

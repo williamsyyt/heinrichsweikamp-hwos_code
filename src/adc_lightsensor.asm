@@ -27,7 +27,7 @@ wait_adc2:
 
 	global	get_battery_voltage
 get_battery_voltage:			; starts ADC and waits until fnished
-    btfss   c3_hardware
+    btfss   cr_hardware
     bra     get_battery_voltage1     ; Normal ostc3 hardware
 
     call    lt2942_get_accumulated_charge
@@ -220,7 +220,7 @@ get_ambient_level:              ; starts ADC and waits until finished
     btfsc   adc_running         ; ADC in use?
     return                      ; Yes, return
 
-    btfss   c3_hardware
+    btfss   cr_hardware
     bra     get_ambient_level1  ; Normal ostc3 hardware
     movlw   .250
     movwf   ambient_light+0
@@ -274,8 +274,8 @@ get_ambient_level2:
 	incf	isr1_temp,F				; adjust 0-2 to 1-3
 
     banksel common                  ; flag is in bank1
-	movlw	ambient_light_max_high_c3; c3 hardware brightest setting
-    btfss   c3_hardware
+	movlw	ambient_light_max_high_cr; cR hardware brightest setting
+    btfss   cr_hardware
     movlw	ambient_light_max_high_15V; 1,5V battery brightest setting
     btfsc	battery_is_36v          ; 3,6V battery in use?
 	movlw	ambient_light_max_high_36V	; 3,6V battery brightest setting
