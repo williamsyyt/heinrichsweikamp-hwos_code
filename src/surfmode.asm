@@ -44,7 +44,7 @@ gui     CODE
 	global	surfloop
 surfloop:
     call	speed_normal
-    btfss   c3_hardware
+    btfss   cr_hardware
     call    piezo_config            ; Configure buttons
     bcf     no_sensor_int           ; Normal pressure mode
 

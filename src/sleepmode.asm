@@ -125,7 +125,7 @@ onesec_sleep:
 	btfsc	oneminupdate			; one minute in sleep?
 	rcall	onemin_sleep			; do oneminute tasks, e.g. calculate desaturation
 
-    btfsc   c3_hardware
+    btfsc   cr_hardware
     call    get_battery_voltage     ; Check for charger
 
 	incf	divemins+0,F 			; counts to #test_pressure_in_sleep (5)
@@ -145,8 +145,8 @@ onesec_sleep:
 	btfsc	neg_flag				; Wake up from Sleep?
 	bra		onesec_sleep1a			; Yes, skip button checks, wake up!
 
-    btfsc   c3_hardware
-    bra     onesec_sleep1           ; No wake-up with c3 hardware
+    btfsc   cr_hardware
+    bra     onesec_sleep1           ; No wake-up with cR hardware
     btfsc   vusb_in                 ; USB plugged in?
  	bra		onesec_sleep1a			; Yes, skip button checks, wake up!
 

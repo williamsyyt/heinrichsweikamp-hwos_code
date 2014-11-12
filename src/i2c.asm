@@ -20,8 +20,8 @@
 #include "wait.inc"
 #include "math.inc"
 
-#DEFINE battery_offset          .27302  ; 65536-(3,25Ah/0,085mAh)
-#DEFINE battery_devider         .382    ; 3,25Ah/0,085mAh/100 [%]
+#DEFINE battery_offset          .29065  ; 65536-(3,1Ah/0,085mAh)
+#DEFINE battery_devider         .365    ; 3,1Ah/0,085mAh/100 [%]
 
 i2c    CODE
 
@@ -403,14 +403,14 @@ lt2942_init:                    ; Setup Control register B
 
 	global	lt2942_get_status
 lt2942_get_status:          ; Read status register
-    bcf     c3_hardware     ; Clear flag
+    bcf     cr_hardware     ; Clear flag
 	clrf	i2c_temp
 	movlw	0x00            ; Point to Status reg
 	call	I2C_TX_GAUGE
 	call	I2C_RX_GAUGE
 	movff	SSP1BUF,WREG
     btfss   WREG,7          ; 2942 found?
-    bsf     c3_hardware     ; Yes, set flag
+    bsf     cr_hardware     ; Yes, set flag
 	bsf		SSP1CON2,PEN	; Stop condition
 	rcall	WaitMSSP
 	return

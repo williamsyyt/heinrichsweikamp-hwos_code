@@ -149,7 +149,7 @@
     TCODE   tMetric,     " m/°C"            ; Enum menu
     TCODE   tImperial,   "ft/°F"
 	
-    TCODE   tDefName,   "HW OSTC3"
+    TCODE   tDefName,   "HW OSTC"
 	TCODE	tbar,		"bar"				; bar
 
 ; Units for all menu

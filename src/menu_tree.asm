@@ -71,7 +71,7 @@ return_ccr_menu:
 do_ccr_menu:
     bcf     menu_show_sensors           ; Clear flag
     bcf     menu_show_sensors2          ; Clear flag
-    btfsc   c3_hardware
+    btfsc   cr_hardware
     bra     do_ccr_menu_c3
     MENU_BEGIN  tCCRSetup, .5
         MENU_OPTION     tCCRMode,    oCCRMode,    0
