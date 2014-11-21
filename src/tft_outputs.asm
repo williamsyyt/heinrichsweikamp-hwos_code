@@ -1636,9 +1636,8 @@ TFT_debug_output:
     WIN_TINY   .80,.0
 	call	TFT_standard_color
 	lfsr	FSR2,buffer
-    movff   int_O_ceiling+0,lo
-    movff   int_O_ceiling+1,hi
-    output_16
+    movff   max_CCPR1L,lo
+    output_8
 	STRCAT_PRINT ""
     return
 
