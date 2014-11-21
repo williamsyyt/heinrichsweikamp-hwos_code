@@ -222,10 +222,19 @@ get_ambient_level:              ; starts ADC and waits until finished
 
     btfss   cr_hardware
     bra     get_ambient_level1  ; Normal ostc3 hardware
-    movlw   .250
-    movwf   ambient_light+0
-    clrf    ambient_light+1     ; Set to max
-    bra     get_ambient_level2  ; Continue as normal
+
+  	banksel isr_backup              ; Back to Bank0 ISR data
+	movff	opt_brightness,isr1_temp
+	incf	isr1_temp,F				; adjust 0-2 to 1-3
+	movlw	ambient_light_max_high_cr; cR hardware brightest setting
+	dcfsnz	isr1_temp,F
+	movlw	ambient_light_max_eco	; brightest setting
+	dcfsnz	isr1_temp,F
+	movlw	ambient_light_max_medium; brightest setting
+
+	movff	WREG,ambient_light+0		; Set to max.
+	movff	ambient_light+0,max_CCPR1L	; Store value for dimming in TMR7 interrupt
+	return
 
 get_ambient_level1:
 	movlw	b'00000000'         ; Vref+ = Vdd
@@ -269,7 +278,6 @@ get_ambient_level2:
     subwf   ambient_light+0,F       ; Subtract 10 (ADC Offset)
     btfsc   STATUS,N
     movwf   ambient_light+0         ; avoid clipping
-
 
   	banksel isr_backup              ; Back to Bank0 ISR data
 	movff	opt_brightness,isr1_temp
