@@ -189,7 +189,6 @@ surfloop_loop:
 surfloop_loop2:	
 ; Tasks approx. every 50ms for all modes
 	call	test_switches_surfmode		; check switches
-	call	speed_normal
 
 ; One minute tasks for all modes
 	btfsc	oneminupdate				; do every minute tasks

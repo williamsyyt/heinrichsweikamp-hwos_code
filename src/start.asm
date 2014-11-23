@@ -51,11 +51,8 @@ clear_rambank:
 	bra		clear_rambank			; clear...
 
     call    init_ostc3
-  	call    speed_normal
-
 	bsf		no_sensor_int			; disable sensor interrupt
 
-	call	disable_rs232			; disable UART module
 ; Air pressure compensation	after reset
 	call	get_calibration_data	; Get calibration data from pressure sensor
 	banksel common                  ; get_calibration_data uses isr_backup
@@ -174,7 +171,6 @@ power_on_return:
 	bra		restart					; x and y are equal -> do not reset cf
 		
 check_firmware_new:
-    call	speed_normal
 	call	TFT_boot                ; Initialize TFT (includes clear screen)
 	clrf    CCPR1L          		; Backlight off
     WIN_TOP     .50

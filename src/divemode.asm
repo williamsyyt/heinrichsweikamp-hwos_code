@@ -1316,7 +1316,8 @@ diveloop_boot:
     rcall	reset_average1				; Reset the resettable average depth
     bcf		decostop_active
 	bcf		better_gas_available        ;=1: A better gas is available and a gas change is advised in divemode
-	call	ghostwriter_short_header		; Write short header with divenumber into profile memory
+	call	ghostwriter_short_header	; Write short header with divenumber into profile memory
+    call    piezo_config_dive           ; Setup buttons
 
     btfsc   simulatormode_active
     bra     diveloop_boot_1
