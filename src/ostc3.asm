@@ -156,13 +156,17 @@ init_ostc3:
 ;init serial port1 (TRISC6/7)
 	movlw	b'00001000'			; BRG16=1
 	movwf	BAUDCON1
-	movlw 	b'00100100'			; BRGH=1, SYNC=0
-	movwf 	TXSTA1
+;	movlw 	b'00100100'			; BRGH=1, SYNC=0
+;	movwf 	TXSTA1
 	movlw 	.34					; SPBRGH:SPBRG = .34  : 114285 BAUD @ 16MHz (+0,79% Error to 115200 BAUD)
 	movwf 	SPBRG1				; SPBRGH:SPBRG = .207 :  19230 BAUD @ 16MHz (-0,16% Error to 19200 BAUD)
 	clrf	SPBRGH1				;
-	movlw 	b'10010000'
-	movwf 	RCSTA1
+;	movlw 	b'10010000'
+;	movwf 	RCSTA1
+
+	clrf	RCSTA1
+	clrf	TXSTA1					; UART disable
+    bcf     PORTC,6                 ; TX hard to GND
 
 ;init serial port2 (TRISG2)
     banksel BAUDCON2
@@ -258,6 +262,10 @@ init_ostc3:
     bsf     power_sw2
     btfss   power_sw2
     bra     $-4
+
+	movlw	d'2'
+	movwf	speed_setting		; Normal
+
 
 	return
 

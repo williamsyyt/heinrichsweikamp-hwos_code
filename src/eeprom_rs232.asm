@@ -146,7 +146,6 @@ enable_s8_2:                    ; S8 Digital
 	movlw 	b'10010000'
 	movwf 	RCSTA2
     banksel common
-;    bcf     s8_npower               ; Power S8 HUD
     bsf     s8_digital              ; Set flag
     return
 
@@ -178,7 +177,6 @@ disable_rs232:
 	clrf	RCSTA1
 	clrf	TXSTA1					; UART disable
     bcf     PORTC,6                 ; TX hard to GND
-;	bsf		TRISC,6					; Input
 	return
 
 	global	rs232_wait_tx

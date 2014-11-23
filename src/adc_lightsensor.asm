@@ -431,6 +431,18 @@ piezo_config:   ; Settings between 20 and 200
     rcall   piezo_config_tx
     return
 
+    global  piezo_config_dive           ; Sets up piezo sensitivity of heinrichs weikamp Piezo buttons (~30ms)
+piezo_config_dive:   ; Settings between 20 and 200
+    movlw   .60                     ; right button
+    rcall   piezo_config_tx
+    movlw   .60                     ; left button
+    rcall   piezo_config_tx
+    movlw   .200                    ; reserved
+    rcall   piezo_config_tx
+    movlw   .200                    ; reserved
+    rcall   piezo_config_tx
+    return
+
 piezo_config_tx:                    ; Send one byte
     movwf   uart1_temp              ; Store byte
     movlw   .8

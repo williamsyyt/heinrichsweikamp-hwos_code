@@ -73,41 +73,41 @@ isr_uart2:               ; IR/S8-Link
         incf    ir_s8_counter,F            ; Increase counter
         movff   ir_s8_counter,isr1_temp    ; Copy
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.0
+        movwf   ir_s8_buffer+.0
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.1
+        movwf   ir_s8_buffer+.1
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.2
+        movwf   ir_s8_buffer+.2
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.3
+        movwf   ir_s8_buffer+.3
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.4
+        movwf   ir_s8_buffer+.4
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.5
+        movwf   ir_s8_buffer+.5
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.6
+        movwf   ir_s8_buffer+.6
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.7
+        movwf   ir_s8_buffer+.7
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.8
+        movwf   ir_s8_buffer+.8
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.9
+        movwf   ir_s8_buffer+.9
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.10
+        movwf   ir_s8_buffer+.10
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.11
+        movwf   ir_s8_buffer+.11
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.12
+        movwf   ir_s8_buffer+.12
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.13
+        movwf   ir_s8_buffer+.13
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.14
+        movwf   ir_s8_buffer+.14
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.15
+        movwf   ir_s8_buffer+.15
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.16
+        movwf   ir_s8_buffer+.16
         dcfsnz  isr1_temp,F
-        movwf    ir_s8_buffer+.17
+        movwf   ir_s8_buffer+.17
 
         clrf    TMR3L                   ; Preload timer
         movlw   .253
@@ -616,9 +616,6 @@ isr_battery_gauge3:
 		addwfc	isr2_temp,F
 		bra		isr_battery_gauge5
 isr_battery_gauge4:
-;		movlw	.3
-;		cpfseq	speed_setting
-;		bra		isr_battery_gauge5
 		banksel isr_backup              ; Bank0 ISR data
 		movlw	LOW		current_speed_fastest
 		addwf	isr1_temp,F
@@ -702,7 +699,6 @@ isr_rtcc_convert:
 
 isr_switch_right:						; 
         bcf     INTCON,INT0IE           ; Disable INT0
-;        bcf     power_sw2               ; Power-down switch circuity
 		banksel common                  ; flag1 is in Bank1
         btfss   flip_screen             ; 180° flipped?
 		bsf		switch_right            ; Set flag
@@ -712,54 +708,27 @@ isr_switch_right:						;
 
 isr_switch_left:						; 
         bcf     INTCON3,INT1IE          ; Disable INT1
- ;       bcf     power_sw1               ; Power-down switch circuity
 		banksel common                  ; flag1 is in Bank1
         btfss   flip_screen             ; 180° flipped?
 		bsf		switch_left				; Set flag
         btfsc   flip_screen             ; 180° flipped?
 		bsf		switch_right            ; Set flag
-
 isr_switch_common:
         ; load timer1 for first press
         clrf    TMR1L
         movlw   TMR1H_VALUE_FIRST       ; in steps of 7,8125ms
         movwf   TMR1H
         bsf     T1CON,TMR1ON            ; Start Timer 1
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-
 		banksel isr_backup              ; Select Bank0 for ISR data.
-;        bsf     power_sw1
 		bcf		INTCON3,INT1IF			; Clear flag
-;        bsf     power_sw2               ; Power-up switch circuity
 		bcf		INTCON,INT0IF			; Clear flag
 		return
 
 timer1int:
    		bcf		PIR1,TMR1IF             ; Clear flag
         banksel common                  ; flag1 is in Bank1
+		bcf		INTCON,INT0IF			; Clear flag
+		bcf		INTCON3,INT1IF			; Clear flag
         btfss   switch_left1            ; Left button hold-down?
         bra     timer1int_left          ; Yes
         btfss   switch_right2           ; Right button hold-down?
@@ -769,8 +738,6 @@ timer1int:
         bcf     T1CON,TMR1ON            ; Stop Timer 1
         bsf     INTCON,INT0IE           ; Enable INT0
         bsf     INTCON3,INT1IE          ; Enable INT1
-		bcf		INTCON,INT0IF			; Clear flag
-		bcf		INTCON3,INT1IF			; Clear flag
 		return
 
 timer1int_left:
@@ -791,35 +758,6 @@ timer1int_common:
         btfsc   divemode
         movlw   TMR1H_VALUE_CONT_DIVE   ; Dive mode
         movwf   TMR1H
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        nop
-;        bsf     power_sw1
-		bcf		INTCON3,INT1IF			; Clear flag
-;        bsf     power_sw2               ; Power-up switch circuity
-		bcf		INTCON,INT0IF			; Clear flag
         return                          ; Return from timer1int with timer1 kept running
 
 ;=============================================================================
