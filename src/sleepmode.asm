@@ -165,8 +165,6 @@ onesec_sleep1:
 onesec_sleep1a:	; At least one button pressed or amb_pressure > wake_up_from_sleep
 	bcf		INTCON,INT0IF				; Clear flag
 	bcf		INTCON3,INT1IF				; Clear flag
-	bcf		switch_right
-	bcf		switch_left
 	bcf		sleepmode                   ; wake up!
 	SAFE_2BYTE_COPY last_surfpressure_30min, amb_pressure	; copy for compatibility
 	movlw	.0
