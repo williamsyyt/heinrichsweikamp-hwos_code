@@ -104,9 +104,6 @@ diveloop_loop1x:
     btfsc   toggle_gf                       ; =1: Toggle GF/aGF
     rcall   divemodemode_togglegf           ; Toggle aGF/GF
 
-;    btfsc   FLAG_ccr_mode                   ; In CCR mode
-;    call    TFT_active_gas_divemode         ; Update Setpoint every second
-
     call    compute_ppo2                    ; compute mv_sensorX and ppo2_sensorX arrays
 
 diveloop_loop3:

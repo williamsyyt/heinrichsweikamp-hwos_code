@@ -31,7 +31,6 @@ TFT_color_code macro color_code_temp
     extern  TFT_display_decotype_surface1   ; Used from logbook!
 	extern	TFT_update_surf_press
     extern  TFT_surface_sensor             ; Update HUD data in surface mode
-;	extern	TFT_user_image
 ;    extern  TFT_clear_customview_surfacemode
     extern  TFT_menu_hud                ; Update HUD data in menu (including mV)
     extern  TFT_menu_calibrate               ; Update mV data in menu

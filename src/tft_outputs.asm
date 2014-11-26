@@ -2221,62 +2221,6 @@ TFT_clear_depth:            			; No, clear depth area and set flag
 
 ;=============================================================================
 
-;	global	TFT_user_image
-;TFT_user_image:
-;    ;---- Display user image -------------------------------------------------
-;    ; Compute address in external EEPROM
-;    movff   opt_skin,WREG
-;    mullw   0x50
-;    movff   PRODL,ext_flash_address+1
-;    movf    PRODH,W
-;    iorlw   0x30
-;    movwf   ext_flash_address+2
-;
-;    ; First pixel at @+4:
-;    movlw   4
-;    movwf   ext_flash_address+0
-;
-;    ; Read first pixel
-;	call	ext_flash_read_block_start
-;;	movff   SSP2BUF,skin_color+1        ; TFT format: HIGH is first...
-;	movwf	SSP2BUF						; Write to buffer to initiate new read
-;	btfss	SSP2STAT, BF                ; Next byte ready ?
-;	bra		$-2                         ; NO: wait...
-;;   	movff   SSP2BUF,skin_color+0
-;	call    ext_flash_read_block_stop
-;
-;   ; Make a frame of the retrieved skin color.
-;    setf    win_color1
-;    setf    win_color2
-;	WIN_FRAME_COLOR16 user_image_upper-.1, user_image_upper+.100,user_image_left-.1, user_image_left+.50
-;
-;    WIN_LEFT    user_image_left+.25
-;    WIN_TOP     user_image_upper+.50
-;
-;    ; Display skin icon
-;    clrf        ext_flash_address+0
-;    call        TFT_write_flash_image_addr
-;
-;    ;---- Print custom text string
-;    WIN_LEFT    user_image_left+.50+.5
-;    WIN_TOP     user_image_upper+.0
-;
-;    ; ---- STRNCPY : String copy from RAM
-;   ; lfsr        FSR0, opt_name          ; Source
-;    lfsr        FSR1, .13               ; Len max
-;    lfsr        FSR2, buffer            ; destination
-;TFT_user_image_1:
-;    movf        POSTINC0,W              ; Get byte
-;    bz          TFT_user_image_2        ; End if NULL
-;    movwf       POSTINC2                ; NO: copy
-;    decfsz      FSR1L                   ; Max len reached ?
-;    bra         TFT_user_image_1        ; NO: loop
-;TFT_user_image_2:
-;    clrf        POSTINC2                ; Mark end of string
-;
-;    goto        aa_wordprocessor        ; and print
-
-
     global  TFT_custom_text
 TFT_custom_text:            ; Show the custom text
     lfsr        FSR0, opt_name          ; Source

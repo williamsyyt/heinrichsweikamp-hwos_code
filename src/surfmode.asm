@@ -117,8 +117,6 @@ surfloop:
 	WIN_FONT 	FT_SMALL
 	bcf     win_invert              ; Reset invert flag
 
-;	call	TFT_user_image				; Show the user image/text
-	
     WIN_COLOR	color_lightblue
 	WIN_SMALL	menu_pos_column,menu_pos_row
     STRCPY_TEXT_PRINT  tMenu		;"<Menu"
@@ -265,9 +263,9 @@ surfmode_check_for_warnings:
 
     ; Warnings for all modes
     call	check_warn_battery                  ; Check if the battery level should be displayed/warned
-    call    surfmode_check_for_nofly            ; Check if nofly time should be shown
-    call    surfmode_check_for_desat            ; Check if desat time should be shown
-    call    surfmode_check_for_interval         ; Check if surface interval should be shown
+    rcall   surfmode_check_for_nofly            ; Check if nofly time should be shown
+    rcall   surfmode_check_for_desat            ; Check if desat time should be shown
+    rcall   surfmode_check_for_interval         ; Check if surface interval should be shown
 
 	btfsc	FLAG_apnoe_mode             ; Done for Apnoe or Gauge mode
     bra     surfmode_check_for_warnings2
