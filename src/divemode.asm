@@ -34,7 +34,7 @@ diveloop:
 	call	diveloop_boot			; Boot tasks for all modes
 
 ; Startup Tasks for all modes
-	call	TFT_ClearScreen			; clean up TFT
+    call	TFT_boot                ; Initialize TFT (includes clear screen)
 	call	TFT_divemode_mask		; Display mask
 	call	TFT_temp_divemode		; Displays temperature
     movff   customview_divemode,menupos3    ; Reload last customview
