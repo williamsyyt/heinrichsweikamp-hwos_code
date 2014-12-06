@@ -32,12 +32,14 @@ get_battery_voltage:			; starts ADC and waits until fnished
 
     call    lt2942_get_accumulated_charge
     call    lt2942_get_voltage
+    bcf     cv_active
+    bcf     cc_active
     bcf     LEDr
     bcf     TRISJ,2                 ; Chrg-Out output
     bsf     CHRG_OUT
 
     btfss   CHRG_IN
-    bra     cc_active
+    bra     charge_cc_active
 
     bcf     CHRG_OUT
     bsf     TRISJ,2                 ; Chrg-Out high impedance
@@ -47,13 +49,16 @@ get_battery_voltage:			; starts ADC and waits until fnished
     btfsc   CHRG_IN
     return
 ;cv_active:
+    bsf     cc_active
+    bsf     cv_active
     bsf     LEDr                    ; Indicate charging
     call    lt2942_charge_done      ; Reset accumulating registers to 0xFFFF
     WAITMS  d'10'
     bcf     LEDr                    ; Indicate charging
     return
 
-cc_active:
+charge_cc_active:
+    bsf     cc_active
     bsf     LEDr                    ; Indicate charging
     bcf     CHRG_OUT
     bsf     TRISJ,2                 ; Chrg-Out high impedance

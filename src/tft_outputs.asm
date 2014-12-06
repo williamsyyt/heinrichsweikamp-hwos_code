@@ -2298,7 +2298,7 @@ update_surf_press_common:
 	STRCAT_PRINT  ""
     call    TFT_divemask_color
 	WIN_SMALL   surf_press_column+4*8,surf_press_row
-	STRCPY_PRINT  "mbar"
+    STRCPY_TEXT_PRINT  tMBAR        ; mbar
 	return
 
 update_surf_press2:
@@ -2315,6 +2315,17 @@ update_surf_press2:
 TFT_update_batt_voltage:
     movff   batt_percent,lo         ; Get battery percent
     TFT_color_code		warn_battery; Color-code battery percent
+
+    ; Setup charge indicator
+    btfsc   cc_active
+    bsf     win_invert
+    btfsc   cc_active
+    movlw   color_yellow
+    btfsc   cv_active
+    movlw   color_green
+    btfsc   cc_active
+    call	TFT_set_color
+
 	WIN_TINY batt_percent_column,batt_percent_row
 	bsf		leftbind
 	output_8
@@ -2323,6 +2334,7 @@ TFT_update_batt_voltage:
 	movlw	0x00
 	movff	WREG,buffer+4			; Only "xxx%"
     STRCAT_PRINT	""
+    bcf     win_invert
 	call	TFT_standard_color
 	WIN_TINY batt_voltage_column,batt_voltage_row
 	movff	batt_voltage+0,lo

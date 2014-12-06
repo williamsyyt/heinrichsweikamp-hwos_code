@@ -109,10 +109,6 @@ start_copy_pressure:
 
 	extern	deco_reset
 	call	deco_reset
-  	clrf	nofly_time+0	              	; Reset NoFly
-  	clrf	nofly_time+1
-	clrf	desaturation_time+0				; Reset Desat
-	clrf	desaturation_time+1
 
 	call	rtc_init						; init clock
 
