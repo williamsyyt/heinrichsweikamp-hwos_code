@@ -644,7 +644,8 @@ opt_flip_screen         res 1   ; =1: Flip the screen
 #DEFINE voting_logic_sensor1    flag11,3; =1: This sensor is within the voting logic threshold
 #DEFINE voting_logic_sensor2    flag11,4; =1: This sensor is within the voting logic threshold
 #DEFINE voting_logic_sensor3    flag11,5; =1: This sensor is within the voting logic threshold
-
+#DEFINE cc_active               flag11,6; =1: Constant Current active (cR Hardware)
+#DEFINE cv_active               flag11,7; =1: Constant Voltage active (cR Hardware)
 ;=============================================================================
 ; C-code Routines
 ; PART 2
