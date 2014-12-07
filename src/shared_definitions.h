@@ -75,6 +75,7 @@
 bank3   udata_ovr  0x300
 #endif
 
+
 #ifdef xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     Define model dimensions.
     NUM_COMP  is the number of compartiments in the Bühlmann ZH-L16 model, ie 16.
@@ -153,8 +154,6 @@ VAR_UCHAR (char_I_bottom_depth);           // Bottom depth for planning (used in
 VAR_UCHAR (char_I_bottom_time);            // Bottom time for planning (used in gas volume evaluation).
 VAR_UCHAR (char_I_dive_interval);          // Delay before next dive simulation.
 VAR_UCHAR (char_I_const_ppO2);             // new in v.101
-
-TAB_UCHAR (char_I_deco_enable, NUM_GAS);    // new in v.101
 
 TAB_UCHAR (char_I_deco_gas_change,NUM_GAS); // new in v.101
 TAB_UCHAR (char_I_dil_change,NUM_GAS);      // Must be placed after char_I_deco_gas_change!

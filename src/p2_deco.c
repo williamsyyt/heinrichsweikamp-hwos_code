@@ -634,7 +634,6 @@ static void copy_deco_table(void)
         for(y++; y<NUM_STOPS; y++)
         {
             char_O_deco_time_for_log [y] = 0;
-            char_O_deco_gas  [y] = 0;
         }
     }
 }
@@ -2061,7 +2060,7 @@ void deco_calc_CNS_planning(void)
         {
             overlay unsigned char stop_gas;
 
-            //---- Get next stop, possibly in reverse order ------------------
+            //---- Get next stop ---------------------------------------------
             {
                 time             = char_O_deco_time[(NUM_STOPS-1)-i];
                 temp_depth_limit = char_O_deco_depth[(NUM_STOPS-1)-i];
