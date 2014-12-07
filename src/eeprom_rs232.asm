@@ -89,12 +89,10 @@ enable_ir_s8:
     banksel BAUDCON2
 	movlw	b'00100000'			; BRG16=0           ; inverted for IR
 	movwf	BAUDCON2
-    banksel TXSTA2
 	movlw 	b'00100000'			; BRGH=0, SYNC=0
 	movwf 	TXSTA2
 	movlw 	.102                ; SPBRGH:SPBRG = .102  : 2403 BAUD @ 16MHz
 	movwf 	SPBRG2
-	clrf	SPBRGH2
 	movlw 	b'10010000'
 	movwf 	RCSTA2
     banksel common
@@ -137,12 +135,10 @@ enable_s8_2:                    ; S8 Digital
     banksel BAUDCON2
     movlw	b'00000000'			; BRG16=0           ; normal for S8
 	movwf	BAUDCON2
-    banksel TXSTA2
 	movlw 	b'00100000'			; BRGH=0, SYNC=0
 	movwf 	TXSTA2
     movlw 	.25                 ; SPBRGH:SPBRG = .25   : 9615 BAUD @ 16MHz
 	movwf 	SPBRG2
-	clrf	SPBRGH2
 	movlw 	b'10010000'
 	movwf 	RCSTA2
     banksel common
@@ -152,22 +148,14 @@ enable_s8_2:                    ; S8 Digital
 ;=============================================================================
 	global	enable_rs232
 enable_rs232:
-	bcf		TRISC,6					; Output
 	call	speed_normal			; 16MHz
 enable_rs232_2:
     movlw	T2CON_NORMAL
     cpfseq  T2CON
     bra     enable_rs232_2          ; Wait until speed is normal
 ;init serial port1 (TRISC6/7)
-	clrf	RCSTA1
-	clrf	TXSTA1
-	movlw	b'00001000'			; BRG16=1
-	movwf	BAUDCON1
 	movlw 	b'00100100'			; BRGH=1, SYNC=0
 	movwf 	TXSTA1
-	movlw 	.34					; SPBRGH:SPBRG =  .34 : 114285 BAUD @ 16MHz (+0,79% Error to 115200 BAUD)
-	movwf 	SPBRG1
-	clrf	SPBRGH1
 	movlw 	b'10010000'
 	movwf 	RCSTA1
 	return
@@ -181,9 +169,6 @@ disable_rs232:
 
 	global	rs232_wait_tx
 rs232_wait_tx:
-	btfsc	TXSTA1,TRMT			; Transmit Shift Register empty?
-	return						; Yes, return!
-
 	btfss	TXSTA1,TRMT			; RS232 Busy?
 	bra		rs232_wait_tx		; yes, wait...
 	return						; Done.
@@ -191,12 +176,9 @@ rs232_wait_tx:
     global  rs232_wait_tx2
 rs232_wait_tx2:
     banksel TXSTA2
-	btfsc	TXSTA2,TRMT			; Transmit Shift Register empty?
-    bra     rs232_wait_tx2_2    ; Yes, return!
-
+rs232_wait_tx2_1:
 	btfss	TXSTA2,TRMT			; RS232 Busy?
-	bra		rs232_wait_tx2		; yes, wait...
-rs232_wait_tx2_2:
+	bra		rs232_wait_tx2_1    ; yes, wait...
     banksel common
 	return						; Done.
 

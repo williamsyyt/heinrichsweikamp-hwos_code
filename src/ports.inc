@@ -60,7 +60,9 @@
 
 ; PORTF
 ; RF1 (AN6, Batt_analog) and RF2 (AN7, Lightsensor)
-; TRIS=b'11000000'
+; TRIS=b'01111110'
+#DEFINE NRTS            PORTF,6 ; I
+#DEFINE NCTS            PORTF,7 ; 0
 
 ; PORTG  
 #DEFINE TX3_PIEZO_CFG   PORTG,0
