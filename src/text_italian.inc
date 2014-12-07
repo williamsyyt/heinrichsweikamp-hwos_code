@@ -171,12 +171,13 @@
 
 ; Decoplanner submenu
     TCODE   tBtTm,  	"Tempo Fondo :"        ; Bot. Time: (10 chars)
+    TCODE   tBtTm_short,"Tempo:"               ; Bot. Time: (max. 6 chars)
     TCODE   tMxDep, 	"Profond. Max:"        ; Max Depth: (10 chars)
     TCODE   tIntvl, 	"Int.Superf. :"        ; Interval : (10 chars)
     TCODE   tDeco,  	"Calcola Deco"         ; Calculate Deco
     TCODE   tDivePlan,  "Pianificat:"          ; Dive Plan:
     TCODE   tNoDeco,    "No Deco"              ; No Deco
-    TCODE   tMore,      "Dettagli..."          ; More...
+    TCODE   tMore,      "Dettagli.."           ; More...
     TCODE   tCNS,       "CNS"                  ; CNS
 
 ; Information menu

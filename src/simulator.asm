@@ -31,8 +31,10 @@ gui     CODE
     extern  deco_calc_CNS_fraction
     extern  deco_calc_CNS_planning
     extern  deco_pull_tissues_from_vault
+    extern  TFT_display_decotype_surface1
 
     extern  log_screendump_and_onesecond, logbook_preloop_tasks
+    extern  do_planner_menu
 
 ;---- Private temp variables -------------------------------------------------
         CBLOCK  tmp+0x10                ; Reserved space for wordprocessor and convert
@@ -47,15 +49,15 @@ gui     CODE
 
 ;---- Demo decoplanner -------------------------------------------------------
         global  do_demo_planner
-        extern  do_planner_menu
 
 do_demo_planner:
-        call    speed_fastest
+        btfsc   FLAG_gauge_mode          ; =1: In Gauge mode
+        goto    do_planner_menu
+        btfsc   FLAG_apnoe_mode          ; =1: In Apnea mode
+        goto    do_planner_menu
 ;        call    deco_reset              ; TODO: remove reset all Decodata
-        call    deco_planer
-        call    deco_show_plan
-        bcf     switch_right
-        bcf     switch_left
+        rcall   deco_planer
+        rcall   deco_show_plan
         goto    do_planner_menu
 
 ;=============================================================================
@@ -589,7 +591,7 @@ deco_plan_show_2:
         rcall   deco_plan_show_clear_bottom  ; Clear from next line
 
     	call    TFT_standard_color
-        TEXT_SMALL .85, .240-.25, tMore
+        TEXT_SMALL .88, .220, tMore
         return
 
 deco_plan_show_99:
@@ -607,7 +609,33 @@ deco_show_plan:
         WIN_COLOR   color_greenish
         TEXT_SMALL  .1,.1, tDivePlan
         call    TFT_standard_color
-        WIN_LEFT    .0
+
+        ; Show plan parameters
+        WIN_SMALL   .0,.25
+        STRCPY  "Int:"
+        movff   char_I_dive_interval,lo
+        bsf     leftbind
+        output_8
+        STRCAT_PRINT  "'"
+        WIN_SMALL   .0,.50
+        STRCPY_TEXT tBtTm_short
+        movff   char_I_bottom_time,lo
+        bsf     leftbind
+        output_8
+        STRCAT_PRINT  "'"
+        WIN_SMALL   .0,.75
+        STRCPY_TEXT tDepth
+        PUTC    ":"
+        movff   char_I_bottom_depth,lo
+        bsf     leftbind
+        output_8
+        STRCAT_PRINT  "m"
+
+        ; Show deco mode
+        WIN_TOP .155
+        lfsr    FSR2,buffer
+        movff   opt_dive_mode,lo        ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
+        call    TFT_display_decotype_surface1
         
         ;---- Display model
         movff   char_I_deco_model,WREG
@@ -615,41 +643,31 @@ deco_show_plan:
         bnz     deco_show_plan_m1
         
         ; Display ZH-L16 sat/desat model.
-        TEXT_SMALL  .0,.40,  tZHL16
-        WIN_TOP .65
-        lfsr    FSR2,buffer
+        TEXT_SMALL  .0,.130,  tZHL16
+        WIN_SMALL   .14,.155
+        PUTC    ","
         movff   char_I_desaturation_multiplier,lo
-        bsf     leftbind
         output_8
         STRCAT  "%/"
         movff   char_I_saturation_multiplier,lo
         output_8
-        STRCAT_PRINT  "%"
         bra     deco_show_plan_m2
 
         ; Display ZH-L16-GF low/high model.
 deco_show_plan_m1:
-        TEXT_SMALL  .0,.40,  tZHL16GF
-        WIN_TOP .65
-        lfsr    FSR2,buffer
+        TEXT_SMALL  .0,.130,  tZHL16GF
+        WIN_SMALL   .14,.155
+        PUTC    ","
         movff   char_I_GF_Low_percentage,lo
         output_99x
         STRCAT  "%/"
         movff   char_I_GF_High_percentage,lo
         output_99x
-        STRCAT_PRINT  "%"
-        ;bra     deco_show_plan_m2
-
 deco_show_plan_m2:
-        ; Show deco mode
-        extern  TFT_display_decotype_surface1
-        WIN_TOP .90
-        lfsr    FSR2,buffer
-        movff   opt_dive_mode,lo        ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
-        call    TFT_display_decotype_surface1
-        
+        STRCAT_PRINT  "%"
+
         ;---- Display TTS result
-        WIN_TOP     .165
+        WIN_SMALL   .0,.180
         STRCPY_TEXT tTTS
         STRCAT  ": "
 
@@ -660,7 +678,7 @@ deco_show_plan_m2:
         STRCAT_PRINT "'"
 
         ;---- Display CNS result
-        WIN_TOP     .190
+        WIN_TOP     .205
         STRCPY_TEXT tCNS
         STRCAT  ": "
         movff   int_O_CNS_fraction+0,lo
@@ -674,7 +692,6 @@ deco_show_plan_m2:
        
         ;---- Loop through pages
 deco_show_plan_1:
-        call    speed_normal
         rcall   deco_show_plan_page
         incf    decoplan_page,F
 
@@ -683,7 +700,7 @@ deco_show_plan_2:
         btfsc   switch_right
         bra     deco_show_plan_3
         btfsc   switch_left
-        bra     deco_show_plan_4
+        return                                  ; Return to simulator menu
         call    log_screendump_and_onesecond    ; Check if we need to make a screenshot and check for new second
     	btfsc	sleepmode                       ; Timeout?
         goto    restart
@@ -692,10 +709,7 @@ deco_show_plan_2:
 deco_show_plan_3:
         btfss   decoplan_last_ceiling_shown
         bra     deco_show_plan_1
-
-deco_show_plan_4:
-        call    speed_normal            ; Display in fast mode.
-        return
+        return                                  ; Return to simulator menu
 
 ;=============================================================================
 ;
