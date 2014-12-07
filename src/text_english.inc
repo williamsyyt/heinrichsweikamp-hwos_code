@@ -171,6 +171,7 @@
 
 ; Decoplanner submenu
     TCODE   tBtTm,  	"Bot. Time:"        ; Bot. Time: (10 chars)
+    TCODE   tBtTm_short,"Time:"             ; Bot. Time: (max. 6 chars)
     TCODE   tMxDep, 	"Max Depth:"        ; Max Depth: (10 chars)
     TCODE   tIntvl, 	"Interval :"        ; Interval : (10 chars)
     TCODE   tDeco,  	"Calculate Deco"    ; Calculate Deco
