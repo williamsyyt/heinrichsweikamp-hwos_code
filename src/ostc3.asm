@@ -43,6 +43,7 @@ init_ostc3:
 	movwf	OSCTUNE				; 4x PLL Disable (Bit6) - only works with 8 or 16MHz (=32 or 64MHz)
 	bcf		RCON,SBOREN			; Bown-Out off
 	bcf		RCON,IPEN			; Priority Interrupts off
+    clrf    CM1CON              ; Disable
     banksel WDTCON
     movlw   b'10000000'
     movwf   WDTCON              ; Setup Watchdog 
@@ -54,6 +55,8 @@ init_ostc3:
 	clrf	ODCON1				; Disable Open Drain capability
 	clrf	ODCON2				; Disable Open Drain capability
 	clrf	ODCON3				; Disable Open Drain capability
+    clrf    CM2CON              ; Disable
+    clrf    CM3CON              ; Disable
 
 	movlw	b'11000000'			; ANSEL, AN7 and AN6 -> Analog inputs, PORTA is digital.
 	movwf	ANCON0
@@ -86,10 +89,10 @@ init_ostc3:
 
 	movlw	b'00000000'			; 1= Input, RE1 -> Power_IR, RE2 -> CS_MCP, RE3 -> LED_blue, RE4 -> power_sw1, RE5 -> Set to 1 for cR hardware
 	movwf	TRISE
-	movlw	b'00110000'			; Init port
+	movlw	b'00110001'			; Init port
 	movwf	PORTE
 
-	movlw	b'00111110'			; 1= Input, (RF1, RF2, RF3, RF4, RF5) -> Analog
+	movlw	b'01111110'			; 1= Input, (RF1, RF2, RF3, RF4, RF5) -> Analog
 	movwf	TRISF
 	movlw	b'00000000'			; Init port
 	movwf	PORTF
