@@ -520,7 +520,7 @@ lt2942_get_accumulated_charge:	; Read accumulated charge and compute percent
 	rcall	WaitMSSP
 
     ; Compute batt_percent
-    ; charge-battery_offset/382
+    ; (charge-battery_offset)/365
     movlw   LOW     battery_offset
     movwf   sub_b+0
     movlw   HIGH    battery_offset
