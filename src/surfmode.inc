@@ -20,7 +20,7 @@
 #DEFINE	surf_clock_row		.0
 #DEFINE	surf_clock_column	.11
 #DEFINE	surf_date_row		.25
-#DEFINE	surf_date_column	.0
+#DEFINE	surf_date_column	.1
 
 #DEFINE	batt_voltage_row	.8
 #DEFINE	batt_voltage_column	.60
