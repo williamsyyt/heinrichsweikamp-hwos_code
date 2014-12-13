@@ -63,7 +63,7 @@
 #DEFINE	apnoe_last_max_depth_column	.100
 
 #DEFINE	dive_temp_row		.163
-#DEFINE	dive_temp_column	.0
+#DEFINE	dive_temp_column	.2
 
 ; TTS
 #DEFINE	tts_text_row		.211
@@ -77,9 +77,9 @@
 #DEFINE	ndl_value_column	tts_value_column
 
 #DEFINE	active_gas_row		.210
-#DEFINE	active_gas_column	.0
+#DEFINE	active_gas_column	.1
 #DEFINE active_dil_row      .186
-#DEFINE active_dil_column   .0
+#DEFINE active_dil_column   .1
 
 ; Warnings
 #DEFINE	warning_icon_row	.55

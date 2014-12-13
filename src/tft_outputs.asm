@@ -2733,7 +2733,7 @@ TFT_display_apnoe_descent:		; Descent divetime
 ;
 	global	TFT_serial
 TFT_serial:		
-    WIN_TINY	.0,.225
+    WIN_TINY	.5,.225
     STRCPY  "OSTC"                    ; Won't translate that...
     btfsc   cr_hardware
     bra     TFT_serial2

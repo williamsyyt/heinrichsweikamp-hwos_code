@@ -29,12 +29,12 @@
 #include    "eeprom_rs232.inc"
 #include    "calibrate.inc"
 
+   	extern   do_main_menu
+
 #DEFINE	menu_pos_row		.215
-#DEFINE	menu_pos_column		.0
+#DEFINE	menu_pos_column		.1
 #DEFINE	view_row            .215
 #DEFINE	view_column         .124
-
-   	extern   do_main_menu
 
 gui     CODE
 
