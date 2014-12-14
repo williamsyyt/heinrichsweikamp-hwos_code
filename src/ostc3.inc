@@ -201,7 +201,8 @@
 #DEFINE gaslist_sp_min              .50         ; Min. Setpoint [cbar]
 
 ; Compass display
-#DEFINE compass_fast_treshold       .9         ; show new heading instantly if new and old > compass_fast_treshold
+#DEFINE compass_fast_treshold       .9          ; show new heading instantly if new and old > compass_fast_treshold
+#DEFINE compass_averaging           .10         ; numbers of extra averaging
 
 ;---------------------------- Macros ------------------------------------
 
@@ -303,8 +304,8 @@ compass_CZ_f        res 2
 compass_heading     res 2       ; Corrected heading (in 1°) : -180 .. 180
 compass_heading_old res 2       ; Old heading (For smoother display)
 compass_heading_shown res 2     ; Displayed heading
-compass_roll        res 2       ; Rotation around the X axis
-compass_pitch       res 2       ; Rotation arounf the Y axis
+;compass_roll        res 2       ; Rotation around the X axis
+;compass_pitch       res 2       ; Rotation arounf the Y axis
 
 compass_a           res 2       ; Tmp data for Q15 arithmetics
 compass_b           res 2
