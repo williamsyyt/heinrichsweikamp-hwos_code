@@ -1588,12 +1588,12 @@ tft_compass_cardinal_NW:
 
 compass_heading_common:
 	call	speed_normal
+    movlw   compass_averaging           ; numbers of extra averaging
+    movwf   up
+compass_heading_common2:
     rcall   TFT_get_compass
-    rcall   TFT_get_compass
-    rcall   TFT_get_compass
-    rcall   TFT_get_compass
-    rcall   TFT_get_compass
-    rcall   TFT_get_compass
+    decfsz  up,F
+    bra     compass_heading_common2
     extern  compass
     call    compass                     ; Do compass corrections.
     banksel common
@@ -1604,6 +1604,15 @@ compass_heading_common:
     movff   compass_heading+0,sub_b+0
     movff   compass_heading+1,sub_b+1
     call    sub16
+    btfss   neg_flag                        ; <0?
+    bra     compass_heading_common3         ; No, test for threshold
+    ; Yes, subtract the other way round
+    movff   compass_heading+0,sub_a+0
+    movff   compass_heading+1,sub_a+1
+    movff   compass_heading_old+0,sub_b+0
+    movff   compass_heading_old+1,sub_b+1
+    call    sub16
+compass_heading_common3:
     movff   compass_heading+0,compass_heading_old+0 ; copy new "old"
     movff   compass_heading+1,compass_heading_old+1
 
@@ -1617,7 +1626,7 @@ compass_heading_common:
     ; Yes.
     movff	compass_heading+0,lo
     movff	compass_heading+1,hi
-    call    TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
+    rcall   TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
     movff   lo,compass_heading_shown+0
     movff   hi,compass_heading_shown+1
     return
@@ -1725,7 +1734,7 @@ TFT_temp_surfmode:
 	bra		TFT_temp_surfmode_metric
 
 ;TFT_temp_surfmode_imperial:
-	call	TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
+	rcall	TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
 	call	convert_celsius_to_fahrenheit	; convert value in lo:hi from celsius to fahrenheit
 	lfsr	FSR2,buffer						; Overwrite "-"
 	bsf		ignore_digit5		; Full degrees only
@@ -1737,7 +1746,7 @@ TFT_temp_surfmode:
 	return
 
 TFT_temp_surfmode_metric:
-	call	TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
+	rcall	TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
 	movlw	d'3'
 	movwf	ignore_digits
 	bsf		ignore_digit5		; Full degrees only
@@ -1814,7 +1823,7 @@ TFT_temp_divemode:
 	bra		TFT_temp_divemode_metric
 
 ;TFT_temp_divemode_imperial:
-	call	TFT_convert_signed_16bit        ; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
+	rcall	TFT_convert_signed_16bit        ; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
 	call	convert_celsius_to_fahrenheit	; convert value in lo:hi from celsius to fahrenheit
 	lfsr	FSR2,buffer						; Overwrite "-" (There won't be less then -18°C underwater...)
 	bsf		ignore_digit5		; Full degrees only
@@ -1828,7 +1837,7 @@ TFT_temp_divemode_common:
 	return                          ; Done.
 
 TFT_temp_divemode_metric:
-	call	TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
+	rcall	TFT_convert_signed_16bit	; converts lo:hi into signed-short and adds '-' to POSTINC2 if required
 	movlw	d'3'
 	movwf	ignore_digits
 	bsf		ignore_digit5		; Full degrees only

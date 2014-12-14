@@ -23,7 +23,7 @@
     global compass_b
 
     ; Result
-    global compass_heading, compass_roll, compass_pitch
+    global compass_heading; , compass_roll, compass_pitch
 
     extern  compass
     extern  compass_reset_calibration
