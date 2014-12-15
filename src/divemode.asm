@@ -24,6 +24,7 @@
 #include	"ghostwriter.inc"
 #include    "i2c.inc"
 #include    "calibrate.inc"
+#include    "convert.inc"
 
 gui     CODE
 
@@ -725,7 +726,6 @@ set_dive_modes1:
 	btfsc	realdive				; Dive longer than one minute?
 	clrf 	timeout_counter			; Yes, reset timout counter
 
-set_dive_modes_common:
 	bsf		divemode				; (Re-)Set divemode flag
 	bsf		divemode2				; displayed divetime is running
 	return
@@ -866,7 +866,7 @@ test_switches_divemode1:
 	bcf		switch_right
     movlw   divemode_menuview_timeout
     movwf   timeout_counter3            ; Reload timeout
-	movff	menupos2,WREG               ; Menupos3 holds number of customview/divemode menu function
+	movff	menupos2,WREG               ; menupos2 holds number of customview/divemode menu function
 	dcfsnz	WREG,F
     bra		divemode_option_gaschange	; Switch to the indicated "better gas"
 	dcfsnz	WREG,F
@@ -881,6 +881,8 @@ test_switches_divemode1:
 	bra		divemode_option4			; Quit Apnoe mode
 	dcfsnz	WREG,F
 	bra		divemode_option5			; Reset Stopwatch (In Gauge mode)
+	dcfsnz	WREG,F
+	bra		divemode_option6			; +5mins simulation
     return
 
 test_switches_divemode2:
@@ -1021,6 +1023,69 @@ divemode_option5:
     call    menuview_toggle_reset   ; Reset to zero (Zero=no menuview)
     bsf     reset_average_depth     ; Set Flag
     return
+
+divemode_option6:
+    bcf     divemode2                   ; Stop divetime
+    movlw   .5
+    addwf   divemins+0,F
+    movlw   .0
+    addwfc  divemins+1,F
+    movlw   .5
+    movwf   up
+; 1min mode
+divemode_option6_2:
+	movlw   .1
+	movff	WREG,char_I_step_is_1min    ; Force 1min mode
+    clrf    TMR5L
+    clrf    TMR5H                       ; 30,51757813µs/bit in TMR5L:TMR5H
+	call	deco_calc_hauptroutine		; calc_tissue
+    movlb   .1
+    decfsz  up,F                        ; Done?
+    bra     divemode_option6_2          ; Not yet
+    bsf     divemode2                   ; continue divetime
+    call    menuview_toggle_reset
+    return
+
+; 2sec mode
+;    #DEFINE divemode_simtext_row        .164
+;    #DEFINE divemode_simtext_column     .32
+;
+;    rcall   divemode_option6_divetime
+;    rcall   divemode_option6_divetime   ; 2 times
+;
+;    bsf     win_invert                  ; Set invert flag
+;    movlw   color_yellow
+;    call	TFT_set_color
+;    bsf     leftbind
+;    WIN_SMALL   divemode_simtext_column,divemode_simtext_row
+;    lfsr	FSR2,buffer
+;    movlw   .2
+;    mulwf   up
+;    movff   PRODL,lo
+;    movff   PRODH,hi
+;    output_16
+;    STRCAT_PRINT    "s   "               ; Show 300s delay countdown
+;    call	TFT_standard_color
+;    bcf     win_invert
+;    bcf     leftbind
+;    rcall   calc_deko_divemode2a        ; Calc 150*2 seconds = 300secs = 5mins
+;    decfsz  up,F                        ; Done?
+;    bra     divemode_option6_2          ; Not yet
+;    bsf     divemode2                   ; continue divetime
+;    call    menuview_toggle_reset
+;    return
+
+divemode_option6_divetime:
+    incf		divesecs,F
+	movlw		d'59'
+	cpfsgt		divesecs
+	bra			divemode_option6_divetime2
+	clrf		divesecs
+	infsnz		divemins+0,F
+    incf		divemins+1,F			; increase divemins
+divemode_option6_divetime2:
+    return
+
 
 divemode_simulator_check_limits:
 	; Check limits (150m and 0m)

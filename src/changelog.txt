@@ -2,6 +2,7 @@
 
 - Stable Version -
 NEW: Show plan parameters in decoplan result page
+NEW: On-board simulator can increase divetime in 5min steps
 
 [1.62]
 

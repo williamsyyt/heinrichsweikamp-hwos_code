@@ -241,7 +241,7 @@ menuview_toggle:            ; Show Menu or the simulator tasks
     bsf     menuview
 	bcf		switch_left
 	incf	menupos2,F			            ; Number of options to show
-	movlw	d'6'							; Max number of options in divemode
+	movlw	d'8'							; Max number of options in divemode
 	cpfsgt	menupos2			            ; Max reached?
 	bra		menuview_mask		            ; No, show
     global  menuview_toggle_reset
@@ -274,6 +274,8 @@ menuview_mask2:
 	bra		menuview_view5
 	dcfsnz	WREG,F
 	bra		menuview_view6
+	dcfsnz	WREG,F
+	bra		menuview_view7
 menuview_exit:
     call	TFT_standard_color
     bcf     win_invert              ; Reset invert flag
@@ -328,6 +330,15 @@ menuview_view6:
 	btfss	FLAG_gauge_mode					; In Gauge mode?
 	bra		menuview_toggle 				; No, call next option
 	STRCPY_TEXT_PRINT	tDivemenu_ResetAvr  ; "Reset Avr."
+	bra     menuview_exit                   ; Done.
+menuview_view7:
+    btfss  	simulatormode_active			; View only for simulator mode
+	bra		menuview_toggle 				; Call next option
+	btfsc	FLAG_gauge_mode					; In Gauge mode?
+	bra		menuview_toggle 				; Yes, call next option
+	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
+	bra		menuview_toggle 				; Yes, call next option
+	STRCPY_TEXT_PRINT	tplus5min           ; "Sim:+5mins"
 	bra     menuview_exit                   ; Done.
 
 
