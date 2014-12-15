@@ -129,17 +129,22 @@ no_deco_restore:
 	call	deco_calc_wo_deco_step_1_min	; calculate deco in surface mode
 	banksel common
 	bcf		menubit							; clear menu flag
+
 ; Check for Power-on reset here
-	extern	new_battery_menu	
-	extern	use_old_batteries
+	extern	new_battery_menu,use_old_batteries
+    ; *****************************************************************************
+	; "new_battery_menu" and "use_old_batteries" 'goto' back to "power_on_return"
+    ; *****************************************************************************
 
 	btfsc	RCON,POR						; Was this a power-on reset?
     goto	use_old_batteries				; No, load last stored battery values
-	; "new_battery_menu" and "use_old_batteries" 'goto' back to "power_on_return"
 
-    ; Yes
+    call    lt2942_get_status               ; Check for gauge IC
+    btfsc   cr_hardware                     ; cR hardware?
+    goto	use_old_batteries				; Yes, load last stored battery values
+
+    ; No, cR and we have a power-on reset
  	goto	new_battery_menu				; show "New battery dialog"
-	; "new_battery_menu" and "use_old_batteries" 'goto' back to "power_on_return"
 
 	global	power_on_return
 power_on_return:
