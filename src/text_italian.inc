@@ -230,6 +230,7 @@
 	TCODE	tQuitSim,	 "Uscire?"            ; Quit Simulation?
 	TCODE	tDescent1m,	 "Sim:-1m"          ; Descent 1m
 	TCODE	tAscent1m,	 "Sim:+1m"          ; Ascent 1m
+    TCODE	tplus5min,	 "Sim:+5'"          ; +5 mins
 
 ; Logbook
 	TCODE	tCNS2,		"CNS:"
