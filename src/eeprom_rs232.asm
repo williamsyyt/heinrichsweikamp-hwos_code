@@ -153,6 +153,7 @@ enable_rs232_2:
     movlw	T2CON_NORMAL
     cpfseq  T2CON
     bra     enable_rs232_2          ; Wait until speed is normal
+    bcf     PORTE,0                 ; Start comms
 ;init serial port1 (TRISC6/7)
 	movlw 	b'00100100'			; BRGH=1, SYNC=0
 	movwf 	TXSTA1
@@ -165,6 +166,7 @@ disable_rs232:
 	clrf	RCSTA1
 	clrf	TXSTA1					; UART disable
     bcf     PORTC,6                 ; TX hard to GND
+    bsf     PORTE,0                 ; Stop comms
 	return
 
 	global	rs232_wait_tx
