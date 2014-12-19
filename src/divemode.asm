@@ -660,7 +660,7 @@ update_temp_and_or_depth:			    ; New sensor data arrived...
 
 update_divemode60:                      ; update any minute
 	call	get_battery_voltage			; gets battery voltage
-	call	set_powersafe				; Battery low?
+	rcall	set_powersafe				; Battery low?
 	call	TFT_max_pressure			; Update max. depth
 	call	customview_minute			; Do every-minute tasks for the custom view area
 	bcf		oneminupdate

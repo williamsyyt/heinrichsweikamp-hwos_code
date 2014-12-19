@@ -323,13 +323,15 @@ do_settings_menu:
         MENU_CALL   tExit,          do_continue_main_menu
     MENU_END
 
+    extern  comm_mode0
 do_settings_menu_more:
-    MENU_BEGIN  tSystSets, .6
+    MENU_BEGIN  tSystSets, .7
         MENU_CALL   tCompassMenu,   do_compass_menu
 		MENU_CALL	tLogOffset,					do_log_offset_menu
         MENU_OPTION tUnits,    oUnits,          0
         MENU_OPTION tSamplingrate,oSamplingRate,0
         MENU_OPTION tDvSalinity,oDiveSalinity,  0
+        MENU_CALL   tUsbTitle,  comm_mode0
         MENU_CALL   tExit,          do_return_settings
     MENU_END
 

@@ -32,6 +32,10 @@ get_battery_voltage:			; starts ADC and waits until fnished
 
     call    lt2942_get_accumulated_charge
     call    lt2942_get_voltage
+
+    btfsc   divemode
+    return                          ; Not in divemode
+
     bcf     cv_active
     bcf     cc_active
     bcf     LEDr
@@ -49,12 +53,15 @@ get_battery_voltage:			; starts ADC and waits until fnished
     btfsc   CHRG_IN
     return
 ;cv_active:
+    decfsz  safety_stop_countdown,F
+    return
     bsf     cc_active
     bsf     cv_active
     bsf     LEDr                    ; Indicate charging
     call    lt2942_charge_done      ; Reset accumulating registers to 0xFFFF
     WAITMS  d'10'
     bcf     LEDr                    ; Indicate charging
+    bsf     safety_stop_countdown,0 ; =1
     return
 
 charge_cc_active:
@@ -62,6 +69,8 @@ charge_cc_active:
     bsf     LEDr                    ; Indicate charging
     bcf     CHRG_OUT
     bsf     TRISJ,2                 ; Chrg-Out high impedance
+    movlw   .5
+    movwf   safety_stop_countdown
     return
 
 get_battery_voltage1:
