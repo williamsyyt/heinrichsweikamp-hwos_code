@@ -363,13 +363,7 @@ ghostwriter_end_dive:
 	movff	ext_flash_address+2,ext_flash_log_pointer+2	; Save end-of-profile pointer to store in header
 
     ; Set to first address again to store dive length ext_flash_dive_counter:3
-	clrf    EEADRH                      ; Make sure to select eeprom bank 0
-	read_int_eeprom	.4
-	movff	EEDATA,ext_flash_address+0
-	read_int_eeprom	.5
-	movff	EEDATA,ext_flash_address+1
-	read_int_eeprom	.6
-	movff	EEDATA,ext_flash_address+2
+    rcall   ghostwriter_load_pointer        ; Load ext_flash_address:3 from EEPROM .4-.6
 
     incf_ext_flash_address_0x20	d'6'        ; Skip internal "0xFA 0xFA #Divenumber:2 0xFA 0xFA" Header
     ; Store dive length
@@ -819,10 +813,7 @@ ghostwriter_end_dive_common_sim2:
 	addwfc  surface_interval+1				; Add simulated divetime to surface interval
     bra     ghostwriter_end_dive_common
 
-	global	ghostwriter_short_header
-ghostwriter_short_header:	; Write short header with divenumber into profile memory
-
-	; load pointer for profile storing into RAM (Updated in EEPROM after the dive)
+ghostwriter_load_pointer:               ; Load ext_flash_address:3 from EEPROM .4-.6
 	clrf    EEADRH                      ; Make sure to select eeprom bank 0
 	read_int_eeprom	.4
 	movff	EEDATA,ext_flash_address+0
@@ -830,6 +821,46 @@ ghostwriter_short_header:	; Write short header with divenumber into profile memo
 	movff	EEDATA,ext_flash_address+1
 	read_int_eeprom	.6
 	movff	EEDATA,ext_flash_address+2
+    return
+
+ghostwriter_short_header_init:          ; Proceed one page forward
+    clrf    EEDATA
+    write_int_eeprom .4                 ; ext_flash_address+0 = 0
+    movlw   .16
+    addwf   ext_flash_address+1,F
+    movlw   .0
+    addwfc  ext_flash_address+2,F
+    movlw	0x20
+	cpfseq	ext_flash_address+2			; at address 0x200000?
+	bra     ghostwriter_short_header_init2  ; No
+	clrf	ext_flash_address+2			; Yes, rollover to 0x000000
+ghostwriter_short_header_init2:
+    movlw   0xF0
+    andwf   ext_flash_address+1,F       ; keep higher nibble, set lower nibble to 0
+
+    movff   ext_flash_address+1,EEDATA
+    write_int_eeprom .5                 ; Write new pointer
+    movff   ext_flash_address+2,EEDATA
+    write_int_eeprom .6                 ; Write new pointer
+    bra     ghostwriter_short_header2   ; Done.
+
+	global	ghostwriter_short_header
+ghostwriter_short_header:	; Write short header with divenumber into profile memory
+	; load pointer for profile storing into RAM (Updated in EEPROM after the dive)
+    rcall   ghostwriter_load_pointer        ; Load ext_flash_address:3 from EEPROM .4-.6
+
+    ; The following code is used to write a clean new dive after the previous hasn't been
+    ; stored correctly. e.g. after a battery fail during the dive
+    call    ext_flash_byte_read_plus_0x20   ; Into temp1
+    incfsz  temp1,F
+    bra     ghostwriter_short_header_init   ; Not 0xFF -> init page
+    call    ext_flash_byte_read_plus_0x20   ; Into temp1
+    incfsz  temp1,F
+    bra     ghostwriter_short_header_init   ; Not 0xFF -> init page
+
+ghostwriter_short_header2:
+    ; All ok, reload the pointer and start
+    rcall   ghostwriter_load_pointer        ; Load ext_flash_address:3 from EEPROM .4-.6
 
     ; Clear dive length counter
     clrf    ext_flash_dive_counter+0
