@@ -44,8 +44,6 @@ gui     CODE
 	global	surfloop
 surfloop:
     call	speed_normal
-    btfss   cr_hardware
-    call    piezo_config            ; Configure buttons
     bcf     no_sensor_int           ; Normal pressure mode
 
     clrf	CCP1CON					; stop PWM
@@ -85,6 +83,9 @@ surfloop:
 	clrf	ext_flash_address+0
 	clrf	ext_flash_address+1
 	clrf	ext_flash_address+2
+
+    btfss   cr_hardware
+    call    piezo_config            ; Configure buttons
 
 	clrf	timeout_counter2
 	clrf 	timeout_counter3
