@@ -323,17 +323,41 @@ do_settings_menu:
         MENU_CALL   tExit,          do_continue_main_menu
     MENU_END
 
-    extern  comm_mode0
+    
 do_settings_menu_more:
+    btfsc   cr_hardware
+    bra     do_settings_menu_more_c3
+
+    MENU_BEGIN  tSystSets, .6
+        MENU_CALL   tCompassMenu,   do_compass_menu
+		MENU_CALL	tLogOffset,					do_log_offset_menu
+        MENU_OPTION tUnits,    oUnits,          0
+        MENU_OPTION tSamplingrate,oSamplingRate,0
+        MENU_OPTION tDvSalinity,oDiveSalinity,  0
+        MENU_CALL   tExit,          do_return_settings
+    MENU_END
+
+do_settings_menu_more_c3:
     MENU_BEGIN  tSystSets, .7
         MENU_CALL   tCompassMenu,   do_compass_menu
 		MENU_CALL	tLogOffset,					do_log_offset_menu
         MENU_OPTION tUnits,    oUnits,          0
         MENU_OPTION tSamplingrate,oSamplingRate,0
         MENU_OPTION tDvSalinity,oDiveSalinity,  0
-        MENU_CALL   tUsbTitle,  comm_mode0
+        MENU_CALL   tMore,          do_settings_cr_menu
         MENU_CALL   tExit,          do_return_settings
     MENU_END
+
+    extern  comm_mode0
+do_settings_cr_menu:        ; Menu with features only available in cR hardware
+    MENU_BEGIN  tSystSets, .4
+        MENU_CALL   tUsbTitle,  comm_mode0
+        MENU_OPTION tButtonleft,ocR_button_left  ,0  ; left button sensitivity
+        MENU_OPTION tButtonright,ocR_button_right,0  ; right button sensitivity
+        MENU_CALL   tExit,          do_settings_menu_more_c3
+    MENU_END
+
+
 
 do_compass_menu:
     MENU_BEGIN  tSystSets, .2

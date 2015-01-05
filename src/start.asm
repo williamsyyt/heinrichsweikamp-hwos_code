@@ -58,7 +58,6 @@ clear_rambank:
 	banksel common                  ; get_calibration_data uses isr_backup
 	bcf		no_sensor_int		    ; normal sensor interrupt mode
 
-    call    piezo_config
     call	TFT_DisplayOff			; display off
     bsf     LEDr                    ; Status LED
 	bcf		pressure_refresh
@@ -240,7 +239,9 @@ restart:
 	btfsc	menubit					; Return from Menu/COMM mode or timeout?
 	call	option_save_all			; Yes, save all settings into EEPROM
 
+    call    option_restore_all      ; Restore everything from EEPROM
     call    option_check_all        ; Check all options (and reset if not within their min/max boundaries)
+    call	option_save_all			; Save all settings into EEPROM after they have been checked
 
 	clrf	flag1					; clear all flags
 	clrf	flag2

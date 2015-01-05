@@ -152,6 +152,9 @@
     TCODE   tDefName,   "HW OSTC"
 	TCODE	tbar,		"bar"				; bar
 
+    TCODE   tButtonleft,"Left button:"      ; Left button
+    TCODE   tButtonright,"Right button:"    ; Right button
+
 ; Units for all menu
     TCODE   tMeters,    "m"
 	TCODE	tFeets,		"ft"
