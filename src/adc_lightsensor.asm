@@ -435,21 +435,9 @@ get_analog_inputs4:
 
     global  piezo_config            ; Sets up piezo sensitivity of heinrichs weikamp Piezo buttons (~30ms)
 piezo_config:   ; Settings between 20 and 200
-    movlw   .75                     ; right button
+    movff   opt_cR_button_right,WREG; right button
     rcall   piezo_config_tx
-    movlw   .75                     ; left button
-    rcall   piezo_config_tx
-    movlw   .200                    ; reserved
-    rcall   piezo_config_tx
-    movlw   .200                    ; reserved
-    rcall   piezo_config_tx
-    return
-
-    global  piezo_config_dive           ; Sets up piezo sensitivity of heinrichs weikamp Piezo buttons (~30ms)
-piezo_config_dive:   ; Settings between 20 and 200
-    movlw   .60                     ; right button
-    rcall   piezo_config_tx
-    movlw   .60                     ; left button
+    movff   opt_cR_button_left,WREG ; left button
     rcall   piezo_config_tx
     movlw   .200                    ; reserved
     rcall   piezo_config_tx

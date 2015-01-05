@@ -172,8 +172,13 @@ option_check:
         xorlw   1
         bz      option_check_enum8      ; ENUM8: Check if lower then max. value only
 
-        movf    opt_min,W
-        cpfsgt  INDF1                   ; bigger then opt_min?
+        tstfsz  opt_min                 ; opt_min=0?
+        bra     option_check_both       ; no
+        bra     option_check_enum8      ; Check max only
+
+option_check_both:
+        decf    opt_min,W
+        cpfsgt  INDF1                   ; bigger then opt_min-1?
         bra     option_check_reset      ; No, reset option
 option_check_enum8:                     ; ENUM8: Check max only
         incf    opt_max,W
