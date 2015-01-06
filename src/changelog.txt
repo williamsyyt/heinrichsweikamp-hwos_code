@@ -1,3 +1,8 @@
+[1.72]
+
+- Beta Version -
+BUGFIX: Store new dives after power-loss during divemode correctly
+
 [1.70]
 
 - Stable Version -

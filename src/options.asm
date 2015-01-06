@@ -181,7 +181,8 @@ option_check_both:
         cpfsgt  INDF1                   ; bigger then opt_min-1?
         bra     option_check_reset      ; No, reset option
 option_check_enum8:                     ; ENUM8: Check max only
-        incf    opt_max,W
+        infsnz  opt_max,W               ; Max = 255?
+        return                          ; Yes, igonore max. test
         cpfslt  INDF1                   ; smaller then opt_max+1?
         bra     option_check_reset      ; No, reset option
         return                          ; in range, return
