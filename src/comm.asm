@@ -953,6 +953,10 @@ comm_read_setting:
     movff   opt_sensor_fallback, TXREG1     ; RCREG1=0x38
     dcfsnz  WREG
     movff   opt_flip_screen, TXREG1         ; RCREG1=0x39
+    dcfsnz  WREG
+    movff   opt_cR_button_left, TXREG1      ; RCREG1=0x3A
+    dcfsnz  WREG
+    movff   opt_cR_button_right, TXREG1     ; RCREG1=0x3B
 
 comm_read_abort:
     bra		comm_download_mode0             ; Done. Loop with timeout reset
@@ -1214,6 +1218,10 @@ comm_write_setting:
     movff   RCREG1, opt_sensor_fallback     ; RCREG1=0x38
     dcfsnz  WREG
     movff   RCREG1, opt_flip_screen         ; RCREG1=0x39
+    dcfsnz  WREG
+    movff   RCREG1, opt_cR_button_left      ; RCREG1=0x3A
+    dcfsnz  WREG
+    movff   RCREG1, opt_cR_button_right     ; RCREG1=0x3B
 
 comm_write_abort:
     ; Check Options, gases and diluents

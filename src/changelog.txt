@@ -1,7 +1,8 @@
 [1.72]
 
-- Beta Version -
+- Stable Version -
 BUGFIX: Store new dives after power-loss during divemode correctly
+NEW: Make button sensitivity configurable (cR hardware)
 
 [1.70]
 
