@@ -69,8 +69,8 @@ write_eep2:
 	bcf		EECON1,WREN
 	return
 
-    global  disable_ir
-disable_ir:
+    global  disable_ir_s8
+disable_ir_s8:
     banksel TXSTA2
 	clrf    TXSTA2
 	clrf    RCSTA2

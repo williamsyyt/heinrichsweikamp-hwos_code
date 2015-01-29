@@ -28,4 +28,4 @@ read_int_eeprom	macro	eeprom_address
 	extern	rs232_wait_tx
     extern	rs232_wait_tx2
     extern  enable_ir_s8
-    extern  disable_ir
+    extern  disable_ir_s8
