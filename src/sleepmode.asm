@@ -32,7 +32,7 @@ gui     CODE
 
 	global	sleeploop
 sleeploop:							; enter sleepmode!
-    call    disable_ir              ; IR off
+    call    disable_ir_s8           ; IR/S8 off
     call    mcp_sleep
 	bcf		LEDg
 	bcf		LEDr

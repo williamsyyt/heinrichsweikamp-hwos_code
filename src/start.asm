@@ -302,7 +302,7 @@ restart_set_modes_and_flags1:
 	bcf		FLAG_apnoe_mode
     bcf     FLAG_ccr_mode             ; =1: CCR mode (Fixed ppO2 or Sensor) active
     bcf     FLAG_gauge_mode           ; =1: In Gauge mode
-    call    disable_ir                ; IR off
+    call    disable_ir_s8             ; IR off
 
     tstfsz  lo
     bra     restart_set_modes_and_flags2

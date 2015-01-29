@@ -85,12 +85,12 @@ check_sensors:
     bra     check_sensor2       ; No HUD/Digital data
 
     ; Copy disable flags from digital input
-    btfss   sensor1_active
-    bcf     use_O2_sensor1
-    btfss   sensor2_active
-    bcf     use_O2_sensor2
-    btfss   sensor3_active
-    bcf     use_O2_sensor3
+;    btfss   sensor1_active
+;    bcf     use_O2_sensor1
+;    btfss   sensor2_active
+;    bcf     use_O2_sensor2
+;    btfss   sensor3_active
+;    bcf     use_O2_sensor3
     bra     check_sensor3           ; Check for voting logic
 
 check_sensor2:
