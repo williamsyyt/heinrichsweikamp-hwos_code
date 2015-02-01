@@ -1,3 +1,8 @@
+[1.73]
+
+- Beta Version -
+BUGFIX: Show dives with >999mins divetime correctly
+
 [1.72]
 
 - Stable Version -

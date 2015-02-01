@@ -1485,8 +1485,6 @@ static void calc_ascenttime(void)
     else
         int_O_extra_ascenttime = sum;
 
-    if(int_O_ascenttime>999)
-        int_O_ascenttime=999;   // limit to 999'
 }
 
 //////////////////////////////////////////////////////////////////////////////

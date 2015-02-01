@@ -332,7 +332,7 @@ TFT_boot2:
 TFT_boot3:
 	Index_out 0x22
 ;	WAITMS	d'81'					; 46
-	call	TFT_ClearScreen
+	rcall	TFT_ClearScreen
 	Index_out 0x07
 	Parameter_out 0x01, 0x00
 	return

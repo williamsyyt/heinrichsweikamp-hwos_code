@@ -247,7 +247,7 @@ gaslist_imperial_non_travel:
         movff   PRODH,hi
 		call	convert_mbar_to_feet    ; convert value in lo:hi from mbar to feet
         bsf     leftbind
-        output_16_3
+        output_16_3                     ; limit to 999 and display only (0-999)
         STRCAT_TEXT	 tFeets				; "ft"
         return
 		
@@ -629,7 +629,7 @@ gaslist_MOD_END:
         movff   PRODH,hi
 		call	convert_mbar_to_feet    ; convert value in lo:hi from mbar to feet
         bsf     leftbind
-        output_16_3
+        output_16_3                     ; limit to 999 and display only (0-999)
         STRCAT_TEXT	 tFeets				; "ft"
         bra     gaslist_MOD_common
 gaslist_MOD_metric:
@@ -671,7 +671,7 @@ gaslist_MOD_common:
         movff   PRODH,hi
 		call	convert_mbar_to_feet    ; convert value in lo:hi from mbar to feet
         bsf     leftbind
-        output_16_3
+        output_16_3                     ; limit to 999 and display only (0-999)
         STRCAT_TEXT	 tFeets				; "ft"
         return
 gaslist_END_metric:

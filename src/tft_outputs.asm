@@ -403,7 +403,7 @@ TFT_show_color_schemes:         ; update the color schemes
     movff   mins,lo
     clrf    hi
 	WIN_MEDIUM	divetime_column, divetime_row+.40
-	output_16_3                     ; displays only last three figures from a 16Bit value (0-999)
+	output_16_3                     ; limit to 999 and display only (0-999)
 	STRCAT_PRINT ""                 ; Show minutes in large font
 	WIN_SMALL  divetime_secs_column, divetime_secs_row+.40   		; left position for two sec figures
 	PUTC    ':'

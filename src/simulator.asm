@@ -683,11 +683,11 @@ deco_show_plan_m2:
         STRCAT  ": "
         movff   int_O_CNS_fraction+0,lo
         movff   int_O_CNS_fraction+1,hi
-        output_16_3
+        output_16_3                     ; limit to 999 and display only (0-999)
         STRCAT  "%\x92"					; "->"
         movff   decoplan_CNS+0,lo
         movff   decoplan_CNS+1,hi
-        output_16_3
+        output_16_3                     ; limit to 999 and display only (0-999)
         STRCAT_PRINT "%"
        
         ;---- Loop through pages
