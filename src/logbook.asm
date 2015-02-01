@@ -536,7 +536,7 @@ display_profile_offset4:
 	call		convert_mbar_to_feet       	; convert value in lo:hi from mbar to feet
 	PUTC	' '
 	bcf			leftbind
-    output_16_3
+    output_16_3                             ; limit to 999 and display only (0-999)
 	STRCAT_TEXT_PRINT    tFeets
 	bra			display_profile_offset4_common
 
@@ -1466,7 +1466,7 @@ display_listdive2:
 	call		convert_mbar_to_feet    ; convert value in lo:hi from mbar to feet
 	PUTC	' '
 	bcf			leftbind
-    output_16_3
+    output_16_3                         ; limit to 999 and display only (0-999)
 	STRCAT_TEXT tFeets1
 	bra			display_listdive3
 

@@ -96,8 +96,25 @@ output8:
 	global	output16_3_call
 	global	output16_call
 	global	output16
-output16_3_call:
-	bsf		show_last3	
+output16_3_call:                ; limit to 999
+	bsf		show_last3
+    ; Limit to 3
+    movlw   .4
+    cpfslt  hi
+    bra     output16_3_call_2
+    movlw   .3
+    cpfseq  hi          ; =3?
+    bra     output16_3_call_3   ; No, done.
+    movlw   .231                ; Limit to 231(+768=999...)
+    cpfslt  lo
+    movwf   lo
+    bra     output16_3_call_3   ; done.
+output16_3_call_2:  ; Set to .999
+    movlw   LOW     .999
+    movwf   lo
+    movlw   HIGH    .999
+    movwf   hi
+output16_3_call_3:
 output16_call:
 	clrf	ignore_digits
 	incf	ignore_digits,F
