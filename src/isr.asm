@@ -187,6 +187,10 @@ isr_timer3_ir:  ; IR input
 
         movlw   ir_timeout_value        ; multiples of 62,5ms
         movwf   ir_S8_timeout              ; Reload timeout
+
+        banksel hud_status_byte
+        bsf     hud_connection_ok       ; Set manually for hwHUD w/o the HUD module...
+        banksel isr_backup              ; Select Bank0 for ISR data.
  
 isr_timer3_exit:
         clrf    ir_s8_counter              ; Clear pointer
