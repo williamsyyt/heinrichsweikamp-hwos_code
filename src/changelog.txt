@@ -1,7 +1,8 @@
-[1.73]
+[1.74]
 
-- Beta Version -
+- Stable Version -
 BUGFIX: Show dives with >999mins divetime correctly
+NEW: Support for optical hwHUD without the LED module (OSTC3 only)
 
 [1.72]
 

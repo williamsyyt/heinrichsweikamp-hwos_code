@@ -1645,7 +1645,7 @@ TFT_debug_output:
     WIN_TINY   .80,.0
 	call	TFT_standard_color
 	lfsr	FSR2,buffer
-    movff   opt_cR_button_left,lo
+    movff   hud_status_byte,lo
     output_8
 	STRCAT_PRINT ""
     return
