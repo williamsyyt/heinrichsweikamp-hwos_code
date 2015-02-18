@@ -27,6 +27,7 @@
 #include    "customview.inc"
 #include    "i2c.inc"
 #include    "colorschemes.inc"
+#include    "calibrate.inc"
 
 	extern	aa_wordprocessor
 
@@ -1159,6 +1160,7 @@ TFT_menu_hud_2:
 
     global  TFT_menu_calibrate
 TFT_menu_calibrate:     ; update mV data in calibration menu
+    call    compute_ppo2			; compute mv_sensorX and ppo2_sensorX arrays
     call    TFT_attention_color         ; show in yellow
     bsf     leftbind
     WIN_SMALL   surf_menu_sensor1_column,surf_menu2_sensor1_row
