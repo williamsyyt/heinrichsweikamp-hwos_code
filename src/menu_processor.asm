@@ -22,9 +22,9 @@
 #include "tft_outputs.inc"
 #include "eeprom_rs232.inc"
 #include "adc_lightsensor.inc"
-#include "calibrate.inc"
 
-;NOTE: should be idenric in .inc and .asm !
+
+;NOTE: should be identic in .inc and .asm !
 #define MENU_LINES_MAX  .7              ; Number of lines per screen?
 #define MENU_TITLE_FONT WIN_STD         ; Font should contains lower/UPPER alpha
 #define MENU_LINE_FONT  WIN_SMALL       ; Font should contains lower/UPPER alpha
@@ -335,7 +335,6 @@ menu_line_loop:
         btfss	quarter_second_update   ; 1/4 second?
         bra     menu_line_loop1         ; Not yet...
 
-        call    compute_ppo2			; compute mv_sensorX and ppo2_sensorX arrays
         btfsc   menu_show_sensors2      ; In the "Calibrate" menu?
         call    TFT_menu_calibrate      ; Yes, update mV data
         bcf     quarter_second_update   ; Clear flag
