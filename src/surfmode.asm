@@ -194,6 +194,9 @@ surfloop_loop2:
 	call	update_surfloop60			; yes, e.g. update time and date
 
 ; Mode tasks
+	btfsc	divemode					; Divemode active?
+	goto	diveloop					; Yes, switch into Divemode!
+
 	btfsc	menubit						; Menu?
 	goto	do_main_menu				; Menu!
 
@@ -238,8 +241,6 @@ surfloop_loop3:
     bra     surfloop_loop4
     call    TFT_dump_screen             ; Dump the screen contents
 surfloop_loop4:
-	btfsc	divemode					; Divemode active?
-	goto	diveloop					; Yes, switch into Divemode!
 	btfsc	sleepmode					; Sleepmode active?
 	goto	sleeploop					; Yes, switch into sleepmode!
 
