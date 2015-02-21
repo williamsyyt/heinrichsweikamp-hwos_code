@@ -891,7 +891,7 @@ TFT_update_avr_stopwatch_metric:
     WIN_MEDIUM  dive_avr_stop_column1,dive_avr_stop_row
     bsf     ignore_digit5         ; no cm
     output_16dp  .3               ; yxz.a
-    STRCAT_PRINT ""
+    STRCAT_PRINT " "
     ; Stopped average depth
     movff   avr_rel_pressure+0,lo
     movff   avr_rel_pressure+1,hi
@@ -901,7 +901,7 @@ TFT_update_avr_stopwatch_metric:
     output_16dp  .3               ; yxz.a
     bcf     leftbind
     bcf     ignore_digit5
-    STRCAT_PRINT ""
+    STRCAT_PRINT " "
     return
 
     global  TFT_ceiling_mask                        ; The ceiling mask
