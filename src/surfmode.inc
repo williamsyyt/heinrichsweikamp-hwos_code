@@ -27,9 +27,6 @@
 #DEFINE	batt_percent_row	.26
 #DEFINE	batt_percent_column	.60
 
-#DEFINE surf_decotype_row       .60
-#DEFINE surf_decotype_column    .100
-
 #DEFINE	surf_desat_row		.103
 #DEFINE	surf_desat_column	.65
 #DEFINE	surf_nofly_row		.128
