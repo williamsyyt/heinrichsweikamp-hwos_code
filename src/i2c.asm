@@ -403,14 +403,14 @@ lt2942_init:                    ; Setup Control register B
 
 	global	lt2942_get_status
 lt2942_get_status:          ; Read status register
-    bcf     cr_hardware     ; Clear flag
+    bcf     rechargeable     ; Clear flag
 	clrf	i2c_temp
 	movlw	0x00            ; Point to Status reg
 	call	I2C_TX_GAUGE
 	call	I2C_RX_GAUGE
 	movff	SSP1BUF,WREG
     btfss   WREG,7          ; 2942 found?
-    bsf     cr_hardware     ; Yes, set flag
+    bsf     rechargeable     ; Yes, set flag
 	bsf		SSP1CON2,PEN	; Stop condition
 	rcall	WaitMSSP
 	return

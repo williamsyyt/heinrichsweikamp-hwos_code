@@ -71,7 +71,7 @@ return_ccr_menu:
 do_ccr_menu:
     bcf     menu_show_sensors           ; Clear flag
     bcf     menu_show_sensors2          ; Clear flag
-    btfsc   cr_hardware
+    btfsc   rechargeable
     bra     do_ccr_menu_c3
     MENU_BEGIN  tCCRSetup, .5
         MENU_OPTION     tCCRMode,    oCCRMode,    0
@@ -325,7 +325,7 @@ do_settings_menu:
 
     
 do_settings_menu_more:
-    btfsc   cr_hardware
+    btfsc   rechargeable
     bra     do_settings_menu_more_c3
 
     MENU_BEGIN  tSystSets, .6

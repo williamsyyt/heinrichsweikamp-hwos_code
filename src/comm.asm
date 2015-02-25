@@ -94,7 +94,7 @@ comm_mode1:
 	dcfsnz 	timeout_counter,F
 	bra		comm_service_exit           ; Timeout -> Exit
 comm_mode2:
-    btfsc   cr_hardware
+    btfsc   rechargeable
     bra     comm_mode4                  ; Skip
 
 	call	get_battery_voltage			; gets battery voltage
@@ -484,6 +484,10 @@ comm_download_mode2:
 	cpfseq	RCREG1
 	bra		$+4
 	bra		comm_identify               ; Send firmware, serial, etc.
+	movlw	"j"
+	cpfseq	RCREG1
+	bra		$+4
+	bra		comm_hardware_descriptor    ; Send hardware descriptor byte
 	movlw	"n"
 	cpfseq	RCREG1
 	bra		$+4
@@ -724,6 +728,17 @@ common_identify_loop:
 
     bra     comm_download_mode0             ; Done.
 
+;-----------------------------------------------------------------------------
+; Reply hardware descriptor byte
+;
+
+comm_hardware_descriptor:
+    movlw	"j"								; send echo
+    movwf	TXREG1
+    call	rs232_wait_tx					; wait for UART
+    movff   hardware_flag,TXREG1
+    call	rs232_wait_tx					; wait for UART
+    bra     comm_download_mode0             ; Done.
 
 ;-----------------------------------------------------------------------------
 

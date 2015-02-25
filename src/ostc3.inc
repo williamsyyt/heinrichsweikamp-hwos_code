@@ -204,6 +204,16 @@
 #DEFINE compass_fast_treshold       .9          ; show new heading instantly if new and old > compass_fast_treshold
 #DEFINE compass_averaging           .10         ; numbers of extra averaging
 
+; Hardware defines
+#DEFINE rechargeable        hardware_flag,0     ; OSTC has rechargeable battery with battery management chip
+#DEFINE ambient_sensor      hardware_flag,1     ; OSTC has an ambient sensor
+#DEFINE analog_o2_input     hardware_flag,2     ; OSTC has analog inputs and S8 digital
+#DEFINE optical_input       hardware_flag,3     ; OSTC has an digital optical input
+#DEFINE ble_available       hardware_flag,4     ; OSTC has an BLE module
+;unused
+;unused
+;unused
+
 ;---------------------------- Macros ------------------------------------
 
 TSTOSS  macro opt_reg           ; TeST Option Skip if not Zero
@@ -340,6 +350,8 @@ flag9           		res 1
 flag10           		res 1
 flag11           		res 1
 
+hardware_flag           res 1           ; hardware descriptor flag
+
 temp1			res 1
 temp2			res 1
 
@@ -444,7 +456,6 @@ decodata				res 2
 apnoe_timeout_counter 	res 1
 apnoe_surface_mins 		res 1
 apnoe_surface_secs		res 1
-tft_gaslist_temp        res 1
 
 ; Profile storing
 AlarmType			res 1
@@ -630,7 +641,7 @@ opt_cR_button_right     res 1   ; Right button sensitivity (cR hardware)
 #DEFINE show_safety_stop		flag9,4	; =1: Show the safety stop
 #DEFINE	safety_stop_active      flag9,5	; =1: The safety stop is currently displayed
 #DEFINE new_s8_data_available   flag9,6 ; =1: New data frame recieved
-#DEFINE	cr_hardware             flag9,7;  =1: OSTC cR hardware
+; unused
 
 #DEFINE s8_digital              flag10,0; =1: Digital I/O
 #DEFINE menu_show_sensors2      flag10,1; =1: Update mV data in calibration menu
