@@ -146,7 +146,7 @@ surfloop:
     movff   opt_dive_mode,lo            ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
     tstfsz  lo
     bra     surfloop_no_oc              ; Not OC
-    WIN_TINY surf_decotype_column+.18,surf_decotype_row+.12
+    WIN_SMALL surf_decotype_column+.1,surf_decotype_row+.30
     extern  get_first_gas_to_WREG,gaslist_strcat_gas
     call    get_first_gas_to_WREG       ; Gets first gas (0-4) into WREG
     movwf   PRODL
