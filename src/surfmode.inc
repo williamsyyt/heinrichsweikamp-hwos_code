@@ -91,3 +91,16 @@
 #DEFINE surf_tissue_N2_column       surf_tissue_diagram_left+.5
 #DEFINE surf_tissue_He_row          surf_tissue_diagram_top+.56
 #DEFINE surf_tissue_He_column       surf_tissue_N2_column
+
+#DEFINE surf_decotype_row       .60
+#DEFINE surf_decotype_column    .100
+
+; OSTC2-style start gas and boxes
+#DEFINE surf_decotype_boxes_top     surf_decotype_row+.30+.25-.1
+#DEFINE surf_decotype_boxes_bottom  surf_decotype_boxes_top+.22
+#DEFINE surf_decotype_boxes_left1   surf_decotype_column+.5
+#DEFINE surf_decotype_boxes_left2   surf_decotype_boxes_left1+.9
+#DEFINE surf_decotype_boxes_left3   surf_decotype_boxes_left1+.18
+#DEFINE surf_decotype_boxes_left4   surf_decotype_boxes_left1+.27
+#DEFINE surf_decotype_boxes_left5   surf_decotype_boxes_left1+.36
+
