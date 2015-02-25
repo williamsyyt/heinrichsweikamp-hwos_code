@@ -274,7 +274,7 @@ compute_ppo2_analog:
 
 	global	compute_ppo2			; compute mv_sensorX and ppo2_sensorX arrays
 compute_ppo2:
-    btfss   rechargeable                 ; cR hardware?
+    btfss   analog_o2_input             ; cR hardware?
     return                              ; No
 
     btfss   s8_digital                  ; =1: Digital I/O

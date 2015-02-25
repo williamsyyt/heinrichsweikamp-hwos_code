@@ -1206,7 +1206,7 @@ TFT_menu_hud:            ; Yes, update HUD data
     STRCAT_PRINT "mV "
     WIN_SMALL   surf_menu_sensor4_column,surf_menu_sensor4_row
 
-    btfss   rechargeable
+    btfss   analog_o2_input
     bra     TFT_menu_hud_2  ; always for normal OSTC3
     btfss   s8_digital
     return                  ; Not for analog
