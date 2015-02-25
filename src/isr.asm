@@ -279,7 +279,7 @@ isr_tmr7:       						; each 62,5ms
         movwf   ir_S8_timeout              ; Reload timeout
 
         banksel common
-        btfss   rechargeable
+        btfss   analog_o2_input
         bra     isr_tmr7_1a             ; Always with normal ostc3 hardware
         btfss   s8_digital
         bra     isr_tmr7_2              ; only when digital

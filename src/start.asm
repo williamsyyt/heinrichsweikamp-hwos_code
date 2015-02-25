@@ -256,10 +256,21 @@ restart:
     clrf    hardware_flag           ; hardware descriptor flag
 	bsf		tft_is_dimming          ; TFT is dimming up (soon), ignore ambient sensor!
 
-    call    lt2942_get_status       ; Check for gauge IC
-    btfsc   rechargeable             ; cR hardware?
-    call    lt2942_init             ; Yes, init battery gauge IC
+    ; configure hardware_flag byte
 
+    bsf     ambient_sensor          ; Clear flag
+    bsf     optical_input           ; Clear flag
+
+    call    lt2942_get_status       ; Check for gauge IC
+    btfss   rechargeable            ; cR hardware?
+    bra     restart2                ; No
+
+    call    lt2942_init             ; Yes, init battery gauge IC
+    bsf     analog_o2_input         ; Set flag
+    bcf     ambient_sensor          ; Clear flag
+    bcf     optical_input           ; Clear flag
+
+restart2:
 	; Select high altitude (Fly) mode?
 	movff	last_surfpressure_30min+0,sub_b+0
 	movff	last_surfpressure_30min+1,sub_b+1
@@ -271,7 +282,7 @@ restart:
 	btfss	neg_flag				; Result negative (Ambient>880mbar)?
 	bsf		high_altitude_mode		; No, Set Flag!
 
-    btfss   rechargeable
+    btfss   analog_o2_input
     bsf     TRISB,3
     btfss   rechargeable
     bsf     TRISG,0

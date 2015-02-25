@@ -234,7 +234,7 @@ get_ambient_level:              ; starts ADC and waits until finished
     btfsc   adc_running         ; ADC in use?
     return                      ; Yes, return
 
-    btfss   rechargeable
+    btfsc   ambient_sensor
     bra     get_ambient_level1  ; Normal ostc3 hardware
 
   	banksel isr_backup              ; Back to Bank0 ISR data
