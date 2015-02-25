@@ -866,20 +866,20 @@ TFT_dyn_gaslist:                            ; Show the dynamic gaslist
 
     WIN_SMALL dive_custom_dyn_mask_column1,dive_custom_dyn_mask_row1
     movlw   .1
-    movwf   tft_gaslist_temp+0
+    movwf   temp1
     bsf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
     rcall   TFT_dyn_gaslist_common
     WIN_SMALL dive_custom_dyn_mask_column1,dive_custom_dyn_mask_row2
-    incf    tft_gaslist_temp+0,F     ; +1
-    movf    tft_gaslist_temp+0,W     ; into W
+    incf    temp1,F     ; +1
+    movf    temp1,W     ; into W
     rcall   TFT_dyn_gaslist_common
     WIN_SMALL dive_custom_dyn_mask_column2,dive_custom_dyn_mask_row1
-    incf    tft_gaslist_temp+0,F     ; +1
-    movf    tft_gaslist_temp+0,W     ; into W
+    incf    temp1,F     ; +1
+    movf    temp1,W     ; into W
     rcall   TFT_dyn_gaslist_common
     WIN_SMALL dive_custom_dyn_mask_column2,dive_custom_dyn_mask_row2
-    incf    tft_gaslist_temp+0,F     ; +1
-    movf    tft_gaslist_temp+0,W     ; into W
+    incf    temp1,F     ; +1
+    movf    temp1,W     ; into W
     rcall   TFT_dyn_gaslist_common
     call	TFT_standard_color
     return
@@ -887,9 +887,9 @@ TFT_dyn_gaslist:                            ; Show the dynamic gaslist
 TFT_dyn_gaslist_common:
     cpfseq  active_gas  ;1-5
     bra     $+4
-    incf    tft_gaslist_temp+0,F     ; +1
-    movff   tft_gaslist_temp+0,lo
-    movff   tft_gaslist_temp+0,PRODL
+    incf    temp1,F     ; +1
+    movff   temp1,lo
+    movff   temp1,PRODL
     decf    PRODL,F     ;-1 to have 0-4
     bsf     leftbind
     output_8            ; Gas number
@@ -1206,7 +1206,7 @@ TFT_menu_hud:            ; Yes, update HUD data
     STRCAT_PRINT "mV "
     WIN_SMALL   surf_menu_sensor4_column,surf_menu_sensor4_row
 
-    btfss   cr_hardware
+    btfss   rechargeable
     bra     TFT_menu_hud_2  ; always for normal OSTC3
     btfss   s8_digital
     return                  ; Not for analog
@@ -2808,7 +2808,7 @@ TFT_display_apnoe_descent:		; Descent divetime
 TFT_serial:		
     WIN_TINY	.5,.225
     STRCPY  "OSTC"                    ; Won't translate that...
-    btfsc   cr_hardware
+    btfsc   rechargeable
     bra     TFT_serial2
     STRCAT  "3 #"
     bra     TFT_serial3

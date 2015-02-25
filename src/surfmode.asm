@@ -84,7 +84,7 @@ surfloop:
 	clrf	ext_flash_address+1
 	clrf	ext_flash_address+2
 
-    btfsc   cr_hardware
+    btfsc   rechargeable
     call    piezo_config            ; Configure buttons
 
 	clrf	timeout_counter2

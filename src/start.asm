@@ -139,7 +139,7 @@ no_deco_restore:
     goto	use_old_batteries				; No, load last stored battery values
 
     call    lt2942_get_status               ; Check for gauge IC
-    btfsc   cr_hardware                     ; cR hardware?
+    btfsc   rechargeable                     ; cR hardware?
     goto	use_old_batteries				; Yes, load last stored battery values
 
     ; No, cR and we have a power-on reset
@@ -253,10 +253,11 @@ restart:
     clrf	flag8
     clrf    flag9
     clrf    flag10
-	bsf		tft_is_dimming	; TFT is dimming up (soon), ignore ambient sensor!
+    clrf    hardware_flag           ; hardware descriptor flag
+	bsf		tft_is_dimming          ; TFT is dimming up (soon), ignore ambient sensor!
 
     call    lt2942_get_status       ; Check for gauge IC
-    btfsc   cr_hardware             ; cR hardware?
+    btfsc   rechargeable             ; cR hardware?
     call    lt2942_init             ; Yes, init battery gauge IC
 
 	; Select high altitude (Fly) mode?
@@ -270,9 +271,9 @@ restart:
 	btfss	neg_flag				; Result negative (Ambient>880mbar)?
 	bsf		high_altitude_mode		; No, Set Flag!
 
-    btfss   cr_hardware
+    btfss   rechargeable
     bsf     TRISB,3
-    btfss   cr_hardware
+    btfss   rechargeable
     bsf     TRISG,0
 	call	ext_flash_disable_protection	; Disable write protection for external flash
 
