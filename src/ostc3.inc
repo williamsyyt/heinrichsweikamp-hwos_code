@@ -30,11 +30,6 @@
 #DEFINE comm_service_key        0xABCDEF
 
 ;-----------------------------------------------------------------------------
-; Global layout parameters
-#DEFINE surf_decotype_row       .60
-#DEFINE surf_decotype_column    .100
-
-;-----------------------------------------------------------------------------
 
 #DEFINE	CCP1CON_VALUE		b'00001100'		; PWM1 for LED dimming
 #DEFINE T2CON_ECO           b'00000100'		; 1:1 Postscaler, 1:1 Prescaler, Timer 2 start -> 980Hz (Good compromise of no-flicker and efficiency)

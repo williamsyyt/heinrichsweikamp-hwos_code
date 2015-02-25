@@ -143,15 +143,11 @@ surfloop:
 	call	TFT_update_surf_press		; display surface pressure
 	call	TFT_temp_surfmode			; Displays temperature
 	call	TFT_display_decotype_surface
+
     movff   opt_dive_mode,lo            ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
     tstfsz  lo
     bra     surfloop_no_oc              ; Not OC
-    WIN_SMALL surf_decotype_column+.1,surf_decotype_row+.30
-    extern  get_first_gas_to_WREG,gaslist_strcat_gas
-    call    get_first_gas_to_WREG       ; Gets first gas (0-4) into WREG
-    movwf   PRODL
-    call    gaslist_strcat_gas          ; Input: PRODL : gas number (0..4), Output: Text appended into buffer pointed by FSR2.
-    STRCAT_PRINT ""
+    call    TFT_show_OC_startgas_surface; Show first gas and "OSTC2-like" active gases
 surfloop_no_oc:
     movff   customview_surfmode,menupos3    ; Reload last customview
     call    surf_customview_mask        ; Update #menupos3 view

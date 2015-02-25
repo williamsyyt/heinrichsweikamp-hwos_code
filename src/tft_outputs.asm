@@ -335,6 +335,68 @@ TFT_color_code_battery:             ; With battery percent in lo
 
 ; ****************************************************************************
 
+    global  TFT_show_OC_startgas_surface
+TFT_show_OC_startgas_surface:           ; Show first gas and "OSTC2-like" active gases
+    ; Show first gas
+    WIN_SMALL surf_decotype_column+.1,surf_decotype_row+.30
+    extern  get_first_gas_to_WREG,gaslist_strcat_gas
+    call    get_first_gas_to_WREG       ; Gets first gas (0-4) into WREG
+    movwf   PRODL
+    call    gaslist_strcat_gas          ; Input: PRODL : gas number (0..4), Output: Text appended into buffer pointed by FSR2.
+    STRCAT_PRINT ""
+    ; Show boxes
+    WIN_TOP		surf_decotype_row+.30+.25
+	WIN_LEFT	surf_decotype_boxes_left1+.1
+    rcall    TFT_disabled_color
+    movff   opt_gas_type+0,hi          ; 0=Disabled, 1=First, 2=Travel, 3=Deco
+    tstfsz  hi
+    rcall    TFT_standard_color
+    STRCPY_PRINT    "1"
+    decfsz  hi,F                        ; Type = 1 (First)?
+    bra     DISP_active_gas_surfmode3   ; No, skip box
+	WIN_FRAME_STD   surf_decotype_boxes_top, surf_decotype_boxes_bottom, surf_decotype_boxes_left1, surf_decotype_boxes_left1+.8    ;top, bottom, left, right
+DISP_active_gas_surfmode3:
+    rcall    TFT_disabled_color
+    movff   opt_gas_type+1,hi         ; 0=Disabled, 1=First, 2=Travel, 3=Deco
+    tstfsz  hi
+    rcall    TFT_standard_color
+	WIN_LEFT	surf_decotype_boxes_left2+.1
+    STRCPY_PRINT    "2"
+    decfsz  hi,F                        ; Type = 1 (First)?
+    bra     DISP_active_gas_surfmode4   ; No, skip box
+	WIN_FRAME_STD   surf_decotype_boxes_top, surf_decotype_boxes_bottom, surf_decotype_boxes_left2, surf_decotype_boxes_left2+.8    ;top, bottom, left, right
+DISP_active_gas_surfmode4:
+    rcall    TFT_disabled_color
+    movff   opt_gas_type+2,hi         ; 0=Disabled, 1=First, 2=Travel, 3=Deco
+    tstfsz  hi
+    rcall    TFT_standard_color
+	WIN_LEFT	surf_decotype_boxes_left3+.1
+    STRCPY_PRINT    "3"
+    decfsz  hi,F                        ; Type = 1 (First)?
+    bra     DISP_active_gas_surfmode5       ; No, skip box
+    WIN_FRAME_STD   surf_decotype_boxes_top, surf_decotype_boxes_bottom, surf_decotype_boxes_left3, surf_decotype_boxes_left3+.8    ;top, bottom, left, right
+DISP_active_gas_surfmode5:
+    rcall    TFT_disabled_color
+    movff   opt_gas_type+3,hi         ; 0=Disabled, 1=First, 2=Travel, 3=Deco
+    tstfsz  hi
+    rcall    TFT_standard_color
+	WIN_LEFT	surf_decotype_boxes_left4+.1
+    STRCPY_PRINT    "4"
+    decfsz  hi,F                        ; Type = 1 (First)?
+    bra     DISP_active_gas_surfmode6       ; No, skip box
+    WIN_FRAME_STD   surf_decotype_boxes_top, surf_decotype_boxes_bottom, surf_decotype_boxes_left4, surf_decotype_boxes_left4+.8    ;top, bottom, left, right
+DISP_active_gas_surfmode6:
+    call    TFT_disabled_color
+    movff   opt_gas_type+4,hi         ; 0=Disabled, 1=First, 2=Travel, 3=Deco
+    tstfsz  hi
+    rcall    TFT_standard_color
+	WIN_LEFT	surf_decotype_boxes_left5+.1
+    STRCPY_PRINT    "5"
+    rcall    TFT_standard_color          ; Reset color
+    decfsz  hi,F                        ; Type = 1 (First)?
+    return                                  ; no, Done.
+    WIN_FRAME_STD   surf_decotype_boxes_top, surf_decotype_boxes_bottom, surf_decotype_boxes_left5, surf_decotype_boxes_left5+.8    ;top, bottom, left, right
+    return                                  ; Done.
 
     global  TFT_show_color_schemes
 TFT_show_color_schemes:         ; update the color schemes
