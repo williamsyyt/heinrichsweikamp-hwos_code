@@ -615,7 +615,7 @@ end_dive_oc_cc_common:
 	movlw	samplingrate_apnoe		; Apnoe sampling rate
 	rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
 
-    ; CNS at gebinning of dive
+    ; CNS at beginning of dive
 	movff	CNS_start+0,WREG
     rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
     movff	CNS_start+1,WREG
@@ -633,7 +633,7 @@ end_dive_oc_cc_common:
     movf    hi,W
     rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
 
-    ; Spare at Byte 60
+    ; Spare at Byte 59
     movlw   0xFF
     rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
     ; Store 5 Setpoints

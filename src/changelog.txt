@@ -3,6 +3,7 @@
 - Stable Version -
 BUGFIX: Show average depth with one dezimal digit only
 NEW: Show start gas in OC mode permanently
+NEW: Show OSTC2-like active gas boxes in surface mode
 
 [1.74]
 
