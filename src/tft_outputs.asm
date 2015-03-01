@@ -180,10 +180,10 @@ TFT_color_code_gaslist:				; %O2 in hi
 	call		mult16x16                   ; lo * p_amb/10
 ; Check if ppO2>6,55bar
 	tstfsz		xC+2						; char_I_O2_ratio * p_amb/10 > 65536, ppO2>6,55bar?
-	bra			TFT_color_code_warn     	; Yes, warn in warning color
+	bra			TFT_warnings_color       	; Yes, warn in warning color
 ; Check if ppO2>3,30bar
 	btfsc		xC+1,7
-	bra			TFT_color_code_warn         ; Yes, warn in warning color
+	bra			TFT_warnings_color          ; Yes, warn in warning color
 
 ; Check for low ppo2
 	movff       xC+0,sub_a+0
@@ -194,7 +194,7 @@ TFT_color_code_gaslist:				; %O2 in hi
 	movff       PRODH,sub_b+1
 	call        subU16
 	btfsc       neg_flag
-    bra			TFT_color_code_warn     ; too low -> Warning Color!
+    bra			TFT_warnings_color      ; too low -> Warning Color!
 
 ; Check for high ppo2
 	movff		opt_ppO2_max,WREG		; PPO2 Max for MOD calculation and color coding in divemode
@@ -203,11 +203,7 @@ TFT_color_code_gaslist:				; %O2 in hi
 	movff		PRODH,sub_b+1
 	call		subU16					;  sub_c = sub_a - sub_b	
 	btfss		neg_flag
-	bra			TFT_color_code_warn     ; too high -> Warning Color!
-	return
-
-TFT_color_code_warn:
-	call		TFT_warnings_color
+	bra			TFT_warnings_color      ; too high -> Warning Color!
 	return
 
 TFT_color_code_ceiling:
@@ -224,7 +220,7 @@ TFT_color_code_ceiling:
 	movf	xC+0,W						; Depth in m
 	subwf	lo,W
 	btfsc	STATUS,C
-	bra		TFT_color_code_warn     	; Set to warning color
+	bra		TFT_warnings_color     	; Set to warning color
 	call	TFT_standard_color
 	return
 
@@ -245,19 +241,19 @@ TFT_color_code_depth:
 	movff	lo_temp,lo			; Restore hi, lo
 	call	subU16			;  sub_c = sub_a - sub_b
 	btfss	neg_flag
-	bra		TFT_color_code_warn ; Set to warning color
+	bra		TFT_warnings_color ; Set to warning color
 	call	TFT_standard_color
 	return
 
 TFT_color_code_cns:
     movff   int_O_CNS_fraction+1,lo		; copy into bank1
     tstfsz  lo                          ; >255% ?
-    bra     TFT_color_code_warn         ; Yes
+    bra     TFT_warnings_color         ; Yes
 	movff	int_O_CNS_fraction+0,lo
 	movlw	color_code_cns_high		; CNS Warn [%]
 	subwf	lo,W
 	btfsc	STATUS,C
-	bra		TFT_color_code_warn		; Set to warning color
+	bra		TFT_warnings_color		; Set to warning color
 	call	TFT_standard_color
 	return
 
@@ -266,17 +262,17 @@ TFT_color_code_gf:
 	movlw	color_code_gf_warn_high 	; GF Warn [%]
 	subwf	lo,W
 	btfsc	STATUS,C
-	bra		TFT_color_code_warn         ; Set to warning color
+	bra		TFT_warnings_color         ; Set to warning color
 	call	TFT_standard_color
 	return
 
 TFT_color_code_ppo2:
 ; Check if ppO2>6,55bar
 	tstfsz	xC+2					; char_I_O2_ratio * p_amb/10 > 65536, ppO2>6,55bar?
-	bra		TFT_color_code_warn     ; Yes, warn in warning color
+	bra		TFT_warnings_color     ; Yes, warn in warning color
 ; Check if ppO2>3,30bar
 	btfsc	xC+1,7
-	bra		TFT_color_code_warn     ; Yes, warn in warning color
+	bra		TFT_warnings_color     ; Yes, warn in warning color
 
 	movff	xC+0,sub_a+0
 	movff	xC+1,sub_a+1
@@ -286,7 +282,7 @@ TFT_color_code_ppo2:
 	movff	PRODH,sub_b+1
 	call	subU16			  		; sub_c = sub_a - sub_b
 	btfss	neg_flag
-	bra		TFT_color_code_warn     ; Set to warning color
+	bra		TFT_warnings_color     ; Set to warning color
 
 	movff	xC+0,sub_a+0
 	movff	xC+1,sub_a+1
@@ -296,7 +292,7 @@ TFT_color_code_ppo2:
 	movff	PRODH,sub_b+1
 	call	subU16			  		; sub_c = sub_a - sub_b
 	btfsc	neg_flag
-	bra		TFT_color_code_warn     ; Set to warning color
+	bra		TFT_warnings_color     ; Set to warning color
 	call	TFT_standard_color
 	return
 
@@ -307,7 +303,7 @@ TFT_color_code_velocity:
 	movlw	color_code_velocity_warn_high	; Velocity warn [m/min]
 	subwf	lo,W
 	btfsc	STATUS,C
-	bra		TFT_color_code_warn             ; Set to warning color
+	bra		TFT_warnings_color             ; Set to warning color
 TFT_color_code_velocity1:
 	call	TFT_standard_color
 	return
@@ -316,12 +312,12 @@ TFT_color_code_ppo2_hud:            ; With ppO2 [cbar] in lo
 	movff	opt_ppO2_max,WREG		; PPO2 Max for MOD calculation and color coding in divemode
     cpfsgt  lo                      ; lo > opt_ppO2_max?
     bra     TFT_color_code_ppo2_hud1; No
-    bra     TFT_color_code_warn     ; Yes
+    bra     TFT_warnings_color     ; Yes
 TFT_color_code_ppo2_hud1:
 	movff	opt_ppO2_min,WREG		; PPO2 min for Sensors and color coding in divemode
     cpfslt  lo                      ; lo < opt_ppO2_min?
     bra     TFT_color_code_ppo2_hud2; No
-    bra     TFT_color_code_warn     ; Yes
+    bra     TFT_warnings_color     ; Yes
 TFT_color_code_ppo2_hud2:
     call	TFT_standard_color
     return
@@ -329,7 +325,7 @@ TFT_color_code_ppo2_hud2:
 TFT_color_code_battery:             ; With battery percent in lo
     movlw   color_code_battery_low
     cpfsgt  lo                      ; lo < color_code_battery_low ?
-    bra     TFT_color_code_warn     ; No
+    bra     TFT_warnings_color     ; No
     call	TFT_standard_color
     return
 
@@ -1427,10 +1423,14 @@ TFT_surface_compass_mask:
 
     global  TFT_dive_compass_mask
 TFT_dive_compass_mask:
-    WIN_TINY    dive_compass_mask_column,dive_compass_mask_row
-    call    TFT_divemask_color
-    STRCPY_TEXT_PRINT   tHeading            ; Heading:
+    WIN_BOX_STD     dive_compass_graph_row-.3,dive_compass_graph_row,(dive_compass_graph_left+dive_compass_graph_right)/.2-.2,(dive_compass_graph_left+dive_compass_graph_right)/.2+.2
+    WIN_FRAME_STD   dive_compass_graph_row, dive_compass_graph_row+dive_compass_graph_height,dive_compass_graph_left-.1,dive_compass_graph_right-.1
     return
+
+;    WIN_TINY    dive_compass_mask_column,dive_compass_mask_row
+;    call    TFT_divemask_color
+;    STRCPY_TEXT_PRINT   tHeading            ; Heading:
+;    return
 
 
     global  TFT_surface_compass_heading
@@ -1487,83 +1487,120 @@ TFT_surface_compass_heading_com3:
     lfsr	FSR2,buffer+3
     STRCAT  "° "
     rcall   tft_compass_cardinal        ; Add cardinal and ordinal to POSTINC2
-    STRCAT_PRINT " "
+    clrf    WREG
+    movff   WREG,buffer+.7              ; limit to 7 chars
+    STRCAT_PRINT ""
     return
 
     global  TFT_dive_compass_heading
 TFT_dive_compass_heading:
     rcall   compass_heading_common
+
+    ; Graphic output
+    movff   compass_heading_shown+0,lo
+    movff   compass_heading_shown+1,hi
+    bcf     STATUS,C
+    rrcf    hi,F
+    rrcf    lo,F   ; /2  -> heading 0-179 in lo
+
+; Debug
+    WIN_TINY    .0,.71
+    output_8
+    STRCAT_PRINT " "
+; Debug
+
+    ; With 60° shown, left border is heading-30° or lo - 15
+    movlw   .15
+    subwf   lo,W
+    btfss   STATUS,C        ; <0?
+    addlw   .180            ; Yes, adjust value
+    movwf   lo              ; lo has now left border of graphic in 0-179
+
+; Debug
+    WIN_TINY    .0,.85
+    output_8
+    STRCAT_PRINT " "
+; Debug
+
+; Draw marks (left border of graphic is in lo)
+;    WIN_BOX_BLACK   dive_compass_graph_row+.1,dive_compass_graph_row+dive_compass_graph_height-.1,dive_compass_graph_left,dive_compass_graph_right-.2
+;    WIN_FRAME_STD   dive_compass_graph_row, dive_compass_graph_row+dive_compass_graph_height,dive_compass_graph_left-.1,dive_compass_graph_right-.1
+    movlw   dive_compass_graph_row+.1
+    movff   WREG,win_top
+    movlw   dive_compass_graph_height-.1
+    movff   WREG,win_height
+
+    ; lo is 0-179, draw first mark at full 10°
+    incf    lo,F            ; +1
+    setf    hi              ; =255
+TFT_compass_graph1:
+    lfsr    FSR2,buffer
+    incf    hi,F
+    decf    lo,F
+    output_8
+    movlw   "0"
+    movwf   up             ; Digit "0"
+    movff   buffer+2,WREG
+    cpfseq  up             ; Last digit = 0?
+    bra     TFT_compass_graph1b  ; No
+    bra     TFT_compass_graph1a  ; Yes
+TFT_compass_graph1b:
+    movlw   "5"
+    movwf   up             ; Digit "5"
+    movff   buffer+2,WREG
+    cpfseq  up             ; Last digit = 5?
+    bra     TFT_compass_graph1  ; No
+
+TFT_compass_graph1a:
+    ; Yes setup PROD for the first mark
+    movlw   .5
+    mulwf   hi
+    movlw   dive_compass_graph_leftx2
+    addwf   PRODL,F
+    movlw   .0
+    addwfc  PRODH,F         ; add left offset
+
+    movlw   .11             ; amount of marks (-1)
+    movwf   up
+TFT_compass_graph2:
+    movff   PRODL,lo
+    movff   PRODH,hi        ; Backup
+    rcall   TFT_compass_graph3    ; Write one mark
+    movff   lo,PRODL
+    movff   hi,PRODH        ; Restore
+    movlw   .25             ; Spacing in pixels
+    addwf   PRODL,F
+    movlw   .0
+    addwfc  PRODH,F
+    decfsz  up,F
+    bra     TFT_compass_graph2
+
+    rcall   TFT_compass_graph4    ; Write one mark without black space
+
+    ; Text output
     WIN_STD dive_compass_head_column,dive_compass_head_row
 	call	TFT_standard_color
     rcall   TFT_surface_compass_heading_com  ; Show "000° N"
-TFT_dive_compass_heading3:
-    return              ; No graphical output (yet)
 
-    movff   compass_heading+0,sub_a+0
-    movff   compass_heading+1,sub_a+1
-    movlw   .45
-    movwf   sub_b+0
-    clrf    sub_b+1
-    call    subU16                      ;  sub_c = sub_a - sub_b (with UNSIGNED values)
-    btfss   neg_flag                    ; Result <0?
-    bra     TFT_dive_compass_heading_graph1 ; No
-    ; Yes
-    movlw   LOW     .360
-    movwf   sub_a+0
-    movlw   HIGH    .360
-    movwf   sub_a+1
-    movff   sub_c+0,sub_b+0
-    movff   sub_c+1,sub_b+1
-    call    subU16                      ;  sub_c = sub_a - sub_b (with UNSIGNED values)
+    return          ; Done.
 
-TFT_dive_compass_heading_graph1:
-    WIN_SMALL dive_compass_head_column+.70,dive_compass_head_row
-    movff   sub_c+0,lo
-    movff   sub_c+1,hi
-	call	TFT_standard_color
-    bsf     leftbind
-    output_16
-    bcf     leftbind
-    STRCAT_PRINT "  "
 
-; Draw marks (left border of graphic is in lo)
-    movlw   b'00011111'
-    andwf   lo,F                        ; Get lowest 5bits of heading
-	movlw	d'30'
-	cpfslt	lo
-	movwf	lo							; Limit to 30
-    rlncf   lo,F                        ; x2
-; marks parameters
-    WIN_BOX_BLACK   dive_compass_graph_row,dive_compass_graph_row+dive_compass_graph_height,.0,.159
-    call	TFT_standard_color
-    WIN_SMALL .77,dive_compass_graph_row        ; Center of screen
-    STRCPY_PRINT "^"
-    call    TFT_divemask_color
-    movlw   dive_compass_graph_row
-    movff   WREG,win_top
-    movlw   dive_compass_graph_height
-    movff   WREG,win_height
-    movlw   dive_compass_graph_width
+TFT_compass_graph3:
+    rcall   TFT_compass_graph4              ; Mark
+    movff   lo,PRODL
+    movff   hi,PRODH        ; Restore
+
+    ; black space
+    clrf    WREG
+    movff   WREG,win_color1
+    movff   WREG,win_color2                 ; Set to black
+    movlw   dive_compass_graph_width+.1
+    addwf   PRODL,F
+    movlw   .0
+    addwfc  PRODH,F
+    movlw   .20             ; Spacing in pixels
     movff   WREG,win_width+0
-    clrf    win_width+1
-; marks draw loop
-    movlw   .6
-    movwf   hi                  ; amount of marks (max.)
-    clrf    lo_temp
-TFT_dive_compass_heading_graph2:
-    movlw   LOW      .319
-    movwf   sub_a+0
-    movlw   HIGH     .319
-    movwf   sub_a+1
-    movff   lo,sub_b+0
-    movff   lo_temp,sub_b+1
-    call    subU16
-    btfsc   neg_flag
-    bra     TFT_dive_compass_heading_graph3 ; Abort when negative
-    movff   sub_c+0,PRODL
-    movff   sub_c+1,PRODH
     call    TFT_box_write_16bit_win_left    ; With column in PRODL:PRODH
-    ;---- Define Window ------------------------------------------------------
 	movf	win_width,W
 	bcf     STATUS,C
 	rlcf    WREG
@@ -1571,18 +1608,26 @@ TFT_dive_compass_heading_graph2:
 	movlw   0
 	rlcf    WREG
 	movwf   win_width+1
-    call    TFT_box_16bit_win_left
-    movlw   .56                             ; 60 px. space
-    addwf   lo,F
-    movlw   .0
-    addwfc  lo_temp,F
-;    movlw   .160
-;    cpfslt  lo
-;    bra     TFT_dive_compass_heading_graph3 ; Abort
-    decfsz  hi,F
-    bra     TFT_dive_compass_heading_graph2
-TFT_dive_compass_heading_graph3:
+    call    TFT_box_16bit_win_left          ; Fill window
     return
+
+TFT_compass_graph4:
+    call    TFT_divemask_color
+    ;---- Define Window ------------------------------------------------------
+    movlw   dive_compass_graph_width
+    movff   WREG,win_width+0
+    clrf    win_width+1
+    call    TFT_box_write_16bit_win_left    ; With column in PRODL:PRODH
+	movf	win_width,W
+	bcf     STATUS,C
+	rlcf    WREG
+	movwf   win_width+0
+	movlw   0
+	rlcf    WREG
+	movwf   win_width+1
+    call    TFT_box_16bit_win_left          ; Fill window
+    return
+
 
 tft_compass_cardinal:
     btfsc  hi,0          ; Heading >255°?
@@ -1623,8 +1668,7 @@ tft_compass_cardinal2:
     subwf   lo,W
     btfss   STATUS,C
     bra     tft_compass_cardinal_NW
-    bra     tft_compass_cardinal_N
-
+;    bra     tft_compass_cardinal_N
 tft_compass_cardinal_N:
     STRCAT_TEXT     tN
     return

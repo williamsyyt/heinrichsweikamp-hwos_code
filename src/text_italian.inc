@@ -285,13 +285,13 @@
     TCODE   tSampling10s,   "10s"               ; 10s
 
 ; Compass directions
-    TCODE   tN,             "N"                 ; N(orth),338°-22°
+    TCODE   tN,             "N "                ; N(orth),338°-22°
     TCODE   tNE,            "NE"                ; North-East,23°-67°
-    TCODE   tE,             "E"                 ; E(east),68°-112°
+    TCODE   tE,             "E "                ; E(east),68°-112°
     TCODE   tSE,            "SE"                ; South-East,113°-157°
-    TCODE   tS,             "S"                 ; S(outh),157°-202°
+    TCODE   tS,             "S "                ; S(outh),157°-202°
     TCODE   tSW,            "SO"                ; South-West,203°-247°
-    TCODE   tW,             "O"                 ; W(West),248°-292°
+    TCODE   tW,             "O "                ; W(West),248°-292°
     TCODE   tNW,            "NO"                ; North-West,293°-337°
 
 ; Color Scheme menu

@@ -121,8 +121,8 @@ diveloop_loop4:                             ; Menu-Exit returns here...
 	btfsc	oneminupdate					; one minute tasks
 	rcall	update_divemode60				; Update clock, etc.
 
-    btfss   quarter_second_update
-    bra     diveloop_loop4a
+;    btfss   quarter_second_update
+;    bra     diveloop_loop4a
 
     bcf     quarter_second_update
     movlw   .6
