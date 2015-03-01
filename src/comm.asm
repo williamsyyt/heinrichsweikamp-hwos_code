@@ -837,13 +837,10 @@ comm_send_dive_profile:
 	cpfseq	ext_flash_address+2
 	bra		comm_send_dive_profile
 	
-	call	rs232_wait_tx					; Wait for UART
+	rcall   comm_read_setting_wait          ; Wait for UART
 	bra		comm_download_mode0		; Done. Loop with timeout reset
 
 ;-----------------------------------------------------------------------------
-
-comm_read_unused:
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
 
 comm_read_setting:
     movlw   "r"
@@ -851,39 +848,11 @@ comm_read_setting:
 	call	rs232_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	bra		comm_read_abort                 ; No, abort!
-	call	rs232_wait_tx					; Wait for UART
-    movf    RCREG1,W                        ; Copy
-    bz      comm_read_unused                ; RCREG1=0x00
-    dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=0x01
-    dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=0x02
-    dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=0x03
-    dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=0x04
-    dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=0x05
-    dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=0x06
-    dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=0x07
-    dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=0x08
-    dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=0x09
-    dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=0x0A
-    dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=0x0B
-    dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=0x0C
-    dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=0x0D
-    dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=0x0E
-    dcfsnz  WREG
-    bra     comm_read_unused                ; RCREG1=0x0F
+	rcall   comm_read_setting_wait          ; Wait for UART
+    movlw   0x0F
+    cpfsgt  RCREG1                          ; 0x00-0x0F: unused
+    bra		comm_read_abort                 ; abort!
+    subwf   RCREG1,W                        ; Subtract unused commands
     dcfsnz  WREG
     bra     comm_read_gas1                  ; RCREG1=0x10
     dcfsnz  WREG
@@ -981,7 +950,7 @@ comm_read_setting_wait:
     return
 
 comm_read_done:
-    call	rs232_wait_tx					; Wait for UART
+    rcall	comm_read_setting_wait          ; Wait for UART
     bra		comm_download_mode0             ; Done. Loop with timeout reset
 
 comm_read_gas1:
@@ -1104,9 +1073,52 @@ comm_read_sp5:
 
 
 ;-----------------------------------------------------------------------------
+comm_write_gas1:
+    movff   RCREG1,opt_gas_O2_ratio+0
+    rcall	comm_write_get_byte
+    movff   RCREG1,opt_gas_He_ratio+0
+    rcall	comm_write_get_byte
+    movff   RCREG1,opt_gas_type+0
+    rcall	comm_write_get_byte
+    movff   RCREG1,opt_OC_bail_gas_change+0
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_gas2:
+    movff   RCREG1,opt_gas_O2_ratio+1
+    rcall	comm_write_get_byte
+    movff   RCREG1,opt_gas_He_ratio+1
+    rcall	comm_write_get_byte
+    movff   RCREG1,opt_gas_type+1
+    rcall	comm_write_get_byte
+    movff   RCREG1,opt_OC_bail_gas_change+1
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_gas3:
+    movff   RCREG1,opt_gas_O2_ratio+2
+    rcall	comm_write_get_byte
+    movff   RCREG1,opt_gas_He_ratio+2
+    rcall	comm_write_get_byte
+    movff   RCREG1,opt_gas_type+2
+    rcall	comm_write_get_byte
+    movff   RCREG1,opt_OC_bail_gas_change+2
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_gas4:
+    movff   RCREG1,opt_gas_O2_ratio+3
+    rcall	comm_write_get_byte
+    movff   RCREG1,opt_gas_He_ratio+3
+    rcall	comm_write_get_byte
+    movff   RCREG1,opt_gas_type+3
+    rcall	comm_write_get_byte
+    movff   RCREG1,opt_OC_bail_gas_change+3
+    bra		comm_write_abort             ; Done. Loop with timeout reset
+comm_write_gas5:
+    movff   RCREG1,opt_gas_O2_ratio+4
+    rcall	comm_write_get_byte
+    movff   RCREG1,opt_gas_He_ratio+4
+    rcall	comm_write_get_byte
+    movff   RCREG1,opt_gas_type+4
+    rcall	comm_write_get_byte
+    movff   RCREG1,opt_OC_bail_gas_change+4
+    bra		comm_write_abort             ; Done. Loop with timeout reset
 
-comm_write_unused:
-    goto    comm_write_abort
 
 comm_write_setting:
     movlw   "w"
@@ -1116,39 +1128,11 @@ comm_write_setting:
 	bra		comm_write_abort                 ; No, abort!
     movff   RCREG1,temp1                     ; Copy
     rcall	comm_write_get_byte              ; "Byte 3"
-	call	rs232_wait_tx					 ; Wait for UART
-    movf    temp1,W
-    bz      comm_write_unused                ; RCREG1=0x00
-    dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=0x01
-    dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=0x02
-    dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=0x03
-    dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=0x04
-    dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=0x05
-    dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=0x06
-    dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=0x07
-    dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=0x08
-    dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=0x09
-    dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=0x0A
-    dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=0x0B
-    dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=0x0C
-    dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=0x0D
-    dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=0x0E
-    dcfsnz  WREG
-    bra     comm_write_unused                ; RCREG1=0x0F
+	rcall	comm_read_setting_wait           ; Wait for UART
+    movlw   0x0F
+    cpfsgt  temp1                            ; 0x00-0x0F: unused
+    bra		comm_write_abort                 ; abort!
+    subwf   temp1,W                          ; Subtract unused commands
     dcfsnz  WREG
     bra     comm_write_gas1                  ; RCREG1=0x10
     dcfsnz  WREG
@@ -1252,52 +1236,6 @@ comm_write_abort:
 comm_write_get_byte:
     call	rs232_get_byte
     return
-
-comm_write_gas1:
-    movff   RCREG1,opt_gas_O2_ratio+0
-    rcall	comm_write_get_byte
-    movff   RCREG1,opt_gas_He_ratio+0
-    rcall	comm_write_get_byte
-    movff   RCREG1,opt_gas_type+0
-    rcall	comm_write_get_byte
-    movff   RCREG1,opt_OC_bail_gas_change+0
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_gas2:
-    movff   RCREG1,opt_gas_O2_ratio+1
-    rcall	comm_write_get_byte
-    movff   RCREG1,opt_gas_He_ratio+1
-    rcall	comm_write_get_byte
-    movff   RCREG1,opt_gas_type+1
-    rcall	comm_write_get_byte
-    movff   RCREG1,opt_OC_bail_gas_change+1
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_gas3:
-    movff   RCREG1,opt_gas_O2_ratio+2
-    rcall	comm_write_get_byte
-    movff   RCREG1,opt_gas_He_ratio+2
-    rcall	comm_write_get_byte
-    movff   RCREG1,opt_gas_type+2
-    rcall	comm_write_get_byte
-    movff   RCREG1,opt_OC_bail_gas_change+2
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_gas4:
-    movff   RCREG1,opt_gas_O2_ratio+3
-    rcall	comm_write_get_byte
-    movff   RCREG1,opt_gas_He_ratio+3
-    rcall	comm_write_get_byte
-    movff   RCREG1,opt_gas_type+3
-    rcall	comm_write_get_byte
-    movff   RCREG1,opt_OC_bail_gas_change+3
-    bra		comm_write_abort             ; Done. Loop with timeout reset
-comm_write_gas5:
-    movff   RCREG1,opt_gas_O2_ratio+4
-    rcall	comm_write_get_byte
-    movff   RCREG1,opt_gas_He_ratio+4
-    rcall	comm_write_get_byte
-    movff   RCREG1,opt_gas_type+4
-    rcall	comm_write_get_byte
-    movff   RCREG1,opt_OC_bail_gas_change+4
-    bra		comm_write_abort             ; Done. Loop with timeout reset
 
 comm_write_dil1:
     movff   RCREG1,opt_dil_O2_ratio+0
