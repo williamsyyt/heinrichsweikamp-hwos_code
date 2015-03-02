@@ -72,8 +72,11 @@ do_ccr_menu:
     bcf     menu_show_sensors           ; Clear flag
     bcf     menu_show_sensors2          ; Clear flag
     btfsc   analog_o2_input
-    bra     do_ccr_menu_c3
-    MENU_BEGIN  tCCRSetup, .5
+    bra     do_ccr_menu_cR
+    btfss   optical_input
+    bra     do_ccr_menu_ostc2
+
+    MENU_BEGIN  tCCRSetup, .5          ; OSTC3 menu
         MENU_OPTION     tCCRMode,    oCCRMode,    0
         MENU_CALL       tCCRSensor,             do_ccr_sensor
         MENU_CALL       tDiluentSetup,          do_diluent_setup
@@ -81,7 +84,7 @@ do_ccr_menu:
         MENU_CALL       tExit,                  do_continue_main_menu
     MENU_END
 
-do_ccr_menu_c3:                         ; including "Calibrate"
+do_ccr_menu_cR:                         ; cR menu
     MENU_BEGIN  tCCRSetup, .6
         MENU_OPTION     tCCRMode,    oCCRMode,    0
         MENU_CALL       tCCRSensor,             do_ccr_sensor
@@ -90,6 +93,14 @@ do_ccr_menu_c3:                         ; including "Calibrate"
         MENU_CALL       tFixedSetpoints,        do_fixed_setpoints
         MENU_CALL       tExit,                  do_continue_main_menu
     MENU_END
+
+do_ccr_menu_ostc2:
+    MENU_BEGIN  tCCRSetup, .3           ; ostc2 menu
+        MENU_CALL       tDiluentSetup,          do_diluent_setup
+        MENU_CALL       tFixedSetpoints,        do_fixed_setpoints
+        MENU_CALL       tExit,                  do_continue_main_menu
+    MENU_END
+
 
 do_calibrate_menu:
     call    enable_ir_s8                ; Enable IR/S8-Port
