@@ -258,7 +258,6 @@ comm_send_firmware_abort:
 
     movlw   0xFF                            ; send ABORTED byte.
 	movwf	TXREG1
-	call	rs232_wait_tx                   ; Wait for UART
 	bra		comm_download_mode0				; Done.
 
 ;-----------------------------------------------------------------------------
@@ -738,6 +737,14 @@ comm_hardware_descriptor:
     call	rs232_wait_tx					; wait for UART
     movff   hardware_flag,TXREG1
     call	rs232_wait_tx					; wait for UART
+    movlw   0x00            ; unused 1
+    movwf   TXREG1
+    call	rs232_wait_tx					; wait for UART
+    movlw   0x00            ; unused 2
+    movwf   TXREG1
+    call	rs232_wait_tx					; wait for UART
+    movlw   0x00            ; unused 3
+    movwf   TXREG1
     bra     comm_download_mode0             ; Done.
 
 ;-----------------------------------------------------------------------------
@@ -950,7 +957,6 @@ comm_read_setting_wait:
     return
 
 comm_read_done:
-    rcall	comm_read_setting_wait          ; Wait for UART
     bra		comm_download_mode0             ; Done. Loop with timeout reset
 
 comm_read_gas1:
