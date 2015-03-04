@@ -269,8 +269,17 @@ restart:
     bsf     analog_o2_input         ; Set flag
     bcf     ambient_sensor          ; Clear flag
     bcf     optical_input           ; Clear flag
-
 restart2:
+    btfsc   vusb_in
+    bra     restart3                ; USB (and powered on)
+    bcf     PORTE,0                 ; Start comms
+    WAITMS  d'1'
+    btfss   vusb_in
+    bra     restart3                ; USB (and powered off)
+    bsf     ble_available           ; ble available
+restart3:    
+    bsf     PORTE,0                 ; Stop comms
+
 	; Select high altitude (Fly) mode?
 	movff	last_surfpressure_30min+0,sub_b+0
 	movff	last_surfpressure_30min+1,sub_b+1

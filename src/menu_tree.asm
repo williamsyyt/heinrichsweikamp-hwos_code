@@ -336,9 +336,10 @@ do_settings_menu:
 
     
 do_settings_menu_more:
-    btfsc   rechargeable
+    btfsc   rechargeable            ; piezo buttons available
     bra     do_settings_menu_more_c3
-
+    btfsc   ble_available           ; ble available
+    bra     do_settings_menu_more_ble
     MENU_BEGIN  tSystSets, .6
         MENU_CALL   tCompassMenu,   do_compass_menu
 		MENU_CALL	tLogOffset,					do_log_offset_menu
@@ -360,6 +361,7 @@ do_settings_menu_more_c3:
     MENU_END
 
     extern  comm_mode0
+
 do_settings_cr_menu:        ; Menu with features only available in cR hardware
     MENU_BEGIN  tSystSets, .4
         MENU_CALL   tUsbTitle,  comm_mode0
@@ -368,7 +370,16 @@ do_settings_cr_menu:        ; Menu with features only available in cR hardware
         MENU_CALL   tExit,          do_settings_menu_more_c3
     MENU_END
 
-
+do_settings_menu_more_ble:  ; Menu with BLE feature
+    MENU_BEGIN  tSystSets, .7
+        MENU_CALL   tCompassMenu,   do_compass_menu
+		MENU_CALL	tLogOffset,					do_log_offset_menu
+        MENU_OPTION tUnits,    oUnits,          0
+        MENU_OPTION tSamplingrate,oSamplingRate,0
+        MENU_OPTION tDvSalinity,oDiveSalinity,  0
+        MENU_CALL   tUsbTitle,  comm_mode0
+        MENU_CALL   tExit,          do_return_settings
+    MENU_END
 
 do_compass_menu:
     MENU_BEGIN  tSystSets, .2
