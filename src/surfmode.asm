@@ -46,6 +46,9 @@ surfloop:
     call	speed_normal
     bcf     no_sensor_int           ; Normal pressure mode
 
+    bcf     LEDg
+    bcf     LEDr
+
     clrf	CCP1CON					; stop PWM
 	bcf		PORTC,2					; Pull PWM output to GND
 	call	TFT_boot                ; Initialize TFT (includes clear screen)
@@ -98,8 +101,6 @@ surfloop:
 	bcf		simulatormode_active		; Quit simulator mode (if active)
 	bcf		switch_left
 	bcf		switch_right
-    bcf     LEDg
-    bcf     LEDr
 
 	;---- Fade to standard surface view --------------------------------------
 	; Wait 1 second
