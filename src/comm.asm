@@ -196,7 +196,6 @@ comm_service_exit_common:
 	bra		$-2
 
 	call	disable_rs232
-	bcf		LEDr
     goto    restart
 
 ;-----------------------------------------------------------------------------
@@ -736,15 +735,6 @@ comm_hardware_descriptor:
     movwf	TXREG1
     call	rs232_wait_tx					; wait for UART
     movff   hardware_flag,TXREG1
-    call	rs232_wait_tx					; wait for UART
-    movlw   0x00            ; unused 1
-    movwf   TXREG1
-    call	rs232_wait_tx					; wait for UART
-    movlw   0x00            ; unused 2
-    movwf   TXREG1
-    call	rs232_wait_tx					; wait for UART
-    movlw   0x00            ; unused 3
-    movwf   TXREG1
     bra     comm_download_mode0             ; Done.
 
 ;-----------------------------------------------------------------------------
