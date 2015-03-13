@@ -2,6 +2,7 @@
 
 - Stable Version -
 CNANGE: aGF pair has same range then normal GF pair
+BUGFIX: Always update CCR sensor data in Sensor-Menu
 
 [1.75]
 

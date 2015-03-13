@@ -1171,6 +1171,7 @@ TFT_surface_sensor6:
 
     global  TFT_menu_hud
 TFT_menu_hud:            ; Yes, update HUD data
+    call    compute_ppo2			; compute mv_sensorX and ppo2_sensorX arrays
     call    TFT_attention_color         ; show in yellow
     bsf     leftbind
     WIN_SMALL   surf_menu_sensor1_column,surf_menu_sensor1_row
