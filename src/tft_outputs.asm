@@ -1504,11 +1504,11 @@ TFT_dive_compass_heading:
     rrcf    hi,F
     rrcf    lo,F   ; /2  -> heading 0-179 in lo
 
-; Debug
-    WIN_TINY    .0,.71
-    output_8
-    STRCAT_PRINT " "
-; Debug
+;; Debug
+;    WIN_TINY    .0,.71
+;    output_8
+;    STRCAT_PRINT " "
+;; Debug
 
     ; With 60° shown, left border is heading-30° or lo - 15
     movlw   .15
@@ -1517,11 +1517,11 @@ TFT_dive_compass_heading:
     addlw   .180            ; Yes, adjust value
     movwf   lo              ; lo has now left border of graphic in 0-179
 
-; Debug
-    WIN_TINY    .0,.85
-    output_8
-    STRCAT_PRINT " "
-; Debug
+;; Debug
+;    WIN_TINY    .0,.85
+;    output_8
+;    STRCAT_PRINT " "
+;; Debug
 
 ; Draw marks (left border of graphic is in lo)
 ;    WIN_BOX_BLACK   dive_compass_graph_row+.1,dive_compass_graph_row+dive_compass_graph_height-.1,dive_compass_graph_left,dive_compass_graph_right-.2
@@ -1754,7 +1754,7 @@ TFT_debug_output:
     WIN_TINY   .80,.0
 	call	TFT_standard_color
 	lfsr	FSR2,buffer
-    movff   hud_status_byte,lo
+    movff   hardware_flag,lo
     output_8
 	STRCAT_PRINT ""
     return
