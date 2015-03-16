@@ -266,9 +266,9 @@ restart:
     bra     restart2                ; No
 
     call    lt2942_init             ; Yes, init battery gauge IC
-    bsf     analog_o2_input         ; Set flag
     bcf     ambient_sensor          ; Clear flag
     bcf     optical_input           ; Clear flag
+
 restart2:
     btfsc   vusb_in
     bra     restart3                ; USB (and powered on)
@@ -279,7 +279,13 @@ restart2:
     bsf     ble_available           ; ble available
 restart3:    
     bsf     PORTE,0                 ; Stop comms
+    btfsc   ble_available           ; ble available?
+    bra     restart4                ; Yes, can't be a cR
+    btfss   rechargeable            ; Rechargeable
+    bra     restart4                ; No, can't be a cR
+    bsf     analog_o2_input         ; Set flag for analog
 
+restart4:
 	; Select high altitude (Fly) mode?
 	movff	last_surfpressure_30min+0,sub_b+0
 	movff	last_surfpressure_30min+1,sub_b+1
