@@ -207,6 +207,10 @@ do_divemode_splist:
     bsf     short_gas_decriptions
     movlw   .1
     movwf   menupos                 ; Set to first option in divemode menu
+    movf    hardware_flag,W
+    sublw   0x11        ; 2 with BLE
+    btfsc   STATUS,Z
+    bra     do_divemode_splist2
     MENU_BEGIN  tGaslist, .6
         MENU_DYNAMIC    gaslist_strcat_setpoint, do_switch_sp
         MENU_DYNAMIC    gaslist_strcat_setpoint, do_switch_sp
@@ -215,6 +219,16 @@ do_divemode_splist:
         MENU_DYNAMIC    gaslist_strcat_setpoint, do_switch_sp
         MENU_CALL   tCCRSensor,         do_divemode_sensor
   MENU_END
+
+do_divemode_splist2:
+    MENU_BEGIN  tGaslist, .5
+        MENU_DYNAMIC    gaslist_strcat_setpoint, do_switch_sp
+        MENU_DYNAMIC    gaslist_strcat_setpoint, do_switch_sp
+        MENU_DYNAMIC    gaslist_strcat_setpoint, do_switch_sp
+        MENU_DYNAMIC    gaslist_strcat_setpoint, do_switch_sp
+        MENU_DYNAMIC    gaslist_strcat_setpoint, do_switch_sp
+  MENU_END
+
 
 do_divemode_sensor:
     ; Set customview to 1 (HUD Data)

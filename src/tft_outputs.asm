@@ -1124,6 +1124,11 @@ TFT_update_hud6:
 
     global  TFT_surface_sensor             ; Update Sensor data in surface mode
 TFT_surface_sensor:
+    movf    hardware_flag,W
+    sublw   0x11        ; 2 with BLE
+    btfsc   STATUS,Z
+    return              ; Ignore for 0x11
+
     ; show three sensors
     bsf     leftbind
     WIN_SMALL surf_hud_sensor1_column,surf_hud_sensor1_row
@@ -1424,15 +1429,10 @@ TFT_surface_compass_mask:
 
     global  TFT_dive_compass_mask
 TFT_dive_compass_mask:
-    WIN_BOX_STD     dive_compass_graph_row-.3,dive_compass_graph_row,(dive_compass_graph_left+dive_compass_graph_right)/.2-.2,(dive_compass_graph_left+dive_compass_graph_right)/.2+.2
-    WIN_FRAME_STD   dive_compass_graph_row, dive_compass_graph_row+dive_compass_graph_height,dive_compass_graph_left-.1,dive_compass_graph_right-.1
+    WIN_TINY    dive_compass_mask_column,dive_compass_mask_row
+    call    TFT_divemask_color
+    STRCPY_TEXT_PRINT   tHeading            ; Heading:
     return
-
-;    WIN_TINY    dive_compass_mask_column,dive_compass_mask_row
-;    call    TFT_divemask_color
-;    STRCPY_TEXT_PRINT   tHeading            ; Heading:
-;    return
-
 
     global  TFT_surface_compass_heading
 TFT_surface_compass_heading:
@@ -1496,139 +1496,11 @@ TFT_surface_compass_heading_com3:
     global  TFT_dive_compass_heading
 TFT_dive_compass_heading:
     rcall   compass_heading_common
-
-    ; Graphic output
-    movff   compass_heading_shown+0,lo
-    movff   compass_heading_shown+1,hi
-    bcf     STATUS,C
-    rrcf    hi,F
-    rrcf    lo,F   ; /2  -> heading 0-179 in lo
-
-;; Debug
-;    WIN_TINY    .0,.71
-;    output_8
-;    STRCAT_PRINT " "
-;; Debug
-
-    ; With 60° shown, left border is heading-30° or lo - 15
-    movlw   .15
-    subwf   lo,W
-    btfss   STATUS,C        ; <0?
-    addlw   .180            ; Yes, adjust value
-    movwf   lo              ; lo has now left border of graphic in 0-179
-
-;; Debug
-;    WIN_TINY    .0,.85
-;    output_8
-;    STRCAT_PRINT " "
-;; Debug
-
-; Draw marks (left border of graphic is in lo)
-;    WIN_BOX_BLACK   dive_compass_graph_row+.1,dive_compass_graph_row+dive_compass_graph_height-.1,dive_compass_graph_left,dive_compass_graph_right-.2
-;    WIN_FRAME_STD   dive_compass_graph_row, dive_compass_graph_row+dive_compass_graph_height,dive_compass_graph_left-.1,dive_compass_graph_right-.1
-    movlw   dive_compass_graph_row+.1
-    movff   WREG,win_top
-    movlw   dive_compass_graph_height-.1
-    movff   WREG,win_height
-
-    ; lo is 0-179, draw first mark at full 10°
-    incf    lo,F            ; +1
-    setf    hi              ; =255
-TFT_compass_graph1:
-    lfsr    FSR2,buffer
-    incf    hi,F
-    decf    lo,F
-    output_8
-    movlw   "0"
-    movwf   up             ; Digit "0"
-    movff   buffer+2,WREG
-    cpfseq  up             ; Last digit = 0?
-    bra     TFT_compass_graph1b  ; No
-    bra     TFT_compass_graph1a  ; Yes
-TFT_compass_graph1b:
-    movlw   "5"
-    movwf   up             ; Digit "5"
-    movff   buffer+2,WREG
-    cpfseq  up             ; Last digit = 5?
-    bra     TFT_compass_graph1  ; No
-
-TFT_compass_graph1a:
-    ; Yes setup PROD for the first mark
-    movlw   .5
-    mulwf   hi
-    movlw   dive_compass_graph_leftx2
-    addwf   PRODL,F
-    movlw   .0
-    addwfc  PRODH,F         ; add left offset
-
-    movlw   .11             ; amount of marks (-1)
-    movwf   up
-TFT_compass_graph2:
-    movff   PRODL,lo
-    movff   PRODH,hi        ; Backup
-    rcall   TFT_compass_graph3    ; Write one mark
-    movff   lo,PRODL
-    movff   hi,PRODH        ; Restore
-    movlw   .25             ; Spacing in pixels
-    addwf   PRODL,F
-    movlw   .0
-    addwfc  PRODH,F
-    decfsz  up,F
-    bra     TFT_compass_graph2
-
-    rcall   TFT_compass_graph4    ; Write one mark without black space
-
     ; Text output
     WIN_STD dive_compass_head_column,dive_compass_head_row
-	call	TFT_standard_color
+ 	call	TFT_standard_color
     rcall   TFT_surface_compass_heading_com  ; Show "000° N"
-
-    return          ; Done.
-
-
-TFT_compass_graph3:
-    rcall   TFT_compass_graph4              ; Mark
-    movff   lo,PRODL
-    movff   hi,PRODH        ; Restore
-
-    ; black space
-    clrf    WREG
-    movff   WREG,win_color1
-    movff   WREG,win_color2                 ; Set to black
-    movlw   dive_compass_graph_width+.1
-    addwf   PRODL,F
-    movlw   .0
-    addwfc  PRODH,F
-    movlw   .20             ; Spacing in pixels
-    movff   WREG,win_width+0
-    call    TFT_box_write_16bit_win_left    ; With column in PRODL:PRODH
-	movf	win_width,W
-	bcf     STATUS,C
-	rlcf    WREG
-	movwf   win_width+0
-	movlw   0
-	rlcf    WREG
-	movwf   win_width+1
-    call    TFT_box_16bit_win_left          ; Fill window
-    return
-
-TFT_compass_graph4:
-    call    TFT_divemask_color
-    ;---- Define Window ------------------------------------------------------
-    movlw   dive_compass_graph_width
-    movff   WREG,win_width+0
-    clrf    win_width+1
-    call    TFT_box_write_16bit_win_left    ; With column in PRODL:PRODH
-	movf	win_width,W
-	bcf     STATUS,C
-	rlcf    WREG
-	movwf   win_width+0
-	movlw   0
-	rlcf    WREG
-	movwf   win_width+1
-    call    TFT_box_16bit_win_left          ; Fill window
-    return
-
+    return              ; No graphical output (yet)
 
 tft_compass_cardinal:
     btfsc  hi,0          ; Heading >255°?

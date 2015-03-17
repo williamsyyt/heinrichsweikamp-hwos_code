@@ -284,8 +284,13 @@ restart3:
     btfss   rechargeable            ; Rechargeable
     bra     restart4                ; No, can't be a cR
     bsf     analog_o2_input         ; Set flag for analog
-
 restart4:
+    ; The hardware_flag is now:
+    ; 3: 0x0A
+    ; cR: 0x05
+    ; 2 with BLE: 0x11
+    ; 3 with BLE: 0x1A 
+
 	; Select high altitude (Fly) mode?
 	movff	last_surfpressure_30min+0,sub_b+0
 	movff	last_surfpressure_30min+1,sub_b+1
