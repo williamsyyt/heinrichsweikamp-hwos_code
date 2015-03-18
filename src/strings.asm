@@ -164,7 +164,7 @@ text_get_french:
         subwfb  TBLPTRU
         bra     text_get_english
         
-        ; Add correction for Spanish table:
+        ; Add correction for italian table:
 text_get_italian:
         extern  text_italian_base
         movlw   LOW(text_italian_base)

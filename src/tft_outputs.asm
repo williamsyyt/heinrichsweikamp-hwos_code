@@ -583,7 +583,7 @@ TFT_divemode_warning:
     bsf     dive_warning_displayed              ; =1: The warning sign is shown
     WIN_TOP  	warning_icon_row
 	WIN_LEFT 	warning_icon_column
-    TFT_WRITE_PROM_IMAGE dive_warning_block 	; Show Warning icon
+;    TFT_WRITE_PROM_IMAGE dive_warning_block 	; Show Warning icon
 ;    movlw   .3
 ;    cpfslt  warning_counter                     ; More then two warnings?
 ;    rcall   TFT_divemode_warning_counter        ; Yes, show the number
@@ -1544,10 +1544,10 @@ TFT_dive_compass_ruler_loop:
     movlw   d'0'
     cpfsgt  lo,1
     bra     TFT_dive_compass_ruler_loop_zz
-    call    TFT_dive_compass_clr_ruler
+    rcall    TFT_dive_compass_clr_ruler
 TFT_dive_compass_ruler_loop_zz:
     ; 3. Draw the markers @ RM
-    call    TFT_dive_compass_ruler_print
+    rcall    TFT_dive_compass_ruler_print
     ; 4. If D<82 and RM>79: means we put something over the center line
     ;    redraw the center line
     movlw   d'82'
@@ -1556,7 +1556,7 @@ TFT_dive_compass_ruler_loop_zz:
     movlw   d'79'
     cpfsgt  lo,1
     bra     TFT_dive_compass_ruler_loop_zz2
-    call    TFT_dive_compass_c_mk
+    rcall    TFT_dive_compass_c_mk
 TFT_dive_compass_ruler_loop_zz2:
     ; 5. set D = RM + 2 : position after the 2px tick
     movff   lo,hi
@@ -1577,7 +1577,7 @@ TFT_dive_compass_ruler_lend:    ; loop end
     movlw   d'160'
     movwf   lo
     ; 10. clear it
-    call TFT_dive_compass_clr_ruler
+    rcall TFT_dive_compass_clr_ruler
 
 TFT_dive_compass_ruler_lend2:
     ; done with the compass ruler, put the labels on the screen
@@ -1598,10 +1598,12 @@ TFT_dive_compass_ruler_lend2:
     movwf   sub_a+0
     movlw   high( d'309' )
     movwf   sub_a+1
-    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfsc   print_compass_label             ; Yes?
-    STRCPY_PRINT    "NW"                    ; yes - print it
-    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+    rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfss   print_compass_label             ; Yes?
+    bra     dcr_1
+    STRCPY_TEXT_PRINT     tNW                 ; yes - print it
+dcr_1:
+    rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'6'
     movwf   up                  ; up stores the width of hte label
@@ -1609,10 +1611,12 @@ TFT_dive_compass_ruler_lend2:
     movwf   sub_a+0
     movlw   high( d'358' )
     movwf   sub_a+1
-    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfsc   print_compass_label               ; Yes?
-    STRCPY_PRINT    "N"                     ; yes - print it
-    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+    rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfss   print_compass_label               ; Yes?
+    bra     dcr_2
+    STRCPY_TEXT_PRINT     tN                 ; yes - print it
+dcr_2:
+    rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'13'
     movwf   up                  ; up stores the width of hte label
@@ -1620,10 +1624,12 @@ TFT_dive_compass_ruler_lend2:
     movwf   sub_a+0
     movlw   high( d'399' )
     movwf   sub_a+1
-    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfsc   print_compass_label               ; Yes?
-    STRCPY_PRINT    "NE"                    ; yes - print it
-    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+    rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfss   print_compass_label               ; Yes?
+    bra     dcr_3
+    STRCPY_TEXT_PRINT     tNE                ; yes - print it
+dcr_3:
+    rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'6'
     movwf   up                  ; up stores the width of hte label
@@ -1631,10 +1637,12 @@ TFT_dive_compass_ruler_lend2:
     movwf   sub_a+0
     movlw   high( d'448' )
     movwf   sub_a+1
-    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfsc   print_compass_label               ; Yes?
-    STRCPY_PRINT    "E"                     ; yes - print it
-    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+    rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfss   print_compass_label               ; Yes?
+    bra     dcr_4
+    STRCPY_TEXT_PRINT     tE                 ; yes - print it
+dcr_4:
+    rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'13'
     movwf   up                  ; up stores the width of hte label
@@ -1642,10 +1650,12 @@ TFT_dive_compass_ruler_lend2:
     movwf   sub_a+0
     movlw   high( d'489' )
     movwf   sub_a+1
-    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfsc   print_compass_label               ; Yes?
-    STRCPY_PRINT    "SE"                    ; yes - print it
-    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+    rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfss   print_compass_label               ; Yes?
+    bra     dcr_5
+    STRCPY_TEXT_PRINT     tSE                 ; yes - print it
+dcr_5:
+    rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'6'
     movwf   up                  ; up stores the width of hte label
@@ -1653,10 +1663,12 @@ TFT_dive_compass_ruler_lend2:
     movwf   sub_a+0
     movlw   high( d'538' )
     movwf   sub_a+1
-    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfsc   print_compass_label               ; Yes?
-    STRCPY_PRINT    "S"                     ; yes - print it
-    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+    rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfss   print_compass_label               ; Yes?
+    bra     dcr_6
+    STRCPY_TEXT_PRINT     tS                 ; yes - print it
+dcr_6:
+    rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'14'
     movwf   up                  ; up stores the width of hte label
@@ -1664,10 +1676,12 @@ TFT_dive_compass_ruler_lend2:
     movwf   sub_a+0
     movlw   high( d'579' )
     movwf   sub_a+1
-    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfsc   print_compass_label               ; Yes?
-    STRCPY_PRINT    "SW"                    ; yes - print it
-    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+    rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfss   print_compass_label               ; Yes?
+    bra     dcr_7
+    STRCPY_TEXT_PRINT     tSW                 ; yes - print it
+dcr_7:
+    rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'7'
     movwf   up                  ; up stores the width of hte label
@@ -1675,10 +1689,12 @@ TFT_dive_compass_ruler_lend2:
     movwf   sub_a+0
     movlw   high( d'627' )
     movwf   sub_a+1
-    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfsc   print_compass_label               ; Yes?
-    STRCPY_PRINT    "W"                     ; yes - print it
-    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+    rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfss   print_compass_label               ; Yes?
+    bra     dcr_8
+    STRCPY_TEXT_PRINT     tW                 ; yes - print it
+dcr_8:
+    rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'14'  
     movwf   up                  ; up stores the width of hte label
@@ -1686,10 +1702,12 @@ TFT_dive_compass_ruler_lend2:
     movwf   sub_a+0
     movlw   high( d'669' )
     movwf   sub_a+1
-    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfsc   print_compass_label               ; Yes?
-    STRCPY_PRINT    "NW"                    ; yes - print it
-    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+    rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfss   print_compass_label               ; Yes?
+    bra     dcr_9
+    STRCPY_TEXT_PRINT     tNW                 ; yes - print it
+dcr_9:
+    rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'6'
     movwf   up                  ; up stores the width of hte label
@@ -1697,10 +1715,12 @@ TFT_dive_compass_ruler_lend2:
     movwf   sub_a+0
     movlw   high( d'718' )
     movwf   sub_a+1
-    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfsc   print_compass_label               ; Yes?
-    STRCPY_PRINT    "N"                     ; yes - print it
-    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+    rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfss   print_compass_label               ; Yes?
+    bra     dcr_10
+    STRCPY_TEXT_PRINT     tN                 ; yes - print it
+dcr_10:
+    rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'13'
     movwf   up                  ; up stores the width of hte label
@@ -1708,10 +1728,12 @@ TFT_dive_compass_ruler_lend2:
     movwf   sub_a+0
     movlw   high( d'759' )
     movwf   sub_a+1
-    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfsc   print_compass_label               ; Yes?
-    STRCPY_PRINT    "NE"                    ; yes - print it
-    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+    rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfss   print_compass_label               ; Yes?
+    bra     dcr_11
+    STRCPY_TEXT_PRINT     tNE                 ; yes - print it
+dcr_11:
+    rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
 TFT_dive_compass_label_end:
     ; restore lo and hi for the final cleanup
@@ -1725,8 +1747,8 @@ TFT_dive_compass_label_end:
     movlw   d'160'
     movff   WREG,lo
     ; clear it
-    call    TFT_dive_compass_clr_label
-    call    TFT_dive_compass_c_mk     ; this is not required until marker implemented...
+    rcall    TFT_dive_compass_clr_label
+    rcall    TFT_dive_compass_c_mk     ; this is not required until marker implemented...
 TFT_dive_compass_label_end2:
     clrf    WREG
 ;TFT_dive_compass_text:
@@ -1782,12 +1804,12 @@ TFT_dive_compass_label_proc:
     movlw   d'0'
     cpfsgt  lo
     bra     TFT_dive_compass_label_proc_p
-    call    TFT_dive_compass_clr_label
+    rcall    TFT_dive_compass_clr_label
 TFT_dive_compass_label_proc_p:
     ; 4. print the SQ on the screen
     call    TFT_standard_color
     bsf     print_compass_label
-    call    TFT_dive_compass_label_print
+    rcall    TFT_dive_compass_label_print
     ; 6. retain the new display positions
     movff   hi,divB     ; old-hi will be used by the c_mk : clear+marker printing
     movff   lo,hi
@@ -1808,7 +1830,7 @@ TFT_dive_compass_label_print:
 TFT_dive_compass_c_mk:
     ; Common task to draw center line and marker
     ;    until a proper implementation make it simple:
-    call    TFT_dive_compass_cline
+    rcall    TFT_dive_compass_cline
     return
 
 TFT_dive_compass_clr_label:
@@ -1825,13 +1847,13 @@ TFT_dive_compass_clr_ruler:
     movff   WREG,win_top
     movlw   dive_compass_tick_height
     movff   WREG,win_height
-    call    TFT_dive_compass_clear
+    rcall    TFT_dive_compass_clear
     ;bottom tick
     movlw   dive_compass_tick_bot_top     ; set top & height
     movff   WREG,win_top
     movlw   dive_compass_tick_height
     movff   WREG,win_height
-    call    TFT_dive_compass_clear
+    rcall    TFT_dive_compass_clear
     return
 
 TFT_dive_compass_clear:

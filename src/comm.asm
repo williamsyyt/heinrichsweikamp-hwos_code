@@ -74,6 +74,7 @@ comm_mode0:
     movwf   TBLPTRH
     movlw   0x01
     movwf   TBLPTRU
+    extern  color_image
     call    color_image                 ; Show usb logo
 	WIN_SMALL	comm_status1_column, comm_status1_row
 	STRCPY_TEXT_PRINT	tUsbStarting	; Starting...
@@ -206,7 +207,7 @@ comm_service_ll_bootloader:
 	STRCPY_TEXT_PRINT	tUsbLlBld               ; Low Level Bootloader started
     WIN_TOP  	comm_warning_row
 	WIN_LEFT 	comm_warning_column
-    TFT_WRITE_PROM_IMAGE dive_warning_block 	; Show Warning icon
+;    TFT_WRITE_PROM_IMAGE dive_warning_block 	; Show Warning icon
     goto    0x1FF0C
 
 ;-----------------------------------------------------------------------------
