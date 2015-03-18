@@ -12,8 +12,8 @@
 icons_data   CODE
 
 ; Dive mode warning icon
-	global	dive_warning_block
-#include "../src/Icons/dive_warning.inc"	;45x39 px
+;	global	dive_warning_block
+;#include "../src/Icons/dive_warning.inc"	;45x39 px
 ; small warning icon
 ;	global	warning_block
 ;#include "../src/Icons/warning.inc"       ;25x22 px
