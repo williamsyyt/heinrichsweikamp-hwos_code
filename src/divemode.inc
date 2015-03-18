@@ -207,13 +207,17 @@
 
 #DEFINE dive_compass_mask_row       decoplan_title_row
 #DEFINE dive_compass_mask_column    decoplan_title_column
-#DEFINE dive_compass_head_column    .57
-#DEFINE dive_compass_head_row       divemode_customview_row+.30
+#DEFINE dive_compass_head_column    .62
+#DEFINE dive_compass_head_row       divemode_customview_row+.39
 
-#DEFINE dive_compass_graph_row      .102
-#DEFINE dive_compass_graph_height   .23
-#DEFINE dive_compass_graph_width    .2
-#DEFINE dive_compass_graph_left     .5
-#DEFINE dive_compass_graph_leftx2   dive_compass_graph_left*.2
-#DEFINE dive_compass_graph_right    .155
+#DEFINE dive_compass_graph_row      .101
+#DEFINE dive_compass_graph_height   .33
+
+#DEFINE dive_compass_tick_height      .3
+#DEFINE dive_compass_tick_top_top     .102
+#DEFINE dive_compass_tick_top_bot     .105
+#DEFINE dive_compass_label_row        .107
+#DEFINE dive_compass_label_height     .24
+#DEFINE dive_compass_tick_bot_top     .131
+#DEFINE dive_compass_tick_bot_bot     .134
 

@@ -660,6 +660,15 @@ opt_cR_button_right     res 1   ; Right button sensitivity (cR hardware)
 #DEFINE voting_logic_sensor3    flag11,5; =1: This sensor is within the voting logic threshold
 #DEFINE cc_active               flag11,6; =1: Constant Current active (cR Hardware)
 #DEFINE cv_active               flag11,7; =1: Constant Voltage active (cR Hardware)
+
+flag12           		res 1
+#DEFINE print_compass_label     flag12,0   ; print the grpahical comapss label
+
+;---- Data for graphical compass
+xRD             res 2       ; virtual compass ruler offset
+xLO             res 1       ; lo backup to prevent trashing
+xHI             res 1       ; hi backup to prevent trashing
+
 ;=============================================================================
 ; C-code Routines
 ; PART 2
