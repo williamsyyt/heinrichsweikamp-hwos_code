@@ -1429,9 +1429,7 @@ TFT_surface_compass_mask:
 
     global  TFT_dive_compass_mask
 TFT_dive_compass_mask:
-    WIN_TINY    dive_compass_mask_column,dive_compass_mask_row
-    call    TFT_divemask_color
-    STRCPY_TEXT_PRINT   tHeading            ; Heading:
+    WIN_FRAME_STD   dive_compass_graph_row, dive_compass_graph_row+dive_compass_graph_height, .0, .159
     return
 
     global  TFT_surface_compass_heading
@@ -1496,11 +1494,384 @@ TFT_surface_compass_heading_com3:
     global  TFT_dive_compass_heading
 TFT_dive_compass_heading:
     rcall   compass_heading_common
+
+    movff   compass_heading_shown+0,xA+0
+    movff   compass_heading_shown+1,xA+1
+
+    ; 1.  160°: +360 offset for non-negative scale
+    movlw   high(d'360')
+    addwf   xA+1,1
+    movlw   low(d'360')
+    addwf   xA+0,1
+    btfsc   STATUS,C
+    incf    xA+1
+    ; 2. -80: left pixel offset from the center
+    movlw   low( d'80' )
+    subwf   xA+0,1
+    btfss   STATUS,C
+    decf    xA+1
+    ; 3. save it to RD
+    movff   xA+0,xRD+0
+    movff   xA+1,xRD+1
+
+    ; calculate mod15 for the ticks
+	movlw	d'15'
+	movwf	xB+0
+	clrf	xB+1
+	call	div16x16  				;xA/xB=xC with xA+0 as remainder
+    ; check xA+0, it has the remainder
+    movlw   d'0'
+    cpfsgt  xA+0                        ; mod15 > 0
+    bra     TFT_dive_compass_ruler      ; no, RM = 0
+    ; yes RM = 15 - RDmod15
+    movlw   d'15'
+    subfwb  xA+0,1
+TFT_dive_compass_ruler:
+    ; xA+0 holds the RM, store it to 'lo'
+    movff    xA+0,lo
+    ; init DD to zero, store it to 'hi'
+    movlw   d'0'
+    movff   WREG,hi
+
+TFT_dive_compass_ruler_loop:
+    ; 1. check if we run of from the display
+    movlw   d'160'    ; Looks like 160 works because TFT_box limits the dispay
+    cpfslt  lo,1
+    bra     TFT_dive_compass_ruler_lend    ; xRM >= W
+    ; 2. Clear the tick area from DD to RM - in segments to avoid blinking
+    ;    don't do a clear if we are at 0 (zero) otherwise it will blink
+    ;    because of the width underflow
+    movlw   d'0'
+    cpfsgt  lo,1
+    bra     TFT_dive_compass_ruler_loop_zz
+    call    TFT_dive_compass_clr_ruler
+TFT_dive_compass_ruler_loop_zz:
+    ; 3. Draw the markers @ RM
+    call    TFT_dive_compass_ruler_print
+    ; 4. If D<82 and RM>79: means we put something over the center line
+    ;    redraw the center line
+    movlw   d'82'
+    cpfslt  hi,1
+    bra     TFT_dive_compass_ruler_loop_zz2
+    movlw   d'79'
+    cpfsgt  lo,1
+    bra     TFT_dive_compass_ruler_loop_zz2
+    call    TFT_dive_compass_c_mk
+TFT_dive_compass_ruler_loop_zz2:
+    ; 5. set D = RM + 2 : position after the 2px tick
+    movff   lo,hi
+    movlw   d'2'
+    addwf   hi,1
+    ; 6. set RM = RM + 15 : position to the next tick
+    movlw   d'15'
+    addwf   lo,1
+    ; 7. loop
+    bra     TFT_dive_compass_ruler_loop
+
+TFT_dive_compass_ruler_lend:    ; loop end
+    ; 8. clear the rest of the tick area if D<160
+    movlw   d'160'
+    cpfslt  hi,1
+    bra     TFT_dive_compass_ruler_lend2    ; D >= W
+    ; 9. position left to end of display to clear the remaining area
+    movlw   d'160'
+    movwf   lo
+    ; 10. clear it
+    call TFT_dive_compass_clr_ruler
+
+TFT_dive_compass_ruler_lend2:
+    ; done with the compass ruler, put the labels on the screen
+    ; get the RD abck to sub_b
+    movff   xRD+0,sub_b+0
+    movff   xRD+1,sub_b+1
+    ; hi stores the display position
+    movlw   d'0'
+    movwf   hi
+    ; lo stores the last item's display position
+    movlw   d'0'
+    movwf   lo
+    bcf     print_compass_label
+
+    movlw   d'14'
+    movwf   up                  ; up stores the width of hte label
+    movlw   low( d'309' )       ; position of the label
+    movwf   sub_a+0
+    movlw   high( d'309' )
+    movwf   sub_a+1
+    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfsc   print_compass_label             ; Yes?
+    STRCPY_PRINT    "NW"                    ; yes - print it
+    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+
+    movlw   d'6'
+    movwf   up                  ; up stores the width of hte label
+    movlw   low( d'358' )       ; position of the label
+    movwf   sub_a+0
+    movlw   high( d'358' )
+    movwf   sub_a+1
+    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfsc   print_compass_label               ; Yes?
+    STRCPY_PRINT    "N"                     ; yes - print it
+    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+
+    movlw   d'13'
+    movwf   up                  ; up stores the width of hte label
+    movlw   low( d'399' )       ; position of the label
+    movwf   sub_a+0
+    movlw   high( d'399' )
+    movwf   sub_a+1
+    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfsc   print_compass_label               ; Yes?
+    STRCPY_PRINT    "NE"                    ; yes - print it
+    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+
+    movlw   d'6'
+    movwf   up                  ; up stores the width of hte label
+    movlw   low( d'448' )       ; position of the label
+    movwf   sub_a+0
+    movlw   high( d'448' )
+    movwf   sub_a+1
+    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfsc   print_compass_label               ; Yes?
+    STRCPY_PRINT    "E"                     ; yes - print it
+    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+
+    movlw   d'13'
+    movwf   up                  ; up stores the width of hte label
+    movlw   low( d'489' )       ; position of the label
+    movwf   sub_a+0
+    movlw   high( d'489' )
+    movwf   sub_a+1
+    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfsc   print_compass_label               ; Yes?
+    STRCPY_PRINT    "SE"                    ; yes - print it
+    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+
+    movlw   d'6'
+    movwf   up                  ; up stores the width of hte label
+    movlw   low( d'538' )       ; position of the label
+    movwf   sub_a+0
+    movlw   high( d'538' )
+    movwf   sub_a+1
+    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfsc   print_compass_label               ; Yes?
+    STRCPY_PRINT    "S"                     ; yes - print it
+    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+
+    movlw   d'14'
+    movwf   up                  ; up stores the width of hte label
+    movlw   low( d'579' )       ; position of the label
+    movwf   sub_a+0
+    movlw   high( d'579' )
+    movwf   sub_a+1
+    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfsc   print_compass_label               ; Yes?
+    STRCPY_PRINT    "SW"                    ; yes - print it
+    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+
+    movlw   d'7'
+    movwf   up                  ; up stores the width of hte label
+    movlw   low( d'627' )       ; position of the label
+    movwf   sub_a+0
+    movlw   high( d'627' )
+    movwf   sub_a+1
+    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfsc   print_compass_label               ; Yes?
+    STRCPY_PRINT    "W"                     ; yes - print it
+    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+
+    movlw   d'14'  
+    movwf   up                  ; up stores the width of hte label
+    movlw   low( d'669' )       ; position of the label
+    movwf   sub_a+0
+    movlw   high( d'669' )
+    movwf   sub_a+1
+    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfsc   print_compass_label               ; Yes?
+    STRCPY_PRINT    "NW"                    ; yes - print it
+    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+
+    movlw   d'6'
+    movwf   up                  ; up stores the width of hte label
+    movlw   low( d'718' )       ; position of the label
+    movwf   sub_a+0
+    movlw   high( d'718' )
+    movwf   sub_a+1
+    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfsc   print_compass_label               ; Yes?
+    STRCPY_PRINT    "N"                     ; yes - print it
+    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+
+    movlw   d'13'
+    movwf   up                  ; up stores the width of hte label
+    movlw   low( d'759' )       ; position of the label
+    movwf   sub_a+0
+    movlw   high( d'759' )
+    movwf   sub_a+1
+    call    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfsc   print_compass_label               ; Yes?
+    STRCPY_PRINT    "NE"                    ; yes - print it
+    call    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+
+TFT_dive_compass_label_end:
+    ; restore lo and hi for the final cleanup
+    movff   xLO,lo
+    movff   xHI,hi
+    ; clear the rest of the SQ area if there are more space
+    movlw   d'160'
+    cpfslt  hi
+    bra     TFT_dive_compass_label_end2    ; D >= 160, no more space
+    ; position left to end of display to clear the remaining area
+    movlw   d'160'
+    movff   WREG,lo
+    ; clear it
+    call    TFT_dive_compass_clr_label
+    call    TFT_dive_compass_c_mk     ; this is not required until marker implemented...
+TFT_dive_compass_label_end2:
+    clrf    WREG
+;TFT_dive_compass_text:
     ; Text output
-    WIN_STD dive_compass_head_column,dive_compass_head_row
- 	call	TFT_standard_color
+    WIN_SMALL   dive_compass_head_column,dive_compass_head_row
+    call    TFT_standard_color
     rcall   TFT_surface_compass_heading_com  ; Show "000° N"
-    return              ; No graphical output (yet)
+    return
+
+TFT_dive_compass_label_proc:
+    ; Input:
+    ;   hi: DD  - display current position
+    ;   sub_b: RD - ruler display offset
+    ;   sub_a: RP - item's ruler display offset
+    ; get the RD abck to sub_b
+    movff   xRD+0,sub_b+0
+    movff   xRD+1,sub_b+1
+    movff   xHI,hi
+    bcf     print_compass_label
+    ; 1/a. check if it's viewable ? sub_a(RP) >= sub_b(RD) ?
+    ;    set the carry flag if sub_b(xRD) is equal to or greater than sub_a(xRP):
+    call    subU16      ;  sub_c = sub_a - sub_b
+    btfsc   neg_flag    ; >=0?
+    return              ; No
+    ; store the RO=RP-RD for drawing
+    movff   sub_c+0,xC+0
+    movff   sub_c+1,xC+1
+
+    ; 1/b. check if it's viewable ? sub_a(RP)+up(width) < sub_b(RD)+160
+    ;      if already above, no need to process the rest of the labels
+    ;movff   up,WREG    ; don't worry about the width, low level call prevents overload
+    movlw   d'2'        ;   .. but still avoid thin mess on the side of the display
+    addwf   sub_a+0,1
+    btfsc   STATUS, C
+    incf    sub_a+1
+
+    movlw   d'160'
+    addwf   sub_b+0,1
+    btfsc   STATUS, C
+    incf    sub_b+1
+    call    subU16      ;  sub_c = sub_a - sub_b
+    btfss   neg_flag    ; ? <0
+    bra     TFT_dive_compass_label_end      ; No
+    ;return     ; instead of simple return go tho the end and
+                ; skip the rest of the labels to speed up the process
+
+    ; 2. restore RO=RP-RD from 1/a.
+    movff   xC+0,lo
+
+    ; 3. Clear the segment from DD(hi) to lo
+    ; don't do a clear if we are at 0 (zero) otherwise it will blink
+    ;   ?because of the width underflow?
+    movlw   d'0'
+    cpfsgt  lo
+    bra     TFT_dive_compass_label_proc_p
+    call    TFT_dive_compass_clr_label
+TFT_dive_compass_label_proc_p:
+    ; 4. print the SQ on the screen
+    call    TFT_standard_color
+    bsf     print_compass_label
+    call    TFT_dive_compass_label_print
+    ; 6. retain the new display positions
+    movff   hi,divB     ; old-hi will be used by the c_mk : clear+marker printing
+    movff   lo,hi
+    movff   up,WREG
+    addwf   hi,1
+    movff   lo,xLO
+    movff   hi,xHI
+    return
+
+TFT_dive_compass_label_print:
+    movlw   dive_compass_label_row
+    movff   WREG,win_top
+    movff   lo,win_leftx2
+    movlw   FT_SMALL
+    movff   WREG,win_font
+    return
+
+TFT_dive_compass_c_mk:
+    ; Common task to draw center line and marker
+    ;    until a proper implementation make it simple:
+    call    TFT_dive_compass_cline
+    return
+
+TFT_dive_compass_clr_label:
+    movlw   dive_compass_label_row-.2     ; set top & height
+    movff   WREG,win_top
+    movlw   dive_compass_label_height+.2
+    movff   WREG,win_height
+    call    TFT_dive_compass_clear
+    return
+
+TFT_dive_compass_clr_ruler:
+    ; top tick
+    movlw   dive_compass_tick_top_top     ; set top & height
+    movff   WREG,win_top
+    movlw   dive_compass_tick_height
+    movff   WREG,win_height
+    call    TFT_dive_compass_clear
+    ;bottom tick
+    movlw   dive_compass_tick_bot_top     ; set top & height
+    movff   WREG,win_top
+    movlw   dive_compass_tick_height
+    movff   WREG,win_height
+    call    TFT_dive_compass_clear
+    return
+
+TFT_dive_compass_clear:
+    ; we receive RM in lo and DD in hi
+    ; calculate width = RM-D
+    movff   hi,WREG
+    subwf   lo,0
+    movff   WREG,win_width         ; RM-DD
+    movff   WREG,win_bargraph
+    movff   hi,win_leftx2
+    movlw   color_black
+    call    TFT_set_color
+    call    TFT_box
+    return
+
+TFT_dive_compass_ruler_print:
+    ; we receive RM in lo and DD in hi
+    movlw   dive_compass_tick_top_top
+    movff   WREG,win_top
+    movlw   dive_compass_tick_height
+    movff   WREG,win_height
+    movlw   d'2'
+    movff   WREG,win_width
+    movlw   d'2'
+    movff   WREG,win_bargraph
+    movff   lo,win_leftx2          ; 0..159
+    call    TFT_standard_color
+    call    TFT_box
+    movlw   dive_compass_tick_bot_top
+    movff   WREG,win_top
+    movlw   dive_compass_tick_height
+    movff   WREG,win_height
+    call    TFT_standard_color
+    call    TFT_box
+    return
+
+TFT_dive_compass_cline:
+   	movlw   color_yellow
+    WIN_BOX_COLOR     dive_compass_tick_top_top,dive_compass_tick_bot_bot,.80,.81
+    return
 
 tft_compass_cardinal:
     btfsc  hi,0          ; Heading >255°?
