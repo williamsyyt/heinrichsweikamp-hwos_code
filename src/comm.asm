@@ -207,7 +207,7 @@ comm_service_ll_bootloader:
 	STRCPY_TEXT_PRINT	tUsbLlBld               ; Low Level Bootloader started
     WIN_TOP  	comm_warning_row
 	WIN_LEFT 	comm_warning_column
-;    TFT_WRITE_PROM_IMAGE dive_warning_block 	; Show Warning icon
+    TFT_WRITE_PROM_IMAGE dive_warning2_block 	; Show Warning icon
     goto    0x1FF0C
 
 ;-----------------------------------------------------------------------------
