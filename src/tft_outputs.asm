@@ -583,22 +583,8 @@ TFT_divemode_warning:
     bsf     dive_warning_displayed              ; =1: The warning sign is shown
     WIN_TOP  	warning_icon_row
 	WIN_LEFT 	warning_icon_column
-;    TFT_WRITE_PROM_IMAGE dive_warning_block 	; Show Warning icon
-;    movlw   .3
-;    cpfslt  warning_counter                     ; More then two warnings?
-;    rcall   TFT_divemode_warning_counter        ; Yes, show the number
-	return
-
-;TFT_divemode_warning_counter:
-;    WIN_SMALL	warning_icon_column+.8,warning_icon_row+.13
-;    call	TFT_warnings_color
-;    movff   warning_counter,lo
-;    bsf     leftbind
-;	output_8
-;    bcf     leftbind
-;	STRCAT_PRINT ""
-;	call	TFT_standard_color
-;	return
+    TFT_WRITE_PROM_IMAGE dive_warning2_block 	; Show Warning icon
+    return
 
 	global	TFT_divemode_warning_clear
 TFT_divemode_warning_clear:
