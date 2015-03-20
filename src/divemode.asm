@@ -84,8 +84,7 @@ diveloop_loop1b:
 ; Tasks only for Apnoe mode
 	rcall	divemode_apnoe_tasks			; 1 sec. Apnoe tasks
     call	customview_second				; Do every-second tasks for the custom view area
- ;   call	divemode_check_for_warnings     ; Check for any warnings
-	bra		diveloop_loop1x					; Common Tasks
+ 	bra		diveloop_loop1x					; Common Tasks
 
 diveloop_loop1x:
 ; Common 1sec. tasks for all modes
@@ -883,10 +882,11 @@ test_switches_divemode1:
 	bra		divemode_option5			; Reset Stopwatch (In Gauge mode)
 	dcfsnz	WREG,F
 	bra		divemode_option6			; +5mins simulation
+	dcfsnz	WREG,F
+	bra		divemode_option7			; Store heading
     return
 
 test_switches_divemode2:
-	bcf		switch_left
     call    menuview_toggle         ; Menu or Simulator tasks
     return
 
@@ -1029,9 +1029,9 @@ divemode_option6:
     movlw   .5
     addwf   divemins+0,F
     movlw   .0
-    addwfc  divemins+1,F
+    addwfc  divemins+1,F                ; Add 5 mins
     movlw   .5
-    movwf   up
+    movwf   up                          ; counter
 ; 1min mode
 divemode_option6_2:
 	movlw   .1
@@ -1046,44 +1046,9 @@ divemode_option6_2:
     call    menuview_toggle_reset
     return
 
-; 2sec mode
-;    #DEFINE divemode_simtext_row        .164
-;    #DEFINE divemode_simtext_column     .32
-;
-;    rcall   divemode_option6_divetime
-;    rcall   divemode_option6_divetime   ; 2 times
-;
-;    bsf     win_invert                  ; Set invert flag
-;    movlw   color_yellow
-;    call	TFT_set_color
-;    bsf     leftbind
-;    WIN_SMALL   divemode_simtext_column,divemode_simtext_row
-;    lfsr	FSR2,buffer
-;    movlw   .2
-;    mulwf   up
-;    movff   PRODL,lo
-;    movff   PRODH,hi
-;    output_16
-;    STRCAT_PRINT    "s   "               ; Show 300s delay countdown
-;    call	TFT_standard_color
-;    bcf     win_invert
-;    bcf     leftbind
-;    rcall   calc_deko_divemode2a        ; Calc 150*2 seconds = 300secs = 5mins
-;    decfsz  up,F                        ; Done?
-;    bra     divemode_option6_2          ; Not yet
-;    bsf     divemode2                   ; continue divetime
-;    call    menuview_toggle_reset
-;    return
-
-divemode_option6_divetime:
-    incf		divesecs,F
-	movlw		d'59'
-	cpfsgt		divesecs
-	bra			divemode_option6_divetime2
-	clrf		divesecs
-	infsnz		divemins+0,F
-    incf		divemins+1,F			; increase divemins
-divemode_option6_divetime2:
+divemode_option7:
+    ; Store heading for compass view
+    call    menuview_toggle_reset       ; Done.
     return
 
 
