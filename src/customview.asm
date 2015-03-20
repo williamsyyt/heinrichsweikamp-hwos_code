@@ -241,7 +241,7 @@ menuview_toggle:            ; Show Menu or the simulator tasks
     bsf     menuview
 	bcf		switch_left
 	incf	menupos2,F			            ; Number of options to show
-	movlw	d'8'							; Max number of options in divemode
+	movlw	d'9'							; Max number of options in divemode
 	cpfsgt	menupos2			            ; Max reached?
 	bra		menuview_mask		            ; No, show
     global  menuview_toggle_reset
@@ -263,19 +263,21 @@ menuview_mask2:
 	dcfsnz	WREG,F
 	bra		menuview_view_gaschange         ; If a better gas is indicated
 	dcfsnz	WREG,F
-	bra		menuview_view1
+	bra		menuview_view1                  ; "Menu?" (Not in Gauge and Anpnoe)
 	dcfsnz	WREG,F
-	bra		menuview_view2
+	bra		menuview_view2                  ; "Quit Simulation?" (Sim only)
 	dcfsnz	WREG,F
-	bra		menuview_view3
+	bra		menuview_view3                  ; "Descent 1m" (Sim only)
 	dcfsnz	WREG,F
-	bra		menuview_view4
+	bra		menuview_view4                  ; "Ascend 1m" (Sim only)
 	dcfsnz	WREG,F
-	bra		menuview_view5
+	bra		menuview_view5                  ; "Quit Apnea mode?" (Apnea only)
 	dcfsnz	WREG,F
-	bra		menuview_view6
+	bra		menuview_view6                  ; "Reset Avr." (Gauge only)
 	dcfsnz	WREG,F
-	bra		menuview_view7
+	bra		menuview_view7                  ; "Sim:+5mins"  (Sim only)
+	dcfsnz	WREG,F
+	bra		menuview_view8                  ; "Heading"  (When compass is shown)
 menuview_exit:
     call	TFT_standard_color
     bcf     win_invert              ; Reset invert flag
@@ -306,7 +308,7 @@ menuview_view1:
 menuview_view2:
     btfss  	simulatormode_active			; View only for simulator mode
 	bra		menuview_toggle 				; Call next option
-	STRCPY_TEXT_PRINT tQuitSim				;"Quit Simulation?"
+	STRCPY_TEXT_PRINT tQuitSim				; "Quit Simulation?"
     bra     menuview_exit                   ; Done.
 menuview_view3:
     btfss  	simulatormode_active			; View only for simulator mode
@@ -339,6 +341,12 @@ menuview_view7:
 	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
 	bra		menuview_toggle 				; Yes, call next option
 	STRCPY_TEXT_PRINT	tplus5min           ; "Sim:+5mins"
+	bra     menuview_exit                   ; Done.
+menuview_view8:
+    movlw   .6
+    cpfseq  menupos3                        ; in compass view?
+	bra		menuview_toggle 				; No, call next option
+	STRCPY_TEXT_PRINT	tSetHeading         ; "Heading"
 	bra     menuview_exit                   ; Done.
 
 

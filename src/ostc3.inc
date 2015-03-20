@@ -324,6 +324,12 @@ compass_r           res 3
 CNS_start           res 2       ; CNS value at beginning of dive
 GF_start            res 1       ; GF value at beginning of dive
 
+;---- Data for graphical compass
+xRD             res 2       ; virtual compass ruler offset
+xLO             res 1       ; lo backup to prevent trashing
+xHI             res 1       ; hi backup to prevent trashing
+
+
 ;---------------------------- Common DATA ------------------------------------
 
 common          equ         0x100       ; Alias for "banksel common"
@@ -641,7 +647,7 @@ opt_cR_button_right     res 1   ; Right button sensitivity (cR hardware)
 #DEFINE show_safety_stop		flag9,4	; =1: Show the safety stop
 #DEFINE	safety_stop_active      flag9,5	; =1: The safety stop is currently displayed
 #DEFINE new_s8_data_available   flag9,6 ; =1: New data frame recieved
-; unused
+#DEFINE print_compass_label     flag9,7 ; =1: print the graphical comapss label
 
 #DEFINE s8_digital              flag10,0; =1: Digital I/O
 #DEFINE menu_show_sensors2      flag10,1; =1: Update mV data in calibration menu
@@ -660,14 +666,6 @@ opt_cR_button_right     res 1   ; Right button sensitivity (cR hardware)
 #DEFINE voting_logic_sensor3    flag11,5; =1: This sensor is within the voting logic threshold
 #DEFINE cc_active               flag11,6; =1: Constant Current active (cR Hardware)
 #DEFINE cv_active               flag11,7; =1: Constant Voltage active (cR Hardware)
-
-flag12           		res 1
-#DEFINE print_compass_label     flag12,0   ; print the grpahical comapss label
-
-;---- Data for graphical compass
-xRD             res 2       ; virtual compass ruler offset
-xLO             res 1       ; lo backup to prevent trashing
-xHI             res 1       ; hi backup to prevent trashing
 
 ;=============================================================================
 ; C-code Routines

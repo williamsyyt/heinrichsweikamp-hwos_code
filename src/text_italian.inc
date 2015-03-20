@@ -228,6 +228,7 @@
 
 ; Divemode menu
     TCODE   tDivePreMenu,   "Menu?"         ; Menu?
+    TCODE   tSetHeading,    "Direz."        ; Heading (Max. seven chars)
 
 ; Simulator menu
 	TCODE	tQuitSim,	 "Uscire?"            ; Quit Simulation?
