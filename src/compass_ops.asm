@@ -1282,8 +1282,9 @@ TFT_dive_compass_clear:
     subwf   lo,0
     movff   WREG,win_width         ; RM-DD
     movff   WREG,win_bargraph
-    incf    hi,W                   ; +1 pixel to avopid clipping of chars
-    movff   WREG,win_leftx2
+;    incf    hi,W                   ; +1 pixel to avopid clipping of chars
+;    movff   WREG,win_leftx2
+    movff   hi,win_leftx2
     movlw   color_black
     call    TFT_set_color
     call    TFT_box
