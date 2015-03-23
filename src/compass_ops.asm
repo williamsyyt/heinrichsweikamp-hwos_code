@@ -540,34 +540,23 @@ TFT_dive_compass_heading_1:
     movff   sub_c+1,xRD180+1
     movff   sub_c+0,xRD180+0
 
+TFT_dive_compass_bearing_1:
+    ; calculate bearing position and visibility (ahead or behind)
+    bcf     compass_bearing_vis     ; default is not-visibly
+    bcf     compass_bearing_ahd     ; default is behind
     ; get the bearing virtual display offset, store it to divA
     movff   compass_bearing+0,xA+0
     movff   compass_bearing+1,xA+1
-    ; divA =IF (U10>292;U10;U10+360)
-    movlw   high(d'292')
-    movff   WREG,sub_a+1
-    movlw   low(d'292')
-    movff   WREG,sub_a+0
-    movff   xA+1,sub_b+1
-    movff   xA+0,sub_b+0
-    call    subU16      ;  sub_c = sub_a - sub_b
-    btfsc   neg_flag    ; xA>292
-    bra     TFT_dive_compass_bearing_1  ;yes
-    ; no, xA<=292
     movlw   high(d'360')
     addwf   xA+1,1
     movlw   low(d'360')
     addwf   xA+0,1
     btfsc   STATUS,C
     incf    xA+1
-    ; save it for the direction (<< or >>) calculation
+    ; save it to reuse for upper/lower turns and ahead/behind checks
     movff   xA+1,divA+1
     movff   xA+0,divA+0
 
-TFT_dive_compass_bearing_1:
-    ; calculate bearing position and visibility (ahead or behind)
-    bcf     compass_bearing_vis     ; default is not-visibly
-    bcf     compass_bearing_ahd     ; default is behind
     ; check if it's ahead
     ; load the bearing offset into sub_a
     movff   divA+1,sub_a+1
@@ -580,7 +569,7 @@ TFT_dive_compass_bearing_1:
     btfsc   compass_bearing_vis
     bra     TFT_dive_compass_bearing_dir
 
-    ; check if it's ahead with a furr turn
+    ; check if it's ahead with an upper turn
     ; load the bearing offset into sub_a
     movff   divA+1,sub_a+1
     movff   divA+0,sub_a+0
@@ -593,6 +582,24 @@ TFT_dive_compass_bearing_1:
     addwf   sub_b+0,1
     btfsc   STATUS,C
     incf    sub_b+1
+    rcall    TFT_dive_compass_bearing_ap
+    ;test if we found it
+    btfsc   compass_bearing_vis
+    bra     TFT_dive_compass_bearing_dir
+
+    ; check if it's ahead with a lower turn
+    ; load the bearing offset into sub_a
+    movff   divA+1,sub_a+1
+    movff   divA+0,sub_a+0
+    movlw   high(d'360')
+    addwf   sub_a+1,1
+    movlw   low(d'360')
+    addwf   sub_a+0,1
+    btfsc   STATUS,C
+    incf    sub_a+1
+    ; load the display offset back to sub_b
+    movff   xRD+0,sub_b+0
+    movff   xRD+1,sub_b+1
     rcall    TFT_dive_compass_bearing_ap
     ;test if we found it
     btfsc   compass_bearing_vis
@@ -716,11 +723,29 @@ TFT_dive_compass_bearing_dir:
     bra     TFT_dive_compass_ruler  ; bearing points to heading, no signs are required, go to the ruler
 
 TFT_dive_compass_bearing_lr:
+    ; get the bearing virtual display offset
+    movff   compass_bearing+0,xA+0
+    movff   compass_bearing+1,xA+1
+    ; divA =IF (U10>292;U10;U10+360)
+    movlw   high(d'292')
+    movff   WREG,sub_a+1
+    movlw   low(d'292')
+    movff   WREG,sub_a+0
+    movff   xA+1,sub_b+1
+    movff   xA+0,sub_b+0
+    call    subU16      ;  sub_c = sub_a - sub_b
+    btfsc   neg_flag    ; xA>292
+    bra     TFT_dive_compass_bearing_lr_1  ;yes
+    ; no, xA<=292
+    movlw   high(d'360')
+    addwf   xA+1,1
+    movlw   low(d'360')
+    addwf   xA+0,1
+    btfsc   STATUS,C
+    incf    xA+1
+TFT_dive_compass_bearing_lr_1:
     ; 1. calculate whether bearing is to left or to right
     bsf     compass_bearing_lft   ; to the left by default
-    ; get the bearing offset back
-    movff   divA+1,xA+1
-    movff   divA+0,xA+0
     ; xC: save center value to compare the direction to front value
     movff   xA+1,xC+1
     movff   xA+0,xC+0
