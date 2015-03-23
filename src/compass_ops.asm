@@ -1056,11 +1056,11 @@ TFT_dive_compass_dir_text:
     bra     TFT_dive_compass_text
 
 TFT_dive_compass_dir_text_2:
+    movlw   color_green
+    call    TFT_set_color
     btfsc   compass_bearing_lft
     bra     TFT_dive_compass_dir_ldir      ; bearing_lft=1, print the left marker
 ;TFT_dive_compass_text_rdir:
-    movlw   color_green
-    call    TFT_set_color
     WIN_SMALL   dive_compass_rdir_column,dive_compass_head_row
     STRCPY_PRINT    ">>"
     ; do not forget to clear the left
@@ -1068,8 +1068,6 @@ TFT_dive_compass_dir_text_2:
     bra     TFT_dive_compass_text
 
 TFT_dive_compass_dir_ldir:
-    movlw   color_green
-    call    TFT_set_color
     WIN_SMALL   dive_compass_ldir_column,dive_compass_head_row
     STRCPY_PRINT    "<<"
     ; do not forget to clear the right
@@ -1135,12 +1133,17 @@ TFT_dive_compass_label_proc:
     movlw   d'0'
     cpfsgt  lo
     bra     TFT_dive_compass_label_proc_p
-    rcall    TFT_dive_compass_clr_label
+    rcall   TFT_dive_compass_clr_label
 TFT_dive_compass_label_proc_p:
     ; 4. print the SQ on the screen
     call    TFT_standard_color
     bsf     print_compass_label
-    rcall    TFT_dive_compass_label_print
+;TFT_dive_compass_label_print:
+    movlw   dive_compass_label_row
+    movff   WREG,win_top
+    movff   lo,win_leftx2
+    movlw   FT_SMALL
+    movff   WREG,win_font
     ; 6. retain the new display positions
     movff   hi,divB     ; old-hi will be used by the c_mk : clear+marker printing
     movff   lo,hi
@@ -1148,14 +1151,6 @@ TFT_dive_compass_label_proc_p:
     addwf   hi,1
     movff   lo,xLO
     movff   hi,xHI
-    return
-
-TFT_dive_compass_label_print:
-    movlw   dive_compass_label_row
-    movff   WREG,win_top
-    movff   lo,win_leftx2
-    movlw   FT_SMALL
-    movff   WREG,win_font
     return
 
 TFT_dive_compass_c_mk:
@@ -1188,7 +1183,7 @@ TFT_dive_compass_mk:
     clrf    lo
     movff   xCM,lo
     bsf     print_compass_label ; set=green marker
-    rcall    TFT_dive_compass_mk_print
+    rcall   TFT_dive_compass_mk_print
     bcf     print_compass_label
     bra     TFT_dive_compass_mk_end
 
@@ -1196,7 +1191,7 @@ TFT_dive_compass_mk_rear:
     clrf    lo
     movff   xCM,lo
     bcf     print_compass_label ; set=red marker
-    rcall    TFT_dive_compass_mk_print
+    rcall   TFT_dive_compass_mk_print
 
 TFT_dive_compass_mk_end:
     movff   xA+0,lo
@@ -1209,15 +1204,15 @@ TFT_dive_compass_mk_print:
     bra     TFT_dive_compass_mk_print_2 ; lo<1, skip the first line
     movlw   d'2'
     subwf   lo,0
-    movff   WREG,win_leftx2
-    rcall    TFT_dive_compass_mk_print_3
+;    movff   WREG,win_leftx2
+    rcall   TFT_dive_compass_mk_print_3
 TFT_dive_compass_mk_print_2:
     movlw   d'2'
     addwf   lo,0
-    movff   WREG,win_leftx2
-    rcall    TFT_dive_compass_mk_print_3
-    return
+;    rcall   TFT_dive_compass_mk_print_3
+;    return
 TFT_dive_compass_mk_print_3:
+    movff   WREG,win_leftx2
     movlw   dive_compass_label_row
     movff   WREG,win_top
     movlw   dive_compass_label_height-.2
@@ -1238,7 +1233,7 @@ TFT_dive_compass_clr_label:
     movff   WREG,win_top
     movlw   dive_compass_label_height+.2
     movff   WREG,win_height
-    rcall    TFT_dive_compass_clear
+    rcall   TFT_dive_compass_clear
     return
 
 TFT_dive_compass_clr_ruler:
@@ -1253,9 +1248,8 @@ TFT_dive_compass_clr_ruler:
     movff   WREG,win_top
     movlw   dive_compass_tick_height
     movff   WREG,win_height
-    rcall    TFT_dive_compass_clear
-    return
-
+;    rcall   TFT_dive_compass_clear
+;    return
 TFT_dive_compass_clear:
     ; we receive RM in lo and DD in hi
     ; calculate width = RM-D
@@ -1263,7 +1257,8 @@ TFT_dive_compass_clear:
     subwf   lo,0
     movff   WREG,win_width         ; RM-DD
     movff   WREG,win_bargraph
-    movff   hi,win_leftx2
+    incf    hi,W                   ; +1 pixel to avopid clipping of chars
+    movff   WREG,win_leftx2
     movlw   color_black
     call    TFT_set_color
     call    TFT_box
@@ -1286,7 +1281,6 @@ TFT_dive_compass_ruler_print:
     movff   WREG,win_top
     movlw   dive_compass_tick_height
     movff   WREG,win_height
-    call    TFT_standard_color
     call    TFT_box
     return
 
