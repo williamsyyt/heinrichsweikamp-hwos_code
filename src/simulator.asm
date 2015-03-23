@@ -43,7 +43,8 @@ gui     CODE
             decoplan_last               ; Depth of last stop (CF#29)
             decoplan_flags              ; Various private flags.
             decoplan_CNS:2              ; Backup CNS before vault restore
-            ; Reserved to tmp+0x1F...
+            decoplan_page               ; page number
+            ; Reserved to tmp+0x16...
         ENDC
 #define decoplan_last_ceiling_shown   decoplan_flags,0
 

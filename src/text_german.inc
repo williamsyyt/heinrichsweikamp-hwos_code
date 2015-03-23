@@ -228,7 +228,7 @@
 
 ; Divemode menu
     TCODE   tDivePreMenu,   "Menü?"         ; Menu?
-    TCODE   tSetHeading,    "Kurs"          ; Heading (Max. seven chars)
+    TCODE   tSetHeading,    "Kurs"          ; Bearing (Max. seven chars)
 
 ; Simulator menu
 	TCODE	tQuitSim,	 "Ende?"            ; Quit Simulation?

@@ -233,10 +233,6 @@ isr_prod    res 2
 amb_pressure	res	2
 temperature		res	2
 
-W1              res 2           ; Raw (packed) calibration data
-W2              res 2
-W3              res 2
-W4              res 2	        ; 100
 C1              res 2           ; Decoded calibration data
 C2              res 2
 C3              res 2
@@ -283,7 +279,7 @@ max_CCPR1L		res	1			; Max. brightness value for CCPR1L
 battery_gauge	res	6			; 48Bit -> 78Ah max...
 
 ; IR/S8-Link
-ir_s8_buffer        res .18
+ir_s8_buffer        res .18     ; temporally used in get_calibration_data for the raw (packed) calibration data
 ir_s8_counter       res 1
 ir_S8_timeout       res 1       ; Timeout for valid data
 
@@ -326,8 +322,12 @@ GF_start            res 1       ; GF value at beginning of dive
 
 ;---- Data for graphical compass
 xRD             res 2       ; virtual compass ruler offset
+xRDr            res 2       ; virtual compass ruler offset - right end
+xRD180          res 2       ; virtual compass ruler offset for the -180 marker
 xLO             res 1       ; lo backup to prevent trashing
 xHI             res 1       ; hi backup to prevent trashing
+xCM             res 1       ; compass bearing relative position
+compass_bearing res 2       ; this is where the bearing menu stores the actual heading for bearing
 
 
 ;---------------------------- Common DATA ------------------------------------
@@ -355,6 +355,7 @@ flag8           		res 1
 flag9           		res 1
 flag10           		res 1
 flag11           		res 1
+flag12           		res 1
 
 hardware_flag           res 1           ; hardware descriptor flag
 
@@ -425,7 +426,6 @@ desaturation_time		res 2
 convert_value_temp      res 3           ; used in menu_battery_state_convert_date
 active_gas				res 1
 active_diluent          res 1           ; As a backup when switching back from Bailout to CCR
-decoplan_page			res 1
 warning_counter			res 1			; Counts amount of warning in divemode
 warning_counter_backup	res 1			; Backup of warning_counter
 warning_page            res 1           ; current # of warning page
@@ -666,6 +666,12 @@ opt_cR_button_right     res 1   ; Right button sensitivity (cR hardware)
 #DEFINE voting_logic_sensor3    flag11,5; =1: This sensor is within the voting logic threshold
 #DEFINE cc_active               flag11,6; =1: Constant Current active (cR Hardware)
 #DEFINE cv_active               flag11,7; =1: Constant Voltage active (cR Hardware)
+
+#DEFINE compass_bearing_set     flag12,0    ; bearing set
+#DEFINE compass_bearing_eq      flag12,1    ; bearing is in direction? do not show << or >> 
+#DEFINE compass_bearing_lft     flag12,2    ; bearing is to the left/<< if set, otherwise to the right/>>
+#DEFINE compass_bearing_vis     flag12,3    ; bearing is visible? (either ahead or behind/-180°)
+#DEFINE compass_bearing_ahd     flag12,4    ; bearing is ahead or behind?
 
 ;=============================================================================
 ; C-code Routines

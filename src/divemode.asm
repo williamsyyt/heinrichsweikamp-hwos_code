@@ -1048,9 +1048,11 @@ divemode_option6_2:
 
 divemode_option7:
     ; Store heading for compass view
+    movff   compass_heading_shown+0,compass_bearing+0
+    movff   compass_heading_shown+1,compass_bearing+1
+    bsf     compass_bearing_set         ; set flag
     call    menuview_toggle_reset       ; Done.
     return
-
 
 divemode_simulator_check_limits:
 	; Check limits (150m and 0m)
@@ -1301,6 +1303,10 @@ diveloop_boot:
 	clrf	WREG
 	movff	WREG,max_pressure+0				; clear some variables
 	movff	WREG,max_pressure+1
+    movff   WREG,compass_bearing+0
+    movff   WREG,compass_bearing+1
+
+    bcf     compass_bearing_set
 
     bcf     use_agf                         ; Start with normal GF set
     bcf     divemode_menu                   ; clear divemode menu flag

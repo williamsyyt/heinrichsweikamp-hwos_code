@@ -941,14 +941,11 @@ comm_read_setting:
     movff   opt_cR_button_right, TXREG1     ; RCREG1=0x3B
 
 comm_read_abort:
+comm_read_done:
     bra		comm_download_mode0             ; Done. Loop with timeout reset
 
 comm_read_setting_wait:
-    call	rs232_wait_tx					; Wait for UART
-    return
-
-comm_read_done:
-    bra		comm_download_mode0             ; Done. Loop with timeout reset
+    goto    rs232_wait_tx					; Wait for UART (and return!)
 
 comm_read_gas1:
     movff   opt_gas_O2_ratio+0, TXREG1
