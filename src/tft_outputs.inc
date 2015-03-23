@@ -37,13 +37,13 @@ TFT_color_code macro color_code_temp
     extern  TFT_menu_calibrate               ; Update mV data in menu
     extern  TFT_custom_text             ; The custom text
     extern  TFT_surface_tissues         ; Show Tissue diagram in surface mode
-    extern  TFT_surface_compass_mask    ; Compass heading mask
-    extern  TFT_surface_compass_heading ; Compass heading value
+;    extern  TFT_surface_compass_mask    ; Compass heading mask
+;    extern  TFT_surface_compass_heading ; Compass heading value
     extern  TFT_surface_decosettings    ; Show all deco settings
     extern  TFT_cat_serial              ; Add serial to current string
     extern  TFT_cat_firmware            ; Add firmware version to current string
-    extern  TFT_compass_show_gain       ; Show the current compass gain
-    extern  TFT_show_timeout_testmode   ; Show the timeout during calibration
+;    extern  TFT_compass_show_gain       ; Show the current compass gain
+;    extern  TFT_show_timeout_testmode   ; Show the timeout during calibration
 ; Menu
 	extern	TFT_LogOffset_Logtitle
     extern  TFT_show_color_schemes      ; Yes, update the color schemes
@@ -51,7 +51,7 @@ TFT_color_code macro color_code_temp
 ; Debug and useless stuff
 ;	extern	TFT_update_raw_data
 ;    extern	TFT_update_raw_data2
-    extern  TFT_compass_fast
+;    extern  TFT_compass_fast
 
 ; Dive mode
 	extern	TFT_display_cns
@@ -93,8 +93,8 @@ TFT_color_code macro color_code_temp
     extern  TFT_gf_mask                         ; Setup Mask
     extern  TFT_gf_info                         ; Show GF informations
     extern  TFT_warning_agf                     ; Show a warning if aGF is selected
-    extern  TFT_dive_compass_mask               ; Compass mask
-    extern  TFT_dive_compass_heading            ; Compass heading
+;    extern  TFT_dive_compass_mask               ; Compass mask
+;    extern  TFT_dive_compass_heading            ; Compass heading
     extern  TFT_dyn_gaslist                     ; Show the dyn gaslist
     extern  TFT_divetimeout                     ; Show timeout counter
     extern  TFT_hud_voltages                    ; Show HUD details
