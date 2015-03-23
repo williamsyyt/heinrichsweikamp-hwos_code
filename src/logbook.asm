@@ -194,7 +194,7 @@ LOG_POINT_TO    macro   address
 logbook code
 
 TFT_logbook_cursor:
-	call		speed_fastest
+;	call		speed_fastest
     WIN_BOX_BLACK   .0, .240-.16, logbook_list_left-.16, logbook_list_left-.1		;top, bottom, left, right
 
 	WIN_LEFT	logbook_list_left-.16
@@ -256,7 +256,7 @@ logbook:
 ; c) when 255 dives are reached divemins+0 = 255
 
 logbook2:
-	call		speed_fastest
+;	call		speed_fastest
 	incf		divemins+0,F		; increase dive counter
     incf        divemins+0,W        ; = 0x..FF ?
     bz          logbook_reset      ; Yes: FF --> loop.
@@ -380,7 +380,7 @@ display_profile_or_exit2:
 display_profile:
     bcf         is_bailout
     bcf         gas6_changed                ; Clear event flags
-	call    	speed_fastest
+;	call    	speed_fastest
 	movff		menupos,logbook_menupos_temp; store current cursor position
 	bsf			return_from_profileview		; tweak search routine to exit after found
 
@@ -391,7 +391,7 @@ display_profile:
 	movwf		divesecs					; # of dive to show
 
 display_profile2:
-	call		speed_fastest
+;	call		speed_fastest
     clrf        CCP1CON                     ; stop PWM
     bcf         PORTC,2                     ; Pull PWM out to GND
     call		TFT_ClearScreen				; Clear screen
@@ -1370,7 +1370,7 @@ logbook_event3: ; Setpoint change
     return
 
 exit_profileview:
-	call		speed_fastest
+;	call		speed_fastest
 	bcf			sleepmode
 	clrf		timeout_counter2				; restore all registers to build same page again
 	movff		divemins_backup,divemins+0
@@ -1520,7 +1520,7 @@ logbook_show_divenumber3:
 
 
 logbook_page2: ; Show more info
-	call		speed_fastest
+;	call		speed_fastest
     clrf        CCP1CON                     ; stop PWM
     bcf         PORTC,2                     ; Pull PWM out to GND
     call		TFT_ClearScreen				; Clear screen

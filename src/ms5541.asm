@@ -258,93 +258,93 @@ get_calibration_data:
 	movlw	d'13'
 	rcall	send_data_MS5541
 	rcall	get_2bytes_MS5541
-	movff	dMSB,W1+1	
-	movff	dLSB,W1+0
+	movff	dMSB,ir_s8_buffer+1	
+	movff	dLSB,ir_s8_buffer+0
 
 	movlw	b'01011000'	;+3*high as start and 1+low as stop!
 	movwf	isr1_temp
 	movlw	d'13'
 	rcall	send_data_MS5541
 	rcall	get_2bytes_MS5541
-	movff	dMSB,W2+1	
-	movff	dLSB,W2+0
+	movff	dMSB,ir_s8_buffer+3	
+	movff	dLSB,ir_s8_buffer+2
 
 	movlw	b'01100100'	;+3*high as start and 1+low as stop!
 	movwf	isr1_temp
 	movlw	d'13'
 	rcall	send_data_MS5541
 	rcall	get_2bytes_MS5541
-	movff	dMSB,W3+1	
-	movff	dLSB,W3+0
+	movff	dMSB,ir_s8_buffer+5	
+	movff	dLSB,ir_s8_buffer+4
 
 	movlw	b'01101000'	;+3*high as start and 1+low as stop!
 	movwf	isr1_temp
 	movlw	d'13'
 	rcall	send_data_MS5541
 	rcall	get_2bytes_MS5541
-	movff	dMSB,W4+1	
-	movff	dLSB,W4+0
+	movff	dMSB,ir_s8_buffer+7	
+	movff	dLSB,ir_s8_buffer+6
 
 ; calculate C1 (16Bit)
-	movff	W1+1, C1+1
+	movff	ir_s8_buffer+1, C1+1
 	bcf		STATUS,C
 	rrcf	C1+1
 	bcf		STATUS,C
 	rrcf	C1+1
 	bcf		STATUS,C
 	rrcf	C1+1
-	movff	W1+0, C1+0
+	movff	ir_s8_buffer+0, C1+0
 	bsf		STATUS,C
-	btfss	W1+1,0
+	btfss	ir_s8_buffer+1,0
 	bcf		STATUS,C
 	rrcf	C1+0
 	bsf		STATUS,C
-	btfss	W1+1,1
+	btfss	ir_s8_buffer+1,1
 	bcf		STATUS,C
 	rrcf	C1+0
 	bsf		STATUS,C
-	btfss	W1+1,2
+	btfss	ir_s8_buffer+1,2
 	bcf		STATUS,C
 	rrcf	C1+0
 
 ; calculate C2 (16Bit)
-	movff	W2+0, C2+0
+	movff	ir_s8_buffer+2, C2+0
 	bsf		STATUS,C
-	btfss	W2+1,0
+	btfss	ir_s8_buffer+3,0
 	bcf		STATUS,C
 	rrcf	C2+0
 	bsf		STATUS,C
-	btfss	W2+1,1
+	btfss	ir_s8_buffer+3,1
 	bcf		STATUS,C
 	rrcf	C2+0
 	bsf		STATUS,C
-	btfss	W2+1,2
+	btfss	ir_s8_buffer+3,2
 	bcf		STATUS,C
 	rrcf	C2+0
 	bsf		STATUS,C
-	btfss	W2+1,3
+	btfss	ir_s8_buffer+3,3
 	bcf		STATUS,C
 	rrcf	C2+0
 	bsf		STATUS,C
-	btfss	W2+1,4
+	btfss	ir_s8_buffer+3,4
 	bcf		STATUS,C
 	rrcf	C2+0
 	bsf		STATUS,C
-	btfss	W2+1,5
+	btfss	ir_s8_buffer+3,5
 	bcf		STATUS,C
 	rrcf	C2+0
 
-	movff	W2+1, C2+1
+	movff	ir_s8_buffer+3, C2+1
 	bsf		STATUS,C
-	btfss	W1+0,0
+	btfss	ir_s8_buffer+0,0
 	bcf		STATUS,C
 	rrcf	C2+1
 	bsf		STATUS,C
-	btfss	W1+0,1
+	btfss	ir_s8_buffer+0,1
 	bcf		STATUS,C
 	rrcf	C2+1
 	bsf		STATUS,C
-	btfss	W1+0,2
+	btfss	ir_s8_buffer+0,2
 	bcf		STATUS,C
 	rrcf	C2+1
 	bcf		STATUS,C
@@ -355,29 +355,29 @@ get_calibration_data:
 	rrcf	C2+1
 
 ; calculate C3 (16Bit)
-	movff	W3+1,C3+0
+	movff	ir_s8_buffer+5,C3+0
 	bsf		STATUS,C
-	btfss	W3+0,7
+	btfss	ir_s8_buffer+4,7
 	bcf		STATUS,C
 	rlcf	C3+0
 	bsf		STATUS,C
-	btfss	W3+0,6
+	btfss	ir_s8_buffer+4,6
 	bcf		STATUS,C
 	rlcf	C3+0
 	clrf	C3+1
-	btfsc	W3+1,7
+	btfsc	ir_s8_buffer+5,7
 	bsf		C3+1,1
-	btfsc	W3+1,6
+	btfsc	ir_s8_buffer+5,6
 	bsf		C3+1,0
 	
 ; calculate C4 (16Bit)	
-	movff	W4+1,C4+0
+	movff	ir_s8_buffer+7,C4+0
 	bsf		STATUS,C
-	btfss	W4+0,7
+	btfss	ir_s8_buffer+6,7
 	bcf		STATUS,C
 	rlcf	C4+0
 	clrf	C4+1
-	btfsc	W4+1,7
+	btfsc	ir_s8_buffer+7,7
 	bsf		C4+1,0
 
 ; C4=C4-250
@@ -389,21 +389,21 @@ get_calibration_data:
 	movwf   C4+1
 	
 ; calculate C5 (16Bit)		
-	movff	W3+0,C5+0
+	movff	ir_s8_buffer+4,C5+0
 	bcf		C5+0,6
-	btfsc	W2+0,0
+	btfsc	ir_s8_buffer+2,0
 	bsf		C5+0,6
 	bcf		C5+0,7
-	btfsc	W2+0,1
+	btfsc	ir_s8_buffer+2,1
 	bsf		C5+0,7
 	clrf	C5+1
-	btfsc	W2+0,2
+	btfsc	ir_s8_buffer+2,2
 	bsf		C5+1,0
-	btfsc	W2+0,3
+	btfsc	ir_s8_buffer+2,3
 	bsf		C5+1,1
-	btfsc	W2+0,4
+	btfsc	ir_s8_buffer+2,4
 	bsf		C5+1,2
-	btfsc	W2+0,5
+	btfsc	ir_s8_buffer+2,5
 	bsf		C5+1,3
 
     ; calculate C5 = UT1
@@ -423,7 +423,7 @@ get_calibration_data:
 
 ; calculate C6 (16Bit)		
 	clrf	C6+1
-	movff	W4+0,C6+0
+	movff	ir_s8_buffer+6,C6+0
 	bcf		C6+0,7
 
 	banksel	common

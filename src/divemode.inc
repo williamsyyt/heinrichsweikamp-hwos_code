@@ -209,6 +209,8 @@
 #DEFINE dive_compass_mask_column    decoplan_title_column
 #DEFINE dive_compass_head_column    .62
 #DEFINE dive_compass_head_row       divemode_customview_row+.39
+#DEFINE dive_compass_ldir_column    .5
+#DEFINE dive_compass_rdir_column    .140
 
 #DEFINE dive_compass_graph_row      .101
 #DEFINE dive_compass_graph_height   .33

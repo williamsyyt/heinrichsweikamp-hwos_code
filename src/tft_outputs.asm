@@ -1480,27 +1480,334 @@ TFT_surface_compass_heading_com3:
     global  TFT_dive_compass_heading
 TFT_dive_compass_heading:
     rcall   compass_heading_common
+;    ; ToDo - these are for development only, hardcoding the bearing position
+;    ; 244° : SW - W
+;    movlw   low(d'244')
+;    movff   WREG,compass_bearing+0
+;    movlw   high(d'244')
+;    movff   WREG,compass_bearing+1
 
     movff   compass_heading_shown+0,xA+0
     movff   compass_heading_shown+1,xA+1
-
-    ; 1.  160°: +360 offset for non-negative scale
+    ; xRD and xRDlft
+    ; 1.  160° viewing angle: +360 offset if xA<=292; for non-negative scale
+    movlw   high(d'292')
+    movff   WREG,sub_a+1
+    movlw   low(d'292')
+    movff   WREG,sub_a+0
+    movff   xA+1,sub_b+1
+    movff   xA+0,sub_b+0
+    call    subU16      ;  sub_c = sub_a - sub_b
+    btfsc   neg_flag    ; xA>292
+    bra     TFT_dive_compass_heading_1  ;yes
+    ; no, xA<=292
     movlw   high(d'360')
     addwf   xA+1,1
     movlw   low(d'360')
     addwf   xA+0,1
     btfsc   STATUS,C
     incf    xA+1
+TFT_dive_compass_heading_1:
     ; 2. -80: left pixel offset from the center
     movlw   low( d'80' )
     subwf   xA+0,1
     btfss   STATUS,C
     decf    xA+1
-    ; 3. save it to RD
+    ; 3. save it to xRD
     movff   xA+0,xRD+0
     movff   xA+1,xRD+1
+    ; 4. add 160 (display px width)
+    movlw   high(d'160')
+    addwf   xA+1,1
+    movlw   low(d'160')
+    addwf   xA+0,1
+    btfsc   STATUS,C
+    incf    xA+1
+    ; 5. save it to xRDr
+    movff   xA+0,xRDr+0
+    movff   xA+1,xRDr+1
 
+;    ; Bearing ?
+;    ; We can skip this xRD180 calculation if no bearing is set
+;    bcf     compass_bearing_set
+;    movff   compass_bearing+0,sub_a+0
+;    movff   compass_bearing+1,sub_a+1
+;    movlw   d'0'
+;    cpfseq  sub_a+1
+;    bra     TFT_dive_compass_bearing  ; something set, calculate xRD180
+;    movlw   d'0'
+;    cpfseq  sub_a+0
+;    bra     TFT_dive_compass_bearing  ; something set, calculate xRD180
+;    bra     TFT_dive_compass_ruler      ; no value in the bearing, skip calc
+;
+;TFT_dive_compass_bearing:
+;    bsf     compass_bearing_set
+
+    btfss   compass_bearing_set
+    bra     TFT_dive_compass_ruler      ; no value in the bearing, skip calc
+
+    ; we have bearing set, we will need xRD180 calculated
+    ; xRD180  is xRDr-180
+    movff   xRDr+1,sub_a+1
+    movff   xRDr+0,sub_a+0
+    movlw   high(d'180')
+    movff   WREG,sub_b+1
+    movlw   low(d'180')
+    movff   WREG,sub_b+0
+    call    subU16      ;  sub_c = sub_a - sub_b
+    movff   sub_c+1,xRD180+1
+    movff   sub_c+0,xRD180+0
+
+    ; get the bearing virtual display offset, store it to divA
+    movff   compass_bearing+0,xA+0
+    movff   compass_bearing+1,xA+1
+    ; divA =IF (U10>292;U10;U10+360)
+    movlw   high(d'292')
+    movff   WREG,sub_a+1
+    movlw   low(d'292')
+    movff   WREG,sub_a+0
+    movff   xA+1,sub_b+1
+    movff   xA+0,sub_b+0
+    call    subU16      ;  sub_c = sub_a - sub_b
+    btfsc   neg_flag    ; xA>292
+    bra     TFT_dive_compass_bearing_1  ;yes
+    ; no, xA<=292
+    movlw   high(d'360')
+    addwf   xA+1,1
+    movlw   low(d'360')
+    addwf   xA+0,1
+    btfsc   STATUS,C
+    incf    xA+1
+    ; save it for the direction (<< or >>) calculation
+    movff   xA+1,divA+1
+    movff   xA+0,divA+0
+
+TFT_dive_compass_bearing_1:
+    ; calculate bearing position and visibility (ahead or behind)
+    bcf     compass_bearing_vis     ; default is not-visibly
+    bcf     compass_bearing_ahd     ; default is behind
+    ; check if it's ahead
+    ; load the bearing offset into sub_a
+    movff   divA+1,sub_a+1
+    movff   divA+0,sub_a+0
+    ; load the display offset back to sub_b
+    movff   xRD+0,sub_b+0
+    movff   xRD+1,sub_b+1
+    rcall    TFT_dive_compass_bearing_ap
+    ;test if we found it
+    btfsc   compass_bearing_vis
+    bra     TFT_dive_compass_bearing_dir
+
+    ; check if it's ahead with a furr turn
+    ; load the bearing offset into sub_a
+    movff   divA+1,sub_a+1
+    movff   divA+0,sub_a+0
+    ; load the display offset back to sub_b
+    movff   xRD+0,sub_b+0
+    movff   xRD+1,sub_b+1
+    movlw   high(d'360')
+    addwf   sub_b+1,1
+    movlw   low(d'360')
+    addwf   sub_b+0,1
+    btfsc   STATUS,C
+    incf    sub_b+1
+    rcall    TFT_dive_compass_bearing_ap
+    ;test if we found it
+    btfsc   compass_bearing_vis
+    bra     TFT_dive_compass_bearing_dir
+
+    ; marker is not ahead of us, check if it's behind us
+    ; use the (160 - (xRD180 - xCM)) formula to see if it's on the display
+    ; load the display offset back to sub_a
+    movff   xRD180+0,sub_a+0
+    movff   xRD180+1,sub_a+1
+    ; load the marker's offset into sub_b
+    movff   divA+0,sub_b+0
+    movff   divA+1,sub_b+1
+    rcall    TFT_dive_compass_bearing_bp
+    ;test if we found it
+    btfsc   compass_bearing_vis
+    bra     TFT_dive_compass_bearing_dir
+
+    ;check if it's behind with the lower turn
+    movff   xRD180+0,sub_a+0
+    movff   xRD180+1,sub_a+1
+    movlw   high(d'360')
+    addwf   sub_a+1,1
+    movlw   low(d'360')
+    addwf   sub_a+0,1
+    btfsc   STATUS,C
+    incf    sub_a+1
+    ; load the marker's offset into sub_b
+    movff   divA+0,sub_b+0
+    movff   divA+1,sub_b+1
+    rcall    TFT_dive_compass_bearing_bp
+    ;test if we found it
+    btfsc   compass_bearing_vis
+    bra     TFT_dive_compass_bearing_dir
+
+    ; check if it's behind with the upper turn
+    movff   divA+1,sub_b+1
+    movff   divA+0,sub_b+0
+    movlw   high(d'360')
+    addwf   sub_b+1,1
+    movlw   low(d'360')
+    addwf   sub_b+0,1
+    btfsc   STATUS,C
+    incf    sub_b+1
+    rcall    TFT_dive_compass_bearing_bp
+    bra     TFT_dive_compass_bearing_dir
+
+TFT_dive_compass_bearing_ap:
+    ; xCM received in sub_a
+    ; xRD received in sub_b
+    ; 1/a. check if it's viewable from the left side
+    call    subU16      ;  sub_c = sub_a - sub_b
+    btfsc   neg_flag    ; xRD>divA
+    return  ;no,
+    ; yes, store the RO=RP-RD for drawing
+    movff   sub_c+0,xC+0
+    movff   sub_c+1,xC+1
+    ; 1/b. check if it's viewable from the right side?
+    movlw   d'2'        ;   avoid thin mess on the side of the display
+    addwf   sub_a+0,1
+    btfsc   STATUS, C
+    incf    sub_a+1
+    ; load the display offset right side into sub_b
+    movlw   high(d'160')
+    addwf   sub_b+1,1
+    movlw   low(d'160')
+    addwf   sub_b+0,1
+    btfsc   STATUS,C
+    incf    sub_b+1
+    call    subU16      ;  sub_c = sub_a - sub_b
+    btfss   neg_flag    ; xRDr>xA(+2)
+    return ; no,
+    ; print the bearing lines on the screen
+    movff   xC+0,xCM
+    bsf     compass_bearing_vis     ; set visible
+    bsf     compass_bearing_ahd     ; set ahead
+    return    ; done,
+
+TFT_dive_compass_bearing_bp:
+    ; use the (160 - (xRD180 - xCM)) formula to see if it's on the display
+    ; the marker's offset received in sub_b
+    ; the xRD180 display offset received in sub_a
+    ; xRD180 - xCM
+    call    subU16      ;  sub_c = sub_a - sub_b
+    btfsc   neg_flag    ; CM>xRD180
+    return  ; no, not on screen
+    ; 160 - (X)
+    movlw   high(d'160')
+    movff   WREG,sub_a+1
+    movlw   low(d'160')
+    movff   WREG,sub_a+0
+    movff   sub_c+1,sub_b+1
+    movff   sub_c+0,sub_b+0
+    call    subU16      ;  sub_c = sub_a - sub_b
+    btfsc   neg_flag    ; X>160
+    return  ; no, not on screen
+    ; check if not overflow - this sounds a double check...
+    movlw   d'1'
+    cpfslt  sub_c+1
+    return  ; high set, >160
+    movlw   d'160'
+    cpfslt  sub_c+0
+    return  ; low >160
+    ; print the bearing lines on the screen
+    movff   sub_c+0,xCM
+    bsf     compass_bearing_vis
+    return    ; done
+
+TFT_dive_compass_bearing_dir:
+    ; check if bearing to heading, and calculate the direction
+    bcf     compass_bearing_eq
+    btfss   compass_bearing_vis
+    bra     TFT_dive_compass_bearing_lr
+    btfss   compass_bearing_ahd
+    bra     TFT_dive_compass_bearing_lr
+    movff   xCM,xA+0
+    movlw   d'80'
+    cpfseq  xA+0
+    bra     TFT_dive_compass_bearing_lr
+    bsf     compass_bearing_eq
+    bra     TFT_dive_compass_ruler  ; bearing points to heading, no signs are required, go to the ruler
+
+TFT_dive_compass_bearing_lr:
+    ; 1. calculate whether bearing is to left or to right
+    bsf     compass_bearing_lft   ; to the left by default
+    ; get the bearing offset back
+    movff   divA+1,xA+1
+    movff   divA+0,xA+0
+    ; xC: save center value to compare the direction to front value
+    movff   xA+1,xC+1
+    movff   xA+0,xC+0
+    ; xB: we need the left side for comparism... left = -180
+    movff   xA+1,sub_a+1
+    movff   xA+0,sub_a+0
+    movlw   high(d'180')
+    movff   WREG,sub_b+1
+    movlw   low(d'180')
+    movff   WREG,sub_b+0
+    call    subU16      ;  sub_c = sub_a - sub_b
+    movff   sub_c+1,xB+1    ; xB has the left side of the 180° distance center
+    movff   sub_c+0,xB+0
+    ; xA = IF(xRD>(xC+100);xRD-280;xRD+80)
+    movff   xC+1,sub_a+1
+    movff   xC+0,sub_a+0
+    movlw   d'100'
+    addwf   sub_a+0,1
+    btfsc   STATUS,C
+    incf    sub_a+1
+    movff   xRD+1,sub_b+1
+    movff   xRD+0,sub_b+0
+    call    subU16      ;  sub_c = sub_a - sub_b
+    btfsc   neg_flag    ; xRD>xC+100
+    bra     TFT_dive_compass_bearing_lr_2   ; yes, xA=xRD-280
+    ; no, xA = xRD+80
+    movff   xRD+1,xA+1
+    movff   xRD+0,xA+0
+    movlw   d'80'
+    addwf   xA+0,1
+    btfsc   STATUS,C
+    incf    xA+1
+    bra     TFT_dive_compass_bearing_lr_c
+
+TFT_dive_compass_bearing_lr_2:
+    ; xA=xRD-280
+    movff   xRD+1,sub_a+1
+    movff   xRD+0,sub_a+0
+    movlw   high(d'280')
+    movff   WREG,sub_b+1
+    movlw   low(d'280')
+    movff   WREG,sub_b+0
+    call    subU16      ;  sub_c = sub_a - sub_b
+    movff   sub_c+1,xA+1
+    movff   sub_c+0,xA+0
+    ;bra     TFT_dive_compass_bearing_lr_c
+
+TFT_dive_compass_bearing_lr_c:
+   ; xB < xA < xC => right, otherwise left (default)
+    movff   xA+1,sub_b+1
+    movff   xA+0,sub_b+0
+    movff   xB+1,sub_a+1
+    movff   xB+0,sub_a+0
+    call    subU16      ;  sub_c = sub_a - sub_b
+    btfss   neg_flag    ; xA>xB ?
+    bra     TFT_dive_compass_ruler     ; No, xB >= xA, keep default left
+    movff   xA+1,sub_a+1
+    movff   xA+0,sub_a+0
+    movff   xC+1,sub_b+1
+    movff   xC+0,sub_b+0
+    call    subU16      ;  sub_c = sub_a - sub_b
+    btfss   neg_flag    ; xC>xA ?
+    bra     TFT_dive_compass_ruler     ; No, xA >= xC, keep default left
+    bcf     compass_bearing_lft
+
+TFT_dive_compass_ruler:
     ; calculate mod15 for the ticks
+    movff   xRD+0,xA+0
+    movff   xRD+1,xA+1
 	movlw	d'15'
 	movwf	xB+0
 	clrf	xB+1
@@ -1508,11 +1815,11 @@ TFT_dive_compass_heading:
     ; check xA+0, it has the remainder
     movlw   d'0'
     cpfsgt  xA+0                        ; mod15 > 0
-    bra     TFT_dive_compass_ruler      ; no, RM = 0
+    bra     TFT_dive_compass_ruler_1  ; no, RM = 0
     ; yes RM = 15 - RDmod15
     movlw   d'15'
     subfwb  xA+0,1
-TFT_dive_compass_ruler:
+TFT_dive_compass_ruler_1:
     ; xA+0 holds the RM, store it to 'lo'
     movff    xA+0,lo
     ; init DD to zero, store it to 'hi'
@@ -1566,6 +1873,7 @@ TFT_dive_compass_ruler_lend:    ; loop end
     rcall TFT_dive_compass_clr_ruler
 
 TFT_dive_compass_ruler_lend2:
+    rcall TFT_dive_compass_c_mk
     ; done with the compass ruler, put the labels on the screen
     ; get the RD abck to sub_b
     movff   xRD+0,sub_b+0
@@ -1580,15 +1888,41 @@ TFT_dive_compass_ruler_lend2:
 
     movlw   d'14'
     movwf   up                  ; up stores the width of hte label
+    movlw   low( d'219' )       ; position of the label
+    movwf   sub_a+0
+    movlw   high( d'219' )
+    movwf   sub_a+1
+    rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfss   print_compass_label             ; Yes?
+    bra     dcr_1
+    STRCPY_TEXT_PRINT     tSW                 ; yes - print it
+dcr_1:
+    rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+
+    movlw   d'7'
+    movwf   up                  ; up stores the width of hte label
+    movlw   low( d'267' )       ; position of the label
+    movwf   sub_a+0
+    movlw   high( d'267' )
+    movwf   sub_a+1
+    rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
+    btfss   print_compass_label             ; Yes?
+    bra     dcr_2
+    STRCPY_TEXT_PRINT     tW                 ; yes - print it
+dcr_2:
+    rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+
+    movlw   d'14'
+    movwf   up                  ; up stores the width of hte label
     movlw   low( d'309' )       ; position of the label
     movwf   sub_a+0
     movlw   high( d'309' )
     movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
     btfss   print_compass_label             ; Yes?
-    bra     dcr_1
+    bra     dcr_3
     STRCPY_TEXT_PRINT     tNW                 ; yes - print it
-dcr_1:
+dcr_3:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'6'
@@ -1598,10 +1932,10 @@ dcr_1:
     movlw   high( d'358' )
     movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfss   print_compass_label               ; Yes?
-    bra     dcr_2
+    btfss   print_compass_label             ; Yes?
+    bra     dcr_4
     STRCPY_TEXT_PRINT     tN                 ; yes - print it
-dcr_2:
+dcr_4:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'13'
@@ -1611,10 +1945,10 @@ dcr_2:
     movlw   high( d'399' )
     movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfss   print_compass_label               ; Yes?
-    bra     dcr_3
-    STRCPY_TEXT_PRINT     tNE                ; yes - print it
-dcr_3:
+    btfss   print_compass_label             ; Yes?
+    bra     dcr_5
+    STRCPY_TEXT_PRINT     tNE                 ; yes - print it
+dcr_5:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'6'
@@ -1624,10 +1958,10 @@ dcr_3:
     movlw   high( d'448' )
     movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfss   print_compass_label               ; Yes?
-    bra     dcr_4
+    btfss   print_compass_label             ; Yes?
+    bra     dcr_6
     STRCPY_TEXT_PRINT     tE                 ; yes - print it
-dcr_4:
+dcr_6:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'13'
@@ -1637,10 +1971,10 @@ dcr_4:
     movlw   high( d'489' )
     movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfss   print_compass_label               ; Yes?
-    bra     dcr_5
+    btfss   print_compass_label             ; Yes?
+    bra     dcr_7
     STRCPY_TEXT_PRINT     tSE                 ; yes - print it
-dcr_5:
+dcr_7:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'6'
@@ -1650,10 +1984,10 @@ dcr_5:
     movlw   high( d'538' )
     movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfss   print_compass_label               ; Yes?
-    bra     dcr_6
+    btfss   print_compass_label             ; Yes?
+    bra     dcr_8
     STRCPY_TEXT_PRINT     tS                 ; yes - print it
-dcr_6:
+dcr_8:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'14'
@@ -1663,10 +1997,10 @@ dcr_6:
     movlw   high( d'579' )
     movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfss   print_compass_label               ; Yes?
-    bra     dcr_7
+    btfss   print_compass_label             ; Yes?
+    bra     dcr_9
     STRCPY_TEXT_PRINT     tSW                 ; yes - print it
-dcr_7:
+dcr_9:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'7'
@@ -1676,23 +2010,23 @@ dcr_7:
     movlw   high( d'627' )
     movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfss   print_compass_label               ; Yes?
-    bra     dcr_8
+    btfss   print_compass_label             ; Yes?
+    bra     dcr_10
     STRCPY_TEXT_PRINT     tW                 ; yes - print it
-dcr_8:
+dcr_10:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
-    movlw   d'14'  
+    movlw   d'14'
     movwf   up                  ; up stores the width of hte label
     movlw   low( d'669' )       ; position of the label
     movwf   sub_a+0
     movlw   high( d'669' )
     movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfss   print_compass_label               ; Yes?
-    bra     dcr_9
+    btfss   print_compass_label             ; Yes?
+    bra     dcr_11
     STRCPY_TEXT_PRINT     tNW                 ; yes - print it
-dcr_9:
+dcr_11:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
     movlw   d'6'
@@ -1702,26 +2036,14 @@ dcr_9:
     movlw   high( d'718' )
     movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfss   print_compass_label               ; Yes?
-    bra     dcr_10
+    btfss   print_compass_label             ; Yes?
+    bra     dcr_12
     STRCPY_TEXT_PRINT     tN                 ; yes - print it
-dcr_10:
-    rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
-
-    movlw   d'13'
-    movwf   up                  ; up stores the width of hte label
-    movlw   low( d'759' )       ; position of the label
-    movwf   sub_a+0
-    movlw   high( d'759' )
-    movwf   sub_a+1
-    rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
-    btfss   print_compass_label               ; Yes?
-    bra     dcr_11
-    STRCPY_TEXT_PRINT     tNE                 ; yes - print it
-dcr_11:
+dcr_12:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
 TFT_dive_compass_label_end:
+    rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
     ; restore lo and hi for the final cleanup
     movff   xLO,lo
     movff   xHI,hi
@@ -1734,28 +2056,73 @@ TFT_dive_compass_label_end:
     movff   WREG,lo
     ; clear it
     rcall    TFT_dive_compass_clr_label
-    rcall    TFT_dive_compass_c_mk     ; this is not required until marker implemented...
 TFT_dive_compass_label_end2:
-    clrf    WREG
-;TFT_dive_compass_text:
+    rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
+    ; do we have bearing set?
+    btfsc   compass_bearing_set
+    bra     TFT_dive_compass_dir_text   ; bearing_set=1 - go and print the dir (<< or >>)
+    rcall    TFT_dive_compass_dir_lclr     ; no, clear the area (e.g. we had but removed)
+    rcall    TFT_dive_compass_dir_rclr
+    bra     TFT_dive_compass_text
+
+TFT_dive_compass_dir_text:
+    ; bearing set, but does it point to heading?
+    btfss   compass_bearing_eq
+    bra     TFT_dive_compass_dir_text_2   ; bearing != heading - go and print the dir
+    rcall    TFT_dive_compass_dir_lclr     ; bearing = heading, no need for direction markers
+    rcall    TFT_dive_compass_dir_rclr
+    bra     TFT_dive_compass_text
+
+TFT_dive_compass_dir_text_2:
+    btfsc   compass_bearing_lft
+    bra     TFT_dive_compass_dir_ldir      ; bearing_lft=1, print the left marker
+;TFT_dive_compass_text_rdir:
+    movlw   color_green
+    call    TFT_set_color
+    WIN_SMALL   dive_compass_rdir_column,dive_compass_head_row
+    STRCPY_PRINT    ">>"
+    ; do not forget to clear the left
+    rcall    TFT_dive_compass_dir_lclr
+    bra     TFT_dive_compass_text
+
+TFT_dive_compass_dir_ldir:
+    movlw   color_green
+    call    TFT_set_color
+    WIN_SMALL   dive_compass_ldir_column,dive_compass_head_row
+    STRCPY_PRINT    "<<"
+    ; do not forget to clear the right
+    rcall    TFT_dive_compass_dir_rclr
+    ;bra     TFT_dive_compass_text
+
+TFT_dive_compass_text:
     ; Text output
-    WIN_SMALL   dive_compass_head_column,dive_compass_head_row
     call    TFT_standard_color
+    WIN_SMALL   dive_compass_head_column,dive_compass_head_row
     rcall   TFT_surface_compass_heading_com  ; Show "000° N"
+    return
+
+TFT_dive_compass_dir_lclr:
+    WIN_SMALL   dive_compass_ldir_column,dive_compass_head_row
+    STRCPY_PRINT    "  "
+    return
+
+TFT_dive_compass_dir_rclr:
+    WIN_SMALL   dive_compass_rdir_column,dive_compass_head_row
+    STRCPY_PRINT    "  "
     return
 
 TFT_dive_compass_label_proc:
     ; Input:
-    ;   hi: DD  - display current position
-    ;   sub_b: RD - ruler display offset
-    ;   sub_a: RP - item's ruler display offset
+    ;   xHI:   DD  - display'a current position
+    ;   xRD:   RD  - ruler display offset
+    ;   sub_a: RP  - item's ruler display offset
     ; get the RD abck to sub_b
-    movff   xRD+0,sub_b+0
-    movff   xRD+1,sub_b+1
     movff   xHI,hi
     bcf     print_compass_label
     ; 1/a. check if it's viewable ? sub_a(RP) >= sub_b(RD) ?
     ;    set the carry flag if sub_b(xRD) is equal to or greater than sub_a(xRP):
+    movff   xRD+0,sub_b+0
+    movff   xRD+1,sub_b+1
     call    subU16      ;  sub_c = sub_a - sub_b
     btfsc   neg_flag    ; >=0?
     return              ; No
@@ -1771,15 +2138,11 @@ TFT_dive_compass_label_proc:
     btfsc   STATUS, C
     incf    sub_a+1
 
-    movlw   d'160'
-    addwf   sub_b+0,1
-    btfsc   STATUS, C
-    incf    sub_b+1
+    movff   xRDr+0,sub_b+0
+    movff   xRDr+1,sub_b+1
     call    subU16      ;  sub_c = sub_a - sub_b
     btfss   neg_flag    ; ? <0
     bra     TFT_dive_compass_label_end      ; No
-    ;return     ; instead of simple return go tho the end and
-                ; skip the rest of the labels to speed up the process
 
     ; 2. restore RO=RP-RD from 1/a.
     movff   xC+0,lo
@@ -1816,7 +2179,76 @@ TFT_dive_compass_label_print:
 TFT_dive_compass_c_mk:
     ; Common task to draw center line and marker
     ;    until a proper implementation make it simple:
+    rcall    TFT_dive_compass_mk
     rcall    TFT_dive_compass_cline
+    return
+
+TFT_dive_compass_mk:
+    ; draw the bearing on the screen if visible and if we just put something over it
+    btfss   compass_bearing_set
+    return  ; bearing_set=0 nothing to display
+
+    btfss   compass_bearing_vis
+    return  ; bearing set but not visible
+
+    ; save lo/hi from trashing
+    movff   lo,xA+0
+    movff   hi,xA+1
+
+    ; did we just update the marker's position?
+    ;                       DD.......DD
+    ;          CM+2>=DD(old)    or     CM-2<=DD
+    ; ToDo
+
+    btfss   compass_bearing_ahd
+    bra     TFT_dive_compass_mk_rear
+;TFT_dive_compass_mk_front:
+    clrf    lo
+    movff   xCM,lo
+    bsf     print_compass_label ; set=green marker
+    rcall    TFT_dive_compass_mk_print
+    bcf     print_compass_label
+    bra     TFT_dive_compass_mk_end
+
+TFT_dive_compass_mk_rear:
+    clrf    lo
+    movff   xCM,lo
+    bcf     print_compass_label ; set=red marker
+    rcall    TFT_dive_compass_mk_print
+
+TFT_dive_compass_mk_end:
+    movff   xA+0,lo
+    movff   xA+1,hi
+    return
+
+TFT_dive_compass_mk_print:
+    movlw   d'1'
+    cpfsgt  lo
+    bra     TFT_dive_compass_mk_print_2 ; lo<1, skip the first line
+    movlw   d'2'
+    subwf   lo,0
+    movff   WREG,win_leftx2
+    rcall    TFT_dive_compass_mk_print_3
+TFT_dive_compass_mk_print_2:
+    movlw   d'2'
+    addwf   lo,0
+    movff   WREG,win_leftx2
+    rcall    TFT_dive_compass_mk_print_3
+    return
+TFT_dive_compass_mk_print_3:
+    movlw   dive_compass_label_row
+    movff   WREG,win_top
+    movlw   dive_compass_label_height-.2
+    movff   WREG,win_height
+    movlw   d'2'
+    movff   WREG,win_width
+    movlw   d'2'
+    movff   WREG,win_bargraph
+    movlw   color_green
+    btfss   print_compass_label
+    movlw   color_red
+    call    TFT_set_color
+    call    TFT_box
     return
 
 TFT_dive_compass_clr_label:
@@ -1824,7 +2256,7 @@ TFT_dive_compass_clr_label:
     movff   WREG,win_top
     movlw   dive_compass_label_height+.2
     movff   WREG,win_height
-    call    TFT_dive_compass_clear
+    rcall    TFT_dive_compass_clear
     return
 
 TFT_dive_compass_clr_ruler:
