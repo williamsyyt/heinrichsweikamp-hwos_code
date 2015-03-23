@@ -222,6 +222,7 @@ surf_customview_init_view5:                 ; View5: Tissue Diagram
 surf_customview_init_view6:                 ; View6: Compass
     call    I2C_init_accelerometer          ; Start accelerometer
     call    I2C_init_compass                ; Start compass
+    extern  TFT_surface_compass_mask
     call	TFT_surface_compass_mask        ; Show compass
     bra		customview_toggle_exit          ; Done.
 surf_customview_init_view7:
@@ -444,6 +445,7 @@ customview_init_view5:
 customview_init_view6:                      ; Compass (View 6)
     call    I2C_init_accelerometer          ; Start accelerometer
     call    I2C_init_compass                ; Start compass
+    extern  TFT_dive_compass_mask
     call	TFT_dive_compass_mask           ; Show compass
     bra		customview_toggle_exit
 

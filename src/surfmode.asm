@@ -226,6 +226,7 @@ surfloop_loop2:
     movlw   .6
     cpfseq  menupos3                    ; in compass view?
     bra     surfloop_loop2a             ; No
+    extern  TFT_surface_compass_heading
     call    TFT_surface_compass_heading ; Yes, update compass heading value
 
 surfloop_loop2a:

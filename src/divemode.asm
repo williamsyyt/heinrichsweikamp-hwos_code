@@ -127,6 +127,7 @@ diveloop_loop4:                             ; Menu-Exit returns here...
     movlw   .6
     cpfseq  menupos3                    ; in compass view?
     bra     diveloop_loop4a             ; No
+    extern  TFT_dive_compass_heading
     call    TFT_dive_compass_heading    ; Yes, update compass heading value
 diveloop_loop4a:
     btfsc   enable_screen_dumps         ; =1: Ignore vin_usb, wait for "l" command (Screen dump)
