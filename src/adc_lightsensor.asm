@@ -55,6 +55,9 @@ get_battery_voltage:			; starts ADC and waits until fnished
 ;cv_active:
     decfsz  safety_stop_countdown,F
     return
+    movlw   .16
+    cpfslt  batt_voltage+1          ; Batt Voltage more then 16*256mV (4,096V)?
+    bra     charge_cc_active        ; No
     bsf     cc_active
     bsf     cv_active
     bsf     LEDr                    ; Indicate charging
@@ -69,7 +72,7 @@ charge_cc_active:
     bsf     LEDr                    ; Indicate charging
     bcf     CHRG_OUT
     bsf     TRISJ,2                 ; Chrg-Out high impedance
-    movlw   .5
+    movlw   .10
     movwf   safety_stop_countdown
     return
 
@@ -477,7 +480,8 @@ piezo_config_wait_bit3:
     global  reset_battery_pointer
 reset_battery_pointer:       ; Resets battery pointer 0x07-0x0C and battery_gauge:5
 	extern  lt2942_charge_done
-    call    lt2942_charge_done                 ; Reset accumulating registers to 0xFFFF
+    btfsc   rechargeable            ; Something to reset?
+    call    lt2942_charge_done      ; Yes, reset accumulating registers to 0xFFFF
     clrf	EEADRH
 	clrf	EEDATA					; Delete to zero
 	write_int_eeprom 0x07
