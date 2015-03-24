@@ -2460,15 +2460,33 @@ TFT_display_apnoe_descent:		; Descent divetime
 TFT_serial:		
     WIN_TINY	.5,.225
     STRCPY  "OSTC"                    ; Won't translate that...
-    btfsc   rechargeable
+
+    movlw   0x0A
+    cpfseq  hardware_flag
     bra     TFT_serial2
     STRCAT  "3 #"
-    bra     TFT_serial3
+    bra     TFT_serial_common
 TFT_serial2:
+    movlw   0x05
+    cpfseq  hardware_flag
+    bra     TFT_serial3
     STRCAT  " cR #"
+    bra     TFT_serial_common
 TFT_serial3:
+    movlw   0x11
+    cpfseq  hardware_flag
+    bra     TFT_serial4
+    STRCAT  "2 #"
+    bra     TFT_serial_common
+TFT_serial4:
+    movlw   0x1A
+    cpfseq  hardware_flag
+    bra     TFT_serial5
+    STRCAT  "3 #"
+;    bra     TFT_serial_common
+TFT_serial5:
+TFT_serial_common:
     rcall   TFT_cat_serial
-    
     STRCAT  " v"
     WIN_COLOR   color_greenish
     rcall   TFT_cat_firmware
