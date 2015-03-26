@@ -844,34 +844,35 @@ TFT_dyn_gaslist:                            ; Show the dynamic gaslist
     call    TFT_divemask_color
     WIN_TINY  dive_custom_dyn_mask_column,dive_custom_dyn_mask_row
     STRCPY_TEXT_PRINT tGaslist
-    call	TFT_standard_color
+;    call	TFT_standard_color
 
     WIN_SMALL dive_custom_dyn_mask_column1,dive_custom_dyn_mask_row1
     movlw   .1
-    movwf   temp1
+    movwf   uart1_temp
     bsf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
     rcall   TFT_dyn_gaslist_common
     WIN_SMALL dive_custom_dyn_mask_column1,dive_custom_dyn_mask_row2
-    incf    temp1,F     ; +1
-    movf    temp1,W     ; into W
+    incf    uart1_temp,F     ; +1
+    movf    uart1_temp,W     ; into W
     rcall   TFT_dyn_gaslist_common
     WIN_SMALL dive_custom_dyn_mask_column2,dive_custom_dyn_mask_row1
-    incf    temp1,F     ; +1
-    movf    temp1,W     ; into W
+    incf    uart1_temp,F     ; +1
+    movf    uart1_temp,W     ; into W
     rcall   TFT_dyn_gaslist_common
     WIN_SMALL dive_custom_dyn_mask_column2,dive_custom_dyn_mask_row2
-    incf    temp1,F     ; +1
-    movf    temp1,W     ; into W
+    incf    uart1_temp,F     ; +1
+    movf    uart1_temp,W     ; into W
     rcall   TFT_dyn_gaslist_common
     call	TFT_standard_color
     return
 
 TFT_dyn_gaslist_common:
     cpfseq  active_gas  ;1-5
-    bra     $+4
-    incf    temp1,F     ; +1
-    movff   temp1,lo
-    movff   temp1,PRODL
+    bra     TFT_dyn_gaslist_common2
+    incf    uart1_temp,F     ; +1
+TFT_dyn_gaslist_common2:
+    movff   uart1_temp,lo    ; gas number 1-5
+    movff   uart1_temp,PRODL
     decf    PRODL,F     ;-1 to have 0-4
     bsf     leftbind
     output_8            ; Gas number
@@ -1361,7 +1362,7 @@ TFT_debug_output:
     WIN_TINY   .80,.0
 	call	TFT_standard_color
 	lfsr	FSR2,buffer
-    movff   hardware_flag,lo
+    movff   active_gas,lo
     output_8
 	STRCAT_PRINT ""
     return
