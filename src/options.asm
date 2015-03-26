@@ -424,7 +424,9 @@ option_draw:
 
 option_draw_uint8:
         movff   INDF1,lo            ; Draw value.
+        bsf     leftbind
         output_8
+        bcf     leftbind
         clrf    INDF2               ; Make sure to close string...
 
         movf    opt_unit+0,W        ; Is there a unit to append ?
