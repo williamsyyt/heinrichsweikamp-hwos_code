@@ -856,7 +856,7 @@ TFT_dive_compass_ruler_loop_zz:
     movlw   d'79'
     cpfsgt  lo,1
     bra     TFT_dive_compass_ruler_loop_zz2
-    rcall    TFT_dive_compass_c_mk
+    rcall    TFT_dive_compass_cline ;enough to print cline as bearing marker is not in the ticker area
 TFT_dive_compass_ruler_loop_zz2:
     ; 5. set D = RM + 2 : position after the 2px tick
     movff   lo,hi
@@ -880,7 +880,6 @@ TFT_dive_compass_ruler_lend:    ; loop end
     rcall TFT_dive_compass_clr_ruler
 
 TFT_dive_compass_ruler_lend2:
-    rcall TFT_dive_compass_c_mk
     ; done with the compass ruler, put the labels on the screen
     ; get the RD abck to sub_b
     movff   xRD+0,sub_b+0
@@ -1226,12 +1225,27 @@ TFT_dive_compass_mk_end:
 TFT_dive_compass_mk_print:
     movlw   d'1'
     cpfsgt  lo
-    bra     TFT_dive_compass_mk_print_2 ; lo<1, skip the first line
+    bra     TFT_dive_compass_mk_print_2 ; lo<=1, skip the first line
     movlw   d'2'
     subwf   lo,0
 ;    movff   WREG,win_leftx2
     rcall   TFT_dive_compass_mk_print_3
 TFT_dive_compass_mk_print_2:
+    ; save hi/lo
+    movff   hi,divA+1
+    movff   lo,divA+0
+    ; clear the middle of hte bearing marker
+    movff   lo,hi
+    movlw   d'2'
+    addwf   lo,1
+    rcall   TFT_dive_compass_clr_label
+    ; restore hi/lo
+    movff   divA+1,hi
+    movff   divA+0,lo
+    ; print a dot on the middle
+    movff   lo,WREG
+    rcall   TFT_dive_compass_mk_print_dot
+    ; finally print the right marker line
     movlw   d'2'
     addwf   lo,0
 ;    rcall   TFT_dive_compass_mk_print_3
@@ -1242,9 +1256,16 @@ TFT_dive_compass_mk_print_3:
     movff   WREG,win_top
     movlw   dive_compass_label_height-.2
     movff   WREG,win_height
+    bra     TFT_dive_compass_mk_print_4
+TFT_dive_compass_mk_print_dot:
+    movff   WREG,win_leftx2
+    movlw   dive_compass_label_row + .9
+    movff   WREG,win_top
+    movlw   d'4'
+    movff   WREG,win_height
+TFT_dive_compass_mk_print_4:
     movlw   d'2'
     movff   WREG,win_width
-    movlw   d'2'
     movff   WREG,win_bargraph
     movlw   color_green
     btfss   print_compass_label
@@ -1298,7 +1319,6 @@ TFT_dive_compass_ruler_print:
     movff   WREG,win_height
     movlw   d'2'
     movff   WREG,win_width
-    movlw   d'2'
     movff   WREG,win_bargraph
     movff   lo,win_leftx2          ; 0..159
     call    TFT_standard_color
@@ -1307,6 +1327,7 @@ TFT_dive_compass_ruler_print:
     movff   WREG,win_top
     movlw   dive_compass_tick_height
     movff   WREG,win_height
+    call    TFT_standard_color  ; color in WREG is trashed, must be set again!
     call    TFT_box
     return
 
