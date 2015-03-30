@@ -21,11 +21,11 @@ rtc_init:
 	movwf	mins
 	movlw	.12
 	movwf	hours
-	movlw	.6
+	movlw	.30
 	movwf	day
-	movlw	.8
+	movlw	.3
 	movwf	month
-	movlw	.14
+	movlw	.15
 	movwf	year
 	rcall	rtc_set_rtc			; writes mins,sec,hours,day,month and year to rtc module
 	return
