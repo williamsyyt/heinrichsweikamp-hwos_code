@@ -55,8 +55,8 @@ get_battery_voltage:			; starts ADC and waits until fnished
 ;cv_active:
     decfsz  safety_stop_countdown,F
     return
-    movlw   .16
-    cpfslt  batt_voltage+1          ; Batt Voltage more then 16*256mV (4,096V)?
+    movlw   .15
+    cpfsgt  batt_voltage+1          ; Batt Voltage >= 16*256mV (4,096V)?
     bra     charge_cc_active        ; No
     bsf     cc_active
     bsf     cv_active
