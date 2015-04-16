@@ -2,6 +2,7 @@
 
 - Stable Version -
 BUGFIX: Charge done indicator (cR and 2 Hardware)
+BUGFIX: Analog sensors were ignored in 1.76
 
 [1.76]
 
