@@ -361,9 +361,9 @@ compute_mvolts_for_all_sensors:          ; Compute mV or all sensors (S8 Mode)
         #DEFINE	ad2mv_factor	.410
         ; Sensor 1
         clrf	xC+3
-        movff	ir_s8_buffer+.6,xC+2
-        movff	ir_s8_buffer+.5,xC+1
-        movff	ir_s8_buffer+.4,xC+0
+        movff	s8_rawdata_sensor1+2,xC+2
+        movff	s8_rawdata_sensor1+1,xC+1
+        movff	s8_rawdata_sensor1+0,xC+0
         movlw	LOW		ad2mv_factor
         movwf	xB+0
         movlw	HIGH	ad2mv_factor
@@ -373,9 +373,9 @@ compute_mvolts_for_all_sensors:          ; Compute mV or all sensors (S8 Mode)
         movff	xC+0,o2_mv_sensor1+0		; in 100uV steps
         ; Sensor 2
         clrf	xC+3
-        movff	ir_s8_buffer+.9,xC+2
-        movff	ir_s8_buffer+.8,xC+1
-        movff	ir_s8_buffer+.7,xC+0
+        movff	s8_rawdata_sensor2+2,xC+2
+        movff	s8_rawdata_sensor2+1,xC+1
+        movff	s8_rawdata_sensor2+0,xC+0
         movlw	LOW		ad2mv_factor
         movwf	xB+0
         movlw	HIGH	ad2mv_factor
@@ -385,9 +385,9 @@ compute_mvolts_for_all_sensors:          ; Compute mV or all sensors (S8 Mode)
         movff	xC+0,o2_mv_sensor2+0		; in 100uV steps
         ; Sensor 3
         clrf	xC+3
-        movff	ir_s8_buffer+.12,xC+2
-        movff	ir_s8_buffer+.11,xC+1
-        movff	ir_s8_buffer+.10,xC+0
+        movff	s8_rawdata_sensor3+2,xC+2
+        movff	s8_rawdata_sensor3+1,xC+1
+        movff	s8_rawdata_sensor3+0,xC+0
         movlw	LOW		ad2mv_factor
         movwf	xB+0
         movlw	HIGH	ad2mv_factor

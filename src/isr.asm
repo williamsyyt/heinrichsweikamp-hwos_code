@@ -249,11 +249,26 @@ isr_timer3_s8:  ; S8 input
         movff   ir_s8_buffer+.14,hud_battery_mv+1
 
         banksel common
-        bsf     new_s8_data_available       ; set flag
+        btfss   new_s8_data_available       ; =1: Old data already processed?
+        bra     isr_timer3_skip             ; No, skip copying new results
         banksel ir_S8_timeout
 
+        movff	ir_s8_buffer+.6,s8_rawdata_sensor1+2
+        movff	ir_s8_buffer+.5,s8_rawdata_sensor1+1
+        movff	ir_s8_buffer+.4,s8_rawdata_sensor1+0
+        movff	ir_s8_buffer+.9,s8_rawdata_sensor2+2
+        movff	ir_s8_buffer+.8,s8_rawdata_sensor2+1
+        movff	ir_s8_buffer+.7,s8_rawdata_sensor2+0
+        movff	ir_s8_buffer+.12,s8_rawdata_sensor3+2
+        movff	ir_s8_buffer+.11,s8_rawdata_sensor3+1
+        movff	ir_s8_buffer+.10,s8_rawdata_sensor3+0
+        banksel common
+        bsf     new_s8_data_available       ; set flag
+
+isr_timer3_skip:
+        banksel ir_S8_timeout
         movlw   ir_timeout_value        ; multiples of 62,5ms
-        movwf   ir_S8_timeout              ; Reload timeout
+        movwf   ir_S8_timeout           ; Reload timeout
         bra     isr_timer3_exit         ; Exit
 
 
