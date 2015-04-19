@@ -1,3 +1,9 @@
+[1.78]
+
+- Stable Version -
+BUGFIX: Increase timing tolerance for S8 HUD (cR only)
+
+
 [1.77]
 
 - Stable Version -

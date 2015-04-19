@@ -20,7 +20,7 @@
 
 ; Firmware definition
 #DEFINE	softwareversion_x		d'1'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'77'		; Software version  XX.YY
+#DEFINE	softwareversion_y		d'78'		; Software version  XX.YY
 #DEFINE softwareversion_beta 	0 			; (and 0 for release)
 ; Firmware version will appear in "Change Firmware" style
 #DEFINE firmware_expire_year    .16
@@ -329,7 +329,6 @@ xHI             res 1       ; hi backup to prevent trashing
 xCM             res 1       ; compass bearing relative position
 compass_bearing res 2       ; this is where the bearing menu stores the actual heading for bearing
 
-
 ;---------------------------- Common DATA ------------------------------------
 
 common          equ         0x100       ; Alias for "banksel common"
@@ -511,6 +510,15 @@ safety_stop_countdown	res 1	; counts seconds of safety stop
 tmp             udata_ovr   0x1A0       ; Bank1 shared TMP space
 tmp             equ         0x1A0       ; Alias for CBLOCK directive.
                 res         0x060       ; RESERVED area.
+
+;---------------------------- Common2 DATA ------------------------------------
+
+common2          equ         0xA00       ; Alias for "banksel common"
+common2          udata_ovr   common2     ; Bank1 general variables
+
+s8_rawdata_sensor1   res 3  ; 24bit A/D raw data from S8 HUD sensor 1
+s8_rawdata_sensor2   res 3  ; 24bit A/D raw data from S8 HUD sensor 2
+s8_rawdata_sensor3   res 3  ; 24bit A/D raw data from S8 HUD sensor 3
 
 ;-----------------------------------------------------------------------------
 ; Reserve BANK2 for general purpose buffer (strings, images, etc).
