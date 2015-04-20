@@ -93,6 +93,7 @@
 ; Communication Menu
     TCODE   tUsbMode,  "Avvio USB"
 	TCODE	tUsbTitle,	"Modalita' USB"
+    TCODE   tBleTitle,  "Modalita' Bluetooth"
 	TCODE	tUsbStarting,  "Avvio..."
 	TCODE	tUsbStartDone, "Fatto."
 	TCODE	tUsbServiceMode, "Modo Servizio abil"

@@ -33,7 +33,8 @@
 #DEFINE timeout_service_mode    .120        ; Service mode
 
 #DEFINE	comm_title_row		.0
-#DEFINE	comm_title_column	.50
+#DEFINE	comm_title_column_usb	.50
+#DEFINE	comm_title_column_ble	.25
 
 #DEFINE	comm_string_row	.30
 #DEFINE	comm_string_column	.40
@@ -63,8 +64,15 @@ comm_mode:
 comm_mode0:
     call    TFT_ClearScreen
     WIN_COLOR   color_greenish
-	WIN_SMALL	comm_title_column, comm_title_row
-	STRCPY_TEXT_PRINT	tUsbTitle		; comm Mode
+    btfsc   ble_available               ; ble available
+    bra     comm_mode0_ble
+    WIN_SMALL	comm_title_column_usb, comm_title_row
+	STRCPY_TEXT_PRINT	tUsbTitle		; USB Mode
+    bra     comm_mode0_common
+comm_mode0_ble:
+    WIN_SMALL	comm_title_column_ble, comm_title_row
+    STRCPY_TEXT_PRINT	tBleTitle		; BLE Mode
+comm_mode0_common:
     call	TFT_standard_color
     WIN_TOP     .10
     WIN_LEFT    .1
