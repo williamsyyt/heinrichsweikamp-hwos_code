@@ -372,8 +372,8 @@ get_analog_inputs2a:
     ; Ignore 1,2mV noise for not-connected inputs
     tstfsz  o2_mv_sensor1+1     ; >25,5mV?
     bra     get_analog_inputs2  ; Yes, skip here
-    movlw   .12
-    cpfsgt  o2_mv_sensor1+0     ; >1,2mV?
+    movlw   .19
+    cpfsgt  o2_mv_sensor1+0     ; >1,9mV?
     clrf    o2_mv_sensor1+0     ; no, clear result
 get_analog_inputs2:
 	movlw	b'00100101'			; power on ADC, select AN9
@@ -400,8 +400,8 @@ get_analog_inputs3a:
     ; Ignore 1,2mV noise for not-connected inputs
     tstfsz  o2_mv_sensor2+1     ; >25,5mV?
     bra     get_analog_inputs3  ; Yes, skip here
-    movlw   .12
-    cpfsgt  o2_mv_sensor2+0     ; >1,2mV?
+    movlw   .19
+    cpfsgt  o2_mv_sensor2+0     ; >1,9mV?
     clrf    o2_mv_sensor2+0     ; no, clear result
 get_analog_inputs3:
 	movlw	b'00101001'			; power on ADC, select AN10
@@ -428,8 +428,8 @@ get_analog_inputs4a:
     ; Ignore 1,2mV noise for not-connected inputs
     tstfsz  o2_mv_sensor3+1     ; >25,5mV?
     bra     get_analog_inputs4  ; Yes, skip here
-    movlw   .12
-    cpfsgt  o2_mv_sensor3+0     ; >1,2mV?
+    movlw   .19
+    cpfsgt  o2_mv_sensor3+0     ; >1,9mV?
     clrf    o2_mv_sensor3+0     ; no, clear result
 get_analog_inputs4:
 	bcf		ADCON0,0			; power off ADC
