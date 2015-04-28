@@ -249,9 +249,8 @@ isr_timer3_s8:  ; S8 input
         movff   ir_s8_buffer+.14,hud_battery_mv+1
 
         banksel common
-        btfss   new_s8_data_available       ; =1: Old data already processed?
+        btfsc   new_s8_data_available       ; =1: Old data already processed?
         bra     isr_timer3_skip             ; No, skip copying new results
-        banksel ir_S8_timeout
 
         movff	ir_s8_buffer+.6,s8_rawdata_sensor1+2
         movff	ir_s8_buffer+.5,s8_rawdata_sensor1+1
