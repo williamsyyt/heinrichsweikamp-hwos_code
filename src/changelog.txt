@@ -2,7 +2,8 @@
 
 - Stable Version -
 BUGFIX: Increase timing tolerance for S8 HUD (cR only)
-
+CHANGE: increase min input voltage from 1,2mV to 1,9mV (cR only)
+CHANGE: adjust menu for different hardware versions (OSTC 2)
 
 [1.77]
 
