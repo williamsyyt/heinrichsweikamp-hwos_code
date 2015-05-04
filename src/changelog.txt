@@ -1,3 +1,8 @@
+[1.79]
+
+- Stable Version -
+CHANGE: Automatically abort connection fail after 2mins (Bluetooth only)
+
 [1.78]
 
 - Stable Version -

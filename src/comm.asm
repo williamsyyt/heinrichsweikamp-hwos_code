@@ -219,7 +219,7 @@ comm_service_ll_bootloader:
     goto    0x1FF0C
 
 ;-----------------------------------------------------------------------------
-; Sends external flash from 0x3E0000 to 0x3FD000 (118784bytes) via comm
+; send firmware to bootloader
 ;
 comm_send_firmware:
     movlw   0x50                            ; send echo
@@ -371,7 +371,7 @@ comm_send_range:				; Get 3 bytes start address and 3 bytes amount
 	call	rs232_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	bra		comm_download_mode0				; No, Done.
-	movff	RCREG1,up
+    movff   RCREG1,up
 	call	rs232_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	bra		comm_download_mode0				; No, Done.
@@ -386,8 +386,13 @@ comm_send_range:				; Get 3 bytes start address and 3 bytes amount
     bnz     $+4
     decf    hi,F
 
-; 6bytes received, send data
-comm_send_range2:						; needs ext_flash_address:3 start address and up:hi:lo amount
+    movlw   0x40
+    cpfslt  up                          ; Abort when up > 0x3F
+    bra		comm_download_mode0			; Abort
+
+    ; 6bytes received, send data
+    ; needs ext_flash_address:3 start address and up:hi:lo amount
+
 	call	ext_flash_read_block_start
 	movwf	TXREG1
 
@@ -547,7 +552,7 @@ comm_download_mode2:
 	movlw	0x50
 	cpfseq	RCREG1
 	bra		$+4
-	bra		comm_send_firmware          ; sends firmware from external flash from 0x3E0000 to 0x3FD000 (118784bytes) via comm
+	bra		comm_send_firmware          ; send firmware to bootloader
 ;	movlw	"t"
 ;	cpfseq	RCREG1
 ;	bra		$+4
