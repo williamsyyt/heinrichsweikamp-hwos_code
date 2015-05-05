@@ -894,6 +894,10 @@ test_switches_divemode2:
 gas_switched_common:
     bcf     divemode_gaschange      ; Clear flag
 
+    tstfsz  menupos                 ; menupos=0?
+    bra     $+4                     ; No
+    return                          ; Yes, do not switch gas (There is no Gas #0 !)
+
     decf    menupos,W               ; 1-5 -> 0-4
     btfss   FLAG_ccr_mode           ; Choose OC Gases
     rcall   setup_gas_registers     ; With WREG=Gas 0-4
