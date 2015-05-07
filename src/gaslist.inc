@@ -2,7 +2,7 @@
 ;
 ;   File gaslist.inc
 ;
-;   Interface to OSTC3 gas list management.
+;   Interface to OSTC gas list management.
 ;
 ;   Copyright (c) 2011, JD Gascuel, HeinrichsWeikamp, all right reserved.
 ;=============================================================================

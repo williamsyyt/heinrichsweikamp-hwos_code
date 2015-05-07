@@ -9,7 +9,7 @@
 ; HISTORY
 ;  2011-05-24 : [jDG] Cleanups from initial Matthias code.
 
-#include "ostc3.inc"
+#include "hwos.inc"
 #include "shared_definitions.h"         ; Mailbox from/to p2_deco.c
 #include "ms5541.inc"
 #include "adc_lightsensor.inc"

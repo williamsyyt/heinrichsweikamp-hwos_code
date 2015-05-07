@@ -2,14 +2,14 @@
 ;
 ;   File gaslist.asm
 ;
-;   Managing OSTC3 gas list
+;   Managing OSTC gas list
 ;
 ;   Copyright (c) 2011, JD Gascuel, HeinrichsWeikamp, all right reserved.
 ;=============================================================================
 ; HISTORY
 ;   2011-08-11 : [jDG] Creation.
 
-#include    "ostc3.inc"                  ; Mandatory header
+#include    "hwos.inc"                  ; Mandatory header
 #include    "convert.inc"
 #include    "math.inc"                  ; div16x16 for MOD calculations
 #include    "strings.inc"

@@ -9,7 +9,7 @@
 ; HISTORY
 ;  2011-07-09 : [jDG] Creation...
 
-#include "ostc3.inc"					; Mandatory include.
+#include "hwos.inc"					; Mandatory include.
 #include "convert.inc"                  ; output_*
 #include "shared_definitions.h"         ; Mailbox from/to p2_deco.c
 #include "strings.inc"                  ; STRCPY,...

@@ -2,16 +2,16 @@
 ;
 ;   File menu_processor.asm
 ;
-;   Routines to handle all OSTC3 graphic/text menus.
+;   Routines to handle all hwOS graphic/text menus.
 ;
 ;   Copyright (c) 2011, JD Gascuel, HeinrichsWeikamp, all right reserved.
 ;=============================================================================
 ; HISTORY
-;   2012-11-02 : [jDG] Cleanup for OSTC3: removed icons. Added scrolling.
+;   2012-11-02 : [jDG] Cleanup for hwOS: removed icons. Added scrolling.
 ;                      But need a font with lower/upper alpha chars...
 
 #include "convert.inc"
-#include "ostc3.inc"
+#include "hwos.inc"
 #include "strings.inc"
 #include "tft.inc"
 #include "varargs.inc"
@@ -259,7 +259,7 @@ menu_vertical:
 menu_vertical_2:
         rcall   menu_draw_lines			; Always re-draw whole menu
 
-		movlw	CCP1CON_VALUE			; See ostc3.inc
+		movlw	CCP1CON_VALUE			; See hwos.inc
         btfss   divemode                ; Not in divemode
 		movwf	CCP1CON                 ; Power-on backlight
 

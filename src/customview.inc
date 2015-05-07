@@ -7,7 +7,7 @@
 ;   Copyright (c) 2011, Matthias Heinrichs, HeinrichsWeikamp, all right reserved.
 ;=============================================================================
 ; HISTORY
-;   2011-08-10 : [mH] Import into OSTC3 sources
+;   2011-08-10 : [mH] Import into hwOS sources
 
     ; Dive mode
 	extern	customview_toggle

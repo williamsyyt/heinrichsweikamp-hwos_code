@@ -9,7 +9,7 @@
 ; HISTORY
 ;  2011-11-27 : [mH] Creation
 
-#include    "ostc3.inc"                  ; Mandatory header
+#include    "hwos.inc"                  ; Mandatory header
 #include 	"shared_definitions.h"         ; Mailbox from/to p2_deco.c
 #include	"external_flash.inc"
 #include	"surfmode.inc"
@@ -435,7 +435,7 @@ ghostwriter_end_dive:
 	rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
 
 	; write rest of header
-	movlw	logbook_profile_version     ; Defined in ostc3.inc
+	movlw	logbook_profile_version     ; Defined in hwos.inc
 	rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
 
     ; Store dive length

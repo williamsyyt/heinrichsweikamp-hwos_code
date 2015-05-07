@@ -9,7 +9,7 @@
 ; HISTORY
 ;  2011-08-06 : [mH] moving from OSTC code
 
-#include    "ostc3.inc"                  ; Mandatory header
+#include    "hwos.inc"                  ; Mandatory header
 #include	"ms5541.inc"
 #include	"isr.inc"
 #include 	"shared_definitions.h"      ; Mailbox from/to p2_deco.c
@@ -26,7 +26,7 @@
 #include    "adc_lightsensor.inc"
 #include    "i2c.inc"
 
-        extern  init_ostc3
+        extern  init_ostc
         extern  option_restore_all
 
 ;=============================================================================
@@ -50,7 +50,7 @@ clear_rambank:
 	cpfseq	FSR0H					; Bank 14 done?
 	bra		clear_rambank			; clear...
 
-    call    init_ostc3
+    call    init_ostc
 	bsf		no_sensor_int			; disable sensor interrupt
 
 ; Air pressure compensation	after reset

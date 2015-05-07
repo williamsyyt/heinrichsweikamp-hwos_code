@@ -9,7 +9,7 @@
 ; HISTORY
 ;  2011-08-03 : [mH] moving from OSTC code
 
-#include    "ostc3.inc"                  ; Mandatory header
+#include    "hwos.inc"                  ; Mandatory header
 #include 	"math.inc"					; Math routines
 
 sensors     CODE

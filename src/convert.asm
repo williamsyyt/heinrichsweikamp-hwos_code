@@ -11,7 +11,7 @@
 ;   2010-12-10 : [jDG] Optimize macro size
 ;
 
-#include    "ostc3.inc"                  ; Mandatory header
+#include    "hwos.inc"                  ; Mandatory header
 
 ;=============================================================================
 

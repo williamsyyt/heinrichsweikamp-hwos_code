@@ -19,7 +19,7 @@ WAITMS		macro	waitms_temp
 			endm
             extern  WAITMSX
 
-; asm routines in ostc3.asm
+; asm routines in hwos.asm
 	extern	speed_eco			; SPEED_ECO: 4MHz
 	extern	speed_normal		; SPEED_NORMAL: 16MHz
 	extern	speed_fastest		; SPEED_FASTEST: 64MHz 

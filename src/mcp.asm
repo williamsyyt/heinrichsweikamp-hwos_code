@@ -10,7 +10,7 @@
 ;  2012-08-12 : [mH] Creation
 
 
-#include "ostc3.inc"
+#include "hwos.inc"
 #include "wait.inc"
 
 mcp code

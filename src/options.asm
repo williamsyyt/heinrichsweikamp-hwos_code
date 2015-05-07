@@ -13,7 +13,7 @@
 ;
 ;   Provides a centralized file with 
 
-#include    "ostc3.inc"                  ; Mandatory header
+#include    "hwos.inc"                  ; Mandatory header
 #include    "strings.inc"
 #include    "convert.inc"
 #include	"ghostwriter.inc"

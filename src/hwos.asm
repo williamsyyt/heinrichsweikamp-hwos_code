@@ -1,15 +1,15 @@
 ;=============================================================================
 ;
-;   File ostc3.asm
+;   File hwos.asm
 ;
-;   Definition of the ostc3 dive computer platform.
+;   Definition of the hwOS dive computer platform.
 ;
 ;   Copyright (c) 2011, JD Gascuel, HeinrichsWeikamp, all right reserved.
 ;=============================================================================
 ; HISTORY
 ;   2011-05-24 : [jDG] Cleanups from initial Matthias code.
 ;   2011-06-24 : [MH]  Added clock speeds.
-#include "ostc3.inc"
+#include "hwos.inc"
 
 ;=============================================================================
 ;----------------------------- CONFIG ---------------------------------
@@ -30,9 +30,9 @@
     CONFIG	CCP2MX = PORTBE      ;RE7-Microcontroller Mode/RB3-All other modes
 ;=============================================================================
 boot    CODE
-    global init_ostc3
+    global init_ostc
 
-init_ostc3:
+init_ostc:
 	banksel common              ; Bank1
 ;init oscillator
 	movlw	b'01110010'

@@ -13,7 +13,7 @@
 ; Temp data, local to this module, moved to ACCES0 area.
 ;
 
-#include    "ostc3.inc"                  ; Mandatory header
+#include    "hwos.inc"                  ; Mandatory header
 #include	"tft.inc"
 #include	"external_flash.inc"
 #include	"math.inc"
@@ -1766,7 +1766,7 @@ display_details_loop:
 
     global  logbook_preloop_tasks
 logbook_preloop_tasks:
-	movlw       CCP1CON_VALUE               ; See ostc3.inc
+	movlw       CCP1CON_VALUE               ; See hwos.inc
 	movwf       CCP1CON                     ; Power-on backlight
 	call		TFT_standard_color
 	bcf			sleepmode					; clear some flags

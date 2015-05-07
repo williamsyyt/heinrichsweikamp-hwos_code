@@ -2,7 +2,7 @@
 ;
 ;   File menu_processor.asm
 ;
-;   Routines to handle all OSTC3 graphic/text menus.
+;   Routines to handle all OSTC graphic/text menus.
 ;
 ;   Copyright (c) 2011, JD Gascuel, HeinrichsWeikamp, all right reserved.
 ;=============================================================================

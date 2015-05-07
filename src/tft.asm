@@ -9,7 +9,7 @@
 ; HISTORY
 ;  2011-05-24 : [jDG] Cleanups from initial Matthias code.
 
-#include "ostc3.inc"
+#include "hwos.inc"
 #include "wait.inc"
 #include "varargs.inc"
 #include "external_flash.inc"
@@ -394,7 +394,7 @@ display0_config_write:              ; With command in WREG
 ;
         global  TFT_Display_FadeIn
 TFT_Display_FadeIn:
-    	movlw	CCP1CON_VALUE			; See ostc3.inc
+    	movlw	CCP1CON_VALUE			; See hwos.inc
         movwf	CCP1CON
 		bsf		tft_is_dimming	; TFT is dimming, ignore ambient sensor!
         clrf    CCPR1L          ; Backlight off - to be sure

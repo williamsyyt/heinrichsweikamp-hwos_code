@@ -11,7 +11,7 @@
 
 ;=============================================================================
 
-#include    "ostc3.inc"                  ; Mandatory header
+#include    "hwos.inc"                  ; Mandatory header
 #include	"tft_outputs.inc"
 #include 	"strings.inc"
 #include 	"tft.inc"

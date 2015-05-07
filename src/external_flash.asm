@@ -9,7 +9,7 @@
 ; HISTORY
 ;  2011-08-12 : [mH] creation
 
-	#include "ostc3.inc"
+	#include "hwos.inc"
 	#include "wait.inc"
 
 basic    CODE
