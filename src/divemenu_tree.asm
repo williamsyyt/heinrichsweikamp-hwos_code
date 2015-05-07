@@ -2,14 +2,14 @@
 ;
 ;   File divemenu_tree.asm
 ;
-;   OSTC3 dive mode menu
+;   OSTC dive mode menu
 ;
 ;   Copyright (c) 2011, JD Gascuel, HeinrichsWeikamp, all right reserved.
 ;=============================================================================
 ; HISTORY
 ;   2013-02-02 : [mH] Made out of menu_tree.asm
 
-#include    "ostc3.inc"                  ; Mandatory header
+#include    "hwos.inc"                  ; Mandatory header
 #include    "menu_processor.inc"
 #include 	"shared_definitions.h"      ; Mailbox from/to p2_deco.c
 #include    "tft_outputs.inc"

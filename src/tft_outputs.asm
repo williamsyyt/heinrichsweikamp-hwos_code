@@ -9,7 +9,7 @@
 ; HISTORY
 ;  2011-08-07 : [mH] moving from OSTC code
 
-#include    "ostc3.inc"                  ; Mandatory header
+#include    "hwos.inc"                  ; Mandatory header
 #include 	"shared_definitions.h"      ; Mailbox from/to p2_deco.c
 #include 	"tft.inc"
 #include 	"wait.inc"
@@ -2455,7 +2455,7 @@ TFT_display_apnoe_descent:		; Descent divetime
 	return
 	
 ;=============================================================================
-; Writes ostc3 #Serial and Firmware version in splash screen
+; Writes ostc #Serial and Firmware version in splash screen
 ;
 	global	TFT_serial
 TFT_serial:		
@@ -2554,7 +2554,7 @@ TFT_cat_firmware:
     return
 
 ;-----------------------------------------------------------------------------
-; For the Information menu: append serial number ostc3#42.
+; For the Information menu: append serial number 
     global  info_menu_serial
     extern  tSerial
 info_menu_serial:

@@ -2,7 +2,7 @@
 ;
 ;   File icons.asm
 ;
-;   Tables for all OSTC3 icons.
+;   Tables for all OSTC icons.
 ;
 ;   Copyright (c) 2011, JD Gascuel, HeinrichsWeikamp, all right reserved.
 ;=============================================================================
@@ -17,8 +17,8 @@ icons_data   CODE
 ; small warning icon
 ;	global	warning_block
 ;#include "../src/Icons/warning.inc"       ;25x22 px
-	global	ostc3_logo_block
-; OSTC3 scribble
-#include "../src/Icons/ostc3_logo.inc"    ;220x61 px
+	global	ostc_logo_block
+; OSTC scribble
+#include "../src/Icons/ostc_logo.inc"    ;220x61 px
 
         END

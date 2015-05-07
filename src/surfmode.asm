@@ -9,7 +9,7 @@
 ; HISTORY
 ;  2011-08-07 : [mH] moving from OSTC code
 
-#include    "ostc3.inc"                 ; Mandatory header
+#include    "hwos.inc"                 ; Mandatory header
 #include 	"shared_definitions.h"      ; Mailbox from/to p2_deco.c
 #include	"start.inc"
 #include	"tft.inc"
@@ -67,12 +67,12 @@ surfloop:
 
     WIN_TOP     .100
     WIN_LEFT    .34
-    extern  ostc3_logo_block
-    movlw   LOW(ostc3_logo_block)
+    extern  ostc_logo_block
+    movlw   LOW(ostc_logo_block)
     movwf   TBLPTRL
-    movlw   HIGH ostc3_logo_block;&0xFFFF
+    movlw   HIGH ostc_logo_block;&0xFFFF
     movwf   TBLPTRH
-    movlw   UPPER(ostc3_logo_block)
+    movlw   UPPER(ostc_logo_block)
     movwf   TBLPTRU
     call    color_image
     call    TFT_Display_FadeIn      ; Show splash
@@ -129,11 +129,11 @@ surfloop:
 ; Logo
     WIN_TOP     .0
     WIN_LEFT    .70
-    movlw   LOW(ostc3_logo_block)
+    movlw   LOW(ostc_logo_block)
     movwf   TBLPTRL
-    movlw   HIGH ostc3_logo_block;&0xFFFF
+    movlw   HIGH ostc_logo_block;&0xFFFF
     movwf   TBLPTRH
-    movlw   UPPER(ostc3_logo_block)
+    movlw   UPPER(ostc_logo_block)
     movwf   TBLPTRU
     call    color_image
 

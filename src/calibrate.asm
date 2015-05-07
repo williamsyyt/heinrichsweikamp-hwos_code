@@ -7,7 +7,7 @@
 ;   Copyright (c) 2014, Heinrichs Weikamp, all right reserved.
 ;=============================================================================
 
-#include 	"ostc3.inc"
+#include 	"hwos.inc"
 #include	"shared_definitions.h"		; Mailbox between c and asm
 #include	"math.inc"
 #include    "adc_lightsensor.inc"

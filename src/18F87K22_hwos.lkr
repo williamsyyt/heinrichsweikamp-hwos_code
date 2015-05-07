@@ -1,4 +1,4 @@
-// Linker script for the OSTC3 Divecomputer
+// Linker script for the hwOS
 // History:
 
 LIBPATH .

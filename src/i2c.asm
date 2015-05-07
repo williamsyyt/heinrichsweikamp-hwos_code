@@ -16,7 +16,7 @@
 ;  2012-08-22 : [mH] Creation
 
 
-#include "ostc3.inc"                ; Mandatory header
+#include "hwos.inc"                ; Mandatory header
 #include "wait.inc"
 #include "math.inc"
 

@@ -2,14 +2,14 @@
 ;
 ;   File menu_tree.asm
 ;
-;   OSTC3 menus
+;   OSTC menus
 ;
 ;   Copyright (c) 2011, JD Gascuel, HeinrichsWeikamp, all right reserved.
 ;=============================================================================
 ; HISTORY
 ;   2011-07-11 : [jDG] Creation.
 
-#include    "ostc3.inc"                  ; Mandatory header
+#include    "hwos.inc"                  ; Mandatory header
 #include    "gaslist.inc"
 #include    "menu_processor.inc"
 #include	"start.inc"

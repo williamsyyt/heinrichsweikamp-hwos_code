@@ -9,7 +9,7 @@
 ; HISTORY
 ;  2011-08-15 : [mH] moving from OSTC code
 
-#include    "ostc3.inc"                  ; Mandatory header
+#include    "hwos.inc"                  ; Mandatory header
 #include 	"shared_definitions.h"         ; Mailbox from/to p2_deco.c
 #include	"tft_outputs.inc"
 #include 	"strings.inc"

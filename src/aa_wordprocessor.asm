@@ -39,7 +39,7 @@
 ;   FSRx            12bits. Usefull as RAM pointers.
 ;=============================================================================
 
-#include "ostc3.inc"
+#include "hwos.inc"
 #include "tft.inc"
 
         extern  aa_font16_block

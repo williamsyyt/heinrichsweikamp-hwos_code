@@ -8,7 +8,7 @@
 ; HISTORY
 ;  2011-08-08 : [mH] moving from OSTC code
 
-#include "ostc3.inc"
+#include "hwos.inc"
 #include "math.inc"
 #include "wait.inc"
 #include "eeprom_rs232.inc"

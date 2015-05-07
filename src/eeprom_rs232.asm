@@ -9,7 +9,7 @@
 ; HISTORY
 ;  2011-08-06 : [mH] moving from OSTC code
 
-#include "ostc3.inc"
+#include "hwos.inc"
 #include "wait.inc"
 
 ;=============================================================================

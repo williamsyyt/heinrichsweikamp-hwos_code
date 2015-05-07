@@ -11,7 +11,7 @@
 ;
 ; See strings.inc for doc and public calling macros.
 
-#include "ostc3.inc"
+#include "hwos.inc"
 #include "varargs.inc"
 
         extern  aa_wordprocessor

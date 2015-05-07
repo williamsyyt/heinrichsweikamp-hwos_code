@@ -10,7 +10,7 @@
 ;  2011-08-22 : [mH] Creation
 ;  2012-02-11 : [jDG] Added "c" set custom text, and "i" identify.
 
-#include "ostc3.inc"
+#include "hwos.inc"
 #include "eeprom_rs232.inc"
 #include "tft.inc"
 #include "wait.inc"

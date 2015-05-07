@@ -1,4 +1,4 @@
-#include    "ostc3.inc"
+#include    "hwos.inc"
 #include    "i2c.inc"
 #include    "tft_outputs.inc"
 #include    "isr.inc"

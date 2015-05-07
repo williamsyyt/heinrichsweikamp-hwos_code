@@ -1,8 +1,8 @@
 ;=============================================================================
 ;
-;   File ostc3.asm
+;   File hwos.inc
 ;
-;   OSTC3 Platform definitions
+;   OSTC Platform definitions
 ;
 ;   Copyright (c) 2011, JD Gascuel, HeinrichsWeikamp, all right reserved.
 ;=============================================================================

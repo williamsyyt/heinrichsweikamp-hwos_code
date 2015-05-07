@@ -10,7 +10,7 @@
 ;   2014-08-03 : mH creation
 ;
 
-#include    "ostc3.inc"                  ; Mandatory header
+#include    "hwos.inc"                  ; Mandatory header
 #include 	"eeprom_rs232.inc"
 
 ;=============================================================================

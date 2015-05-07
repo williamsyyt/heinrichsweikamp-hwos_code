@@ -11,7 +11,7 @@
 ;   2007-05-11 : Updated (OSTC code).
 ;   2011-10-18 : [mH] Timings tested with oscilloscope
 	
-#include "ostc3.inc"
+#include "hwos.inc"
 
 basic       CODE
 

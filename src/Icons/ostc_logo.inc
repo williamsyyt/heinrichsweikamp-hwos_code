@@ -1,11 +1,11 @@
-; \file C:/hw/osct3_code/src/Icons/ostc3_logo.inc
+; \file /src/Icons/ostc_logo.inc
 ; Generated 2015-03-19T12:24:04
 ;
-ostc3_logo_version  equ .112
-ostc3_logo_width    equ .170
-ostc3_logo_height   equ .47
+ostc_logo_version  equ .112
+ostc_logo_width    equ .170
+ostc_logo_height   equ .47
 ;
-ostc3_logo_block:
+ostc_logo_block:
     db  .85, .47
     db  .9, 0
 ;
