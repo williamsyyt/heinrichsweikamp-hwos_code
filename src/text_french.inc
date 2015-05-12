@@ -251,7 +251,6 @@
 
 ; Logbook menu
 	TCODE	tNextLog, 	"Page Suivante"
-	TCODE	tExitLog, 	"Sortir Carnet"
 	
 ; Reset menu
 	TCODE	tReboot,	"Redémarrage"            ;Reboot

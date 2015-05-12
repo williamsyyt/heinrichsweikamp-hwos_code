@@ -234,6 +234,9 @@ check_firmware_new2:
 	global	restart	
 restart:
     clrf    STKPTR                  ; Never return from here
+    clrf	CCP1CON					; stop PWM
+	bcf		PORTC,2					; Pull PWM out to GND
+
 	extern	option_save_all, option_check_all
 
 	btfsc	menubit					; Return from Menu/COMM mode or timeout?

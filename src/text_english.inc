@@ -251,7 +251,6 @@
 
 ; Logbook menu
 	TCODE	tNextLog, 	"Next Page"
-	TCODE	tExitLog, 	"Exit Logbook"
 
 ; Reset menu
 	TCODE	tReboot,	"Reboot"			;Reboot

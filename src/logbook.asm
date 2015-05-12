@@ -334,7 +334,7 @@ logbook_display_loop2:
 	STRCPY_TEXT_PRINT tNextLog				; "Next Page"
 	WIN_LEFT	logbook_list_left
 	WIN_TOP		logbook_row_offset*(logbook_row_number+.1)
-	STRCPY_TEXT_PRINT tExitLog				; "Exit Logbook"
+	STRCPY_TEXT_PRINT tExit                 ; "Exit"
 
 	movlw		d'1'						; Set cursor to position 1...
 	btfsc		return_from_profileview		; .. unless we are returning from a detail/profile view
