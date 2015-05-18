@@ -309,32 +309,9 @@ calc_deko_divemode2:
 
     bcf     setpoint_fallback               ; =1: Fallback to SP1 due to external O2 sensor failure
 
-    btfss   FLAG_ccr_mode                   ; In CCR mode?
-    bra     calc_deko_divemode2a            ; Skip all the following if not in CCR mode
+    btfsc   FLAG_ccr_mode                   ; In CCR mode?
+    rcall    calc_deko_divemode_sensor      ; External sensor stuff
 
-    TSTOSS  opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor
-    bra     calc_deko_divemode2a
-    rcall   divemode_setup_sensor_values    ; Setup sensor values
-    call    check_sensors                   ; Check O2 sensor thresholds for fallback
-    movff   sensor_setpoint,char_I_const_ppO2; Copy sensor result
-
-    TSTOSS  opt_sensor_fallback             ; =1: Fallback to SP1 when sensor is lost
-    bra     calc_deko_divemode2a            ; Never fallback
-
-    btfsc   is_bailout                      ; In bailout?
-    bra     calc_deko_divemode2a            ; Never fallback in bailout
-    ; Check if we should fallback to SP1
-  	btfsc	use_O2_sensor1
-    bra     calc_deko_divemode2a            ; At least one sensor is active, no fallback
-	btfsc	use_O2_sensor2
-	bra     calc_deko_divemode2a            ; At least one sensor is active, no fallback
-	btfsc	use_O2_sensor3
-	bra     calc_deko_divemode2a            ; At least one sensor is active, no fallback
-    ; No sensor in use -> fallback
-    movff   char_I_setpoint_cbar+0,char_I_const_ppO2    ; Setup fixed Setpoint (Always fallback to SP1), overwrite sensor result
-    bsf     setpoint_fallback               ; =1: Fallback to SP1 due to external O2 sensor failure
-
-calc_deko_divemode2a:
 	SAFE_2BYTE_COPY amb_pressure,int_I_pres_respiration ; C-code needs the ambient pressure
 	clrf	WREG
 	movff	WREG,char_I_step_is_1min    ; Force 2 second deco mode
@@ -392,6 +369,30 @@ calc_deko_divemode4:
     movlw   .2                          ; Restart countdown.
     movwf   apnoe_mins
  	return                              ; done.
+
+calc_deko_divemode_sensor:                  ; External sensor stuff
+    TSTOSS  opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor
+    return
+    rcall   divemode_setup_sensor_values    ; Setup sensor values
+    call    check_sensors                   ; Check O2 sensor thresholds for fallback
+    movff   sensor_setpoint,char_I_const_ppO2; Copy sensor result
+
+    TSTOSS  opt_sensor_fallback             ; =1: Fallback to SP1 when sensor is lost
+    return                                  ; Never fallback
+
+    btfsc   is_bailout                      ; In bailout?
+    return                                  ; Never fallback in bailout
+    ; Check if we should fallback to SP1
+  	btfsc	use_O2_sensor1
+    return                                  ; At least one sensor is active, no fallback
+	btfsc	use_O2_sensor2
+	return                                  ; At least one sensor is active, no fallback
+	btfsc	use_O2_sensor3
+	return                                  ; At least one sensor is active, no fallback
+    ; No sensor in use -> fallback
+    movff   char_I_setpoint_cbar+0,char_I_const_ppO2    ; Setup fixed Setpoint (Always fallback to SP1), overwrite sensor result
+    bsf     setpoint_fallback               ; =1: Fallback to SP1 due to external O2 sensor failure
+    return
    
 ;-----------------------------------------------------------------------------
 
@@ -1282,6 +1283,9 @@ dive_boot_oc:
     return
 
 dive_boot_cc:
+    bcf     is_bailout                      ; =1: Bailout
+    bcf     setpoint_fallback               ; =1: Fallback to SP1 due to external O2 sensor failure
+    bcf		blinking_setpoint               ; Reset blinking SP flag
     call    compute_ppo2                    ; compute mv_sensorX and ppo2_sensorX arrays
     bsf     voting_logic_sensor1
     bsf     voting_logic_sensor2
@@ -1297,6 +1301,7 @@ dive_boot_cc:
     banksel char_I_first_gas
     incf    char_I_first_gas,F              ; 0-4 -> 1-5
     banksel common
+    rcall   calc_deko_divemode_sensor       ; External sensor stuff
     return
 
 diveloop_boot:
@@ -1323,12 +1328,11 @@ diveloop_boot:
 	clrf	apnoe_mins
 	clrf	divemins+0
 	clrf	divemins+1
-    bcf     no_more_divesecs                ; =1: Do no longer show seconds in divemode
+    bcf     no_more_divesecs            ; =1: Do no longer show seconds in divemode
 	bcf		divemode_menu_active
     clrf    menupos
-    clrf    menupos2                        ; Reset to zero (Zero=no premenu or simulator task)
+    clrf    menupos2                    ; Reset to zero (Zero=no premenu or simulator task)
 
-    bcf     is_bailout                      ; =1: Bailout
     btfss   FLAG_ccr_mode
     rcall   dive_boot_oc
     btfsc   FLAG_ccr_mode
