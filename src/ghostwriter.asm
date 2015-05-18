@@ -368,11 +368,11 @@ ghostwriter_end_dive:
     incf_ext_flash_address_0x20	d'6'        ; Skip internal "0xFA 0xFA #Divenumber:2 0xFA 0xFA" Header
     ; Store dive length
     movf   ext_flash_dive_counter+0,W
-	call    write_byte_ext_flash_plus_nocnt ; WREG -> Profile in ext. flash (No ext_flash_dive_counter:3 increase)
+	call    write_byte_ext_flash_plus_nodel ; WREG -> Profile in ext. flash (No ext_flash_dive_counter:3 increase) and does NOT delete 4kB page
     movf   ext_flash_dive_counter+1,W
-	call    write_byte_ext_flash_plus_nocnt ; WREG -> Profile in ext. flash (No ext_flash_dive_counter:3 increase)
+	call    write_byte_ext_flash_plus_nodel ; WREG -> Profile in ext. flash (No ext_flash_dive_counter:3 increase) and does NOT delete 4kB page
     movf   ext_flash_dive_counter+2,W
-	call    write_byte_ext_flash_plus_nocnt ; WREG -> Profile in ext. flash (No ext_flash_dive_counter:3 increase)
+	call    write_byte_ext_flash_plus_nodel ; WREG -> Profile in ext. flash (No ext_flash_dive_counter:3 increase) and does NOT delete 4kB page
 
 ; profile recording done.
 
@@ -883,8 +883,19 @@ ghostwriter_short_header2:
 	rcall	ghostwrite_byte_profile 	; WREG -> Profile in ext. flash
 	movlw	0xFA
 	rcall	ghostwrite_byte_profile 	; WREG -> Profile in ext. flash
+
     ; Keep room for dive length ext_flash_dive_counter:3 (Stored at the end of the dive)
-    incf_ext_flash_address_0x20	d'3'        ; Skip Bytes in external flash (faster)
+    ; Writing 0xFF three times here is mandatory
+    ; - 0xFF can be overwritten after the dive
+    ; - ghostwrite_byte_profile takes care of 4kB Page switching
+    ; - fixes an issue when we are at exactly 0xXXX000 here...
+
+    movlw   0xFF
+    rcall	ghostwrite_byte_profile 	; WREG -> Profile in ext. flash
+    movlw   0xFF
+    rcall	ghostwrite_byte_profile 	; WREG -> Profile in ext. flash
+    movlw   0xFF
+    rcall	ghostwrite_byte_profile 	; WREG -> Profile in ext. flash
 
 	movf	samplingrate,W  			; Sampling rate
 	btfsc	FLAG_apnoe_mode				; Apnoe mode?

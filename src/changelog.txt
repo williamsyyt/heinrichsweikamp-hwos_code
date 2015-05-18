@@ -1,9 +1,10 @@
-[1.79]
+[1.80]
 
 - Stable Version -
 CHANGE: Automatically abort connection fail after 2mins (Bluetooth only)
 BUGFIX: Fast Gas change near the ppO2 limit could cause switching to a non-available Gas #0
 CHANGE: Code now called hwOS officially
+BUGFIX: There was a 1:4096 chance that a portion of a dive was not stored correctly resulting in download issues
 
 [1.78]
 
