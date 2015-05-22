@@ -50,3 +50,11 @@ extern Angle utan(PARAMETER Int16 a, PARAMETER Int16 b);
 extern Angle itan(PARAMETER Int16 a, PARAMETER Int16 b);
 extern Angle cosxh(PARAMETER Int16 a, PARAMETER Int16 b);
 extern void  sincos(PARAMETER Int16 a, PARAMETER Int16 b, Int16* sin, Int16* cos);
+
+//////////////////////////////////////////////////////////////////////////////
+// The user functions
+extern void compass(void);
+extern void compass_reset_calibration(void);
+extern void compass_add_calibration(void);
+
+extern void compass_solve_calibration(void);

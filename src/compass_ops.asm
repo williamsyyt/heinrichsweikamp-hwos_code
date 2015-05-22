@@ -33,7 +33,7 @@
     extern  compass_add_calibration
     extern  compass_solve_calibration
 
-compass code
+compass_ops code
 ;-----------------------------------------------------------------------------
 ; Filter compass values
 ;
