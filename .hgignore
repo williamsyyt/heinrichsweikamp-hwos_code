@@ -4,3 +4,4 @@ tools/crop_ostc3_hex_büro.bat
 tools/o3pack.exe
 tools/o3pack_büro.bat
 hwos.X*
+src/Tests/build/

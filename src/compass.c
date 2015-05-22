@@ -1,8 +1,13 @@
 //////////////////////////////////////////////////////////////////////////////
+/// compass.c
+/// Compute north direction from magnetic/acceleration measures.
+/// Copyright (c) 2012-2015, JD Gascuel, HeinrichsWeikamp, all right reserved.
+//////////////////////////////////////////////////////////////////////////////
 // HISTORY
 //  2012-12-01  [jDG] Creation
 //  2012-12-23  [jDG] Added filtering.
 //  2012-12-30  [jDG] Added calibration (spherical best fit).
+//  2015-05-22  [jDG] Minor cleanups. Smaller calibration code.
 
 #include "compass.h"
 
@@ -17,8 +22,9 @@
             LFSR    2, 0x800    \
         _endasm
 #   pragma udata overlay bank9_compass
+#   pragma code compass_run
 #else
-#       define RESET_C_STACK
+#   define RESET_C_STACK
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
@@ -210,7 +216,6 @@ void compass(void)
 
     //---- Calculate sine and cosine of roll angle Phi -----------------------
     sincos(accel_DZ_f, accel_DY_f, &sin, &cos);
-//    compass_roll = itan(sin, cos) / 100;
 
     //---- rotate by roll angle (-Phi) ---------------------------------------
     iBfy = imul(iBpy, cos) - imul(iBpz, sin);
@@ -219,7 +224,6 @@ void compass(void)
 
     //---- calculate sin and cosine of pitch angle Theta ---------------------
     sincos(Gz, -accel_DX_f, &sin, &cos);     // NOTE: changed sin sign.
-//    compass_pitch = itan(sin, cos) / 100;
 
     /* correct cosine if pitch not in range -90 to 90 degrees */
     if( cos < 0 ) cos = -cos;
