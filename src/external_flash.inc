@@ -16,6 +16,7 @@
 
 ; Writes
  extern	write_byte_ext_flash_plus	; Write from WREG and increase address after write with banking at 0x200000
+ extern write_byte_ext_flash_plus_nocnt ; No increase of ext_flash_dive_counter:3
  extern write_byte_ext_flash_plus_nodel ; Does NOT delete 4kB Page when required
  extern write_byte_ext_flash_plus_header ; Write from WREG and increase address after write
  extern ext_flash_byte_write		; Writes one byte from WREG @ext_flash_address:3

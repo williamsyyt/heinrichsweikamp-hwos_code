@@ -891,11 +891,11 @@ ghostwriter_short_header2:
     ; - fixes an issue when we are at exactly 0xXXX000 here...
 
     movlw   0xFF
-    rcall	ghostwrite_byte_profile 	; WREG -> Profile in ext. flash
+    call    write_byte_ext_flash_plus_nocnt ; WREG -> Profile in ext. flash (No ext_flash_dive_counter:3 increase)
     movlw   0xFF
-    rcall	ghostwrite_byte_profile 	; WREG -> Profile in ext. flash
+    call    write_byte_ext_flash_plus_nocnt ; WREG -> Profile in ext. flash (No ext_flash_dive_counter:3 increase)
     movlw   0xFF
-    rcall	ghostwrite_byte_profile 	; WREG -> Profile in ext. flash
+    call    write_byte_ext_flash_plus_nocnt ; WREG -> Profile in ext. flash (No ext_flash_dive_counter:3 increase)
 
 	movf	samplingrate,W  			; Sampling rate
 	btfsc	FLAG_apnoe_mode				; Apnoe mode?
