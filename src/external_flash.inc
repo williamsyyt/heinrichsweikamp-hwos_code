@@ -13,6 +13,7 @@
  extern	incf_ext_flash_address_p1	; +1 for the ext_flash_address:3
  extern ext_flash_disable_protection; Disables write protection
  extern	ext_flash_enable_protection	; Enables write protection
+ extern fix_180_dives               ; fix dives made with the 1.80
 
 ; Writes
  extern	write_byte_ext_flash_plus	; Write from WREG and increase address after write with banking at 0x200000

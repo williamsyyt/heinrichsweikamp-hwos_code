@@ -287,4 +287,76 @@ write_spi2:	; Wait for write command
 	movf		SSP2BUF,W			
 	return	; Returns RX data in WREG and SSP2BUF
 
+    global      fix_180_dives
+fix_180_dives:           ; fix dives made with the 1.80
+    clrf    divesecs    ; Here: # of dive (0-255) in TOC
+fix_180_dives2:
+    rcall   fix_load_dive_into_buffer   ; Load header #divesecs into buffer:256
+    rcall   fix_check_buffer            ; Check the buffered dive
+    tstfsz  WREG                ; Dive needs fix?
+    rcall   fix_buffered_dive   ; Yes, fix and save it
+    decfsz  divesecs,F          ; All done?
+    bra     fix_180_dives2      ; No, continue
+    return                      ; All done.
+
+fix_buffered_dive:           ; Yes, fix and save it
+    rcall	ext_flash_disable_protection	; Disable write protection for external flash
+    banksel buffer
+    ; Set to 1.81
+    movlw   .81
+    movwf   buffer+.49
+    ; Fix wrong profile length
+    movlw   .3
+    subwf	buffer+.9,F
+    movlw	d'0'
+    subwfb	buffer+.10,F
+    subwfb	buffer+.11,F
+    banksel common
+    ; save result into external flash again
+    rcall   fix_set_to_toc_start
+    clrf    lo
+    lfsr    FSR0,buffer+0
+fix_buffered_dive2:
+    movf    POSTINC0,W
+    rcall   write_byte_ext_flash_plus_header; Write from WREG and increase address after write
+    decfsz  lo,F                            ; All done?
+    bra     fix_buffered_dive2              ; No, continue
+    return
+
+fix_check_buffer:            ; Check the buffered dive
+    movff   buffer+.48,temp1
+    movlw   .1
+    cpfseq  temp1           ; buffer+.48 = .1 ?
+    retlw   .0              ; No, abort
+    movff   buffer+.49,temp1
+    movlw   .80
+    cpfseq  temp1           ; buffer+.49 = .80 ?
+    retlw   .0              ; No, abort
+    retlw   .1              ; Yes, fix this dive
+
+fix_load_dive_into_buffer:  ; Load header #divesecs into buffer:256
+    rcall   fix_set_to_toc_start
+    clrf    lo
+    lfsr    FSR0,buffer+0
+fix_load_dive_into_buffer2:
+    rcall   ext_flash_byte_read_plus    	; increase address after read
+    movff   temp1,POSTINC0                  ; copy into buffer
+    decfsz  lo,F                            ; All done?
+    bra     fix_load_dive_into_buffer2      ; No, continue
+
+fix_set_to_toc_start:
+    clrf    ext_flash_address+0
+    clrf    ext_flash_address+1
+    movlw   0x20
+    movwf   ext_flash_address+2
+    movlw   .16
+    mulwf   divesecs; divesecs*16 = offset to 0x2000 (up:hi)
+    movf    PRODL,W
+    addwf   ext_flash_address+1,F
+    movf    PRODH,W
+    addwfc  ext_flash_address+2,F
+    ; pointer at the first 0xFA of header
+    return
+
+
 	END

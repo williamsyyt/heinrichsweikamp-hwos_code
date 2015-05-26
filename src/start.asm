@@ -151,9 +151,8 @@ power_on_return:
 
 ; check firmware and reset Custom Functions after an update
 	movlw	d'1'
-	movwf	EEADR
-	movlw	d'1'
-	movwf	EEADRH
+	movwf	EEADR                   ; =1
+	movwf	EEADRH                  ; =1
 	call	read_eeprom				; read current version x
 	movff	EEDATA,temp1
 	incf	EEADR,F					; set to 0x102
@@ -208,10 +207,11 @@ check_firmware_new:
     lfsr    FSR0,oPressureAdjust
     call    option_save             ; Save in EEPROM
 
+    call    fix_180_dives           ; fix dives made with the 1.80
+
 	movlw	d'1'					; store current version in EEPROM
-	movwf	EEADR
-	movlw	d'1'
-	movwf	EEADRH
+	movwf	EEADR                   ; =1
+	movwf	EEADRH                  ; =1
 	movlw	softwareversion_x
 	movwf	EEDATA		
 	call	write_eeprom			; write version x
