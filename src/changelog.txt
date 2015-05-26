@@ -1,3 +1,8 @@
+[1.81]
+
+- Stable Version -
+BUGFIX: Fix download issue for dives made with 1.80 firmware
+
 [1.80]
 
 - Stable Version -
