@@ -144,9 +144,14 @@ write_byte_ext_flash_plus_h1:
 	rcall		ext_flash_byte_write	; Write the byte
 	bra			incf_ext_flash_address_p1	; +1 and return
 
+    global  write_byte_ext_flash_plus_nocnt ; No increase of ext_flash_dive_counter:3
+write_byte_ext_flash_plus_nocnt:
+    movwf		temp1                       ; store data
+    bra         write_byte_ext_flash_plus2
+
     global  write_byte_ext_flash_plus_nodel ; Does NOT delete 4kB Page when required
-write_byte_ext_flash_plus_nodel:       ; Write from WREG and increase address after write with banking at 0x200000
-    movwf		temp1					; store data
+write_byte_ext_flash_plus_nodel:            ; Write from WREG and increase address after write with banking at 0x200000
+    movwf		temp1                       ; store data
     bra         write_byte_ext_flash_plus1  ; Ignore possible begin of 4kB page, there have been written 0xFF already
 
 	global	write_byte_ext_flash_plus	; Write from WREG and increase address after write with banking at 0x200000
