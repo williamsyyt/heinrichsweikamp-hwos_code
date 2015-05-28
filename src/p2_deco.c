@@ -2158,7 +2158,7 @@ void deco_calc_percentage(void)
 // Output:  int_O_gas_volumes[0..4] in litters * 0.1
 //
 
-/*
+
 void deco_gas_volumes(void)
 {
     overlay float volumes[NUM_GAS];
@@ -2275,7 +2275,7 @@ void deco_gas_volumes(void)
 
 //////////////////////////////////////////////////////////////////////////////
 
-*/
+
 
 void deco_push_tissues_to_vault(void)
 {

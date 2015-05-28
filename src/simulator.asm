@@ -710,7 +710,85 @@ deco_show_plan_2:
 deco_show_plan_3:
         btfss   decoplan_last_ceiling_shown
         bra     deco_show_plan_1
+        ; All stops shown
+        
+        return      ; mH    -  no Gas consumption (yet)
+
+;---- In OCR mode, show the gas Usage special page ---------------------------
+simulator_show_decoplan5_0:    
+    btfsc   FLAG_ccr_mode             ; =1: CCR mode (Fixed ppO2 or Sensor) active
+    return                            ; YES: Return to simulator menu
+
+    ; Make sure to pass first gas
+    call    get_first_gas_to_WREG           ; Gets first gas (0-4) into WREG
+    movff   WREG,char_I_first_gas           ; Copy for compatibility
+
+    ; Compute gas consumption for each tank.
+    extern  deco_gas_volumes
+    call    deco_gas_volumes
+    movlb   .1
+
+    ; Clear the complete stop result column:
+    WIN_BOX_BLACK   .0, .239, .85, .159		;top, bottom, left, right
+
+	movlw	d'10'
+	movwf	waitms_temp                 ; Row for gas list is .10+.25
+	clrf	wait_temp                   ; Gas counter
+    lfsr	FSR0,int_O_gas_volumes      ; Initialize indexed addressing.
+
+	WIN_LEFT	.90                     ; Set column
+    call    TFT_standard_color   
+
+simulator_show_decoplan5_loop:
+    incf    wait_temp,F                 ; Increment gas #
+    
+	movlw	.25
+	addwf	waitms_temp,F		        ; Increase row position
+	movff	waitms_temp,win_top         ; Set Row
+
+    movff   POSTINC0,lo                 ; Read (16bit) result, low first,
+    movff   POSTINC0,hi                 ; then high.
+    movf    lo,W                        ; Null ?
+    iorwf   hi,W
+;    bz      simulator_show_decoplan5_1  ; Skip printing.  mH - Test disabled
+
+    movf    lo,W                        ; == 65535 (saturated ?)
+    andwf   hi,W
+    incf    WREG
+    bnz     simulator_show_decoplan5_2
+    call    TFT_attention_color
+    STRCPY_PRINT  "= xxxx.x"
+    call    TFT_standard_color   
+    bra     simulator_show_decoplan5_1
+    
+simulator_show_decoplan5_2: 
+    STRCPY  "= "
+
+    bsf     leftbind
+    output_16                           ; No decimal anymore.
+    bcf     leftbind
+    STRCAT_PRINT  ""                    ; No unit: can be bars or litters.
+    
+    ; Loop for all 5 gas
+simulator_show_decoplan5_1:
+	movlw	d'5'                        ; list all five gases
+	cpfseq	wait_temp                   ; All gases shown?
+	bra		simulator_show_decoplan5_loop	; No
+	
+;    call	TFT_divemask_color
+;	DISPLAYTEXTH .301                   ; OCR Gas Usage:
+;    call	TFT_standard_color
+
+        call    logbook_preloop_tasks
+simulator_show_decoplan5_3:
+        btfsc   switch_right
         return                                  ; Return to simulator menu
+        btfsc   switch_left
+        return                                  ; Return to simulator menu
+        call    log_screendump_and_onesecond    ; Check if we need to make a screenshot and check for new second
+    	btfsc	sleepmode                       ; Timeout?
+        goto    restart
+        bra     simulator_show_decoplan5_3
 
 ;=============================================================================
 ;
