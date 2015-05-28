@@ -23,7 +23,6 @@
 // history:
 // 2010-12-25 v110: [jDG] split in three files (deco.c, main.c, definitions.h)
 
-
 #define	MBAR_REACH_GASCHANGE_AUTO_CHANGE_OFF	150
 
 // *************************
@@ -48,7 +47,7 @@ extern void deco_pull_tissues_from_vault(void);
 // **         Allow compile on VisualC          **
 // ***********************************************
 
-#ifdef WIN32
+#if defined(WIN32) || defined(UNIX)
     // Some keywords just dont exists on Visual C++:
 #   define CROSS_COMPILE
 #   define __18CXX
@@ -57,10 +56,7 @@ extern void deco_pull_tissues_from_vault(void);
 #   define overlay
 #   define PARAMETER
 
-#include <assert.h>
-
-    // Avoid warnings about float/double mismatches:
-#   pragma warning(disable: 4244 4068 4305)
+#   include <assert.h>
 #else
 #   define PARAMETER static
 #   ifdef __DEBUG

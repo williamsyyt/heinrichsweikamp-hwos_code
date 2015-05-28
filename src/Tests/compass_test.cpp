@@ -56,7 +56,7 @@ static void check_calib()
              + sqr(compass_CZ_f/32768.0f - cz);
 
     // Calibration error less than 2 bits:
-    EXPECT_NEAR(0, sqrtf(r2), 3.0f/32768.0f)
+    EXPECT_NEAR(0, sqrtf(r2), 4.0f/32768.0f)
         << "Center at (" << compass_CX_f/32768.0f << ", "
                          << compass_CY_f/32768.0f << ", "
                          << compass_CZ_f/32768.0f << ")."
