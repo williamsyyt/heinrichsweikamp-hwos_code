@@ -2140,7 +2140,6 @@ void deco_calc_percentage(void)
     assert( int_I_temp < 5760 );                            // Less than 96h too...
 }
 
-
 //////////////////////////////////////////////////////////////////////////////
 // deco_gas_volumes
 //
@@ -2157,8 +2156,6 @@ void deco_calc_percentage(void)
 //          CF#57 == deco liters/minutes (5 .. 50) or bar/min.
 // Output:  int_O_gas_volumes[0..4] in litters * 0.1
 //
-
-
 void deco_gas_volumes(void)
 {
     overlay float volumes[NUM_GAS];
@@ -2167,23 +2164,29 @@ void deco_gas_volumes(void)
     overlay unsigned char gas, depth;
     RESET_C_STACK
 
-    //---- initialize with bottom consumption --------------------------------
+    //---- initialize --------------------------------------------------------
     for(i=0; i<NUM_GAS; ++i)                            // Nothing yet...
         volumes[i] = 0.0;
 
+    // TODO: get conso from settings:
+    bottom_usage = 20;      // In liter/minutes.
+    deco_usage   = 20;      // In liter/minutes.
+
+    // Early return if not defined:
+    if( deco_usage <= 0.0 || bottom_usage <= 0.0 )
+        goto done;
+
+    //---- Bottom usage -----------------------------------------------------
     assert(1 <= char_I_first_gas && char_I_first_gas <= NUM_GAS);
     gas = char_I_first_gas - 1;
 
-    bottom_usage = 20;      // In liter/minutes.
-    if( char_I_const_ppO2 == 0 && bottom_usage > 0.0 )
+    if( char_I_const_ppO2 == 0 )
         volumes[gas]
             = (char_I_bottom_depth*0.1 + 1.0)           // Use Psurface = 1.0 bar.
             * char_I_bottom_time                        // in minutes.
             * bottom_usage;                             // In liter/minutes.
 
     //---- Ascent usage ------------------------------------------------------
-    deco_usage    = 20;     // In liter/minutes.
-
     depth = char_I_bottom_depth;
 
     for(i=0; i<NUM_STOPS; ++i)
@@ -2199,31 +2202,28 @@ void deco_gas_volumes(void)
         assert(0 < newDepth && newDepth <= depth);
         assert(0 <= newGas && newGas < NUM_GAS);
 
-        //---- usage BEFORE gas switch (if any), at 10m/min ------------------
+        //---- usage BEFORE gas switch (if any), at 10m/min:
         volumes[gas] += ((depth+newDepth)*0.05 + 1.0)    // average depth --> bar.
                       * (depth-newDepth)*0.1             // metre --> min
                       * deco_usage;
 
-        //---- Do gas switch, at new depth
+        //---- Do gas switch, at new depth:
         gas   = newGas;
         depth = newDepth;
 
-        // Usage at stop:
-        if( deco_usage > 0.0 )
-            volumes[gas] += (depth*0.1 + 1.0)   // depth --> bar.
-                          * time                // in minutes.
-                          * deco_usage;         // in xxx / min @ 1bar.
-        else
-            volumes[gas] = 65535.0;
+        //---- Usage at stop:
+        volumes[gas] += (depth*0.1 + 1.0)   // depth --> bar.
+                      * time                // in minutes.
+                      * deco_usage;         // in xxx / min @ 1bar.
     }
 
     // From last stop to surface
-    if( deco_usage > 0.0 )
-        volumes[gas] += (depth*0.05 + 1.0)      // avg depth --> bar.
-                      * depth * 0.1             // time to surface, in minutes.
-                      * deco_usage;             // in xxx / min @ 1bar.
+    volumes[gas] += (depth*0.05 + 1.0)      // avg depth --> bar.
+                  * depth * 0.1             // time to surface, in minutes.
+                  * deco_usage;             // in xxx / min @ 1bar.
 
     //---- convert results for the ASM interface -----------------------------
+done:
     for(i=0; i<NUM_GAS; ++i)
         if( volumes[i] > 65534.0 )
             int_O_gas_volumes[i] = 65535;
@@ -2232,8 +2232,6 @@ void deco_gas_volumes(void)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-
-
 
 void deco_push_tissues_to_vault(void)
 {
