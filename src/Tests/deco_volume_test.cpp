@@ -4,7 +4,7 @@
 /// Copyright (c) 2015, JD Gascuel, HeinrichsWeikamp, all right reserved.
 //////////////////////////////////////////////////////////////////////////////
 //  HISTORY
-// 2015-05-27 jDG: Creation for gas volum re-introduction in hwOS 1.80
+// 2015-05-27 jDG: Creation for gas volum re-introduction in hwOS 1.82
 
 extern "C" {
 #   include "p2_deco.c"
