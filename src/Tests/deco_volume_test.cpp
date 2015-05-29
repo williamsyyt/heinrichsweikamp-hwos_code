@@ -98,7 +98,7 @@ TEST(gas_volume, ascent)
 
 //////////////////////////////////////////////////////////////////////////////
 
-TEST(gas_volume, 30min40m_no_stops)
+TEST(gas_volume, OC_30min40m_no_stops)
 {
     setup_dive(30, 40);     // 30' @ 40m
     for(int s=0; s<32; ++s)
@@ -115,12 +115,34 @@ TEST(gas_volume, 30min40m_no_stops)
 
 //////////////////////////////////////////////////////////////////////////////
 
-TEST(gas_volume, 30min40m_1min_1min_3min_12min)
+TEST(gas_volume, OC_30min40m_1min_1min_3min_12min)
 {
     setup_dive(30, 40);     // 30' @ 40m
 
     ASSERT_NO_THROW( deco_gas_volumes() );
     EXPECT_NEAR(fixed(20,30,40) + ascent(20,40,12)
+              + fixed(20, 1,12) + ascent(20,12,9),
+              int_O_gas_volumes[0], 1);
+    EXPECT_EQ(0, int_O_gas_volumes[1]);
+    EXPECT_NEAR(fixed(20, 1,9) + ascent(20,9,6)
+              + fixed(20, 3,6) + ascent(20,6,3)
+              + fixed(20,12,3) + ascent(20,3,0),
+              int_O_gas_volumes[2], 1);
+    EXPECT_EQ(0, int_O_gas_volumes[3]);
+    EXPECT_EQ(0, int_O_gas_volumes[4]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+TEST(gas_volume, CCR_30min40m_1min_1min_3min_12min)
+{
+    setup_dive(30, 40);     // 30' @ 40m
+    char_I_const_ppO2 = 140;
+
+    ASSERT_NO_THROW( deco_gas_volumes() );
+
+    // BAILOUT at 40m: no bottom conso
+    EXPECT_NEAR(ascent(20,40,12)
               + fixed(20, 1,12) + ascent(20,12,9),
               int_O_gas_volumes[0], 1);
     EXPECT_EQ(0, int_O_gas_volumes[1]);
