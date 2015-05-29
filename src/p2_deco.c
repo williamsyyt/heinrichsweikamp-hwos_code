@@ -480,8 +480,8 @@ static unsigned char calc_nextdecodepth(void)
     assert( depth >= -0.2 );        // Allow for 200mbar of weather change.
 
     //---- ZH-L16 + GRADIENT FACTOR model ------------------------------------
-	if( char_I_deco_model != 0 )
-	{
+    if( char_I_deco_model != 0 )
+    {
         overlay unsigned char first_stop = 0;
         overlay float p;
 
@@ -535,7 +535,7 @@ static unsigned char calc_nextdecodepth(void)
 
             // Total preassure at the new stop candidate:
             pres_stop =  next_stop * METER_TO_BAR
-    	              + pres_surface;
+                      + pres_surface;
 
             // Keep GF_low until a first stop depth is found:
             sim_limit( GF_high - next_stop * locked_GF_step );
@@ -550,7 +550,7 @@ static unsigned char calc_nextdecodepth(void)
         assert( first_stop == 0 );
 
 no_deco_stop:
-		temp_depth_limit = min_depth;
+        temp_depth_limit = min_depth;
         goto done;
 
         // next stop is the last validated depth found, aka first_stop
@@ -650,13 +650,13 @@ static void temp_tissue_safety(void)
     assert( 0.0 <  float_desaturation_multiplier && float_desaturation_multiplier <= 1.0 );
     assert( 1.0 <= float_saturation_multiplier   && float_saturation_multiplier   <= 2.0 );
 
-	if( char_I_deco_model == 0 )
-	{
-		if( temp_tissue < 0.0 )
-			temp_tissue *= float_desaturation_multiplier;
- 		else
-			temp_tissue *= float_saturation_multiplier;
-	}
+    if( char_I_deco_model == 0 )
+    {
+        if( temp_tissue < 0.0 )
+            temp_tissue *= float_desaturation_multiplier;
+        else
+            temp_tissue *= float_saturation_multiplier;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -816,12 +816,12 @@ static void gas_switch_set(void)
     if( sim_gas_last_used == 0 )    // Gas6 = manualy set gas.
     {
         calc_N2_ratio = N2_ratio;
-	    calc_He_ratio = He_ratio;
+        calc_He_ratio = He_ratio;
     }
     else
     {
         calc_N2_ratio = char_I_deco_N2_ratio[sim_gas_last_used-1] * 0.01;
-	    calc_He_ratio = char_I_deco_He_ratio[sim_gas_last_used-1] * 0.01;
+        calc_He_ratio = char_I_deco_He_ratio[sim_gas_last_used-1] * 0.01;
     }
 
     assert( 0.0 <= calc_N2_ratio && calc_N2_ratio <= 0.95 );
@@ -850,7 +850,7 @@ static void sim_alveolar_presures(void)
 
     //---- CCR mode : deco gas switch ? --------------------------------------
     if( char_I_const_ppO2 != 0 )
-   	{
+    {
         // In CCR mode, use calc_XX_ratio instead of XX_ratio.
         // Note: PPO2 and ratios are known outside the lumbs, so there is no
         //       ppWater in the equations below:
@@ -858,8 +858,8 @@ static void sim_alveolar_presures(void)
         deco_diluent /= calc_N2_ratio + calc_He_ratio;
 
         if (deco_diluent > temp_deco)
-    	    deco_diluent = temp_deco;
-  	}
+            deco_diluent = temp_deco;
+    }
 
     if( deco_diluent > ppWater )
     {
@@ -948,11 +948,11 @@ static void calc_hauptroutine(void)
     switch( char_O_deco_status )
     {
     case 3: //---- At surface: start a new dive ------------------------------
-    	clear_deco_table();
-    	copy_deco_table();
-    	int_O_ascenttime = 0;       // Reset DTR.
-    	int_O_extra_ascenttime = 0;
-    	char_O_nullzeit = 0;        // Reset bottom time.
+        clear_deco_table();
+        copy_deco_table();
+        int_O_ascenttime = 0;       // Reset DTR.
+        int_O_extra_ascenttime = 0;
+        char_O_nullzeit = 0;        // Reset bottom time.
         char_O_deco_status = 0;     // Calc bottom-time/nullzeit next iteration.
 
         // Values that should be reset just once for the full real dive.
@@ -972,7 +972,7 @@ static void calc_hauptroutine(void)
         gas_switch_find_current();              // Lookup for current gas & time.
         gas_switch_set();                       // setup calc_ratio's
 
-    	calc_nullzeit();
+        calc_nullzeit();
         if( char_O_nullzeit > 0 )               // Some NDL time left ?
         {
             char_O_deco_status = 0;             // YES: recalc ndl next time.
@@ -982,37 +982,37 @@ static void calc_hauptroutine(void)
         }
         else
             char_O_deco_status = 2;             // NO: calc ascent next time.
-    	break;
+        break;
 
     case 2: //---- Simulate ascent to first stop -----------------------------
     case 6: // @+5min variation
         // Check proposed gas at begin of ascent simulation
         sim_dive_mins = int_I_divemins;         // Init current time.
 
-       	gas_switch_find_current();              // Lookup for current gas & time.
+        gas_switch_find_current();              // Lookup for current gas & time.
         gas_switch_set();                       // setup calc_ratio's
 
         backup_gas_used  = sim_gas_last_used;   // And save for later simu steps.
         backup_gas_depth = sim_gas_last_depth;  // And save for later simu steps.
 
-    	sim_ascent_to_first_stop();
+        sim_ascent_to_first_stop();
 
         // Calc stops next time (deco or gas switch).
         char_O_deco_status = 1 | ( char_O_deco_status & 4 );
-    	break;
+        break;
 
     case 1: //---- Simulate stops --------------------------------------------
     case 5: // @+5 variation.
-    	calc_hauptroutine_calc_deco();
+        calc_hauptroutine_calc_deco();
 
         // If simulation is finished, restore the GF low reference, so that
         // next ascent simulation is done from the current depth:
-    	if( (char_O_deco_status & 3) == 0 )
-    	{
+        if( (char_O_deco_status & 3) == 0 )
+        {
             sim_gas_last_used  = backup_gas_used;
             sim_gas_last_depth = backup_gas_depth;
         }
-    	break;
+        break;
     }
 }
 
@@ -1048,7 +1048,7 @@ void calc_hauptroutine_data_input(void)
         deco_gas_change[g] = 0;
         if(char_I_deco_gas_change[g])
             if( int_temp > 100 *(short)char_I_deco_gas_change[g] )
-            	deco_gas_change[g] = char_I_deco_gas_change[g];
+                deco_gas_change[g] = char_I_deco_gas_change[g];
     }
 
     const_ppO2 = char_I_const_ppO2 * 0.01;
@@ -1090,9 +1090,9 @@ void calc_hauptroutine_update_tissues(void)
 
     if( pres_diluent > ppWater )
     {
-     	overlay float EAD, END;
+        overlay float EAD, END;
 
-        ppN2 = N2_ratio * (pres_diluent - ppWater); 
+        ppN2 = N2_ratio * (pres_diluent - ppWater);
         ppHe = He_ratio * (pres_diluent - ppWater);
 
         // EAD : Equivalent Air Dive. Equivalent depth for the same N2 level
@@ -1157,8 +1157,8 @@ void calc_hauptroutine_calc_deco(void)
     for(loop = 0; loop < 16; ++loop)
     {
         // Limit loops to 512ms, using timer 5:
-      	if( tmr5() & (512*32) )
-      	    break;
+        if( tmr5() & (512*32) )
+            break;
 
             if( calc_nextdecodepth() )
             {
@@ -1787,17 +1787,17 @@ void deco_calc_desaturation_time(void)
             temp3 = - temp3 / pres_tissue_He[ci];
 
         if( 0.0 < temp3 && temp3 < 1.0 )
-    	{
+        {
             temp3 = log(1.0 - temp3) / -0.6931; // temp1 is the multiples of half times necessary.
                                                 // 0.6931 is ln(2), because the math function log() calculates with a base of e  not 2 as requested.
                                                 // minus because log is negative
             temp4 = var_He_ht * temp3 / float_desaturation_multiplier; // time necessary (in minutes ) for "complete" desaturation, new in v.101 float_desaturation_multiplier
-    	}
+        }
         else
-    	{
-        	temp3 = 0.0;
-        	temp4 = 0.0;
-    	}
+        {
+            temp3 = 0.0;
+            temp4 = 0.0;
+        }
 
         // saturation_time (for flight)
         if (temp4 > temp2)
@@ -2191,9 +2191,9 @@ void deco_gas_volumes(void)
     {
         overlay unsigned char newDepth, time;
 
-        time = char_O_deco_time[31-i];
+        time = char_O_deco_time[i];
         if( time == 0 ) continue;       // not yet: still search table.
-        newDepth = char_O_deco_depth[31-i];
+        newDepth = char_O_deco_depth[i];
 
         //---- Gas switch during or before this stop --------------------------
         for(;;)
