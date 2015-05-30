@@ -712,7 +712,7 @@ deco_show_plan_3:
         bra     deco_show_plan_1
         ; All stops shown
         	
-;---- In OCR mode, show the gas Usage special page ---------------------------
+;---- In OC mode, show the gas Usage special page ---------------------------
 simulator_show_decoplan5_0:    
     btfsc   FLAG_ccr_mode             ; =1: CCR mode (Fixed ppO2 or Sensor) active
     return                            ; YES: Return to simulator menu
@@ -728,7 +728,7 @@ simulator_show_decoplan5_0:
     movlb   .1
 
     ; Clear the complete stop result column:
-    WIN_BOX_BLACK   .0, .239, .85, .159		;top, bottom, left, right
+    WIN_BOX_BLACK   .0, .239, .80, .159 ; top, bottom, left, right
 
     movlw	.25
     movwf	waitms_temp                 ; Row for gas list is .25+.25
