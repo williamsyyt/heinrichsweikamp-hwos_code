@@ -13,7 +13,7 @@
 
 ; Surface-mode texts
     TCODE   tBeta,      "beta"         	; beta
-	TCODE	tMenu,		"<Menu" 		; <Menu
+    TCODE   tMenu,	"<Menu" 	; <Menu
     TCODE   tView,      "View>"         ; View>
     TCODE   tHeading,   "Heading:"      ; Heading:
 
@@ -32,8 +32,8 @@
     TCODE   tLogbook,   "Logbook"       ; Logbook
     TCODE   tGasSetup,  "OC Gas Setup"  ; OC Gas Setup
     TCODE   tSetTime,   "Set Time"		; Set Time
-	TCODE	tSetDate,	"Set Date"		; Set Date
-	TCODE	tSetTimeDate,"Set Time & Date"; Set Time & Date
+    TCODE	tSetDate,	"Set Date"		; Set Date
+    TCODE	tSetTimeDate,"Set Time & Date"; Set Time & Date
     TCODE   tDispSets,  "Display Settings" ; Display Settings
     TCODE   tExit,      "Exit"          ; Exit
 	TCODE	tResetMenu, "Reset Menu"	; Reset Menu
@@ -183,11 +183,12 @@
     TCODE   tNoDeco,    "No Deco"           ; No Deco
     TCODE   tMore,      "More..."           ; More...
     TCODE   tCNS,       "CNS"               ; CNS
+    TCODE   tGasUsage,  "Gas Usage"	    ; Gas Usage
 
 ; Information menu
     TCODE   tFirmware,  "Firmware: "        ; Firmware: (space)
     TCODE   tSerial,    "Serial  : "        ; Serial  : (space)
-	TCODE	tTotalDives,"Total Dives: "		; Total Dives:
+    TCODE   tTotalDives,"Total Dives: "	    ; Total Dives:
     TCODE   tBatteryV,  "Battery: "         ; Battery:
     
 ; Divemode screen

@@ -183,6 +183,7 @@
     TCODE   tNoDeco,    "No Déco"           ; No Deco
     TCODE   tMore,      "Suite..."          ; More...
     TCODE   tCNS,       "CNS"               ; CNS
+    TCODE   tGasUsage,  "Util. Gaz"         ; Gas Usage
 
 ; Information menu
     TCODE   tFirmware,  "Logiciel: "        ; Firmware: (space)
