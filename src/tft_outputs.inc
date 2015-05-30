@@ -106,16 +106,17 @@ TFT_color_code macro color_code_temp
     extern  TFT_warning_fallback                ; Show fallback warning
 
 ; Misc
-	extern	TFT_standard_color
-    extern  TFT_disabled_color
-    extern  TFT_attention_color
-    extern  TFT_warnings_color
-	extern	adjust_depth_with_salinity          ; computes salinity setting into lo:hi [mbar]
-    extern  adjust_depth_with_salinity_log      ; computes salinity setting (FROM WREG!) into lo:hi [mbar]
-	extern	TFT_convert_date_short
-	extern	TFT_convert_signed_16bit
-	extern	TFT_convert_date
-	extern	TFT_debug_output
-	extern	TFT_show_time_date_menu
-	extern	convert_mbar_to_feet   			; convert value in lo:hi from mbar to feet
-	extern	convert_celsius_to_fahrenheit	; convert value in lo:hi from celsius to fahrenheit
+    extern	TFT_standard_color
+    extern	TFT_disabled_color
+    extern	TFT_attention_color
+    extern	TFT_warnings_color
+    extern      TFT_divemask_color
+    extern	adjust_depth_with_salinity          ; computes salinity setting into lo:hi [mbar]
+    extern	adjust_depth_with_salinity_log      ; computes salinity setting (FROM WREG!) into lo:hi [mbar]
+    extern	TFT_convert_date_short
+    extern	TFT_convert_signed_16bit
+    extern	TFT_convert_date
+    extern	TFT_debug_output
+    extern	TFT_show_time_date_menu
+    extern	convert_mbar_to_feet   			; convert value in lo:hi from mbar to feet
+    extern	convert_celsius_to_fahrenheit	; convert value in lo:hi from celsius to fahrenheit
