@@ -377,6 +377,13 @@ deco_planer_endloop:
         banksel char_I_step_is_1min
         clrf    char_I_step_is_1min     ; Back to 2sec loops
 
+;---- BAILOUT: Switch to OC gases for ascent cycles --------------------------
+        banksel common
+        btfss   is_bailout              ; Doing a bailout decoplan ?
+        bra     deco_planer_finishing   ; NO: keep gases
+        
+        rcall   deco_setup_oc_gases     ; Switch to OC gas and no const_ppO2
+
 ;---- Wait until status reach zero -------------------------------------------
 deco_planer_finishing:
         btg     LEDg
@@ -388,28 +395,7 @@ deco_planer_finishing:
         movf    char_O_deco_status,W
         bnz     deco_planer_finishing
 
-;---- Optional extra cycle to recompute stops in bailout mode ---------------
-        banksel common
-        btfss   is_bailout              ; Doing a bailout decoplan ?
-        bra     deco_planer_finished    ; NO: so we are done.
-        
-        rcall   deco_setup_oc_gases     ; Switch to OC gas and no const_ppO2
-        
-        movlw   .3                      ; restart 2sec cycles.
-        movff   WREG,char_O_deco_status
-        call    deco_calc_hauptroutine  ; Reset + simulate first 2secs.
-        
-deco_planer_bail_loop:
-        btg     LEDg
-;       clrf    TMR5L
-;       clrf    TMR5H                   ; 30,51757813µs/bit in TMR5L:TMR5H
-        call    deco_calc_hauptroutine  ; Simulate 2sec more
-        
-        banksel char_O_deco_status      ; Bank 2
-        movf    char_O_deco_status,W
-        bnz     deco_planer_bail_loop
-
-deco_planer_finished:
+;---- Done: add CNS from decoplan, and restore tissues
         call    deco_calc_CNS_planning
         movff   int_O_CNS_fraction+0,decoplan_CNS+0
         movff   int_O_CNS_fraction+1,decoplan_CNS+1
