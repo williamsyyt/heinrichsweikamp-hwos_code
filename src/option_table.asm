@@ -86,6 +86,7 @@ lbl:    db      2, LOW(defText)         ; Type2 = STRING
         extern  char_I_deco_model, char_I_saturation_multiplier, char_I_desaturation_multiplier
         extern  char_I_extra_time
         extern  tDefName
+        extern  char_I_bottom_usage,char_I_deco_usage,tLitersMinute
     ; Option table
     ; OPTION_UINT8  Label,   min,    max,    default, text-string,   EEPROM location (-1 for RAM only),   RAM location
     global  option_table_begin
@@ -196,6 +197,8 @@ option_table_begin:
         OPTION_BOOL     oFlipScreen,    0,                            .151,    opt_flip_screen                  ; =1: Flip the screen
         OPTION_UINT8p10 ocR_button_left,.20, .100,   .40,   tPercent, .152,    opt_cR_button_left               ; left button sensitivity
         OPTION_UINT8p10 ocR_button_right,.20, .100,   .40,  tPercent, .153,    opt_cR_button_right              ; right button sensitivity
+        OPTION_UINT8    obottom_usage,  .5,.50,   .20,tLitersMinute,  .154,    char_I_bottom_usage              ; l/min
+        OPTION_UINT8    odeco_usage,    .5,.50,   .20,tLitersMinute,  .155,    char_I_deco_usage                ; l/min
 
 ;=============================================================================
 ; Set Time/Set Date (RAM only)

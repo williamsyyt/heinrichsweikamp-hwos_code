@@ -20,6 +20,7 @@
 #include "math.inc"
 #include "eeprom_rs232.inc"
 #include "tft_outputs.inc"
+#include "gaslist.inc"
 
 gui     CODE
 
@@ -758,12 +759,13 @@ simulator_show_decoplan5_0:
     call    TFT_standard_color   
 
 simulator_show_decoplan5_loop:
+    movff   wait_temp,PRODL             ; Copy to PRODL first
     incf    wait_temp,F                 ; Increment gas #
-    
-    STRCPY_TEXT tGas                    ; Print Gas number
-    bsf     leftbind
-    movff   wait_temp,lo
-	output_8
+    lfsr    FSR2,buffer
+    bsf     short_gas_decriptions
+    bsf     divemode                    ; Tweak "customview_show_mix:"
+    call    gaslist_strcat_gas          ; Input: PRODL : gas number (0..4), Output: "Nxlo", "Txlo/hi", "Air" or "O2" into Postinc2
+    bcf     divemode                    ; Tweak "customview_show_mix:"
     
 	movlw	.25
 	addwf	waitms_temp,F		        ; Increase row position
@@ -779,13 +781,12 @@ simulator_show_decoplan5_loop:
     incf    WREG
     bnz     simulator_show_decoplan5_2
     call    TFT_attention_color
-    STRCAT_PRINT  ": xxxx.x"
+    STRCAT_PRINT  ":xxxx.x"
     call    TFT_standard_color   
     bra     simulator_show_decoplan5_1
     
 simulator_show_decoplan5_2: 
-    STRCAT  ": "
-
+    PUTC    ":"
     bsf     leftbind
     output_16                           ; No decimal anymore.
     bcf     leftbind

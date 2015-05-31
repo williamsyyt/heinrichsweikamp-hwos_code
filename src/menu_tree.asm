@@ -259,14 +259,23 @@ do_planner_menu_reset:
 
 do_planner_menu:
     extern  do_demo_planner
-    MENU_BEGIN  tPlan, .6
+    MENU_BEGIN  tPlan, .7
 		MENU_CALL       tInter,                 do_demo_divemode
         MENU_OPTION     tIntvl, odiveInterval,  0
         MENU_OPTION     tBtTm,  obottomTime,    0
         MENU_OPTION     tMxDep, obottomDepth,   0
         MENU_CALL       tDeco,                  do_demo_planner
+        MENU_CALL       tSystSets,              do_planner_config
         MENU_CALL       tExit,                  do_continue_main_menu
     MENU_END
+
+do_planner_config:
+    MENU_BEGIN  tPlan, .3
+        MENU_OPTION     tSetBotUse, obottom_usage,  0
+        MENU_OPTION     tSetDecoUse,  odeco_usage,  0
+        MENU_CALL       tExit,                      do_planner_menu
+    MENU_END
+
 
 ;=============================================================================
 ; Divemode menu

@@ -2151,9 +2151,8 @@ void deco_calc_percentage(void)
 //          Gas list.
 //          char_I_first_gas is the bottom gas.
 //          decoplan (char_O_deco_depth, char_O_deco_time).
-//          CF#54 == TRUE if shallowest stop first.
-//          CF#56 == bottom liters/minutes (5 .. 50) or bar/min.
-//          CF#57 == deco liters/minutes (5 .. 50) or bar/min.
+//          char_I_bottom_usage is bottom liters/minutes (5 .. 50) or bar/min.
+//          char_I_deco_usage is deco liters/minutes (5 .. 50) or bar/min.
 // Output:  int_O_gas_volumes[0..4] in litters * 0.1
 //
 void deco_gas_volumes(void)
@@ -2168,9 +2167,8 @@ void deco_gas_volumes(void)
     for(i=0; i<NUM_GAS; ++i)                            // Nothing yet...
         volumes[i] = 0.0;
 
-    // TODO: get conso from settings:
-    bottom_usage = 20;      // In liter/minutes.
-    deco_usage   = 20;      // In liter/minutes.
+    bottom_usage = char_I_bottom_usage;      // In liter/minutes.
+    deco_usage   = char_I_deco_usage;        // In liter/minutes.
 
     // Early return if not defined:
     if( deco_usage <= 0.0 || bottom_usage <= 0.0 )
