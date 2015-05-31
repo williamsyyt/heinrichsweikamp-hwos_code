@@ -241,9 +241,62 @@ TFT_color_code_depth:
 	movff	lo_temp,lo			; Restore hi, lo
 	call	subU16			;  sub_c = sub_a - sub_b
 	btfss	neg_flag
-	bra		TFT_warnings_color ; Set to warning color
-	call	TFT_standard_color
+	bra		TFT_color_code_depth_warn ; Set to warning color
+    call    TFT_color_code_ppo2_depth  ; check depth against MOD
 	return
+
+TFT_color_code_ppo2_depth:
+    SAFE_2BYTE_COPY amb_pressure, xA
+	movlw	d'10'
+	movwf	xB+0
+	clrf	xB+1
+	call	div16x16				; xC=p_amb/10
+
+	movff	xC+0,xA+0
+	movff	xC+1,xA+1
+    movff   char_I_O2_ratio,xB+0    ; =O2 ratio
+	clrf	xB+1
+	call	mult16x16               ; char_I_O2_ratio * p_amb/10
+
+; Check if ppO2>6,55bar
+	tstfsz	xC+2					; char_I_O2_ratio * p_amb/10 > 65536, ppO2>6,55bar?
+	;bra		TFT_color_code_warn     ; Yes, warn in warning color
+    bra     TFT_color_code_depth_warn
+; Check if ppO2>3,30bar
+	btfsc	xC+1,7
+    bra     TFT_color_code_depth_warn
+
+	movff	xC+0,sub_a+0
+	movff	xC+1,sub_a+1
+	movff	opt_ppO2_max,WREG		; PPO2 Max for MOD calculation and color coding in divemode
+	mullw	d'100'
+	movff	PRODL,sub_b+0
+	movff	PRODH,sub_b+1
+	call	subU16			  		; sub_c = sub_a - sub_b
+	btfss	neg_flag
+    bra     TFT_color_code_depth_warn
+
+	movff	xC+0,sub_a+0
+	movff	xC+1,sub_a+1
+	movff	opt_ppO2_min,WREG		; PPO2 min for Sensors and color coding in divemode
+	mullw	d'100'
+	movff	PRODL,sub_b+0
+	movff	PRODH,sub_b+1
+	call	subU16			  		; sub_c = sub_a - sub_b
+	btfsc	neg_flag
+    bra     TFT_color_code_depth_warn
+    if dm_offset != 0
+        call	TFT_standard_color
+    else
+        movlw   color_green
+    	call	TFT_set_color
+    endif
+    bcf     blinking_depth_warning      ; reset warning
+    return
+
+TFT_color_code_depth_warn:
+   	bsf		blinking_depth_warning         ; Set warning
+    bra     TFT_warnings_color ; Set to warning color
 
 TFT_color_code_cns:
     movff   int_O_CNS_fraction+1,lo		; copy into bank1
@@ -398,18 +451,18 @@ DISP_active_gas_surfmode6:
 TFT_show_color_schemes:         ; update the color schemes
     bsf     divemode            ; put in divemode
     call    TFT_divemask_color
-    WIN_TINY  divemode_mask_depth_column,divemode_mask_depth_row+.40
+    WIN_TINY  .12,.40
     STRCAT_TEXT_PRINT	tDepth
-    WIN_TINY  divemode_mask_maxdepth_column,divemode_mask_maxdepth_row+.40
+    WIN_TINY  .62,.40
     STRCAT_TEXT_PRINT	tMaxDepth
-    WIN_TINY  divemode_mask_divetime_column,divemode_mask_divetime_row+.40
+    WIN_TINY  .122,.40
     STRCAT_TEXT_PRINT	tDivetime
 
     ; Show some demo screen
 
     ; Depth demo
     call	TFT_standard_color
-	WIN_MEDIUM	depth_column+.3,depth_row+.40
+	WIN_MEDIUM	.3,.54
     movlw   LOW     .5172
     movwf   lo
     movlw   HIGH    .5172
@@ -419,7 +472,7 @@ TFT_show_color_schemes:         ; update the color schemes
 	output_16						; Full meters in Big font
 	bcf		leftbind
 	STRCAT_PRINT ""					; Display full meters
-    WIN_SMALL	depth_dm_column-.15,max_depth_dm_row+.40
+    WIN_SMALL	.25,.66
     movlw   LOW     .5172
     movwf   lo
     movlw   HIGH    .5172
@@ -433,7 +486,7 @@ TFT_show_color_schemes:         ; update the color schemes
 	WIN_FONT 	FT_SMALL
 
     ; Max. Depth demo
-    WIN_MEDIUM	max_depth_column,max_depth_row+.40
+    WIN_MEDIUM	.64,.54
 	bsf     ignore_digit4			; no 0.1m
     bsf     leftbind
     movlw   LOW     .6349
@@ -444,7 +497,7 @@ TFT_show_color_schemes:         ; update the color schemes
 	STRCAT_PRINT ""					; Display full meters
     bcf     leftbind
 	; .1m in SMALL font
-	WIN_SMALL	max_depth_dm_column,max_depth_dm_row+.40
+	WIN_SMALL	.87,.66
 	PUTC    "."
 	movlw	d'4'
 	movwf	ignore_digits
@@ -461,10 +514,10 @@ TFT_show_color_schemes:         ; update the color schemes
     ; Divetime demo
     movff   mins,lo
     clrf    hi
-	WIN_MEDIUM	divetime_column, divetime_row+.40
+	WIN_MEDIUM	.103, .54
 	output_16_3                     ; limit to 999 and display only (0-999)
 	STRCAT_PRINT ""                 ; Show minutes in large font
-	WIN_SMALL  divetime_secs_column, divetime_secs_row+.40   		; left position for two sec figures
+	WIN_SMALL  .139, .66   		; left position for two sec figures
 	PUTC    ':'
 	bsf		leftbind
 	movff   secs,lo
@@ -477,26 +530,27 @@ TFT_show_color_schemes:         ; update the color schemes
 
 	global	TFT_divemode_mask
 TFT_divemode_mask:					; Displays mask in Dive-Mode
-    call    TFT_divemask_color
-    WIN_TINY  divemode_mask_depth_column,divemode_mask_depth_row
-    STRCAT_TEXT_PRINT	tDepth
-    WIN_TINY  divemode_mask_maxdepth_column,divemode_mask_maxdepth_row
-    STRCAT_TEXT_PRINT	tMaxDepth
-    WIN_TINY  divemode_mask_divetime_column,divemode_mask_divetime_row
-    STRCAT_TEXT_PRINT	tDivetime
-    
+    if dm_offset != 0
+        call    TFT_divemask_color
+        WIN_TINY            dm_mask_depth_column,dm_mask_depth_row
+        STRCAT_TEXT_PRINT   tDepth
+        WIN_TINY            dm_mask_maxdepth_column,dm_mask_maxdepth_row
+        STRCAT_TEXT_PRINT   tMaxDepth
+        WIN_TINY            dm_mask_divetime_column,dm_mask_divetime_row
+        STRCAT_TEXT_PRINT   tDivetime
+    endif
     call	TFT_standard_color
-	return
+    return
 
 	global	TFT_clear_customview_divemode
 TFT_clear_customview_divemode:
-    WIN_BOX_BLACK    divemode_customview_row, .163, .0, .159	; top, bottom, left, right
+    WIN_BOX_BLACK    dm_customview_row, dm_customview_bot, dm_customview_column, dm_customview_rgt	; top, bottom, left, right
 	return
 
 	global	TFT_display_velocity
 TFT_display_velocity:						; With divA+0 = m/min
 	TFT_color_code	warn_velocity	    	; Color-code Output (With divA+0 = m/min)
-	WIN_SMALL	velocity_text_column,velocity_text_row
+	WIN_SMALL	dm_velocity_text_column, dm_velocity_text_row
 
     TSTOSS  opt_units			; 0=Meters, 1=Feets
 	bra		TFT_display_velocity_metric
@@ -531,17 +585,21 @@ TFT_display_velocity_metric:
 	global	TFT_display_velocity_clear
 TFT_display_velocity_clear:
 	; Clear Text
-	WIN_BOX_BLACK   velocity_text_row, velocity_text_row+.22, velocity_text_column, (velocity_text_column+.7*.8)-1	; top, bottom, left, right
+	WIN_BOX_BLACK   dm_velocity_text_row, dm_velocity_text_bot, dm_velocity_text_column, dm_velocity_text_rgt	; top, bottom, left, right
 	return
 
     global  TFT_clear_decoarea
 TFT_clear_decoarea:
-    WIN_BOX_BLACK   decostop_1st_stop_row, .239, decostop_1st_stop_column ,.159	; top, bottom, left, right
+    WIN_BOX_BLACK   dm_decostop_1st_stop_row, .239, dm_decostop_1st_stop_column, .159	; top, bottom, left, right
 	return
 
     global  TFT_clear_divemode_menu
 TFT_clear_divemode_menu:
-    WIN_BOX_BLACK   divemode_menu_row, divemode_menu_lower, divemode_menu_left ,divemode_menu_right	; top, bottom, left, right
+    if dm_offset != 0
+        WIN_BOX_BLACK   dm_menu_row,   dm_menu_lower, dm_menu_left,  dm_menu_right	; top, bottom, left, right
+    else
+        WIN_BOX_BLACK   dm_3rdrow_top, dm_3rdrow_bot, dm_3rdrow_lft, dm_3rdrow_rgt	; top, bottom, left, right
+    endif
 	return
 
 	global	TFT_display_ndl_mask
@@ -550,7 +608,7 @@ TFT_display_ndl_mask:
     return                              ; Yes, return
 	rcall	TFT_clear_decoarea			; Clear Dekostop and Dekosum
     call    TFT_divemask_color
-   	WIN_STD 	ndl_text_column,ndl_text_row
+   	WIN_STD 	dm_ndl_text_column, dm_ndl_text_row
 	STRCPY_TEXT_PRINT  tNDL             ; NDL
 	call	TFT_standard_color
 	return
@@ -562,7 +620,7 @@ TFT_show_TTS_divemode:
 	call	TFT_standard_color
 	movff	int_O_ascenttime+0,lo       ; TTS
 	movff	int_O_ascenttime+1,hi       ; on 16bits
-	WIN_MEDIUM  tts_value_column,tts_value_row
+	WIN_MEDIUM  dm_tts_value_column, dm_tts_value_row
 	output_16_3					;Displays only 0...999
 	STRCAT_PRINT "'"
 	return
@@ -571,7 +629,7 @@ TFT_show_TTS_divemode:
 TFT_display_ndl:
     btfsc   divemode_menu               ; Is the dive mode menu shown?
     return                              ; Yes, return
-	WIN_MEDIUM	ndl_value_column,ndl_value_row
+	WIN_MEDIUM	dm_ndl_value_column, dm_ndl_value_row
 	call	TFT_standard_color
 	movff	char_O_nullzeit,lo		; Get NDL from C-code
 	output_8
@@ -581,8 +639,8 @@ TFT_display_ndl:
 	global	TFT_divemode_warning
 TFT_divemode_warning:
     bsf     dive_warning_displayed              ; =1: The warning sign is shown
-    WIN_TOP  	warning_icon_row
-	WIN_LEFT 	warning_icon_column
+    WIN_TOP  	dm_warning_icon_row
+	WIN_LEFT 	dm_warning_icon_column
     TFT_WRITE_PROM_IMAGE dive_warning2_block 	; Show Warning icon
     return
 
@@ -591,13 +649,13 @@ TFT_divemode_warning_clear:
     btfss   dive_warning_displayed              ; =1: The warning sign is shown
     return
     bcf     dive_warning_displayed              ; clear only once
-	WIN_BOX_BLACK   warning_icon_row, warning_icon_row+.38, warning_icon_column, warning_icon_column+.21; top, bottom, left, right
+	WIN_BOX_BLACK   dm_warning_icon_row, dm_warning_icon_bot, dm_warning_icon_column, dm_warning_icon_rgt  ; top, bottom, left, right
 	return
 
 	global	TFT_display_deko_mask
 TFT_display_deko_mask:
 	rcall		TFT_clear_decoarea
-   	WIN_STD 	tts_text_column,tts_text_row
+   	WIN_STD 	dm_tts_text_column, dm_tts_text_row
     call    TFT_divemask_color
 	STRCPY_TEXT_PRINT  tTTS             ; TTS
 	call	TFT_standard_color
@@ -648,7 +706,7 @@ TFT_display_deko_output_metric:
 TFT_display_deko:
     btfsc   divemode_menu               ; Is the dive mode menu shown?
     return                              ; Yes, return
-	WIN_MEDIUM	decostop_1st_stop_column,decostop_1st_stop_row
+	WIN_MEDIUM	dm_decostop_1st_stop_column, dm_decostop_1st_stop_row
 	TFT_color_code		warn_ceiling    ; Color-code Output
 	movff	char_O_first_deco_depth,lo  ; Ceiling in m
 	rcall	TFT_display_deko_output_depth ; Outputs depth (stored in lo) to POSTINC2 with "m" or w/o (For ft)
@@ -661,7 +719,7 @@ TFT_display_deko:
     global  TFT_decoplan
 TFT_decoplan:
     call    TFT_divemask_color
-    WIN_TINY    decoplan_title_column,decoplan_title_row
+    WIN_TINY    dm_custom_decoplan_title_column, dm_custom_decoplan_title_row
     STRCPY_TEXT_PRINT tDiveDecoplan
 	call	TFT_standard_color
 
@@ -670,14 +728,14 @@ TFT_decoplan:
 	bra		TFT_display_deko2			; Yes
 	; No, clear output and return
 	call	TFT_standard_color
-	WIN_SMALL	decostop_4th_stop_column,decostop_4th_stop_row
+	WIN_SMALL	dm_cust_dstop_4th_stop_column,dm_cust_dstop_4th_stop_row
 	STRCPY_PRINT "  ---  "
-	WIN_BOX_BLACK   decostop_2nd_stop_row, divemode_simtext_row-1, decostop_2nd_stop_column, decostop_4th_stop_column	; top, bottom, left, right
-	WIN_BOX_BLACK   decostop_5th_stop_row, divemode_simtext_row-1, decostop_5th_stop_column, decostop_6th_stop_column	; top, bottom, left, right
-	WIN_BOX_BLACK   decostop_6th_stop_row, divemode_simtext_row-1, decostop_6th_stop_column, .159	; top, bottom, left, right
+	WIN_BOX_BLACK   dm_cust_dstop_2nd_stop_row, dm_customview_bot, dm_cust_dstop_2nd_stop_column, dm_cust_dstop_4th_stop_column	; top, bottom, left, right
+	WIN_BOX_BLACK   dm_cust_dstop_5th_stop_row, dm_customview_bot, dm_cust_dstop_5th_stop_column, dm_cust_dstop_6th_stop_column	; top, bottom, left, right
+	WIN_BOX_BLACK   dm_cust_dstop_6th_stop_row, dm_customview_bot, dm_cust_dstop_6th_stop_column, .159	; top, bottom, left, right
     return
 TFT_display_deko2:
-	WIN_SMALL	decostop_2nd_stop_column,decostop_2nd_stop_row
+	WIN_SMALL	dm_cust_dstop_2nd_stop_column, dm_cust_dstop_2nd_stop_row
 	movff	char_O_deco_depth+1,lo  	; stop in m
 	bcf     lo,7                        ; Clear GAS_SWITCH bit
 	rcall	TFT_display_deko_output_depth ; Outputs depth (stored in lo) to POSTINC2 with "m" or w/o (For ft)
@@ -688,12 +746,12 @@ TFT_display_deko2:
 	tstfsz	lo							; Show another stop?
 	bra		TFT_display_deko3			; Yes
 	; No, clear output and return
-	WIN_BOX_BLACK   decostop_3rd_stop_row, divemode_simtext_row-1, decostop_2nd_stop_column, decostop_4th_stop_column	; top, bottom, left, right
-	WIN_BOX_BLACK   decostop_4th_stop_row, divemode_simtext_row-1, decostop_4th_stop_column, .159	; top, bottom, left, right
+	WIN_BOX_BLACK   dm_cust_dstop_3rd_stop_row, dm_customview_bot, dm_cust_dstop_2nd_stop_column, dm_cust_dstop_4th_stop_column	; top, bottom, left, right
+	WIN_BOX_BLACK   dm_cust_dstop_4th_stop_row, dm_customview_bot, dm_cust_dstop_4th_stop_column, .159	; top, bottom, left, right
 	return
 
 TFT_display_deko3:
-	WIN_SMALL	decostop_3rd_stop_column,decostop_3rd_stop_row
+	WIN_SMALL	dm_cust_dstop_3rd_stop_column, dm_cust_dstop_3rd_stop_row
 	movff	char_O_deco_depth+2,lo  	; stop in m
 	bcf     lo,7                        ; Clear GAS_SWITCH bit
 	rcall	TFT_display_deko_output_depth ; Outputs depth (stored in lo) to POSTINC2 with "m" or w/o (For ft)
@@ -705,11 +763,11 @@ TFT_display_deko3:
 	tstfsz	lo							; Show another stop?
 	bra		TFT_display_deko4			; Yes
 	; No, clear output and return
-	WIN_BOX_BLACK   decostop_4th_stop_row, divemode_simtext_row-1, decostop_4th_stop_column, .159 ; top, bottom, left, right
+	WIN_BOX_BLACK   dm_cust_dstop_4th_stop_row, dm_customview_bot, dm_cust_dstop_4th_stop_column, .159  ; top, bottom, left, right
 	return								; Done.
 
 TFT_display_deko4:
-	WIN_SMALL	decostop_4th_stop_column,decostop_4th_stop_row
+	WIN_SMALL	dm_cust_dstop_4th_stop_column, dm_cust_dstop_4th_stop_row
 	movff	char_O_deco_depth+3,lo  	; stop in m
 	bcf     lo,7                        ; Clear GAS_SWITCH bit
 	rcall	TFT_display_deko_output_depth ; Outputs depth (stored in lo) to POSTINC2 with "m" or w/o (For ft)
@@ -721,12 +779,12 @@ TFT_display_deko4:
 	tstfsz	lo							; Show another stop?
 	bra		TFT_display_deko5			; Yes
 	; No, clear output and return
-	WIN_BOX_BLACK   decostop_5th_stop_row, divemode_simtext_row-1, decostop_5th_stop_column, decostop_6th_stop_column	; top, bottom, left, right
-	WIN_BOX_BLACK   decostop_6th_stop_row, divemode_simtext_row-1, decostop_6th_stop_column, .159                     ; top, bottom, left, right
+	WIN_BOX_BLACK   dm_cust_dstop_5th_stop_row, dm_customview_bot, dm_cust_dstop_5th_stop_column, dm_cust_dstop_6th_stop_column	; top, bottom, left, right
+	WIN_BOX_BLACK   dm_cust_dstop_6th_stop_row, dm_customview_bot, dm_cust_dstop_6th_stop_column, .159                     ; top, bottom, left, right
 	return								; Done.
 
 TFT_display_deko5:
-	WIN_SMALL	decostop_5th_stop_column,decostop_5th_stop_row
+	WIN_SMALL	dm_cust_dstop_5th_stop_column, dm_cust_dstop_5th_stop_row
 	movff	char_O_deco_depth+4,lo  	; stop in m
 	bcf     lo,7                        ; Clear GAS_SWITCH bit
 	rcall	TFT_display_deko_output_depth ; Outputs depth (stored in lo) to POSTINC2 with "m" or w/o (For ft)
@@ -737,10 +795,10 @@ TFT_display_deko5:
 	tstfsz	lo							; Show another stop?
 	bra		TFT_display_deko6			; Yes
 	; No, clear output and return
-	WIN_BOX_BLACK   decostop_6th_stop_row, divemode_simtext_row-1, decostop_6th_stop_column, .159                     ; top, bottom, left, right
+	WIN_BOX_BLACK   dm_cust_dstop_6th_stop_row, dm_customview_bot, dm_cust_dstop_6th_stop_column, .159        ; top, bottom, left, right
 	return								; Done.
 TFT_display_deko6:
-	WIN_SMALL	decostop_6th_stop_column,decostop_6th_stop_row
+	WIN_SMALL	dm_cust_dstop_6th_stop_column, dm_cust_dstop_6th_stop_row
 	movff	char_O_deco_depth+5,lo  	; stop in m
 	bcf     lo,7                        ; Clear GAS_SWITCH bit
 	rcall	TFT_display_deko_output_depth ; Outputs depth (stored in lo) to POSTINC2 with "m" or w/o (For ft)
@@ -751,10 +809,10 @@ TFT_display_deko6:
 	tstfsz	lo							; Show another stop?
 	bra		TFT_display_deko7			; Yes
 	; No, clear output and return
-	WIN_BOX_BLACK   decostop_7th_stop_row, divemode_simtext_row-1, decostop_7th_stop_column, .159                     ; top, bottom, left, right
+	WIN_BOX_BLACK   dm_cust_dstop_7th_stop_row, dm_customview_bot, dm_cust_dstop_7th_stop_column, .159     ; top, bottom, left, right
 	return								; Done.
 TFT_display_deko7:
-	WIN_SMALL	decostop_7th_stop_column,decostop_7th_stop_row
+	WIN_SMALL	dm_cust_dstop_7th_stop_column, dm_cust_dstop_7th_stop_row
 	movff	char_O_deco_depth+6,lo  	; stop in m
 	bcf     lo,7                        ; Clear GAS_SWITCH bit
 	rcall	TFT_display_deko_output_depth ; Outputs depth (stored in lo) to POSTINC2 with "m" or w/o (For ft)
@@ -774,7 +832,7 @@ TFT_display_deko7:
 
     global  TFT_clear_safety_stop
 TFT_clear_safety_stop:
-    WIN_BOX_BLACK   safetystop_text_row, ndl_text_row-.4, safetystop_text_column, .159	; top, bottom, left, right
+    WIN_BOX_BLACK   dm_safetystop_row, dm_safetystop_bot, dm_safetystop_text_column, .159	; top, bottom, left, right
     return
 
     global  TFT_show_safety_stop
@@ -798,15 +856,18 @@ TFT_show_safety_stop2:
 
     btfsc   divemode_menu                   ; Is the dive mode menu shown?
     return                                  ; Yes, return
-    btfsc   menuview
-    bra     TFT_show_safety_stop3           ; No room when menuview=1...
-
-    rcall    TFT_divemask_color
-    WIN_STD safetystop_text_column,safetystop_text_row
+    ;btfsc   menuview
+    ;bra     TFT_show_safety_stop3           ; No room when menuview=1...
+    if dm_offset != 0
+        call    TFT_divemask_color
+    else
+        call    TFT_standard_color
+    endif
+    WIN_STD  dm_safetystop_text_column, dm_safetystop_text_row
     STRCPY_TEXT_PRINT tDiveSafetyStop
 TFT_show_safety_stop3:
-	rcall    TFT_attention_color            ; show in yellow
-    WIN_MEDIUM	safetystop_column,safetystop_row
+	call    TFT_attention_color            ; show in yellow
+    WIN_MEDIUM	dm_safetystop_column, dm_safetystop_row
 	lfsr	FSR2,buffer
 	movff	safety_stop_countdown,lo
 	clrf	hi
@@ -822,18 +883,18 @@ TFT_show_safety_stop3:
 	output_99x
 	STRCAT_PRINT ""
 	WIN_FONT 	FT_SMALL
-	rcall	TFT_standard_color
+	call	TFT_standard_color
 	return
 
     global  TFT_mask_avr_stopwatch             ; Show mask for average depth and stopwatch
 TFT_mask_avr_stopwatch:
     ; The mask
     call    TFT_divemask_color
-    WIN_TINY  dive_custom_avr_stop_column1,dive_custom_avr_stop_row
+    WIN_TINY          dm_custom_avr_stop_title_column1,dm_custom_avr_stop_title_row
     STRCPY_TEXT_PRINT tDiveTotalAvr
-    WIN_TINY  dive_custom_avr_stop_column2,dive_custom_avr_stop_row
+    WIN_TINY          dm_custom_avr_stop_title_column2,dm_custom_avr_stop_title_row
     STRCPY_TEXT_PRINT tDiveStopwatch
-    WIN_TINY  dive_custom_avr_stop_column3,dive_custom_avr_stop_row
+    WIN_TINY          dm_custom_avr_stop_title_column3,dm_custom_avr_stop_title_row
     STRCPY_TEXT_PRINT tDiveStopAvr
     call	TFT_standard_color
     return
@@ -842,24 +903,24 @@ TFT_mask_avr_stopwatch:
 TFT_dyn_gaslist:                            ; Show the dynamic gaslist
     ; The mask
     call    TFT_divemask_color
-    WIN_TINY  dive_custom_dyn_mask_column,dive_custom_dyn_mask_row
+    WIN_TINY    dm_custom_dyn_gas_mask_column,dm_custom_dyn_gas_mask_row
     STRCPY_TEXT_PRINT tGaslist
 ;    call	TFT_standard_color
 
-    WIN_SMALL dive_custom_dyn_mask_column1,dive_custom_dyn_mask_row1
+    WIN_SMALL   dm_custom_dyn_gas_column1,dm_custom_dyn_gas_row1
     movlw   .1
     movwf   uart1_temp
     bsf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
     rcall   TFT_dyn_gaslist_common
-    WIN_SMALL dive_custom_dyn_mask_column1,dive_custom_dyn_mask_row2
+    WIN_SMALL   dm_custom_dyn_gas_column1,dm_custom_dyn_gas_row2
     incf    uart1_temp,F     ; +1
     movf    uart1_temp,W     ; into W
     rcall   TFT_dyn_gaslist_common
-    WIN_SMALL dive_custom_dyn_mask_column2,dive_custom_dyn_mask_row1
+    WIN_SMALL   dm_custom_dyn_gas_column2,dm_custom_dyn_gas_row1
     incf    uart1_temp,F     ; +1
     movf    uart1_temp,W     ; into W
     rcall   TFT_dyn_gaslist_common
-    WIN_SMALL dive_custom_dyn_mask_column2,dive_custom_dyn_mask_row2
+    WIN_SMALL   dm_custom_dyn_gas_column2,dm_custom_dyn_gas_row2
     incf    uart1_temp,F     ; +1
     movf    uart1_temp,W     ; into W
     rcall   TFT_dyn_gaslist_common
@@ -891,7 +952,7 @@ TFT_update_avr_stopwatch:
     call    TFT_standard_color
     SAFE_2BYTE_COPY  average_divesecs,lo
 	call	convert_time			; lo=secs, hi=mins
-    WIN_MEDIUM  dive_avr_stop_column2,dive_avr_stop_row
+    WIN_MEDIUM  dm_custom_avr_stop_column2,dm_custom_avr_stop_row
     bsf     leftbind
 	movf	hi,W
 	movff	lo,hi
@@ -913,7 +974,7 @@ TFT_update_avr_stopwatch:
     movff   avr_rel_pressure_total+1,hi
     call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
     call	convert_mbar_to_feet       	; convert value in lo:hi from mbar to feet
-    WIN_MEDIUM  dive_avr_stop_column1,dive_avr_stop_row
+    WIN_MEDIUM  dm_custom_avr_stop_column1,dm_custom_avr_stop_row
     bsf     leftbind
     output_16                       ; yxz
     STRCAT_PRINT " "
@@ -922,7 +983,7 @@ TFT_update_avr_stopwatch:
     movff   avr_rel_pressure+1,hi
     call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
     call	convert_mbar_to_feet       	; convert value in lo:hi from mbar to feet
-    WIN_MEDIUM  dive_avr_stop_column3,dive_avr_stop_row
+    WIN_MEDIUM  dm_custom_avr_stop_column3,dm_custom_avr_stop_row
     output_16                       ; yxz
     bcf     leftbind
     STRCAT_PRINT " "
@@ -933,7 +994,7 @@ TFT_update_avr_stopwatch_metric:
     movff   avr_rel_pressure_total+0,lo
     movff   avr_rel_pressure_total+1,hi
     call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
-    WIN_MEDIUM  dive_avr_stop_column1,dive_avr_stop_row
+    WIN_MEDIUM  dm_custom_avr_stop_column1,dm_custom_avr_stop_row
     bsf     ignore_digit5         ; no cm
     output_16dp  .3               ; yxz.a
     STRCAT_PRINT " "
@@ -941,7 +1002,7 @@ TFT_update_avr_stopwatch_metric:
     movff   avr_rel_pressure+0,lo
     movff   avr_rel_pressure+1,hi
     call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
-    WIN_MEDIUM  dive_avr_stop_column3,dive_avr_stop_row
+    WIN_MEDIUM  dm_custom_avr_stop_column3,dm_custom_avr_stop_row
     bsf     ignore_digit5         ; no cm
     output_16dp  .3               ; yxz.a
     bcf     leftbind
@@ -952,7 +1013,7 @@ TFT_update_avr_stopwatch_metric:
     global  TFT_ceiling_mask                        ; The ceiling mask
 TFT_ceiling_mask:
     call    TFT_divemask_color
-    WIN_TINY  dive_ceiling_text_column,dive_ceiling_text_row
+    WIN_TINY  dm_custom_ceiling_text_column,dm_custom_ceiling_text_row
     STRCPY_TEXT_PRINT tCeiling
     call	TFT_standard_color
     return
@@ -960,7 +1021,7 @@ TFT_ceiling_mask:
     global  TFT_ceiling                             ; Ceiling
 TFT_ceiling:
     call    TFT_standard_color
-    WIN_MEDIUM  dive_ceiling_value_column,dive_ceiling_value_row
+    WIN_MEDIUM  dm_custom_ceiling_value_column,dm_custom_ceiling_value_row
     movff   int_O_ceiling+0,lo
     movff   int_O_ceiling+1,hi
     call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
@@ -985,18 +1046,18 @@ TFT_ceiling_metric:
     global  TFT_hud_mask                        ; The HUD mask
 TFT_hud_mask:
     call    TFT_divemask_color
-    WIN_TINY  dive_custom_hud_column1,dive_custom_hud_row
+    WIN_TINY          dm_custom_hud_column1,dm_custom_hud_row
     STRCPY_TEXT_PRINT tDiveHudMask1
-    WIN_TINY  dive_custom_hud_column2,dive_custom_hud_row
+    WIN_TINY          dm_custom_hud_column2,dm_custom_hud_row
     STRCPY_TEXT_PRINT tDiveHudMask2
-    WIN_TINY  dive_custom_hud_column3,dive_custom_hud_row
+    WIN_TINY          dm_custom_hud_column3,dm_custom_hud_row
     STRCPY_TEXT_PRINT tDiveHudMask3
     call	TFT_standard_color
     return
 
     global  TFT_hud_voltages
 TFT_hud_voltages:                    ; Show HUD details
-    WIN_SMALL .5,dive_hud_data_row
+    WIN_SMALL dm_custom_hud_sensor1_column,dm_custom_hud_data_row
     call	TFT_standard_color
     btfss   use_O2_sensor1
     call    TFT_warnings_color
@@ -1006,7 +1067,7 @@ TFT_hud_voltages:                    ; Show HUD details
     output_16dp  .4         ; x.xx
     bcf     leftbind
     STRCAT_PRINT "mV  "
-    WIN_SMALL .55,dive_hud_data_row
+    WIN_SMALL dm_custom_hud_sensor2_column,dm_custom_hud_data_row
     call	TFT_standard_color
     btfss   use_O2_sensor2
     call    TFT_warnings_color
@@ -1016,7 +1077,7 @@ TFT_hud_voltages:                    ; Show HUD details
     output_16dp  .4         ; x.xx
     bcf     leftbind
     STRCAT_PRINT "mV  "
-    WIN_SMALL .105,dive_hud_data_row
+    WIN_SMALL dm_custom_hud_sensor3_column,dm_custom_hud_data_row
     call	TFT_standard_color
     btfss   use_O2_sensor3
     call    TFT_warnings_color
@@ -1038,13 +1099,13 @@ TFT_update_ppo2_sensors:
     btfss   dive_hud1_displayed         ; Was the sensor shown?
     bra     TFT_update_hud2             ; Yes, skip clear
     bcf     dive_hud1_displayed         ; No, clear display flag
-    WIN_BOX_BLACK   dive_hud_data_row, dive_hud_data_row+.31, dive_hud_sensor1_column, dive_hud_sensor2_column	; top, bottom, left, right
-	WIN_STD dive_hud_sensor1_column+.7,dive_hud_data_row+.5
+    WIN_BOX_BLACK   dm_custom_hud_data_row, dm_customview_bot, dm_custom_hud_sensor1_column, dm_custom_hud_sensor2_column	; top, bottom, left, right
+	WIN_STD         dm_custom_hud_sensor1_column+.7, dm_custom_hud_data_row+.5
    	call	TFT_standard_color
     STRCPY_PRINT "---"
     bra     TFT_update_hud2 ; Skip Sensor 1
 TFT_update_hud1:
-    WIN_MEDIUM dive_hud_sensor1_column,dive_hud_data_row
+    WIN_MEDIUM dm_custom_hud_sensor1_column,dm_custom_hud_data_row
     movff   o2_ppo2_sensor1,lo
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
     btfss   voting_logic_sensor1        ; Sensor within voting logic?
@@ -1062,13 +1123,13 @@ TFT_update_hud2:
     btfss   dive_hud2_displayed         ; Was the sensor shown?
     bra     TFT_update_hud4             ; Yes, skip clear
     bcf     dive_hud2_displayed         ; No, clear display flag
-    WIN_BOX_BLACK   dive_hud_data_row, dive_hud_data_row+.31, dive_hud_sensor2_column, dive_hud_sensor3_column	; top, bottom, left, right
-    WIN_STD dive_hud_sensor2_column+.7,dive_hud_data_row+.5
+    WIN_BOX_BLACK   dm_custom_hud_data_row, dm_customview_bot, dm_custom_hud_sensor2_column, dm_custom_hud_sensor3_column	; top, bottom, left, right
+    WIN_STD         dm_custom_hud_sensor2_column+.7, dm_custom_hud_data_row+.5
    	call	TFT_standard_color
     STRCPY_PRINT "---"
     bra     TFT_update_hud4 ; Skip Sensor 2
 TFT_update_hud3:
-    WIN_MEDIUM dive_hud_sensor2_column,dive_hud_data_row
+    WIN_MEDIUM dm_custom_hud_sensor2_column,dm_custom_hud_data_row
     movff   o2_ppo2_sensor2,lo
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
     btfss   voting_logic_sensor2        ; Sensor within voting logic?
@@ -1086,13 +1147,13 @@ TFT_update_hud4:
     btfss   dive_hud3_displayed         ; Was the sensor shown?
     bra     TFT_update_hud6             ; Yes, skip clear
     bcf     dive_hud3_displayed         ; No, clear display flag
-    WIN_BOX_BLACK   dive_hud_data_row, dive_hud_data_row+.31, dive_hud_sensor3_column, .159 ; top, bottom, left, right
-    WIN_STD dive_hud_sensor3_column+.7,dive_hud_data_row+.5
+    WIN_BOX_BLACK   dm_custom_hud_data_row, dm_customview_bot, dm_custom_hud_sensor3_column, .159 ; top, bottom, left, right
+    WIN_STD         dm_custom_hud_sensor3_column+.7, dm_custom_hud_data_row+.5
    	call	TFT_standard_color
     STRCPY_PRINT "---"
     bra     TFT_update_hud6 ; Skip Sensor 3
 TFT_update_hud5:
-    WIN_MEDIUM dive_hud_sensor3_column,dive_hud_data_row
+    WIN_MEDIUM dm_custom_hud_sensor3_column,dm_custom_hud_data_row
     movff   o2_ppo2_sensor3,lo
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
     btfss   voting_logic_sensor3        ; Sensor within voting logic?
@@ -1392,7 +1453,7 @@ TFT_divetimeout:
 	PUTC    ':'
 	movff	hi,lo
 	output_99x
-    movlw   warning_length             ; Divemode string length
+    movlw   dm_warning_length             ; Divemode string length
     call    TFT_fillup_with_spaces     ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""
 	return
@@ -1403,10 +1464,17 @@ TFT_ftts:
     tstfsz  lo
     bra     $+4
     return                              ; char_I_extra_time=0, return.
-	incf	warning_counter,F			; increase counter
-	call	TFT_warning_set_window		; Sets the row and column for the current warning
-    tstfsz  WREG                        ; Is there room for the warning?
-    return                              ; No
+
+    if dm_offset !=0
+        incf    warning_counter,F			; increase counter
+        call    TFT_warning_set_window		; Sets the row and column for the current warning
+        tstfsz  WREG                        ; Is there room for the warning?
+        return                              ; No
+    else
+        call    TFT_standard_color
+        WIN_SMALL dm_ftts_value_column, dm_ftts_value_row
+    endif
+
     movff   char_I_extra_time,lo
     STRCPY  "@+"
     bsf     leftbind
@@ -1424,7 +1492,7 @@ TFT_ftts:
 	output_16
 	bcf         leftbind
     PUTC    "'"
-    movlw   warning_length             ; Divemode string length
+    movlw   dm_warning_length             ; Divemode string length
     call    TFT_fillup_with_spaces     ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""
 	return
@@ -1432,7 +1500,7 @@ TFT_ftts:
 TFT_ftts2:
     STRCAT  "---"
 	bcf     leftbind
-    movlw   warning_length             ; Divemode string length
+    movlw   dm_warning_length             ; Divemode string length
     call    TFT_fillup_with_spaces     ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT ""
     return
@@ -1497,27 +1565,27 @@ TFT_temp_surfmode3:
 ;=============================================================================
     global  TFT_divemode_menu_cursor
 TFT_divemode_menu_cursor:
-    WIN_BOX_BLACK   divemode_menu_item1_row,divemode_menu_item3_row+.24,divemode_menu_item1_column-.8,divemode_menu_item1_column-.1
-    WIN_BOX_BLACK   divemode_menu_item4_row,divemode_menu_item6_row+.24,divemode_menu_item4_column-.8,divemode_menu_item4_column-.1
+    WIN_BOX_BLACK   dm_menu_row+.1, dm_menu_lower-.1, dm_menu_item1_column-.8, dm_menu_item1_column-.1
+    WIN_BOX_BLACK   dm_menu_row+.1, dm_menu_lower-.1, dm_menu_item4_column-.8, dm_menu_item4_column-.1
     call	TFT_standard_color
 
-    movlw   divemode_menu_item1_column-.8
+    movlw   dm_menu_item1_column-.8
     btfsc   menupos,2       ; >3?
-    movlw   divemode_menu_item4_column-.8  ; Yes
+    movlw   dm_menu_item4_column-.8  ; Yes
     movff   WREG,win_leftx2
     
     movff   menupos,lo                      ; Copy menu pos
-    movlw   divemode_menu_item6_row
+    movlw   dm_menu_item6_row
     dcfsnz  lo,F
-    movlw   divemode_menu_item1_row
+    movlw   dm_menu_item1_row
     dcfsnz  lo,F
-    movlw   divemode_menu_item2_row
+    movlw   dm_menu_item2_row
     dcfsnz  lo,F
-    movlw   divemode_menu_item3_row
+    movlw   dm_menu_item3_row
     dcfsnz  lo,F
-    movlw   divemode_menu_item4_row
+    movlw   dm_menu_item4_row
     dcfsnz  lo,F
-    movlw   divemode_menu_item5_row
+    movlw   dm_menu_item5_row
     movff   WREG,win_top
     movlw   FT_SMALL
     movff   WREG,win_font
@@ -1531,7 +1599,7 @@ TFT_temp_divemode:
 	btfsc	blinking_better_gas         ; blinking better Gas?
 	return                              ; Yes, no update of temperature now
 ; temperature
-	WIN_SMALL	dive_temp_column,dive_temp_row
+	WIN_SMALL	dm_temp_column,dm_temp_row
 	call	TFT_standard_color
     bsf     leftbind
 
@@ -1577,7 +1645,7 @@ TFT_active_setpoint2:
     return
 
 TFT_active_setpoint:         ; Show setpoint
-	WIN_STD  active_gas_column,active_gas_row
+	WIN_STD  dm_active_gas_column, dm_active_gas_row
 	call	TFT_standard_color
     btfsc   is_bailout                  ; =1: Bailout
     bra     TFT_active_setpoint_bail    ; Show "Bailout" instead of Setpoint
@@ -1593,7 +1661,7 @@ TFT_active_setpoint:         ; Show setpoint
 	movlw	color_yellow                ; Blink in yellow
     call	TFT_set_color
     bsf     win_invert              ; Set invert flag
-    WIN_STD active_gas_column,active_gas_row
+    WIN_STD dm_active_gas_column, dm_active_gas_row
 	movff	char_I_const_ppO2,lo
 	clrf	hi
 	bsf		leftbind
@@ -1608,7 +1676,11 @@ TFT_active_setpoint:         ; Show setpoint
 
 TFT_active_setpoint_diluent:
     call	TFT_standard_color
-	WIN_SMALL  active_dil_column,active_dil_row
+    if dm_offset != 0
+    	WIN_SMALL  dm_active_dil_column, dm_active_dil_row
+    else
+    	WIN_STD    dm_active_dil_column, dm_active_dil_row
+    endif
     movff   char_I_O2_ratio,lo          ; lo now stores O2 in %
     movff   char_I_He_ratio,hi          ; hi now stores He in %
     rcall   TFT_show_dil_divemode2      ; Show diluent  (Non-Inverted in all cases)
@@ -1622,7 +1694,11 @@ TFT_active_setpoint_diluent:
 	movlw	color_yellow                ; Blink in yellow
     call	TFT_set_color
     bsf     win_invert              ; Set invert flag
-    WIN_SMALL   active_dil_column,active_dil_row
+    if dm_offset != 0
+        WIN_SMALL   dm_active_dil_column, dm_active_dil_row
+    else
+        WIN_STD     dm_active_dil_column, dm_active_dil_row
+    endif
     movff   char_I_O2_ratio,lo          ; lo now stores O2 in %
     movff   char_I_He_ratio,hi          ; hi now stores He in %
 	rcall	TFT_show_dil_divemode2      ; Show gas
@@ -1649,7 +1725,7 @@ TFT_active_gas_divemode:				; Display gas/Setpoint
     bra     TFT_active_setpoint         ; Yes, show setpoint
 
     call    TFT_standard_color
-	WIN_STD active_gas_column,active_gas_row
+	WIN_STD dm_active_gas_column, dm_active_gas_row
     movff   char_I_O2_ratio,lo          ; lo now stores O2 in %
     movff   char_I_He_ratio,hi          ; hi now stores He in %
 	rcall	TFT_active_gas_divemode2    ; Show gas (Non-Inverted in all cases)
@@ -1661,7 +1737,7 @@ TFT_active_gas_divemode:				; Display gas/Setpoint
 	return                              ; No, Done.
     call    TFT_attention_color         ; blink in yellow
     bsf     win_invert                  ; Set invert flag
-    WIN_STD active_gas_column,active_gas_row
+    WIN_STD dm_active_gas_column, dm_active_gas_row
     movff   char_I_O2_ratio,lo          ; lo now stores O2 in %
     movff   char_I_He_ratio,hi          ; hi now stores He in %
 	rcall	TFT_active_gas_divemode2    ; Show gas (Non-Inverted in all cases)
@@ -1810,17 +1886,20 @@ TFT_dillist_surfmode:				; Displays Diluent List
     bcf     ccr_diluent_setup       ; Clear flag
     return
 
+;==================================================================
+
 	global	TFT_depth
 TFT_depth:
     SAFE_2BYTE_COPY rel_pressure, lo
-	call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
+    call    adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
+
+    TFT_color_code  warn_depth			; Color-code the output
+    call TFT_depth_blink
+    WIN_LARGE   dm_depth_column, dm_depth_row
 
     TSTOSS  opt_units   			; 0=m, 1=ft
-	bra		TFT_depth_metric
+    bra     TFT_depth_metric
 ;TFT_depth_imperial
-	WIN_LARGE	depth_feet_column,depth_feet_row
-	TFT_color_code	warn_depth			; Color-code the output
-
     clrf    sub_a+1                     ; Display 0ft if lower then 30cm
 	movlw	d'30'
 	movwf	sub_a+0
@@ -1837,16 +1916,15 @@ TFT_depth:
     movlw   .3                      ; limit to three chars
     call    TFT_fillup_with_spaces  ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""					; Display feet
+    bcf     win_invert                  ; Reset invert flag
     return
 
 depth_less_0.3mtr_feet:
 	STRCAT_PRINT "0  "				; manual zero
+    bcf     win_invert                  ; Reset invert flag
 	return
 
 TFT_depth_metric:
-	WIN_LARGE	depth_column,depth_row
-	TFT_color_code	warn_depth			; Color-code the output
-
 	movlw	.039
 	cpfslt	hi
     bra		depth_greater_99_84mtr
@@ -1895,7 +1973,7 @@ tft_depth3:
 	STRCAT_PRINT ""					; Display full meters
 
 	; .1m in MEDIUM font
-	WIN_MEDIUM	depth_dm_column,depth_dm_row
+	WIN_MEDIUM	dm_depth_dm_column, dm_depth_dm_row
 	TFT_color_code	warn_depth			; Color-code the output
 
     SAFE_2BYTE_COPY rel_pressure, lo
@@ -1917,17 +1995,20 @@ tft_depth3:
 	bsf		ignore_digit5
 	output_16dp	d'0'
 	STRCAT_PRINT ""					; Display decimeters
+    bcf     win_invert                  ; Reset invert flag
 	WIN_FONT 	FT_SMALL
 	return
 
 depth_less_0.3mtr:
 	STRCAT_PRINT "0"				; Display 0.0m manually
+    bcf     win_invert                  ; Reset invert flag
 	WIN_FONT 	FT_SMALL
 	return
 
 depth_greater_99_84mtr:			; Display only in full meters
 	btfss	depth_greater_100m		; Is depth>100m already?
 	rcall	TFT_clear_depth			; No, clear depth area and set flag
+    TFT_color_code	warn_depth
 	; Depth is already in hi:lo
 	; Show depth in Full meters
 	; That means ignore figure 4 and 5
@@ -1937,13 +2018,79 @@ depth_greater_99_84mtr:			; Display only in full meters
 	output_16
 	bcf		leftbind
     STRCAT_PRINT ""					; Display full meters only
+    bcf     win_invert                  ; Reset invert flag
 	WIN_FONT 	FT_SMALL
 	return
 
 TFT_clear_depth:            			; No, clear depth area and set flag
-    WIN_BOX_BLACK   depth_row, .77,.0, max_depth_column-.1    ;top, bottom, left, right
+    WIN_BOX_BLACK   dm_depth_row, dm_depth_bot, dm_depth_column, dm_depth_rgt    ;top, bottom, left, right
 	bsf		depth_greater_100m			; Set Flag
 	return
+
+TFT_depth_blink:
+    ; check if previous cycle had the blinking warning or not
+    btfsc   blinking_depth_prev         ; did we have warning prev?
+    bra     TFT_depth_blink_prevwarn    ; Yes
+
+    ; No; check if it's set now
+    btfsc   blinking_depth_warning      ; do we have warning set now?
+    bra     TFT_depth_blink_warn        ; Yes  - so we have warning now but not prev
+
+    ; no warning in previous cycle, no warning now, reset all flags
+    bcf     blinking_depth_prev         ; reset prev flag
+    bcf     blinking_depth_toggle       ; reset toggle
+    bcf     win_invert
+    ; all done
+    return
+
+TFT_depth_blink_prevwarn:
+    ; ...we had warning in previous cycle, check if we still have the warning set
+    btfss   blinking_depth_warning              ; do we still have the warning?
+    bra     TFT_depth_blink_prevwarn_nowarn     ; No, clear the depth area
+
+    ; we still have the warning, set previous flag for next cycle...
+    bsf     blinking_depth_prev                 ; set prev flag
+    ; and set toggle and invert if required
+    btfss   blinking_depth_toggle               ; do we have the toggle set?
+    bra    TFT_depth_blink_set                  ; No:  set inverse,   do color_box, set flag
+    bra    TFT_depth_blink_reset                ; Yes: clear inverse, do black box, reset flag
+
+TFT_depth_blink_prevwarn_nowarn:
+    ; we had warning, but not now... (e.g. ascended or switched to better gas)
+    ; reset the previous cycle flag for the next cycle...
+    bcf     blinking_depth_prev         ; reset prev flag
+    ; clear it - just in case if we had a blinked before
+    bra    TFT_depth_blink_reset                ; Yes: clear inverse, do black box, reset flag
+
+TFT_depth_blink_warn:
+    ; new blinking warning activated (had no warning in previous cycle)
+    bsf     blinking_depth_prev                 ; set prev flag
+    ; set toggle and invert
+    bra    TFT_depth_blink_set
+
+TFT_depth_blink_set:
+    ; clear the area with color
+    movlw   color_red  ; that should not be hardcoded...
+    WIN_BOX_COLOR    dm_depth_row, dm_depth_bot, dm_depth_column, dm_depth_rgt    ;top, bottom, left, right
+    ;set the invert color
+    bsf     win_invert
+    ; set the toggle
+    bsf     blinking_depth_toggle
+    ; all done
+    return
+
+TFT_depth_blink_reset:
+    ; clear the area with black
+    WIN_BOX_BLACK    dm_depth_row, dm_depth_bot, dm_depth_column, dm_depth_rgt    ;top, bottom, left, right
+    ;reset the invert color
+    bcf     win_invert
+    ; reset the toggle
+    bcf     blinking_depth_toggle
+    ; if it's still warning...
+    btfsc   blinking_depth_warning
+    call    TFT_warnings_color
+    ; all done
+    return
 
 ;=============================================================================
 
@@ -2228,14 +2375,14 @@ TFT_max_pressure3:
 	bra		TFT_max_pressure2_metric
 ;TFT_max_pressure2_imperial
 	call	convert_mbar_to_feet              	; convert value in lo:hi from mbar to feet
-	WIN_MEDIUM	max_depth_feet_column,max_depth_feet_row
+	WIN_MEDIUM	dm_max_depth_column, dm_max_depth_row
 	call	TFT_standard_color
 	output_16_3
 	STRCAT_PRINT ""
 	return
 
 TFT_max_pressure2_metric:
-    WIN_MEDIUM	max_depth_column,max_depth_row
+    WIN_MEDIUM	dm_max_depth_column, dm_max_depth_row
 
 	movlw	.039
 	cpfslt	hi
@@ -2278,7 +2425,7 @@ TFT_max_pressure2_metric:
 	bra		tft_max_depth3
 
 tft_max_depth2:
-	WIN_MEDIUM	max_depth_column,max_depth_row
+	WIN_MEDIUM	dm_max_depth_column, dm_max_depth_row
 	STRCAT	"0"
 
 tft_max_depth3:
@@ -2287,7 +2434,7 @@ tft_max_depth3:
     bcf     leftbind
 
 	; .1m in SMALL font
-	WIN_SMALL	max_depth_dm_column,max_depth_dm_row
+	WIN_SMALL	dm_max_depth_dm_column, dm_max_depth_dm_row
 
     SAFE_2BYTE_COPY max_pressure, lo
 	call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
@@ -2319,7 +2466,7 @@ max_depth_greater_99_84mtr:             ; Display only in full meters
 	return
 
 TFT_clear_max_depth:            			; No, clear max. depth area and set flag
-    WIN_BOX_BLACK   max_depth_row,.49,max_depth_column, max_depth_dm_column+.13    ;top, bottom, left, right
+    WIN_BOX_BLACK   dm_max_depth_row, dm_max_depth_bot, dm_max_depth_column, dm_max_depth_rgt    ;top, bottom, left, right
 	bsf		max_depth_greater_100m			; Set Flag
 	return
 
@@ -2333,7 +2480,7 @@ TFT_max_pressure_apnoe:
 	global	TFT_display_apnoe_last_max
 TFT_display_apnoe_last_max:
     call    TFT_divemask_color
-    WIN_TINY    last_max_apnoe_text_column,last_max_apnoe_text_row
+    WIN_TINY    dm_apnoe_last_max_depth_text_col, dm_apnoe_last_max_depth_text_row
     STRCPY_TEXT_PRINT   tApnoeMax
 
 	call	TFT_standard_color
@@ -2343,13 +2490,13 @@ TFT_display_apnoe_last_max:
 	bra		TFT_display_apnoe_last_m_metric
 ;TFT_display_apnoe_last_max_imperial
 	call	convert_mbar_to_feet              	; convert value in lo:hi from mbar to feet
-	WIN_MEDIUM	apnoe_last_max_depth_column,apnoe_last_max_depth_row
+	WIN_MEDIUM	dm_apnoe_last_max_depth_column, dm_apnoe_last_max_depth_row
 	output_16
 	STRCAT_PRINT ""
 	return
 
 TFT_display_apnoe_last_m_metric:
-	WIN_MEDIUM	apnoe_last_max_depth_column,apnoe_last_max_depth_row
+	WIN_MEDIUM	dm_apnoe_last_max_depth_column, dm_apnoe_last_max_depth_row
 	bsf		ignore_digit5		; do not display 1cm depth
 	output_16dp	d'3'
 	STRCAT_PRINT ""
@@ -2360,27 +2507,56 @@ TFT_display_apnoe_last_m_metric:
 TFT_divemins:
 	movff	divemins+0,lo
 	movff	divemins+1,hi
-    bcf		leftbind
 
+    ; Already showing divemins > 99min
 	btfsc	no_more_divesecs		; Ignore seconds?
 	bra     TFT_divemins2           ; Show minutes only
 
+    ; check if divemins has hi, definitely > 99min
+    movlw   .1
+    cpfslt  hi                      ; HI less than 1?
+    bra     TFT_divemins_clr        ; No, show mins only
+
+    ; check if divemins (when HI is zero) > 99min
 	movlw	.99
-	cpfsgt	lo                      ; bigger then 99?
+	cpfsgt	lo                      ; bigger than 99?
 	bra		TFT_divemins1           ; No show mins:secs
+
+TFT_divemins_clr:
 	; Yes, remove second display for the rest of the dive and clear seconds
 	bsf		no_more_divesecs        ; Set flag
 	; Clear rest of seconds
-	WIN_BOX_BLACK   divetime_row, warning1_row,divetime_column,.159 ;top, bottom, left, right
+	WIN_BOX_BLACK   dm_divetime_row, dm_divetime_bot, dm_divetime_column, dm_divetime_rgt ;top, bottom, left, right
     bra     TFT_divemins2           ; Show minutes only
 
 TFT_divemins1:
-	WIN_MEDIUM	divetime_column, divetime_row
-	output_16_3                     ; displays only last three figures from a 16Bit value (0-999)
+    ; Print out the minutes, up to 99min, only 2chars !
 	call	TFT_standard_color
+	WIN_MEDIUM	dm_divetime_column, dm_divetime_row
+
+    movlw	.9
+	cpfsgt	lo                      ; bigger then 9?
+    bra     TFT_divemins1_pad       ; No, need padding
+    ; Yes, just print out the value
+	bsf		leftbind
+	movff	divemins+0,lo
+	output_99x                     ; displays only last two figures from a 8Bit value (00-99)
+	bcf     leftbind
+	STRCAT_PRINT ""                 ; Show minutes in large font
+    bra     TFT_divemins1_sec
+
+TFT_divemins1_pad:
+	bcf     leftbind
+	PUTC    " "                     ; Add a padding space
+	bsf		leftbind
+	movff	divemins+0,lo
+	output_99                     ; displays only last two figures from a 8Bit value (0-99)
+	bcf     leftbind
 	STRCAT_PRINT ""                 ; Show minutes in large font
 
-	WIN_SMALL  divetime_secs_column, divetime_secs_row   		; left position for two sec figures
+TFT_divemins1_sec:
+    ; Print out the seconds
+	WIN_SMALL  dm_divetime_secs_column, dm_divetime_secs_row   		; left position for two sec figures
 	PUTC    ':'
 	bsf		leftbind
 	movff   divesecs,lo
@@ -2390,21 +2566,45 @@ TFT_divemins1:
 	return
 
 TFT_divemins2:
-	WIN_MEDIUM	divetime_minsonly_column, divetime_row
-	output_16
 	call	TFT_standard_color
+	WIN_MEDIUM	dm_divetime_minsonly_column, dm_divetime_row
+    bcf		leftbind
+
+    ; if we are at or over the limit, do a WARNIGN color
+    ; 9999 = 27 0F = [39][15]
+    movlw   .38
+    cpfsgt  hi                  ; hi > 38 ?
+    bra     TFT_divemins2_out   ; No, hi <= 38, no need to warn
+
+    movlw   .40
+    cpfslt  hi                  ; hi < 40 ?
+    bra     TFT_divemins2_warn  ; No, hi >= 40, need to warn
+    
+    ; hi = 39, check lo. check 14 as 9999 should be already WARN!
+    movlw   .14
+    cpfsgt  lo
+    bra     TFT_divemins2_out   ; No, lo <= 14, no need to warn
+    ; Yes, lo > 14, need to warn
+
+TFT_divemins2_warn:
+    call    TFT_warnings_color
+    bsf     win_invert
+
+TFT_divemins2_out:
+	output_16_4
 	STRCAT_PRINT ""                 ; Show minutes in large font
+    bcf     win_invert
     return
 
 ;=============================================================================
 	global	TFT_display_apnoe_surface
 TFT_display_apnoe_surface:
     call    TFT_divemask_color
-    WIN_TINY    surface_apnoe_text_column,surface_apnoe_text_row
+    WIN_TINY    dm_apnoe_surface_time_text_col,  dm_apnoe_surface_time_text_row
     STRCPY_TEXT_PRINT   tApnoeSurface
 
 	call	TFT_standard_color
-	WIN_MEDIUM	surface_time_apnoe_column, surface_time_apnoe_row
+	WIN_MEDIUM	dm_apnoe_surface_time_column, dm_apnoe_surface_time_row
 	movff	apnoe_surface_mins,lo
 	output_8
     PUTC    ':'
@@ -2416,18 +2616,18 @@ TFT_display_apnoe_surface:
 	global	TFT_apnoe_clear_surface
 TFT_apnoe_clear_surface:
 	; Clear Surface timer....
-	WIN_BOX_BLACK   surface_apnoe_text_row, .239, surface_apnoe_text_column, .159                 ;top, bottom, left, right
+	WIN_BOX_BLACK   dm_apnoe_surface_time_text_row, .239, dm_apnoe_surface_time_text_col, .159                 ;top, bottom, left, right
 	return
 
 	global	TFT_display_apnoe_descent
 TFT_display_apnoe_descent:		; Descent divetime
 	movff	apnoe_mins,lo
     clrf    hi
-	WIN_MEDIUM	divetime_column, divetime_row
+	WIN_MEDIUM	dm_divetime_apnoe_column, dm_divetime_apnoe_row
 	output_16_3                     ; displays only last three figures from a 16Bit value (0-999)
 	call	TFT_standard_color
 	STRCAT_PRINT ""                 ; Show minutes in large font
-	WIN_SMALL  divetime_secs_column, divetime_secs_row   		; left position for two sec figures
+	WIN_SMALL   dm_divetime_apnoe_secs_column, dm_divetime_apnoe_secs_row   		; left position for two sec figures
 	PUTC    ':'
 	bsf		leftbind
 	movff	apnoe_secs,lo
@@ -2436,16 +2636,16 @@ TFT_display_apnoe_descent:		; Descent divetime
 	STRCAT_PRINT ""                 ; Show seconds in small font
 
     call    TFT_divemask_color
-    WIN_TINY    total_apnoe_text_column,total_apnoe_text_row
+    WIN_TINY    dm_total_apnoe_text_column,dm_total_apnoe_text_row
     STRCPY_TEXT_PRINT   tApnoeTotal
 	call	TFT_standard_color
 	movff	divemins,lo
     clrf    hi
-	WIN_MEDIUM	apnoe_total_divetime_column, apnoe_total_divetime_row
+	WIN_MEDIUM	dm_apnoe_total_divetime_column, dm_apnoe_total_divetime_row
 	output_16_3                     ; displays only last three figures from a 16Bit value (0-999)
 	call	TFT_standard_color
 	STRCAT_PRINT ""                 ; Show minutes in large font
-	WIN_SMALL  apnoe_total_divetime_secs_column, apnoe_total_divetime_secs_row   		; left position for two sec figures
+	WIN_SMALL   dm_apnoe_total_divetime_secs_col, dm_apnoe_total_divetime_secs_row	; left position for two sec figures
 	PUTC    ':'
 	bsf		leftbind
 	movff	divesecs,lo
@@ -2648,7 +2848,7 @@ divesets_ppo2_min:
 TFT_clear_warning_text:
     btfss   divemode                            ; in divemode?
     bra     TFT_clear_warning_text2             ; No, setup for surface mode
-    WIN_BOX_BLACK   warning1_row, divemode_customview_row-3, warning1_column, warning_icon_column-3	;top, bottom, left, right
+    WIN_BOX_BLACK   dm_warning_row,    dm_warning_bot,        dm_warning_column,    dm_warning_rgt	;top, bottom, left, right
     return
 TFT_clear_warning_text2:
     WIN_BOX_BLACK   surf_warning1_row, surf_warning2_row+.24, surf_warning1_column, surf_warning1_column+.76     ;top, bottom, left, right
@@ -2658,7 +2858,7 @@ TFT_clear_warning_text2:
 TFT_clear_warning_text_2nd_row:
     btfss   divemode                            ; in divemode?
     bra     TFT_clear_warning_text_2nd_2        ; No, setup for surface mode
-    WIN_BOX_BLACK   warning2_row, divemode_customview_row-3, warning2_column, warning_icon_column-3	;top, bottom, left, right
+    WIN_BOX_BLACK  dm_warning2_row,    dm_warning2_bot,       dm_warning2_column,   dm_warning2_rgt	;top, bottom, left, right
     return
 TFT_clear_warning_text_2nd_2:
     WIN_BOX_BLACK   surf_warning2_row, surf_warning2_row+.24, surf_warning2_column, surf_warning2_column+.76     ;top, bottom, left, right
@@ -2737,7 +2937,7 @@ TFT_warning_agf:
     return                              ; No
     call	TFT_warnings_color
 	STRCPY_TEXT tDiveaGF_active         ; "aGF!"
-    movlw   warning_length              ; Divemode string length
+    movlw   dm_warning_length              ; Divemode string length
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT ""
 	call	TFT_standard_color
@@ -2750,7 +2950,7 @@ TFT_warning_fallback:                ; Show fallback warning
     return                              ; No
     call	TFT_warnings_color
 	STRCPY_TEXT tDiveFallback           ; "Fallback!"
-    movlw   warning_length              ; Divemode string length
+    movlw   dm_warning_length              ; Divemode string length
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT ""
 	call	TFT_standard_color
@@ -2767,7 +2967,7 @@ TFT_warning_gf:                         ;GF
     bsf     leftbind
 	output_8
     PUTC    "%"
-    movlw   warning_length              ; Divemode string length
+    movlw   dm_warning_length              ; Divemode string length
     btfss   divemode                    ; In Divemode?
     movlw   surf_warning_length         ; No, use surface string length
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
@@ -2791,11 +2991,11 @@ TFT_warning_set_window:                 ; Sets the row and column for the curren
 
     btfss   warning_counter,0           ; Toggle with each warning
 	bra		TFT_warning_set_window2
-	WIN_SMALL	warning1_column,warning1_row
+	WIN_SMALL	dm_warning1_column, dm_warning1_row
     bcf     second_row_warning          ; =1: The second row contains a warning
 	retlw   .0                          ; WREG=0 -> Warning window defined
 TFT_warning_set_window2:
-	WIN_SMALL	warning2_column,warning2_row
+	WIN_SMALL	dm_warning2_column, dm_warning2_row
     bsf     second_row_warning          ; =1: The second row contains a warning
 	retlw   .0                          ; WREG=0 -> Warning window defined
 
@@ -2823,7 +3023,7 @@ TFT_update_batt_percent_divemode:
 	output_8
 	bcf		leftbind
     PUTC    "%"
-    movlw   warning_length              ; Divemode string length
+    movlw   dm_warning_length              ; Divemode string length
     btfss   divemode                    ; In Divemode?
     movlw   surf_warning_length         ; No, use surface string length
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
@@ -2836,11 +3036,11 @@ TFT_update_batt_percent_divemode:
 TFT_gf_mask:
     ; The mask
     call    TFT_divemask_color
-    WIN_TINY  dive_gf_column1,dive_gf_text_row
+    WIN_TINY          dm_custom_gf_title_col1, dm_custom_gf_title_row
     STRCPY_TEXT_PRINT tGFactors
-    WIN_TINY  dive_gf_column2,dive_gf_text_row
+    WIN_TINY          dm_custom_gf_title_col2, dm_custom_gf_title_row
     STRCPY_TEXT_PRINT taGFactors
-    WIN_TINY  dive_gf_column3,dive_gf_text_row
+    WIN_TINY          dm_custom_gf_title_col3, dm_custom_gf_title_row
     STRCPY_TEXT_PRINT tGFInfo
 
     ; Show GF (Static)
@@ -2848,7 +3048,7 @@ TFT_gf_mask:
     btfss   use_agf
     call	TFT_standard_color
 
-    WIN_STD   dive_gf_column,dive_gf_row
+    WIN_STD   dm_custom_gf_column, dm_custom_gf_row
     bsf     leftbind
     movff   opt_GF_low,lo
     output_8
@@ -2864,7 +3064,7 @@ TFT_gf_mask:
     btfss   use_agf
     call    TFT_disabled_color
 
-    WIN_STD   dive_agf_column,dive_agf_row
+    WIN_STD   dm_custom_agf_column, dm_custom_agf_row
     movff   opt_aGF_low,lo
     output_8
     PUTC    "/"
@@ -2876,7 +3076,7 @@ TFT_gf_mask:
     return
 
 TFT_gf_mask2:
-    WIN_STD   dive_agf_column+.10,dive_agf_row
+    WIN_STD   dm_custom_agf_column+.10, dm_custom_agf_row
     STRCPY_PRINT   "---"
     bcf     leftbind
     return
@@ -2888,7 +3088,7 @@ TFT_gf_info:
 	movff	char_I_deco_model,hi
 	decfsz	hi,F		; jump over next line if char_I_deco_model == 1
 	movff	char_O_relative_gradient_GF,lo		; gradient factor relative (GF model)
-    WIN_STD   dive_currentgf_column,dive_currentgf_row
+    WIN_STD   dm_custom_currentgf_column, dm_custom_currentgf_row
     output_8
     STRCAT_PRINT   "%"
     return
@@ -2902,12 +3102,12 @@ TFT_ead_end_tissues_clock_mask:
 	btfsc	FLAG_gauge_mode					; In Gauge mode?
 	bra		TFT_ead_end_tissues_clock_mask2 ; Yes
     ; Put three columns at HUD positions
-    WIN_TINY  dive_custom_hud_column2,dive_custom_hud_row
+    WIN_TINY          dm_custom_ead_column,     dm_custom_eadend_title_row
     STRCPY_TEXT_PRINT tDiveEAD_END
-    WIN_TINY  dive_custom_hud_column3,dive_custom_hud_row
+    WIN_TINY          dm_custom_tissue_title_column,  dm_custom_tissue_title_row
     STRCPY_TEXT_PRINT tDiveTissues
 TFT_ead_end_tissues_clock_mask2:            ; Show only clock
-    WIN_TINY  dive_custom_hud_column1,dive_custom_hud_row
+    WIN_TINY    dm_custom_clock_column,  dm_custom_clock_title_row
     STRCPY_TEXT_PRINT tDiveClock
     call	TFT_standard_color
     return
@@ -2915,7 +3115,7 @@ TFT_ead_end_tissues_clock_mask2:            ; Show only clock
     global  TFT_ead_end_tissues_clock           ; Show EAD/END, Tissues and clock
 TFT_ead_end_tissues_clock:
     ; Update clock and date
-    WIN_SMALL   dive_clock_column,dive_clock_row
+    WIN_SMALL   dm_custom_clock_column, dm_custom_clock_row
     call    TFT_clock2                          ; print clock
 
 	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
@@ -2960,20 +3160,20 @@ TFT_ead_end_tissues_clock:
 ;TFT_ead_end_tissues_clock3:
 
     ; Show END/EAD
-    WIN_SMALL   dive_ead_column,dive_ead_row
+    WIN_SMALL   dm_custom_ead_column, dm_custom_ead_row
     STRCPY_TEXT tEAD                            ; EAD:
     movff   char_O_EAD,lo
     rcall   TFT_end_ead_common                  ; print "lo m" (or ft) and limit to 8 chars
-    WIN_SMALL   dive_end_column,dive_end_row
+    WIN_SMALL   dm_custom_end_column, dm_custom_end_row
     STRCPY_TEXT tEND                            ; END:
     movff   char_O_END,lo
     rcall   TFT_end_ead_common                  ; print "lo m" (or ft) and limit to 8 chars
 
     ; Show tissue diagram
     call    TFT_divemask_color
-    WIN_TINY    dive_tissue_N2_column,dive_tissue_N2_row
+    WIN_TINY    dm_custom_tissue_N2_column, dm_custom_tissue_N2_row
     STRCPY_TEXT_PRINT   tN2
-    WIN_TINY    dive_tissue_He_column,dive_tissue_He_row
+    WIN_TINY    dm_custom_tissue_He_column, dm_custom_tissue_He_row
     STRCPY_TEXT_PRINT   tHe
  	call    deco_calc_desaturation_time         ; calculate desaturation time (and char_O_tissue_N2_saturation and char_O_tissue_He_saturation)
 	movlb	b'00000001'                         ; select ram bank 1
@@ -3032,7 +3232,7 @@ TFT_surface_tissues:             ; Show Tissue diagram in surface mode
 	movff	WREG,win_height             ; row bottom (0-239)
     movlw   surf_tissue_diagram_left+.4      ; Surface mode
 	movff	WREG,win_leftx2             ; column left (0-159)
-	movlw	surf_tissue_diagram_right-surf_tissue_diagram_left-4  ; Width
+	movlw	surf_tissue_diagram_right - surf_tissue_diagram_left - .4  ; Width
 	movff   WREG,win_width
 
     ;---- Draw N2 Tissues
@@ -3084,13 +3284,13 @@ surf_tissue_saturation_loop:
 DISP_tissue_saturation_graph:
     ;---- Draw Frame
     call	TFT_standard_color
-    WIN_FRAME_COLOR16   tissue_diagram_top, tissue_diagram_bottom, tissue_diagram_left, .159    ; outer frame
+    WIN_FRAME_COLOR16   dm_custom_tissue_diagram_top, dm_custom_tissue_diagram_bottom, dm_custom_tissue_diagram_left, .159    ; outer frame
 
 	movlw	.1
 	movff	WREG,win_height             ; row bottom (0-239)
-    movlw   tissue_diagram_left+.3      ; divemode
+    movlw   dm_custom_tissue_diagram_left+.3      ; divemode
 	movff	WREG,win_leftx2             ; column left (0-159)
-	movlw	.159-tissue_diagram_left-4  ; Width
+	movlw	.159-dm_custom_tissue_diagram_left-.4  ; Width
 	movff   WREG,win_width
 
     ;---- Draw N2 Tissues
@@ -3099,7 +3299,7 @@ DISP_tissue_saturation_graph:
 	movwf	wait_temp                   ; 16 tissues
 	clrf	waitms_temp                 ; Row offset
 tissue_saturation_graph_N2:
-    movlw   tissue_diagram_top+3        ; divemode
+    movlw   dm_custom_tissue_diagram_top+.3        ; divemode
 	addwf	waitms_temp,W
 	movff	WREG,win_top                ; row top (0-239)
     rcall   tissue_saturation_graph_loop    ; Show one tissue
@@ -3112,7 +3312,7 @@ tissue_saturation_graph_N2:
 	movwf	wait_temp                   ; 16 tissues
 	clrf	waitms_temp                 ; Row offset
 tissue_saturation_graph_He:
-    movlw   tissue_diagram_top+3+.22    ; divemode
+    movlw   dm_custom_tissue_diagram_top+.3+.22    ; divemode
 	addwf	waitms_temp,W
 	movff	WREG,win_top                ; row top (0-239)
 
@@ -3154,7 +3354,7 @@ TFT_display_cns:
 	output_16_3					;Displays only 0...999
 	bcf		leftbind
     PUTC    "%"
-    movlw   warning_length              ; Divemode string length
+    movlw   dm_warning_length              ; Divemode string length
     btfss   divemode                    ; In Divemode?
     movlw   surf_warning_length         ; No, use surface string length
     rcall   TFT_fillup_with_spaces          ; Fillup FSR2 with spaces (Total string length in #WREG)
@@ -3177,7 +3377,7 @@ TFT_display_ppo2:                       ; Show ppO2 (ppO2 stored in xC, in mbar!
 	bsf		ignore_digit4
 	output_16dp	d'1'
 TFT_show_ppO2_2:
-    movlw   warning_length              ; Divemode string length
+    movlw   dm_warning_length              ; Divemode string length
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT ""
 	call	TFT_standard_color

@@ -28,6 +28,7 @@
 #define DP_done2        cvt_flags2,3
 #define show_last3      cvt_flags2,4
 #define leading_zeros   cvt_flags2,5
+#define show_last4      cvt_flags2,6
 
 basic   CODE
 
@@ -93,6 +94,31 @@ output8:
 	rcall	DEC2ASCII
 	bra		LCD_val99_2			
 
+	global	output16_4_call
+output16_4_call:                ; limit to 9999
+	bsf		show_last4
+    ; 9999 = 27 0F = [39][15]
+    movlw   .40
+    cpfslt  hi                  ; hi < 40 ?
+    bra     output16_4_call_2   ; No, hi >= 40, do limit
+    ; Yes, hi <= 39
+    movlw   .39
+    cpfseq  hi                  ; hi = 39 ?
+    bra     output16_4_call_3   ; No, hi < 39, no limit needed
+    ; Yes, hi = 39
+    movlw   .15
+    cpfslt  lo                  ; lo < 15
+    movwf   lo                  ; No, lo >= 15, set lo = 15.
+    ; Yes, lo <= 14 or lo set to =15
+    bra     output16_4_call_3   ; done.
+output16_4_call_2:  ; Set to 9999
+    movlw   LOW     .9999
+    movwf   lo
+    movlw   HIGH    .9999
+    movwf   hi
+output16_4_call_3:
+    bra     output16_call
+
 	global	output16_3_call
 	global	output16_call
 	global	output16
@@ -140,9 +166,14 @@ output16:
 	movwf	temp2		 
 	movlw	b'00100111'
 	movwf	temp3		 
-	btfss	show_last3		; display only last three figures?
+	btfsc	show_last3		; display only last three figures?
+    bra     output16_sk5
+	btfsc	show_last4		; display only last four figures?
+    bra     output16_sk5
 	rcall	DEC2ASCII		; No, show all. Here: 5th order digit
-	
+
+output16_sk5:
+    bcf     show_last4
 	movlw	b'11101000'	; 1000s
 	movwf	temp2		 
 	movlw	b'00000011'
