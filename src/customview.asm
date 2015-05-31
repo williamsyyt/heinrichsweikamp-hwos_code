@@ -250,16 +250,16 @@ menuview_toggle_reset:                      ; Timeout occured
 	clrf	menupos2
     bcf     menuview
 menuview_mask:
-    WIN_BOX_BLACK   divemode_simtext_row, divemode_simtext_row+.24, divemode_simtext_column, divemode_simtext_column+.49    ; top, bottom, left, right
+    WIN_BOX_BLACK   dm_simtext_row, dm_simtext_row+.23, dm_simtext_column, dm_simtext_column+.49 ; top, bottom, left, right
     btfss   FLAG_gauge_mode
     bra     menuview_mask2
-    ; Clear some more in gauge mode
-    WIN_BOX_BLACK   divemode_simtext_row, divemode_simtext_row+.24, divemode_simtext_column+.50, divemode_simtext_column+.70    ; top, bottom, left, right
+    ; Clear some more in gauge mode  --
+    WIN_BOX_BLACK   dm_simtext_row, dm_simtext_row+.23, dm_simtext_column+.50, dm_simtext_column+.70  ; top, bottom, left, right
 menuview_mask2:
     movlw   color_yellow
     call	TFT_set_color
     bsf     win_invert                  ; Set invert flag
-    WIN_SMALL   divemode_simtext_column,divemode_simtext_row
+    WIN_SMALL   dm_simtext_column,dm_simtext_row
 	movff	menupos2,WREG                   ; Menupos2 holds number of menu option to show
 	dcfsnz	WREG,F
 	bra		menuview_view_gaschange         ; If a better gas is indicated
@@ -365,7 +365,7 @@ customview_toggle_reset:					; Timeout occured
     global  customview_mask
 customview_mask:	
 	call	TFT_clear_customview_divemode	
-	WIN_SMALL	divemode_customview_column,divemode_customview_row
+	WIN_SMALL	dm_customview_column,dm_customview_row
 	call	TFT_standard_color
 	movff	menupos3,WREG                   ; Menupos3 holds number of customview function
 	dcfsnz	WREG,F

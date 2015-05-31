@@ -397,7 +397,7 @@ TFT_surface_compass_mask:
 
     global  TFT_dive_compass_mask
 TFT_dive_compass_mask:
-    WIN_FRAME_STD   dive_compass_graph_row, dive_compass_graph_row+dive_compass_graph_height, .0, .159
+    WIN_FRAME_STD   dm_custom_compass_graph_row, dm_custom_compass_graph_row+dm_custom_compass_graph_height, .0, .159
     return
 
     global  TFT_surface_compass_heading
@@ -1085,14 +1085,14 @@ TFT_dive_compass_dir_text_2:
     btfsc   compass_bearing_lft
     bra     TFT_dive_compass_dir_ldir      ; bearing_lft=1, print the left marker
 ;TFT_dive_compass_text_rdir:
-    WIN_SMALL   dive_compass_rdir_column,dive_compass_head_row
+    WIN_SMALL   dm_custom_compass_rdir_column, dm_custom_compass_head_row
     STRCPY_PRINT    ">>"
     ; do not forget to clear the left
     rcall    TFT_dive_compass_dir_lclr
     bra     TFT_dive_compass_text
 
 TFT_dive_compass_dir_ldir:
-    WIN_SMALL   dive_compass_ldir_column,dive_compass_head_row
+    WIN_SMALL   dm_custom_compass_ldir_column, dm_custom_compass_head_row
     STRCPY_PRINT    "<<"
     ; do not forget to clear the right
     rcall    TFT_dive_compass_dir_rclr
@@ -1101,17 +1101,17 @@ TFT_dive_compass_dir_ldir:
 TFT_dive_compass_text:
     ; Text output
     call    TFT_standard_color
-    WIN_SMALL   dive_compass_head_column,dive_compass_head_row
+    WIN_SMALL   dm_custom_compass_head_column, dm_custom_compass_head_row
     rcall   TFT_surface_compass_heading_com  ; Show "000° N"
     return
 
 TFT_dive_compass_dir_lclr:
-    WIN_SMALL   dive_compass_ldir_column,dive_compass_head_row
+    WIN_SMALL   dm_custom_compass_ldir_column, dm_custom_compass_head_row
     STRCPY_PRINT    "  "
     return
 
 TFT_dive_compass_dir_rclr:
-    WIN_SMALL   dive_compass_rdir_column,dive_compass_head_row
+    WIN_SMALL   dm_custom_compass_rdir_column, dm_custom_compass_head_row
     STRCPY_PRINT    "  "
     return
 
@@ -1163,7 +1163,7 @@ TFT_dive_compass_label_proc_p:
     call    TFT_standard_color
     bsf     print_compass_label
 ;TFT_dive_compass_label_print:
-    movlw   dive_compass_label_row
+    movlw   dm_custom_compass_label_row
     movff   WREG,win_top
     movff   lo,win_leftx2
     movlw   FT_SMALL
@@ -1252,14 +1252,14 @@ TFT_dive_compass_mk_print_2:
 ;    return
 TFT_dive_compass_mk_print_3:
     movff   WREG,win_leftx2
-    movlw   dive_compass_label_row
+    movlw   dm_custom_compass_label_row
     movff   WREG,win_top
-    movlw   dive_compass_label_height-.2
+    movlw   dm_custom_compass_label_height-.2
     movff   WREG,win_height
     bra     TFT_dive_compass_mk_print_4
 TFT_dive_compass_mk_print_dot:
     movff   WREG,win_leftx2
-    movlw   dive_compass_label_row + .9
+    movlw   dm_custom_compass_label_row + .9
     movff   WREG,win_top
     movlw   d'4'
     movff   WREG,win_height
@@ -1275,24 +1275,24 @@ TFT_dive_compass_mk_print_4:
     return
 
 TFT_dive_compass_clr_label:
-    movlw   dive_compass_label_row-.2     ; set top & height
+    movlw   dm_custom_compass_label_row-.2     ; set top & height
     movff   WREG,win_top
-    movlw   dive_compass_label_height+.2
+    movlw   dm_custom_compass_label_height+.2
     movff   WREG,win_height
     rcall   TFT_dive_compass_clear
     return
 
 TFT_dive_compass_clr_ruler:
     ; top tick
-    movlw   dive_compass_tick_top_top     ; set top & height
+    movlw   dm_custom_compass_tick_top_top     ; set top & height
     movff   WREG,win_top
-    movlw   dive_compass_tick_height
+    movlw   dm_custom_compass_tick_height
     movff   WREG,win_height
     rcall    TFT_dive_compass_clear
     ;bottom tick
-    movlw   dive_compass_tick_bot_top     ; set top & height
+    movlw   dm_custom_compass_tick_bot_top     ; set top & height
     movff   WREG,win_top
-    movlw   dive_compass_tick_height
+    movlw   dm_custom_compass_tick_height
     movff   WREG,win_height
 ;    rcall   TFT_dive_compass_clear
 ;    return
@@ -1313,9 +1313,9 @@ TFT_dive_compass_clear:
 
 TFT_dive_compass_ruler_print:
     ; we receive RM in lo and DD in hi
-    movlw   dive_compass_tick_top_top
+    movlw   dm_custom_compass_tick_top_top
     movff   WREG,win_top
-    movlw   dive_compass_tick_height
+    movlw   dm_custom_compass_tick_height
     movff   WREG,win_height
     movlw   d'2'
     movff   WREG,win_width
@@ -1323,9 +1323,9 @@ TFT_dive_compass_ruler_print:
     movff   lo,win_leftx2          ; 0..159
     call    TFT_standard_color
     call    TFT_box
-    movlw   dive_compass_tick_bot_top
+    movlw   dm_custom_compass_tick_bot_top
     movff   WREG,win_top
-    movlw   dive_compass_tick_height
+    movlw   dm_custom_compass_tick_height
     movff   WREG,win_height
     call    TFT_standard_color  ; color in WREG is trashed, must be set again!
     call    TFT_box
@@ -1333,7 +1333,7 @@ TFT_dive_compass_ruler_print:
 
 TFT_dive_compass_cline:
    	movlw   color_yellow
-    WIN_BOX_COLOR     dive_compass_tick_top_top,dive_compass_tick_bot_bot,.80,.81
+    WIN_BOX_COLOR     dm_custom_compass_tick_top_top, dm_custom_compass_tick_bot_bot,.80,.81
     return
 
 tft_compass_cardinal:

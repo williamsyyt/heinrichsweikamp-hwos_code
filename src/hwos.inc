@@ -680,6 +680,9 @@ opt_cR_button_right     res 1   ; Right button sensitivity (cR hardware)
 #DEFINE compass_bearing_lft     flag12,2    ; bearing is to the left/<< if set, otherwise to the right/>>
 #DEFINE compass_bearing_vis     flag12,3    ; bearing is visible? (either ahead or behind/-180°)
 #DEFINE compass_bearing_ahd     flag12,4    ; bearing is ahead or behind?
+#DEFINE blinking_depth_warning  flag12,5    ; set by the color_depth. =1: warning color
+#DEFINE blinking_depth_prev     flag12,6    ; set by the TFT_depth.   =1: prev display had warning color
+#DEFINE blinking_depth_toggle   flag12,7    ; toggle to blink
 
 ;=============================================================================
 ; C-code Routines

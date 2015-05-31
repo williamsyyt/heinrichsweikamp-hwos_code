@@ -16,6 +16,11 @@ output_16_3 macro			; displays only last three figures from a 16Bit value (0-999
 	call 	output16_3_call
 	endm
 
+    extern  output16_4_call
+output_16_4 macro			; displays only last four figures from a 16Bit value (0-9999)
+	call 	output16_4_call
+	endm
+
     extern  output16
 output_16dp macro temp4		; 16Bit with decimal point
 	movlw	temp4			; Temp4 stores position for decimal point
