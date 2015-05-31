@@ -180,10 +180,10 @@
     TCODE   tIntvl, 	"Intervall:"        ; Interval : (10 chars)
     TCODE   tDeco,  	"Deko berechnen"    ; Calculate Deco
     TCODE   tDivePlan,  "Tauchplan:"        ; Dive Plan:
-    TCODE   tNoDeco,    "Keine Deco"           ; No Deco
+    TCODE   tNoDeco,    "Keine Deco"        ; No Deco
     TCODE   tMore,      "Mehr..."           ; More...
     TCODE   tCNS,       "ZNS"               ; CNS
-    TCODE   tGasUsage,  "Gas Usage"	    ; Gas Usage
+    TCODE   tGasUsage,  "Verbrauch"         ; Gas Usage
 
 ; Information menu
     TCODE   tFirmware,  "Firmware: "        ; Firmware: (space)
