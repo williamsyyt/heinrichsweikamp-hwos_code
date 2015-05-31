@@ -162,6 +162,7 @@
 	TCODE	tFeets1,	"f"
     TCODE   tMinutes,   "'"
     TCODE   tPercent,   "%"
+    TCODE   tLitersMinute, "l/min"
 
 ; Date
 	TCODE	tDateFormat, "Date:"
@@ -183,7 +184,10 @@
     TCODE   tNoDeco,    "No Deco"           ; No Deco
     TCODE   tMore,      "More..."           ; More...
     TCODE   tCNS,       "CNS"               ; CNS
-    TCODE   tGasUsage,  "Gas Usage"	    ; Gas Usage
+    TCODE   tGasUsage,  "Gas Usage"         ; Gas Usage
+    TCODE   tSetBotUse, "Bottom Gas: "      ; Bottom Gas: (space)
+    TCODE   tSetDecoUse,"Deco Gas: "        ; Deco Gas: (space)
+
 
 ; Information menu
     TCODE   tFirmware,  "Firmware: "        ; Firmware: (space)
