@@ -21,10 +21,9 @@
 #include "surfmode.inc"
 #include "rtc.inc"
 #include "adc_lightsensor.inc"
+#include "shared_definitions.h"
 
 	extern  new_battery_menu,restart,option_reset_all
-    extern  char_I_dil_change, char_I_setpoint_cbar, char_I_setpoint_change
-    extern  char_I_deco_model, char_I_extra_time, char_I_saturation_multiplier, char_I_desaturation_multiplier
     extern  option_check_all, gaslist_cleanup_list, get_first_gas_to_WREG, get_first_dil_to_WREG
     extern  vault_decodata_into_eeprom
 
@@ -952,6 +951,11 @@ comm_read_setting:
     movff   opt_cR_button_left, TXREG1      ; RCREG1=0x3A
     dcfsnz  WREG
     movff   opt_cR_button_right, TXREG1     ; RCREG1=0x3B
+    dcfsnz  WREG
+    movff   char_I_bottom_usage, TXREG1     ; RCREG1=0x3C
+    dcfsnz  WREG
+    movff   char_I_deco_usage, TXREG1       ; RCREG1=0x3D
+
 
 comm_read_abort:
 comm_read_done:
@@ -1228,6 +1232,11 @@ comm_write_setting:
     movff   RCREG1, opt_cR_button_left      ; RCREG1=0x3A
     dcfsnz  WREG
     movff   RCREG1, opt_cR_button_right     ; RCREG1=0x3B
+    dcfsnz  WREG
+    movff   RCREG1, char_I_bottom_usage     ; RCREG1=0x3C
+    dcfsnz  WREG
+    movff   RCREG1, char_I_deco_usage       ; RCREG1=0x3D
+
 
 comm_write_abort:
     ; Check Options, gases and diluents
