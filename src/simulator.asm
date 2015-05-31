@@ -326,7 +326,7 @@ deco_planer:
         banksel common                  ; Bank1
 
 ;---- Specific settings ------------------------------------------------------
-   
+deco_planer_redo:
         banksel char_O_deco_status      ; Bank 2
         movlw   .3                      ; Start in surface state.
         movwf   char_O_deco_status
@@ -380,15 +380,34 @@ deco_planer_endloop:
 ;---- Wait until status reach zero -------------------------------------------
 deco_planer_finishing:
         btg     LEDg
-        clrf    TMR5L
-        clrf    TMR5H                       ; 30,51757813µs/bit in TMR5L:TMR5H
+;       clrf    TMR5L
+;       clrf    TMR5H                   ; 30,51757813µs/bit in TMR5L:TMR5H
         call    deco_calc_hauptroutine  ; Simulate 2sec more
 
         banksel char_O_deco_status      ; Bank 2
         movf    char_O_deco_status,W
-        bz      deco_planer_finished
+        bnz     deco_planer_finishing
+
+;---- Optional extra cycle to recompute stops in bailout mode ---------------
+        banksel common
+        btfss   is_bailout              ; Doing a bailout decoplan ?
+        bra     deco_planer_finished    ; NO: so we are done.
         
-        bra     deco_planer_finishing
+        rcall   deco_setup_oc_gases     ; Switch to OC gas and no const_ppO2
+        
+        movlw   .3                      ; restart 2sec cycles.
+        movff   WREG,char_O_deco_status
+        call    deco_calc_hauptroutine  ; Reset + simulate first 2secs.
+        
+deco_planer_bail_loop:
+        btg     LEDg
+;       clrf    TMR5L
+;       clrf    TMR5H                   ; 30,51757813µs/bit in TMR5L:TMR5H
+        call    deco_calc_hauptroutine  ; Simulate 2sec more
+        
+        banksel char_O_deco_status      ; Bank 2
+        movf    char_O_deco_status,W
+        bnz     deco_planer_bail_loop
 
 deco_planer_finished:
         call    deco_calc_CNS_planning
@@ -712,15 +731,29 @@ deco_show_plan_3:
         bra     deco_show_plan_1
         ; All stops shown
         	
-;---- In OC mode, show the gas Usage special page ---------------------------
+;---- In CCR mode, compute a BAILOUT decoplan ---------------------------------
+    banksel common
+    btfss   FLAG_ccr_mode               ; =1: CCR mode (Fixed ppO2 or Sensor) active
+    bra     simulator_show_decoplan5_0  ; NO: normal OC mode: just display
+
+    btfsc   is_bailout                  ; ALREADY in bailout mode ?
+    bra     simulator_show_decoplan5_0  ; YES: alreay BAIL plan: display gas
+    
+; Redo 2nd deco-plann, in bailout mode:
+    bsf     is_bailout                  ; Set special bailout mode.
+    rcall   deco_planer_redo            ; Redo plan computation
+
+    movff   char_I_setpoint_cbar+0,char_I_const_ppO2
+    bra     deco_show_plan              ; and display bailout stops
+
+;---- In OC+BAIL modes, show the gas Usage special page -----------------------
 simulator_show_decoplan5_0:    
-    btfsc   FLAG_ccr_mode             ; =1: CCR mode (Fixed ppO2 or Sensor) active
-    return                            ; YES: Return to simulator menu
+    bcf     is_bailout                  ; Back to normal
 
     ; Make sure to pass first gas
-    call    get_first_gas_to_WREG           ; Gets first gas (0-4) into WREG
-    incf    WREG,f                          ; gas 1..5
-    movff   WREG,char_I_first_gas           ; Copy for compatibility
+    call    get_first_gas_to_WREG       ; Gets first gas (0-4) into WREG
+    incf    WREG,f                      ; gas 1..5
+    movff   WREG,char_I_first_gas       ; Copy for compatibility
 
     ; Compute gas consumption for each tank.
     extern  deco_gas_volumes
@@ -780,7 +813,17 @@ simulator_show_decoplan5_1:
 	
     WIN_COLOR   color_greenish
     WIN_SMALL   .80,.25
-	STRCPY_TEXT tGasUsage
+
+    btfsc   FLAG_ccr_mode               ; =1: CCR mode (Fixed ppO2 or Sensor) active
+    bra     simulator_show_decoplan5_4  ; YES: This is bailout mode
+
+	STRCPY_TEXT tGasUsage               ; OC: "Gas Usage"
+    bra     simulator_show_decoplan5_5
+
+simulator_show_decoplan5_4:
+	STRCPY_TEXT tDiveBailout            ; CCR: "Bailout"
+
+simulator_show_decoplan5_5
     STRCAT_PRINT  ":"
     call	TFT_standard_color
 

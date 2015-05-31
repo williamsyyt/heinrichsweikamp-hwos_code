@@ -38,8 +38,13 @@ static void setup_plan(const char* stops,
 {
     int depth = 3 * (stops ? strlen(stops) : 0);
 
+    if( ! depth )
+        std::cout << "             no deco" << std::endl;
+
     int s = 0;
     while( depth > 0 && s < NUM_STOPS ) {
+        std::cout << "             " << std::setw(2) << int(stops[s]) << "' @ " << depth << "m" << std::endl;
+
         char_O_deco_time [s] = stops[s];
         char_O_deco_depth[s] = depth;
         char_O_deco_gas  [s] = gas ? gas[s] : 1; // Gas#1 by default
@@ -188,13 +193,13 @@ TEST(gas_volume, OC_15min60m)
 
 //////////////////////////////////////////////////////////////////////////////
 // v1.82 ZH-L16+GF, CCR, 30%/85%
-TEST(gas_volume, CCR_13min30m)
+TEST(gas_volume, CCR_23min30m)
 {
     char_I_const_ppO2 = 140;// SP 1.4 bar
-    setup_dive(13, 30);     // 13' @ 30m --> no deco
+    setup_dive(23, 30);     // 23' @ 30m --> no deco / no BAIL deco
 
     ASSERT_NO_THROW( deco_gas_volumes() );
-    check_volumes(/*NO BTM CONSO*/ ascent(20,30,0), "Gas1: 1190 L",
+    check_volumes(/*NO BTM CONSO*/ ascent(20,30,0), "Gas1: 150 L",
                   0, "",
                   0, "",
                   0, "",
@@ -203,37 +208,59 @@ TEST(gas_volume, CCR_13min30m)
 
 //////////////////////////////////////////////////////////////////////////////
 // v1.82 ZH-L16+GF, CCR, 30%/85%
-TEST(gas_volume, CCR_15min30m)
+TEST(gas_volume, CCR_25min30m)
 {
-    char_I_const_ppO2 = 140;    // SP 1.4 bar
+    char_I_const_ppO2 = 140;// SP 1.4 bar
     char stops[] = {1, 0};
     char gas[]   = {3, 0};
-    setup_dive(15, 30, stops, gas);     // 15' @ 30m --> 1min at 3m
+    setup_dive(25, 30, stops, gas);     // 25' @ 30m --> no deco / BAIL 1' @ 3m
 
     ASSERT_NO_THROW( deco_gas_volumes() );
-    check_volumes(/*NO BTM CONSO*/  ascent(20,30,3), "Gas1: 1343 L",
+    check_volumes(/*NO BTM CONSO*/  ascent(20,30,3), "Gas1: 143 L",
                   0, "",
-                  fixed(20, 1, 3) + ascent(20, 3,0), "Gas3: 33",
+                  fixed(20, 1, 3) + ascent(20, 3,0), "Gas3:  33 L",
                   0, "",
                   0, "");
 }
 
 //////////////////////////////////////////////////////////////////////////////
 // v1.82 ZH-L16+GF, CCR, 30%/85%
-TEST(gas_volume, CCR_29min30m)
+TEST(gas_volume, CCR_45min30m)
 {
     char_I_const_ppO2 = 140;    // SP 1.4 bar
-    char stops[] = {1, 1, 2, 4, 0};
-    char gas[]   = {1, 3, 3, 3, 0};
-    setup_dive(29, 30, stops, gas);     // 29' @ 30m --> 1' 1' 2' 4'
+    char stops[] = {1, 2, 5, 0};
+    char gas[]   = {3, 3, 3, 0};
+    setup_dive(45, 30, stops, gas);     // 45' @ 30m
 
     ASSERT_NO_THROW( deco_gas_volumes() );
-    check_volumes(/*NO BTM CONSO*/  ascent(20,30,12) +
-                  fixed(20, 1,12) + ascent(20,12, 9), "Gas1: 2488 L",
+    check_volumes(/*NO BTM CONSO*/  ascent(20,30, 9), "Gas1: 124 L",
                   0, "",
                   fixed(20, 1, 9) + ascent(20, 9, 6) +
                   fixed(20, 2, 6) + ascent(20, 6, 3) +
-                  fixed(20, 4, 3) + ascent(20, 3, 0), "Gas3: 232 L",
+                  fixed(20, 5, 3) + ascent(20, 3, 0), "Gas3: 258 L",
+                  0, "",
+                  0, "");
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// v1.82 ZH-L16+GF, CCR, 30%/85%
+TEST(gas_volume, CCR_19min51m)
+{
+    char_I_const_ppO2 = 140;    // SP 1.4 bar
+    char stops[] = {1, 2, 2, 4, 3, 4, 9, 0};
+    char gas[]   = {1, 1, 1, 1, 3, 3, 3, 0};
+    setup_dive(19, 51, stops, gas);     // 19' @ 51m --> 20' CCR / 31' BAIL
+
+    ASSERT_NO_THROW( deco_gas_volumes() );
+    check_volumes(/*NO BTM CONSO*/  ascent(20,51,21) +
+                  fixed(20, 1,21) + ascent(20,21,18) +
+                  fixed(20, 2,18) + ascent(20,18,15) +
+                  fixed(20, 2,15) + ascent(20,15,12) +
+                  fixed(20, 4,12) + ascent(20,12, 9), "Gas1: 786 L",
+                  0, "",
+                  fixed(20, 3, 9) + ascent(20, 9, 6) +
+                  fixed(20, 4, 6) + ascent(20, 6, 3) +
+                  fixed(20, 9, 3) + ascent(20, 3, 0), "Gas3: 502 L",
                   0, "",
                   0, "");
 }
@@ -243,20 +270,21 @@ TEST(gas_volume, CCR_29min30m)
 TEST(gas_volume, CCR_15min60m)
 {
     char_I_const_ppO2 = 140;    // SP 1.4 bar
-    char stops[] = {2, 1, 2, 4, 3, 4, 9, 0};
-    char gas[]   = {1, 1, 1, 1, 3, 3, 3, 0};
+    char stops[] = {1, 2, 2, 3, 4, 3, 5, 11, 0};   // BAILOUT mode
+    char gas[]   = {1, 1, 1, 1, 1, 3, 3,  3, 0};
     setup_dive(15, 60, stops, gas);     // 15' @ 60m --> DTR 32'
 
     ASSERT_NO_THROW( deco_gas_volumes() );
-    check_volumes(/*NO BTM CONSO*/  ascent(20,60,21) +
+    check_volumes(/*NO BTM CONSO*/  ascent(20,60,24) +
+                  fixed(20, 1,24) + ascent(20,24,21) +
                   fixed(20, 2,21) + ascent(20,21,18) +
-                  fixed(20, 1,18) + ascent(20,18,15) +
-                  fixed(20, 2,15) + ascent(20,15,12) +
-                  fixed(20, 4,12) + ascent(20,12, 9), "Gas1: 3010 L",
+                  fixed(20, 2,18) + ascent(20,18,15) +
+                  fixed(20, 3,15) + ascent(20,15,12) +
+                  fixed(20, 4,12) + ascent(20,12, 9), "Gas1: 1084 L",
                   0, "",
                   fixed(20, 3, 9) + ascent(20, 9, 6) +
-                  fixed(20, 4, 6) + ascent(20, 6, 3) +
-                  fixed(20, 9, 3) + ascent(20, 3, 0), "Gas3: 502 L",
+                  fixed(20, 5, 6) + ascent(20, 6, 3) +
+                  fixed(20,11, 3) + ascent(20, 3, 0), "Gas3:  586 L",
                   0, "",
                   0, "");
 }
