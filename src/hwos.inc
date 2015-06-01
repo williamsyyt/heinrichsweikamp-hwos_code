@@ -569,6 +569,7 @@ opt_sensor_fallback     res 1   ; =1: Fallback to SP1 when sensor is lost
 opt_flip_screen         res 1   ; =1: Flip the screen
 opt_cR_button_left      res 1   ; Left button sensitivity (cR hardware)
 opt_cR_button_right     res 1   ; Right button sensitivity (cR hardware)
+opt_depthblink          res 1   ; =1:do a red blinking warning, =0:default behaviour
 
 ;-----------------------------EEPROM DATA ------------------------------------
 ; Automatic reset of all options when this is changed:
