@@ -955,6 +955,8 @@ comm_read_setting:
     movff   char_I_bottom_usage, TXREG1     ; RCREG1=0x3C
     dcfsnz  WREG
     movff   char_I_deco_usage, TXREG1       ; RCREG1=0x3D
+    dcfsnz  WREG
+    movff   opt_depthblink, TXREG1       ; RCREG1=0x3E
 
 
 comm_read_abort:
@@ -1236,6 +1238,8 @@ comm_write_setting:
     movff   RCREG1, char_I_bottom_usage     ; RCREG1=0x3C
     dcfsnz  WREG
     movff   RCREG1, char_I_deco_usage       ; RCREG1=0x3D
+    dcfsnz  WREG
+    movff   RCREG1, opt_depthblink          ; RCREG1=0x3E
 
 
 comm_write_abort:
