@@ -84,7 +84,7 @@
 #DEFINE surf_menu2_ambient_column   .95
 
 #DEFINE surf_tissue_diagram_top     .66
-#DEFINE surf_tissue_diagram_bottom  tissue_diagram_top+.64
+#DEFINE surf_tissue_diagram_bottom  surf_tissue_diagram_top+.117  ; 183
 #DEFINE surf_tissue_diagram_left    .5
 #DEFINE surf_tissue_diagram_right   surf_decotype_column-.5
 #DEFINE surf_tissue_N2_row          surf_tissue_diagram_top+.1

@@ -135,6 +135,7 @@
     TCODE   tHigh,      "Hoch"
     TCODE   tDvSalinity,"Salinität:"             ; Salinity
     TCODE   tFlip,      "Anzeige drehen:"        ; Rotate Screen
+    TCODE   tDepthBlink,"Depth warn blink:"
 
 ; Setup Menu
     TCODE   tSystSets,  "Konfiguration"
@@ -228,7 +229,7 @@
     TCODE   taGFactors,     "aGF Values"    ; aGF Values
     TCODE   tGFInfo,        "GF Info"       ; GF Info
     TCODE   tCeiling,       "Ceiling"       ; Ceiling
-    TCODE   tDiveSafetyStop,"Stopp"         ; Stop (Five chars, right alligned)
+    TCODE   tDiveSafetyStop,"Stop"         ; Stop (Four chars, right alligned)
     TCODE   tDiveFallback,  "Fallback!"     ; Fallback! (max. nine chars)
 
 ; Divemode menu
