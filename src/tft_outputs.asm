@@ -239,10 +239,21 @@ TFT_color_code_depth:
 	movff	hi,sub_b+1
 	movff	hi_temp,hi
 	movff	lo_temp,lo			; Restore hi, lo
+
+    TSTOSS  opt_depthblink			; 0=standard, 1=blink
+	bra		TFT_color_code_depth_std
+;TFT_color_code_depth_blink:
 	call	subU16			;  sub_c = sub_a - sub_b
 	btfss	neg_flag
 	bra		TFT_color_code_depth_warn ; Set to warning color
     call    TFT_color_code_ppo2_depth  ; check depth against MOD
+    return
+
+TFT_color_code_depth_std:
+	call	subU16			   ; sub_c = sub_a - sub_b
+	btfss	neg_flag
+	bra		TFT_warnings_color ; Set to warning color
+    call    TFT_standard_color
 	return
 
 TFT_color_code_ppo2_depth:
@@ -1916,7 +1927,7 @@ TFT_depth:
     movlw   .3                      ; limit to three chars
     call    TFT_fillup_with_spaces  ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""					; Display feet
-    bcf     win_invert                  ; Reset invert flag
+    bcf     win_invert              ; Reset invert flag
     return
 
 depth_less_0.3mtr_feet:
@@ -2028,6 +2039,9 @@ TFT_clear_depth:            			; No, clear depth area and set flag
 	return
 
 TFT_depth_blink:
+    TSTOSS  opt_depthblink			; 0=standard, 1=blink
+    return
+
     ; check if previous cycle had the blinking warning or not
     btfsc   blinking_depth_prev         ; did we have warning prev?
     bra     TFT_depth_blink_prevwarn    ; Yes
