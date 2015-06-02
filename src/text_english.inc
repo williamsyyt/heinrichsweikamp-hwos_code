@@ -135,7 +135,7 @@
     TCODE   tHigh,      "High"
     TCODE   tDvSalinity,"Salinity:"             ; Salinity
     TCODE   tFlip,      "Rotate Screen:"        ; Rotate Screen
-    TCODE   tDepthBlink,"Depth warn blink:"
+    TCODE   tMODwarning,"MOD warning:"          ; MOD warning
 
 ; Setup Menu
     TCODE   tSystSets,  "Settings"
