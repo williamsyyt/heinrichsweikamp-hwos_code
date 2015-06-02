@@ -614,11 +614,12 @@ do_dispsets_menu_3stack:
     call    menu_processor_pop
 
 do_dispsets_menu:
-    MENU_BEGIN  tDispSets, .5
+    MENU_BEGIN  tDispSets, .6
         MENU_OPTION tBright,       oBrightness,   0
         MENU_CALL   tColorScheme,                 do_color_scheme
         MENU_OPTION tFlip,         oFlipScreen,   0
-        MENU_OPTION tMODwarning,   oDepthBlink,   0
+        MENU_OPTION tMODwarning,   oMODwarning,   0
+        MENU_OPTION tVSItextv2,    oVSItextv2,    0
         MENU_CALL   tExit,                        do_return_settings
     MENU_END
 

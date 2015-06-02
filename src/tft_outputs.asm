@@ -156,8 +156,6 @@ TFT_color_code1:				; Color-codes the output, if required
 	dcfsnz	WREG
 	bra		TFT_color_code_ppo2         ; Color-code the OC ppO2 results [cbar], opt_ppO2_max as threshold
 	dcfsnz	WREG
-	bra		TFT_color_code_velocity     ; color_code_velocity_warn_high [m/min]
-	dcfsnz	WREG
 	bra		TFT_color_code_ceiling		; Show warning if current depth>shown ceiling
 	dcfsnz	WREG
 	bra		TFT_color_code_gaslist		; Color-code current row in Gaslist (%O2 in hi), opt_ppO2_max as threshold
@@ -240,7 +238,7 @@ TFT_color_code_depth:
 	movff	hi_temp,hi
 	movff	lo_temp,lo			; Restore hi, lo
 
-    TSTOSS  opt_depthblink			; 0=standard, 1=blink
+    TSTOSS  opt_modwarning			; 0=standard, 1=blink
 	bra		TFT_color_code_depth_std
 ;TFT_color_code_depth_blink:
 	call	subU16			;  sub_c = sub_a - sub_b
@@ -357,18 +355,6 @@ TFT_color_code_ppo2:
 	call	subU16			  		; sub_c = sub_a - sub_b
 	btfsc	neg_flag
 	bra		TFT_warnings_color     ; Set to warning color
-	call	TFT_standard_color
-	return
-
-TFT_color_code_velocity:
-	btfss	neg_flag                        ; Ignore for descent!
-	bra		TFT_color_code_velocity1		; Skip check!
-	movff	divA+0,lo
-	movlw	color_code_velocity_warn_high	; Velocity warn [m/min]
-	subwf	lo,W
-	btfsc	STATUS,C
-	bra		TFT_warnings_color             ; Set to warning color
-TFT_color_code_velocity1:
 	call	TFT_standard_color
 	return
 
@@ -558,11 +544,257 @@ TFT_clear_customview_divemode:
     WIN_BOX_BLACK    dm_customview_row, dm_customview_bot, dm_customview_column, dm_customview_rgt	; top, bottom, left, right
 	return
 
+;=========================================================================
+
 	global	TFT_display_velocity
 TFT_display_velocity:						; With divA+0 = m/min
-	TFT_color_code	warn_velocity	    	; Color-code Output (With divA+0 = m/min)
-	WIN_SMALL	dm_velocity_text_column, dm_velocity_text_row
 
+    TSTOSS  opt_vsitextv2       			; 0=standard, 1=dynamic
+    bra     TFT_dispay_velocity_std
+
+    ; Input is:
+    ;   neg_flag: ascend=1, descend=0
+    ;   divA+0:   rate in m/min
+
+	movlw	velocity_display_threshold_2	; lowest threshold for display vertical velocity
+	subwf	divA+0,W
+	btfss	STATUS,C
+	bra		TFT_display_velocity_clear
+	bsf		display_velocity
+
+    ; use a depth-dependent ascent rate warning
+    ; depth(ft):     <20 >20 >40 >60 >75 >88 >101 >115 >128 >144 >164
+    ; speed(ft/min):  23  26  29  33  36  43   49   56   59   62   66
+    ; depth(m):      <=6  >6 >12 >18 >23 >27  >31  >35  >39  >44  >50
+    ; speed(m/min):    7   8   9  10  11  13   15   17   18   19   20 (warning)
+	; speed(m/min):    5   6   7   8   8  10   12   13   14   15   15 (attention)
+
+    bcf     neg_flag_save
+    btfsc   neg_flag
+    bsf     neg_flag_save
+
+    ; no warning color if descending
+    call	TFT_standard_color
+	btfss	neg_flag                            ; Ignore for descent!
+	bra		TFT_display_velocity_out
+
+    SAFE_2BYTE_COPY rel_pressure, lo			; get the actual depth
+	call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
+	call 	convert_mbar_to_feet				; get depth in feet
+	; xA will be used to store the warning/attention limits passed to the verification
+	clrf	xA+0
+	clrf	xA+1
+
+	; store current depth (in feet) into sub_a
+	movff	lo,sub_a+0
+	movff	hi,sub_a+1
+
+;TFT_display_velocity_asc_164:
+	; store segment limit into sub_b
+	clrf	sub_b+1
+	movlw	LOW 	d'164'
+	movwf	sub_b+0
+	movlw	.20                 	; store the warn limit to xA+0
+	movwf	xA+0
+    movlw   .15                     ; store the attn limit to xA+1
+    movwf   xA+1
+	; check if current depth > segment limit
+	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
+	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
+    bra     TFT_velocity_check		            ;  no, depth>=sLimit, do the check for this segment
+
+;TFT_display_velocity_asc_144:
+	; store segment limit into sub_b
+	clrf	sub_b+1
+	movlw	LOW 	d'144'
+	movwf	sub_b+0
+	movlw	.19                 	; store the warn limit to xA+0
+	movwf	xA+0
+    movlw   .15                     ; store the attn limit to xA+1
+    movwf   xA+1
+	; check if current depth > segment limit
+	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
+	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
+    bra     TFT_velocity_check		            ;  no, depth>=sLimit, do the check for this segment
+
+;TFT_display_velocity_asc_128:
+	; store segment limit into sub_b
+	clrf	sub_b+1
+	movlw	LOW 	d'128'
+	movwf	sub_b+0
+	movlw	.18                 	; store the warn limit to xA+0
+	movwf	xA+0
+    movlw   .14                     ; store the attn limit to xA+1
+    movwf   xA+1
+	; check if current depth > segment limit
+	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
+	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
+    bra     TFT_velocity_check		            ;  no, depth>=sLimit, do the check for this segment
+
+;TFT_display_velocity_asc_115:
+	; store segment limit into sub_b
+	clrf	sub_b+1
+	movlw	LOW 	d'115'
+	movwf	sub_b+0
+	movlw	.17                 	; store the warn limit to xA+0
+	movwf	xA+0
+    movlw   .13                     ; store the attn limit to xA+1
+    movwf   xA+1
+	; check if current depth > segment limit
+	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
+	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
+    bra     TFT_velocity_check		            ;  no, depth>=sLimit, do the check for this segment
+
+;TFT_display_velocity_asc_101:
+	; store segment limit into sub_b
+	clrf	sub_b+1
+	movlw	LOW 	d'101'
+	movwf	sub_b+0
+	movlw	.15                 	; store the warn limit to xA+0
+	movwf	xA+0
+    movlw   .12                     ; store the attn limit to xA+1
+    movwf   xA+1
+	; check if current depth > segment limit
+	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
+	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
+    bra     TFT_velocity_check		            ;  no, depth>=sLimit, do the check for this segment
+
+;TFT_display_velocity_asc_88:
+	; store segment limit into sub_b
+	clrf	sub_b+1
+	movlw	LOW 	d'88'
+	movwf	sub_b+0
+	movlw	.13                 	; store the warn limit to xA+0
+	movwf	xA+0
+    movlw   .10                     ; store the attn limit to xA+1
+    movwf   xA+1
+	; check if current depth > segment limit
+	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
+	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
+    bra     TFT_velocity_check		            ;  no, depth>=sLimit, do the check for this segment
+
+;TFT_display_velocity_asc_75:
+	; store segment limit into sub_b
+	clrf	sub_b+1
+	movlw	LOW 	d'75'
+	movwf	sub_b+0
+	movlw	.11                 	; store the warn limit to xA+0
+	movwf	xA+0
+    movlw   .8                     ; store the attn limit to xA+1
+    movwf   xA+1
+	; check if current depth > segment limit
+	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
+	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
+    bra     TFT_velocity_check		            ;  no, depth>=sLimit, do the check for this segment
+
+;TFT_display_velocity_asc_60:
+	; store segment limit into sub_b
+	clrf	sub_b+1
+	movlw	LOW 	d'60'
+	movwf	sub_b+0
+	movlw	.10                 	; store the warn limit to xA+0
+	movwf	xA+0
+    movlw   .8                     ; store the attn limit to xA+1
+    movwf   xA+1
+	; check if current depth > segment limit
+	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
+	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
+    bra     TFT_velocity_check		            ;  no, depth>=sLimit, do the check for this segment
+
+;TFT_display_velocity_asc_40:
+	; store segment limit into sub_b
+	clrf	sub_b+1
+	movlw	LOW 	d'40'
+	movwf	sub_b+0
+	movlw	.9                 	; store the warn limit to xA+0
+	movwf	xA+0
+    movlw   .7                     ; store the attn limit to xA+1
+    movwf   xA+1
+	; check if current depth > segment limit
+	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
+	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
+    bra     TFT_velocity_check		            ;  no, depth>=sLimit, do the check for this segment
+
+;TFT_display_velocity_asc_20:
+	; store segment limit into sub_b
+	clrf	sub_b+1
+	movlw	LOW 	d'20'
+	movwf	sub_b+0
+	movlw	.8                 	; store the warn limit to xA+0
+	movwf	xA+0
+    movlw   .6                     ; store the attn limit to xA+1
+    movwf   xA+1
+	; check if current depth > segment limit
+	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
+	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
+    bra     TFT_velocity_check		            ;  no, depth>=sLimit, do the check for this segment
+
+;TFT_display_velocity_asc_n6:
+	; no more steps, check the smallest rate
+	; store the warn limit to xA : <20ft=23; <6m=7
+	movlw	.7
+	movwf	xA+0
+    movlw   .5
+    movwf   xA+1
+    ;bra     TFT_velocity_check                  ;  depth < 20ft / 6m
+
+TFT_velocity_check:
+	; move current ascent rate to lo
+	clrf    hi
+	movff	divA+0,lo
+	; Velocity warn [m/min] - we receive it from xA+0
+    movff	xA+0,WREG
+	; compare the values
+	subwf	lo,W                            ; subtract W from lo,
+	btfsc	STATUS,C                        ; Check if C (carry flag) is set. Cleared if the larger number is subtracted from smaller one
+	bra		TFT_velocity_warn    ; Skip if no carry flag otherwise set to warning color
+    ; not eq or gt warning trashold, lets check if it reach the attention level
+	; Velocity attn [m/min] - we receive it from xA+1
+    movff	xA+1,WREG
+	; compare the values
+	subwf	lo,W                            ; subtract W from lo,
+	btfsc	STATUS,C                        ; Check if C (carry flag) is set. Cleared if the larger number is subtracted from smaller one
+	bra		TFT_velocity_attn    ; Skip if no carry flag otherwise set to warning color
+    ;bra     TFT_velocity_def
+
+TFT_velocity_def:
+	call	TFT_standard_color
+    bra     TFT_display_velocity_out
+
+TFT_velocity_warn:
+	call	TFT_warnings_color             ; Set to warning color
+    bsf     win_invert
+    bra     TFT_display_velocity_out
+
+TFT_velocity_attn:
+	call	TFT_attention_color            ; Set to attention color
+    ;bra     TFT_display_velocity_out
+
+TFT_display_velocity_out:
+    ; retain neg_flag value - restore
+    bcf     neg_flag
+    btfsc   neg_flag_save
+    bsf     neg_flag
+    bra     TFT_dispay_velocity_disp
+
+TFT_dispay_velocity_std:
+	movlw	velocity_display_threshold_1	; lowest threshold for display vertical velocity
+	subwf	divA+0,W
+	btfss	STATUS,C
+	bra		TFT_display_velocity_clear
+	bsf		display_velocity
+
+	call	TFT_standard_color
+	btfss	neg_flag                        ; Ignore for descent!
+	bra		TFT_dispay_velocity_disp		; Skip check!
+	movff	divA+0,lo
+	movlw	color_code_velocity_warn_high	; Velocity warn [m/min]
+	subwf	lo,W
+	btfsc	STATUS,C
+	call		TFT_warnings_color             ; Set to warning color
+
+TFT_dispay_velocity_disp:
+    WIN_SMALL	dm_velocity_text_column, dm_velocity_text_row
     TSTOSS  opt_units			; 0=Meters, 1=Feets
 	bra		TFT_display_velocity_metric
 ;TFT_display_velocity_imperial:
@@ -580,6 +812,7 @@ TFT_display_velocity:						; With divA+0 = m/min
 	bcf		leftbind
 	STRCAT_TEXT_PRINT  tVelImperial			; Unit switch
 	call	TFT_standard_color
+    bcf     win_invert
     return
 
 TFT_display_velocity_metric:
@@ -591,13 +824,19 @@ TFT_display_velocity_metric:
 	output_99
 	STRCAT_TEXT_PRINT  tVelMetric			; Unit switch
 	call	TFT_standard_color
+    bcf     win_invert
     return
 
 	global	TFT_display_velocity_clear
 TFT_display_velocity_clear:
+	btfss	display_velocity			; Velocity was not displayed, do not delete
+	return
+	bcf		display_velocity			; Velocity was displayed, delete velocity now
 	; Clear Text
 	WIN_BOX_BLACK   dm_velocity_text_row, dm_velocity_text_bot, dm_velocity_text_column, dm_velocity_text_rgt	; top, bottom, left, right
 	return
+
+;=========================================================================
 
     global  TFT_clear_decoarea
 TFT_clear_decoarea:
@@ -2039,7 +2278,7 @@ TFT_clear_depth:            			; No, clear depth area and set flag
 	return
 
 TFT_depth_blink:
-    TSTOSS  opt_depthblink			; 0=standard, 1=blink
+    TSTOSS  opt_modwarning			; 0=standard, 1=blink
     return
 
     ; check if previous cycle had the blinking warning or not

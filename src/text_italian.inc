@@ -136,6 +136,7 @@
     TCODE   tDvSalinity,"Salinita':"             ; Salinity
     TCODE   tFlip,      "Ruotare schermo:"       ; Rotate Screen
     TCODE   tMODwarning,"MOD warning:"          ; MOD warning
+    TCODE   tVSItextv2, "Dyn asc rate lim:"     ; Dyn asc rate lim
 
 ; Setup Menu
     TCODE   tSystSets,  "Impostazioni"
