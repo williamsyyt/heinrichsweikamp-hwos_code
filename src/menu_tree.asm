@@ -618,7 +618,7 @@ do_dispsets_menu:
         MENU_OPTION tBright,       oBrightness,   0
         MENU_CALL   tColorScheme,                 do_color_scheme
         MENU_OPTION tFlip,         oFlipScreen,   0
-        MENU_OPTION tDepthBlink,   oDepthBlink,   0
+        MENU_OPTION tMODwarning,   oDepthBlink,   0
         MENU_CALL   tExit,                        do_return_settings
     MENU_END
 
