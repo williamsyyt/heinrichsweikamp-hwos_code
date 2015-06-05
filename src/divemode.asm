@@ -447,7 +447,7 @@ divemode_setup_sensor_values4:
 
 calc_velocity:								; called every two seconds
 	btfss	divemode						
-	bra		do_not_display_velocity			; display velocity only in divemode (Not at the surface after dive)
+	return                      			; display velocity only in divemode (Not at the surface after dive)
 
 calc_velocity2:
     SAFE_2BYTE_COPY amb_pressure, sub_a
@@ -476,21 +476,9 @@ calc_velocity2:
 	movwf	divA+0						; divA=99
 
 calc_velocity3:
-	movlw	velocity_warning_level_1	; lowest threshold for display vertical velocity
-	subwf	divA+0,W					; 
-	btfss	STATUS,C
-	bra		do_not_display_velocity
-
-	bsf		display_velocity
 	call	TFT_display_velocity		; With divA+0 = m/min...
 	return
 
-do_not_display_velocity:
-	btfss	display_velocity			; Velocity was not displayed, do not delete
-	return
-	bcf		display_velocity			; Velocity was displayed, delete velocity now
-	call	TFT_display_velocity_clear
-	return
 
 ;=============================================================================
 

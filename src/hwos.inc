@@ -66,15 +66,14 @@
 #DEFINE	FT_MEDIUM           .2
 #DEFINE	FT_LARGE            .3
 
-#DEFINE	warn_depth          .1
-#DEFINE	warn_cns            .2
-#DEFINE	warn_gf             .3
-#DEFINE	warn_ppo2           .4
-#DEFINE warn_velocity       .5
-#DEFINE warn_ceiling        .6
-#DEFINE	warn_gas_in_gaslist	.7
-#DEFINE	warn_ppo2_hud       .8
-#DEFINE warn_battery        .9
+#DEFINE warn_depth          .1
+#DEFINE warn_cns            .2
+#DEFINE warn_gf             .3
+#DEFINE warn_ppo2           .4
+#DEFINE warn_ceiling        .5
+#DEFINE warn_gas_in_gaslist .6
+#DEFINE warn_ppo2_hud       .7
+#DEFINE warn_battery        .8
 
 ; External O2 cell input parameters
 #DEFINE	min_mv				.80			; = 8mV
@@ -152,10 +151,11 @@
 ; Color-code parameters for the divemode
 #DEFINE	color_code_cns_high		.100	; [%]
 #DEFINE	color_code_gf_warn_high .101	; [%]
-#DEFINE	color_code_velocity_warn_high .10;[m/min]
+#DEFINE	color_code_velocity_warn_high .10   ;[m/min]
 
 ; Velocity threshold
-#DEFINE	velocity_warning_level_1	.7	; [m/min]
+#DEFINE	velocity_display_threshold_1	.7	; [m/min]
+#DEFINE	velocity_display_threshold_2	.5	; [m/min]
 
 ; Battery thresholds
 #DEFINE lithium_36v_empty       .2400   ; [mV] Saft 3,6V LS14500 AA - threshold for battery percent display
@@ -569,7 +569,8 @@ opt_sensor_fallback     res 1   ; =1: Fallback to SP1 when sensor is lost
 opt_flip_screen         res 1   ; =1: Flip the screen
 opt_cR_button_left      res 1   ; Left button sensitivity (cR hardware)
 opt_cR_button_right     res 1   ; Right button sensitivity (cR hardware)
-opt_depthblink          res 1   ; =1:do a red blinking warning, =0:default behaviour
+opt_modwarning          res 1   ; =1:do a red blinking warning, =0:default behaviour
+opt_vsitextv2           res 1   ; =1:use the depth dependent ascend rate limits
 
 ;-----------------------------EEPROM DATA ------------------------------------
 ; Automatic reset of all options when this is changed:
@@ -684,6 +685,9 @@ opt_depthblink          res 1   ; =1:do a red blinking warning, =0:default behav
 #DEFINE blinking_depth_warning  flag12,5    ; set by the color_depth. =1: warning color
 #DEFINE blinking_depth_prev     flag12,6    ; set by the TFT_depth.   =1: prev display had warning color
 #DEFINE blinking_depth_toggle   flag12,7    ; toggle to blink
+
+flag13                  res 1
+#DEFINE neg_flag_save           flag13,0    ; neg_flag backup for velocity logic
 
 ;=============================================================================
 ; C-code Routines
