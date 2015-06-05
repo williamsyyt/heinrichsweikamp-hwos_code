@@ -199,7 +199,8 @@ option_table_begin:
         OPTION_UINT8p10 ocR_button_right,.20, .100,   .40,  tPercent, .153,    opt_cR_button_right              ; right button sensitivity
         OPTION_UINT8    obottom_usage,  .5,.50,   .20,tLitersMinute,  .154,    char_I_bottom_usage              ; l/min
         OPTION_UINT8    odeco_usage,    .5,.50,   .20,tLitersMinute,  .155,    char_I_deco_usage                ; l/min
-        OPTION_BOOL     oDepthBlink,    0,                            .156,    opt_depthblink                   ; =1: red depth blinking warning
+        OPTION_BOOL     oMODwarning,    0,                            .156,    opt_modwarning                   ; =1: red depth blinking warning
+        OPTION_BOOL     oVSItextv2,     0,                            .157,    opt_vsitextv2                    ; =1: use the dynamic ascend rate limits
 
 ;=============================================================================
 ; Set Time/Set Date (RAM only)
