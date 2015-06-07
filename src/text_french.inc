@@ -208,7 +208,7 @@
     TCODE   tSelectNx,   "Nx"               ; Nx
     TCODE   tSelectTx,   "Tx"               ; Tx
     TCODE   tDepth,      "Prof."            ; Depth
-    TCODE   tMaxDepth,   "Prof. Max."       ; Max. Depth
+    TCODE   tMaxDepth,   "Prof. Max."       ; Max. Depth - max 10chars!
     TCODE   tDivetime,   "Durée T."         ; Divetime
     TCODE   tDiveHudMask1,   "cell. 1"
     TCODE   tDiveHudMask2,   "cell. 2"

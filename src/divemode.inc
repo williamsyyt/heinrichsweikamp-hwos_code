@@ -29,7 +29,7 @@
 #DEFINE    dm_mask_depth_row         .0
 #DEFINE    dm_mask_depth_column      .12
 #DEFINE    dm_mask_maxdepth_row      .0
-#DEFINE    dm_mask_maxdepth_column   .62
+#DEFINE    dm_mask_maxdepth_column   .73
 #DEFINE    dm_mask_divetime_row      .0
 #DEFINE    dm_mask_divetime_column   .122
 
@@ -54,10 +54,11 @@
 #DEFINE    dm_velocity_text_bot        dm_velocity_text_row+.23     ; 99
 #DEFINE    dm_velocity_text_rgt        dm_depth_rgt                 ; 61
 ; Ascend/Descend bar
-#DEFINE    dm_velobar_top          dm_offset           ; 14
+#DEFINE    dm_velobar_top          dm_offset           ; 14  !! _top+60 must fit into sub_a+0 !!
 #DEFINE    dm_velobar_lft          dm_depth_rgt+.1     ; 62
 #DEFINE    dm_velobar_bot          dm_offset+.85       ; 99
 #DEFINE    dm_velobar_rgt          .73                 ; 73
+#DEFINE    dm_velobar_width        .12
 
 ;******* Upper content / content row / 2nd col *******
 #DEFINE    dm_upcnt_2ndcol            .74                       ; 74

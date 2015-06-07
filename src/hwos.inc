@@ -688,6 +688,8 @@ opt_vsitextv2           res 1   ; =1:use the depth dependent ascend rate limits
 
 flag13                  res 1
 #DEFINE neg_flag_save           flag13,0    ; neg_flag backup for velocity logic
+#DEFINE velocity_warn           flag13,1    ; flag set when ascend is in warning rate
+#DEFINE velocity_attn           flag13,2    ; flag set when ascend is in attention rate
 
 ;=============================================================================
 ; C-code Routines

@@ -995,7 +995,7 @@ divemode_option1:						; Quit simulation mode
 
 divemode_option3:			; minus 1m
 	banksel	isr_backup
-	movlw	d'100'
+	movlw	d'10'
 	subwf	sim_pressure+0
 	movlw	.0
 	subwfb	sim_pressure+1
@@ -1005,7 +1005,7 @@ divemode_option3:			; minus 1m
 
 divemode_option2:			; plus 1m
 	banksel	isr_backup
-	movlw	d'100'
+	movlw	d'10'
 	addwf	sim_pressure+0
 	movlw	.0
 	addwfc	sim_pressure+1
