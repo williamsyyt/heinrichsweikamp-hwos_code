@@ -45,7 +45,7 @@
 #DEFINE    dm_depth_row           dm_offset              ; TOP  - 14 - start position of the detph numbers
 #DEFINE    dm_depth_column        .0                     ; LEFT - 0
 #DEFINE    dm_depth_bot           dm_depth_row+.61       ; 75
-#DEFINE    dm_depth_rgt           dm_depth_column+.61    ; 61
+#DEFINE    dm_depth_rgt           dm_depth_column+.59    ; 59
 #DEFINE    dm_depth_dm_row        dm_depth_row+.25       ; 39 - if metric and d<100, decimeter shown as: ".5"
 #DEFINE    dm_depth_dm_column     dm_depth_column+.40    ; 40 - bottom aligned so it has its own position (2nd content line only)
 ; Ascend rate
@@ -53,31 +53,37 @@
 #DEFINE    dm_velocity_text_column     dm_depth_column              ; 0
 #DEFINE    dm_velocity_text_bot        dm_velocity_text_row+.23     ; 99
 #DEFINE    dm_velocity_text_rgt        dm_depth_rgt                 ; 61
+; Ascend/Descend bar
+#DEFINE    dm_velobar_top          dm_offset           ; 14
+#DEFINE    dm_velobar_lft          dm_depth_rgt+.1     ; 62
+#DEFINE    dm_velobar_bot          dm_offset+.85       ; 99
+#DEFINE    dm_velobar_rgt          .73                 ; 73
 
 ;******* Upper content / content row / 2nd col *******
+#DEFINE    dm_upcnt_2ndcol            .74                       ; 74
 ; Max depth
 #DEFINE    dm_max_depth_row           dm_offset                 ; 14
-#DEFINE    dm_max_depth_column        .64                       ; 64
+#DEFINE    dm_max_depth_column        dm_upcnt_2ndcol           ; 74
 #DEFINE    dm_max_depth_bot           dm_max_depth_row+.34      ; 48
 #DEFINE    dm_max_depth_rgt           dm_max_depth_column+.36   ; 100
 #DEFINE    dm_max_depth_dm_row        dm_max_depth_row+.11      ; 25
 #DEFINE    dm_max_depth_dm_column     dm_max_depth_column+.23   ; 87
 ; Warning area (combined)
 #DEFINE    dm_warning_row             dm_offset+.36             ; 50
-#DEFINE    dm_warning_column          .64                       ; 64
+#DEFINE    dm_warning_column          dm_upcnt_2ndcol           ; 74
 #DEFINE    dm_warning_bot             dm_warning_row+.49        ; 99
-#DEFINE    dm_warning_rgt             dm_warning_column+.68     ; 130
+#DEFINE    dm_warning_rgt             dm_warning_column+.62     ; 136
 #DEFINE    dm_warning_length          .9                        ; total string length
 ; Warning row #1
 #DEFINE    dm_warning1_row            dm_warning_row            ; 36/50
 #DEFINE    dm_warning1_column         dm_warning_column         ; 64
 #DEFINE    dm_warning1_bot            dm_warning1_row+.23       ; 59/73
-#DEFINE    dm_warning1_rgt            dm_warning1_column+.68    ; 130
+#DEFINE    dm_warning1_rgt            dm_warning_rgt            ; 136
 ; Warning row #2
 #DEFINE    dm_warning2_row            dm_warning_row+.24        ; 60/74
 #DEFINE    dm_warning2_column         dm_warning_column         ; 64
 #DEFINE    dm_warning2_bot            dm_warning2_row+.23       ; 83/97
-#DEFINE    dm_warning2_rgt            dm_warning2_column+.68    ; 130
+#DEFINE    dm_warning2_rgt            dm_warning_rgt            ; 136
 
 ;******* Upper content / content row / 3rd col *******
 ; Dive time
@@ -90,7 +96,7 @@
 #DEFINE    dm_divetime_secs_column        dm_divetime_column+.24 ; 139
 ; Warning icon
 #DEFINE    dm_warning_icon_row            dm_offset+.41                ; 55
-#DEFINE    dm_warning_icon_column         .135                         ; 135
+#DEFINE    dm_warning_icon_column         .137                         ; 137
 #DEFINE    dm_warning_icon_bot            dm_warning_icon_row+.38      ; 93
 #DEFINE    dm_warning_icon_rgt            dm_warning_icon_column+.21   ; 156
 ; Apnea dive time

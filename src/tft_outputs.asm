@@ -536,6 +536,11 @@ TFT_divemode_mask:					; Displays mask in Dive-Mode
         WIN_TINY            dm_mask_divetime_column,dm_mask_divetime_row
         STRCAT_TEXT_PRINT   tDivetime
     endif
+
+    ; DEBUG !!!
+    movlw       color_blue
+    WIN_BOX_COLOR dm_velobar_top+.60, dm_velobar_top+.63, dm_velobar_lft+.1, dm_velobar_rgt-.1 ;top, bottom, left, right
+
     call	TFT_standard_color
     return
 
@@ -568,6 +573,11 @@ TFT_display_velocity:						; With divA+0 = m/min
     ; depth(m):      <=6  >6 >12 >18 >23 >27  >31  >35  >39  >44  >50
     ; speed(m/min):    7   8   9  10  11  13   15   17   18   19   20 (warning)
 	; speed(m/min):    5   6   7   8   8  10   12   13   14   15   15 (attention)
+
+    ; w-multip         7   6   5   5   4   3    3    2    2    2    2
+    ; a-multip         6   5   4   3   3   3    2    2    2    2    2
+    ; w-offset         1   2   5   0   6  11    5   16   14   12   10
+    ; a-offset         0   0   2   6   6   0    6    4    2    0    0
 
     bcf     neg_flag_save
     btfsc   neg_flag
@@ -1593,6 +1603,7 @@ TFT_interval:
 	call	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
+    call    TFT_warning_set_window_com
 	STRCPY	"Int:"
 	movff	surface_interval+0,lo
 	movff	surface_interval+1,hi
@@ -1607,6 +1618,7 @@ TFT_interval:
     movlw   surf_warning_length         ; No, use surface string length
     call    TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""
+    call    TFT_warning_set_window_end
 	return
 
     global  TFT_surface_decosettings    ; Show all deco settings
@@ -1683,7 +1695,7 @@ TFT_divetimeout:
 	call	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
-
+    call    TFT_warning_set_window_com
     call	TFT_standard_color
     STRCPY  0x94                        ; "End of dive" icon
     movlw   LOW     divemode_timeout
@@ -1706,6 +1718,7 @@ TFT_divetimeout:
     movlw   dm_warning_length             ; Divemode string length
     call    TFT_fillup_with_spaces     ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""
+    call    TFT_warning_set_window_end
 	return
 
 	global	TFT_ftts
@@ -1720,6 +1733,7 @@ TFT_ftts:
         call    TFT_warning_set_window		; Sets the row and column for the current warning
         tstfsz  WREG                        ; Is there room for the warning?
         return                              ; No
+        call    TFT_warning_set_window_com
     else
         call    TFT_standard_color
         WIN_SMALL dm_ftts_value_column, dm_ftts_value_row
@@ -1745,6 +1759,7 @@ TFT_ftts:
     movlw   dm_warning_length             ; Divemode string length
     call    TFT_fillup_with_spaces     ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""
+    call    TFT_warning_set_window_end
 	return
 
 TFT_ftts2:
@@ -1753,6 +1768,7 @@ TFT_ftts2:
     movlw   dm_warning_length             ; Divemode string length
     call    TFT_fillup_with_spaces     ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT ""
+    call    TFT_warning_set_window_end
     return
 
 
@@ -2636,6 +2652,7 @@ TFT_max_pressure3:
 
 TFT_max_pressure2_metric:
     WIN_MEDIUM	dm_max_depth_column, dm_max_depth_row
+    call    TFT_standard_color
 
 	movlw	.039
 	cpfslt	hi
@@ -3138,6 +3155,7 @@ TFT_desaturation_time:
 	rcall	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
+    call    TFT_warning_set_window_com
 	STRCPY	"Desat:"
 	movff		desaturation_time+0,lo			; divide by 60...
 	movff		desaturation_time+1,hi
@@ -3156,6 +3174,7 @@ TFT_desaturation_time:
     movlw   .0
     movff   WREG,buffer+11
 	STRCAT_PRINT	""
+    call    TFT_warning_set_window_end
 	return
 
 	global	TFT_nofly_time
@@ -3163,6 +3182,7 @@ TFT_nofly_time:
 	rcall	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
+    call    TFT_warning_set_window_com
 	STRCPY	"NoFly:"
 	movff		nofly_time+0,lo			; divide by 60...
 	movff		nofly_time+1,hi
@@ -3181,6 +3201,7 @@ TFT_nofly_time:
     movlw   .0
     movff   WREG,buffer+11
 	STRCAT_PRINT	""
+    call    TFT_warning_set_window_end
 	return
 
     global  TFT_warning_agf
@@ -3188,12 +3209,14 @@ TFT_warning_agf:
 	rcall	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
+    call    TFT_warning_set_window_com
     call	TFT_warnings_color
 	STRCPY_TEXT tDiveaGF_active         ; "aGF!"
     movlw   dm_warning_length              ; Divemode string length
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT ""
 	call	TFT_standard_color
+    call    TFT_warning_set_window_end
     return
 
     global  TFT_warning_fallback
@@ -3214,6 +3237,7 @@ TFT_warning_gf:                         ;GF
 	rcall	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
+    call    TFT_warning_set_window_com
 	TFT_color_code		warn_gf		; Color-code Output
 	STRCPY  "GF:"
 	movff	char_O_gradient_factor,lo		; gradient factor
@@ -3227,6 +3251,7 @@ TFT_warning_gf:                         ;GF
     STRCAT_PRINT  ""
     bcf     leftbind
 	call	TFT_standard_color
+    call    TFT_warning_set_window_end
 	return
 
 TFT_warning_set_window:                 ; Sets the row and column for the current warning
@@ -3263,12 +3288,22 @@ TFT_warning_set_window4:
     bsf     second_row_warning          ; =1: The second row contains a warning
 	retlw   .0                          ; WREG=0 -> Warning window defined
 
+TFT_warning_set_window_com:
+    if dm_offset == 0
+        bsf     win_invert
+    endif
+    return
+
+TFT_warning_set_window_end:
+    bcf     win_invert
+    return
 
 	global	TFT_update_batt_percent_divemode
 TFT_update_batt_percent_divemode:
 	rcall	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
+    call    TFT_warning_set_window_com
     movff   batt_percent,lo         ; Get battery percent
     TFT_color_code		warn_battery; Color-code battery percent
     STRCPY  "Batt:"
@@ -3282,8 +3317,8 @@ TFT_update_batt_percent_divemode:
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT	""
 	call	TFT_standard_color
+    call    TFT_warning_set_window_end
 	return
-
 
     global  TFT_gf_mask                         ; Setup Mask
 TFT_gf_mask:
@@ -3599,6 +3634,7 @@ TFT_display_cns:
 	rcall	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
+    call    TFT_warning_set_window_com
 	TFT_color_code		warn_cns		; Color-code CNS output
 	STRCPY_TEXT tCNS2                   ; CNS:
 	movff	int_O_CNS_fraction+0,lo
@@ -3613,6 +3649,7 @@ TFT_display_cns:
     rcall   TFT_fillup_with_spaces          ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""
 	call	TFT_standard_color
+    call    TFT_warning_set_window_end
 	return
 
 	global	TFT_display_ppo2
@@ -3620,6 +3657,7 @@ TFT_display_ppo2:                       ; Show ppO2 (ppO2 stored in xC, in mbar!
 	rcall	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
+    call    TFT_warning_set_window_com
 	TFT_color_code		warn_ppo2		; Color-code output (ppO2 stored in xC)
     STRCPY_TEXT tppO2                   ; ppO2:
 ; Check very high ppO2 manually
@@ -3634,6 +3672,7 @@ TFT_show_ppO2_2:
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT ""
 	call	TFT_standard_color
+    call    TFT_warning_set_window_end
 	return
 
 TFT_show_ppO2_3:
