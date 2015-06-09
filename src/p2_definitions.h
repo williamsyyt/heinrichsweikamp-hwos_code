@@ -39,9 +39,11 @@ extern void deco_gradient_array(void);
 extern void deco_calc_desaturation_time(void);
 extern void deco_calc_CNS_fraction(void);
 extern void deco_calc_CNS_planning(void);
+extern void deco_calc_CNS_decrease_15min(void);
 extern void deco_clear_CNS_fraction(void);
 extern void deco_push_tissues_to_vault(void);
 extern void deco_pull_tissues_from_vault(void);
+extern void deco_gas_volumes(void);
 
 // ***********************************************
 // **         Allow compile on VisualC          **
