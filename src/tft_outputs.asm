@@ -1050,10 +1050,10 @@ TFT_velocity_VSIbar_draw:
    
     movff   sub_c+0,win_top
     movff   divB,win_height
-    movlw   dm_velobar_width-.4
+    movlw   dm_velobar_width-.2
     movff   WREG,win_width
     movff   WREG,win_bargraph
-    movlw   dm_velobar_lft+.3
+    movlw   dm_velobar_lft+.2
     movff   WREG,win_leftx2
     movlw   color_green
     call    TFT_set_color
@@ -1143,10 +1143,10 @@ TFT_velocity_VSIbar_desc_draw:
 
     movff   sub_a+0,win_top
     movff   divB,win_height
-    movlw   dm_velobar_width-.4
+    movlw   dm_velobar_width-.2
     movff   WREG,win_width
     movff   WREG,win_bargraph
-    movlw   dm_velobar_lft+.3
+    movlw   dm_velobar_lft+.2
     movff   WREG,win_leftx2
     movlw   color_green
     call    TFT_set_color
