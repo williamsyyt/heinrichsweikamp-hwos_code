@@ -54,9 +54,9 @@
 #DEFINE    dm_velocity_text_bot        dm_velocity_text_row+.23     ; 99
 #DEFINE    dm_velocity_text_rgt        dm_depth_rgt                 ; 61
 ; Ascend/Descend bar
-#DEFINE    dm_velobar_top          dm_offset           ; 14  !! _top+60 must fit into sub_a+0 !!
+#DEFINE    dm_velobar_top          dm_offset           ; 14
 #DEFINE    dm_velobar_lft          dm_depth_rgt+.1     ; 62
-#DEFINE    dm_velobar_bot          dm_offset+.85       ; 99
+#DEFINE    dm_velobar_bot          dm_offset+.85       ; 99  // must fit into 8b
 #DEFINE    dm_velobar_rgt          .73                 ; 73
 #DEFINE    dm_velobar_width        .12
 
@@ -316,6 +316,10 @@
 ; FTTS (only modded screen)
 #DEFINE    dm_ftts_value_row              dm_3rdrow_top+.64         ; 215
 #DEFINE    dm_ftts_value_column           .97                       ; 97
+; Grid line (only modded screen)
+#DEFINE     dm_gassep_row                 dm_sep_2_3_row            ; 164
+#DEFINE     dm_gassep_bot                 .239                      ; .239
+#DEFINE     dm_gassep_column              .78                       ; .78
 
 ;******* Bottom content / Apnea mode *******;
 #DEFINE    dm_apnoe_surface_time_text_row           .190                   ; 190
@@ -326,7 +330,6 @@
 #DEFINE    dm_apnoe_last_max_depth_text_col         .100                   ; 100
 #DEFINE    dm_apnoe_last_max_depth_row              .204                   ; 204
 #DEFINE    dm_apnoe_last_max_depth_column           .100                   ; 100
-
 
 
 ; IV. The last set of parameters are for the menus displayed in dive mode
