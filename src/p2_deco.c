@@ -92,7 +92,7 @@
 // TODO:
 //
 // Literature:
-// Bühlmann, Albert: Tauchmedizin; 4. Auflage [2002];
+// Buhlmann, Albert: Tauchmedizin; 4. Auflage [2002];
 // Schr"oder, Kai & Reith, Steffen; 2000; S"attigungsvorg"ange beim Tauchen, das Modell ZH-L16, Funktionsweise von Tauchcomputern; http://www.achim-und-kai.de/kai/tausim/saett_faq
 // Morrison, Stuart; 2000; DIY DECOMPRESSION; http://www.lizardland.co.uk/DIYDeco.html
 // Balthasar, Steffen; Dekompressionstheorie I: Neo Haldane Modelle; http://www.txfreak.de/dekompressionstheorie_1.pdf
@@ -198,10 +198,10 @@ static float		ppHe;
 static float		temp_tissue;
 static float		N2_ratio;       // Breathed gas nitrogen ratio.
 static float		He_ratio;       // Breathed gas helium ratio.
-static float 		var_N2_a;       // Bühlmann a, for current N2 tissue.
-static float 		var_N2_b;       // Bühlmann b, for current N2 tissue.
-static float 		var_He_a;       // Bühlmann a, for current He tissue.
-static float 		var_He_b;       // Bühlmann b, for current He tissue.
+static float 		var_N2_a;       // Buhlmann a, for current N2 tissue.
+static float 		var_N2_b;       // Buhlmann b, for current N2 tissue.
+static float 		var_He_a;       // Buhlmann a, for current He tissue.
+static float 		var_He_b;       // Buhlmann b, for current He tissue.
 static float  		var_N2_e;       // Exposition, for current N2 tissue.
 static float  		var_He_e;       // Exposition, for current He tissue.
 static float            var_N2_ht;      // Half-time for current N2 tissue.
@@ -318,7 +318,7 @@ void assert_failed(PARAMETER short int line)
 
 //////////////////////////////////////////////////////////////////////////////
 // Fast subroutine to read timer 5.
-// Note: result is in 1/32 of msecs (30,51757813µs/bit to be precise)
+// Note: result is in 1/32 of msecs (30,51757813 us/bit to be precise)
 static unsigned short tmr5(void)
 {
 #ifndef CROSS_COMPILE
@@ -894,10 +894,10 @@ static void clear_tissue(void)
     p = N2_ratio * (pres_respiration -  ppWater);
     for(ci=0; ci<NUM_COMP; ci++)
     {
-        // cycle through the 16 Bühlmann N2 tissues
+        // cycle through the 16 Buhlmann N2 tissues
         pres_tissue_N2[ci] = p;
 
-        // cycle through the 16 Bühlmann tissues for Helium
+        // cycle through the 16 Buhlmann tissues for Helium
         pres_tissue_He[ci] = 0.0;
     }
 
@@ -1031,7 +1031,7 @@ void calc_hauptroutine_data_input(void)
     pres_surface        = int_I_pres_surface     * 0.001;
     N2_ratio            = char_I_N2_ratio        * 0.01;
     He_ratio            = char_I_He_ratio        * 0.01;
-    float_deco_distance = char_I_deco_distance   * 0.01;     // Get offset is in mbar.
+    float_deco_distance = char_I_deco_distance   * 0.01;     // Get offset in BAR
 
     // ____________________________________________________
     //
@@ -1677,7 +1677,7 @@ static void calc_gradient_factor(void)
         // NOTE: in GF model, calc_lead_tissue_limit include already the
         //       correction due to gradient factor. To compute the actual
         //       current GF, we need to (re-)compute the raw ambiant-pressure
-        //       limit from the Bühlmann model.
+        //       limit from the Buhlmann model.
         if( char_I_deco_model != 0 )
         {
             ci = char_O_gtissue_no;
@@ -1738,7 +1738,7 @@ void deco_calc_desaturation_time(void)
     assert( 800 < int_I_pres_surface && int_I_pres_surface < 1100 );
     assert( 0 < char_I_desaturation_multiplier && char_I_desaturation_multiplier <= 100 );
 
-    N2_ratio = 0.7902; // FIXED sum as stated in bühlmann
+    N2_ratio = 0.7902; // FIXED sum as stated in buhlmann
     pres_surface = int_I_pres_surface * 0.001;
     ppN2 = N2_ratio * (pres_surface - ppWater);
     int_O_desaturation_time = 0;
