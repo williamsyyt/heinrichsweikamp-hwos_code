@@ -67,7 +67,7 @@ TFT_color_code macro color_code_temp
 	extern	TFT_display_deko_mask
 	extern	TFT_divemode_warning
 	extern	TFT_divemode_warning_clear
-	extern	TFT_display_velocity_clear
+	extern	TFT_velocity_clear
 	extern	TFT_display_velocity
 	extern 	TFT_clear_customview_divemode
 	extern	TFT_display_deko
@@ -87,6 +87,7 @@ TFT_color_code macro color_code_temp
     extern  TFT_update_avr_stopwatch            ; Update average depth and stopwatch
     extern  TFT_decoplan                        ; Decoplan
     extern  TFT_clear_divemode_menu             ; Clear the divemode menu
+    extern  TFT_draw_gassep_line                ; Draw the gas separator grid line in spec mode only
     extern  TFT_divemode_menu_cursor            ; the divemode cursor
     extern  TFT_ead_end_tissues_clock_mask      ; Setup Mask
     extern  TFT_ead_end_tissues_clock           ; Show EAD/END, Tissues and clock

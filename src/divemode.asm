@@ -567,6 +567,7 @@ timeout_divemode_menu2:                 ; Called from divemenu_tree.asm
     call    TFT_active_gas_divemode     ; Redraw gas/setpoint/diluent
     bcf     blinking_better_gas         ; Clear flag to have temperature updated once
     call	TFT_temp_divemode           ; Displays temperature
+    call    TFT_draw_gassep_line        ; Gas separator grid in spec mode only
 
     btfss   decostop_active             ; In deco mode ?
     bra     timeout_divemode_menu_ndl   ; No, show NDL again
@@ -995,7 +996,7 @@ divemode_option1:						; Quit simulation mode
 
 divemode_option3:			; minus 1m
 	banksel	isr_backup
-	movlw	d'10'
+	movlw	d'100'
 	subwf	sim_pressure+0
 	movlw	.0
 	subwfb	sim_pressure+1
@@ -1005,7 +1006,7 @@ divemode_option3:			; minus 1m
 
 divemode_option2:			; plus 1m
 	banksel	isr_backup
-	movlw	d'10'
+	movlw	d'100'
 	addwf	sim_pressure+0
 	movlw	.0
 	addwfc	sim_pressure+1
