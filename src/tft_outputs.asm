@@ -574,15 +574,11 @@ TFT_draw_gassep_line:
 	global	TFT_display_velocity
 TFT_display_velocity:						; With divA+0 = m/min
     ; Input is:
-    ;   neg_flag: ascend=1, descend=0
-    ;   divA+0:   rate in m/min
+    ;   neg_flag_velocity: ascend=1, descend=0
+    ;   divA+0:            rate in m/min
     ; init flags used to store warning/attention
     bcf     velocity_warn
     bcf     velocity_attn
-    ; retain the neg_flag (descending information)
-    bcf     neg_flag_velocity
-    btfsc   neg_flag
-    bsf     neg_flag_velocity
     ; check if old/new ascend logic is used
     TSTOSS  opt_vsitextv2       			; 0=standard, 1=dynamic
     bra     TFT_velocity_std                ; static ascend rate limit
@@ -597,6 +593,7 @@ TFT_display_velocity:						; With divA+0 = m/min
     movlw   .0
     movwf   xC+3
     ; check if velocity is below the treshold level
+    bcf     STATUS,C
 	movlw	velocity_display_threshold_2
 	subwf	divA+0,W
 	btfss	STATUS,C
@@ -885,6 +882,7 @@ TFT_velocity_check:
 	clrf    hi
 	movff	divA+0,lo
 	; Velocity warn [m/min] - we receive it from xA+0
+    bcf     STATUS,C
     movff	xA+0,WREG
 	; compare the values
 	subwf	lo,W                            ; subtract W from lo,
@@ -892,6 +890,7 @@ TFT_velocity_check:
 	bra		TFT_velocity_warn    ; Skip if no carry flag otherwise set to warning color
     ; not eq or gt warning trashold, lets check if it reach the attention level
 	; Velocity attn [m/min] - we receive it from xA+1
+    bcf     STATUS,C
     movff	xA+1,WREG
 	; compare the values
 	subwf	lo,W                            ; subtract W from lo,
@@ -925,7 +924,8 @@ TFT_velocity_std:
     movlw   .6
     movwf   xC+3
 
-	movlw	velocity_display_threshold_1	; lowest threshold for display vertical velocity
+	bcf     STATUS,C
+    movlw	velocity_display_threshold_1	; lowest threshold for display vertical velocity
 	subwf	divA+0,W
 	btfss	STATUS,C
 	bra		TFT_velocity_ntr                ; under treshold, clear text and display VSIbar
@@ -934,6 +934,7 @@ TFT_velocity_std:
 	call	TFT_standard_color
 	btfss	neg_flag_velocity       ; Ignore for descent!
 	bra		TFT_velocity_disp		; Skip check!
+    bcf     STATUS,C
 	movff	divA+0,lo
 	movlw	color_code_velocity_warn_high	; Velocity warn [m/min]
 	subwf	lo,W
@@ -967,7 +968,6 @@ TFT_velocity_disp:
     bcf     win_invert
     bcf     neg_flag
     call    TFT_velocity_VSIbar
-    bcf     neg_flag_velocity
 	call	TFT_standard_color
     return
 
@@ -982,7 +982,6 @@ TFT_velocity_metric:
     bcf     win_invert
     bcf     neg_flag
     call    TFT_velocity_VSIbar
-    bcf     neg_flag_velocity
 	call	TFT_standard_color
     return
 
@@ -1021,7 +1020,11 @@ TFT_velocity_VSIbar_com:
     movlw   .1
     cpfslt  xC+1
     bra     TFT_velocity_VSIbar_max
+    movlw   .60
+    cpfslt  xC+0
+    bra     TFT_velocity_VSIbar_max
     ; add offset
+    bcf     STATUS,C
     movff   sub_b+1,WREG
     addwf   xC+0,1
     btfsc   STATUS,C
@@ -1121,7 +1124,11 @@ TFT_velocity_VSIbar_desc:
     movlw   .1
     cpfslt  xC+1
     bra     TFT_velocity_VSIbar_desc_max
+    movlw   .22
+    cpfslt  xC+1
+    bra     TFT_velocity_VSIbar_desc_max
     ; add offset
+    bcf     STATUS,C
     movff   sub_b+1,WREG
     addwf   xC+0,1
     btfsc   STATUS,C
@@ -1155,6 +1162,7 @@ TFT_velocity_VSIbar_desc_draw:
     movlw   dm_velobar_lft+.2
     movff   WREG,win_leftx2
     movlw   color_green
+    movlw   color_blue               ; DEBUG
     call    TFT_set_color
     call    TFT_box
 
