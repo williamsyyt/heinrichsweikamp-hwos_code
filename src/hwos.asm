@@ -267,7 +267,7 @@ init_ostc:
     bra     $-4
 
 	movlw	d'2'
-	movwf	speed_setting		; Normal
+	movff   WREG,speed_setting		; Normal
 
 
 	return

@@ -320,6 +320,8 @@ compass_r           res 3
 CNS_start           res 2       ; CNS value at beginning of dive
 GF_start            res 1       ; GF value at beginning of dive
 
+speed_setting        	res 1           ; =1: Eco, =2: Normal, =3: Fastest
+
 ;---- Data for graphical compass
 xRD             res 2       ; virtual compass ruler offset
 xRDr            res 2       ; virtual compass ruler offset - right end
@@ -355,6 +357,7 @@ flag9           		res 1
 flag10           		res 1
 flag11           		res 1
 flag12           		res 1
+flag13                  res 1
 
 hardware_flag           res 1           ; hardware descriptor flag
 
@@ -411,7 +414,6 @@ ignore_digits   res 1
 #DEFINE enable_screen_dumps cvt_flags,4 ; =1: Ignore vin_usb, wait for "l" command (Screen dump)
 
 ;---- Misc.
-speed_setting        	res 1           ; =1: Eco, =2: Normal, =3: Fastest
 nofly_time              res 2   		; No Fly time in Minutes (Calculated after Dive)
 timeout_counter 		res 1
 timeout_counter2		res 1
@@ -686,7 +688,6 @@ opt_vsitextv2           res 1   ; =1:use the depth dependent ascend rate limits
 #DEFINE blinking_depth_prev     flag12,6    ; set by the TFT_depth.   =1: prev display had warning color
 #DEFINE blinking_depth_toggle   flag12,7    ; toggle to blink
 
-flag13                  res 1
 #DEFINE neg_flag_velocity       flag13,0    ; neg_flag backup for velocity logic
 #DEFINE velocity_warn           flag13,1    ; flag set when ascend is in warning rate
 #DEFINE velocity_attn           flag13,2    ; flag set when ascend is in attention rate
