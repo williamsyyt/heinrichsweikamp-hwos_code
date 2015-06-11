@@ -1167,7 +1167,6 @@ TFT_velocity_VSIbar_desc_draw:
     movlw   dm_velobar_lft+.2
     movff   WREG,win_leftx2
     movlw   color_green
-    movlw   color_blue               ; DEBUG
     call    TFT_set_color
     call    TFT_box
 
