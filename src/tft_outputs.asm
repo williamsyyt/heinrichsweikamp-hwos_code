@@ -1005,6 +1005,7 @@ TFT_velocity_VSIbar_warn:
     ;bra     TFT_velocity_VSIbar_com
 
 TFT_velocity_VSIbar_com:
+    clrf    divB
     ; multiply
     movff   divA+0,xA+0
     clrf    xA+1
@@ -1014,8 +1015,10 @@ TFT_velocity_VSIbar_com:
     movlw   .1
     cpfslt  xC+3
     bra     TFT_velocity_VSIbar_max
+    movlw   .1
     cpfslt  xC+2
     bra     TFT_velocity_VSIbar_max
+    movlw   .1
     cpfslt  xC+1
     bra     TFT_velocity_VSIbar_max
     ; add offset
@@ -1097,6 +1100,7 @@ TFT_velocity_VSIbar_desc:
     cpfsgt  divA+0
     bra     TFT_velocity_VSIbar_desc_clr
 
+    clrf    divB
     ; Desc uses a single multiplier/offset value: *1 / +3
     movlw   .1
     movff   WREG,sub_b+0    ; multiplier
@@ -1111,8 +1115,10 @@ TFT_velocity_VSIbar_desc:
     movlw   .1
     cpfslt  xC+3
     bra     TFT_velocity_VSIbar_desc_max
+    movlw   .1
     cpfslt  xC+2
     bra     TFT_velocity_VSIbar_desc_max
+    movlw   .1
     cpfslt  xC+1
     bra     TFT_velocity_VSIbar_desc_max
     ; add offset
