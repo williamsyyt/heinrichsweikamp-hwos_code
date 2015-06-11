@@ -335,11 +335,11 @@ isr_sensor_state2:
         movff   sensor_state_counter,WREG
         btfss   WREG,0                  ; every 1/4 second
         bsf     quarter_second_update   ; Set flag
+        banksel isr_backup              ; Back to Bank0 ISR data
 		movlw	d'2'
 		cpfseq	speed_setting           ; Set to normal in case it's not already in normal speed mode
 		rcall	isr_set_speed_to_normal
-		banksel isr_backup              ; Back to Bank0 ISR data
-
+	
 		incf	sensor_state_counter,F	; counts to eight for state maschine
 
 ; State 1: Clear flags and average registers, get temperature (51us) and start pressure integration (73,5us)
@@ -614,10 +614,10 @@ isr_battery_gauge2:
 
 	; Add current for CPU and GPU 
 	; speed_setting=1: ECO (3,1mA -> 861nAs), =2: NORMAL (5,50mA -> 1528nAs) or =3: FASTEST (8,04mA -> 2233nAs)
+        banksel isr_backup              ; Bank0 ISR data
 		movlw	.1
 		cpfseq	speed_setting
 		bra		isr_battery_gauge3
-		banksel isr_backup              ; Bank0 ISR data
 		movlw	LOW		current_speed_eco
 		addwf	isr1_temp,F
 		movlw	HIGH	current_speed_eco
@@ -627,14 +627,12 @@ isr_battery_gauge3:
 		movlw	.2
 		cpfseq	speed_setting
 		bra		isr_battery_gauge4
-		banksel isr_backup              ; Bank0 ISR data
 		movlw	LOW		current_speed_normal
 		addwf	isr1_temp,F
 		movlw	HIGH	current_speed_normal
 		addwfc	isr2_temp,F
 		bra		isr_battery_gauge5
 isr_battery_gauge4:
-		banksel isr_backup              ; Bank0 ISR data
 		movlw	LOW		current_speed_fastest
 		addwf	isr1_temp,F
 		movlw	HIGH	current_speed_fastest
@@ -814,9 +812,8 @@ check_nofly_desat_time3:
 
 isr_restore_clock:
 		banksel	isr_backup
-		movff	speed_setting,isr1_temp			; Copy to Bank0
 		movlw	d'1'
-		cpfseq	isr1_temp
+		cpfseq	speed_setting
 		bra		isr_restore_speed2
 	; Reset to eco	
 		movlw	b'00000000'			
@@ -828,7 +825,7 @@ isr_restore_clock:
 		bra		isr_restore_exit
 isr_restore_speed2:
 		movlw	d'2'
-		cpfseq	isr1_temp
+		cpfseq	speed_setting
 		bra		isr_restore_speed3
 	; Reset to normal
 		movlw	b'01110010'
