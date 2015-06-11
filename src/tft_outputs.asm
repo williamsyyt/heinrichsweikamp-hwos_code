@@ -1005,6 +1005,11 @@ TFT_velocity_VSIbar_warn:
 
 TFT_velocity_VSIbar_com:
     clrf    divB
+
+    movlw   .0
+    cpfsgt  divA+0
+    bra     TFT_velocity_VSIbar_clr
+
     ; multiply
     movff   divA+0,xA+0
     clrf    xA+1
