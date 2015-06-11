@@ -458,6 +458,10 @@ calc_velocity2:
 
 	call	subU16						; sub_c = amb_pressure - last_pressure
 
+    bcf     neg_flag_velocity
+    btfsc   neg_flag
+    bsf     neg_flag_velocity
+
 	movff	sub_c+0,xA+0
 	movff	sub_c+1,xA+1
 	movlw	d'39'						; 77 when called every second....
