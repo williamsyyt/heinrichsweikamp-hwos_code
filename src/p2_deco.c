@@ -729,7 +729,7 @@ void deco_calc_dive_interval(void)
 //
 static void gas_switch_find_current(void)
 {
-    assert( 0 < char_I_current_gas && char_I_current_gas <= (NUM_GAS+1) );
+    assert( 0 < char_I_current_gas && char_I_current_gas <= (2*NUM_GAS) );
 
     if( char_I_current_gas <= NUM_GAS )                 // Gas1..Gas5
     {
