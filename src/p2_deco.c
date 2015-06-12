@@ -1895,8 +1895,8 @@ static void calc_dive_interval(void)
         calc_tissue(2);  // period = 10min.
         CNS_fraction =  0.92587471 * CNS_fraction;  // Half-time = 90min: (1/2)^(1/9)
     }
-    assert( 0.0 <= CNS_fraction && CNS_fraction <= 2.56 );
-    int_O_CNS_fraction = (unsigned int)(CNS_fraction * 100.0 + 0.5);
+    assert( 0.0 <= CNS_fraction && CNS_fraction <= 9.99 ); // 999 %
+    int_O_CNS_fraction = (unsigned short)(CNS_fraction * 100.0 + 0.5);
 
     //---- Restore model -----------------------------------------------------
     char_I_deco_model = backup_model;
@@ -1928,7 +1928,7 @@ void deco_calc_CNS_fraction(void)
     overlay float time_factor = 1.0f;
     RESET_C_STACK
 
-    assert( 0.0 <= CNS_fraction && CNS_fraction <= 2.56 );
+    assert( 0.0 <= CNS_fraction && CNS_fraction <= 9.99 );
     assert( char_I_actual_ppO2 > 15 );
 
     if( char_I_step_is_1min == 1 )
@@ -1957,7 +1957,7 @@ void deco_calc_CNS_fraction(void)
         CNS_fraction += time_factor/(-222.11 * char_I_actual_ppO2 + 37350.0);
     //------------------------------------------------------------------------
     // Arieli et all.(2002): Modeling pulmonary and CNS O2 toxicity:
-    // J Appl Physiol 92: 248–256, 2002, doi:10.1152/japplphysiol.00434.2001
+    // J Appl Physiol 92: 248--256, 2002, doi:10.1152/japplphysiol.00434.2001
     // Formula (A1) based on value for 1.55 and c=20
     // example calculation: Sqrt((1.7/1.55)^20)*0.000404
     else if (char_I_actual_ppO2 < 172)
@@ -1979,12 +1979,12 @@ void deco_calc_CNS_fraction(void)
     else
         CNS_fraction += time_factor*0.0482; // value for 2.5
 
-    if( CNS_fraction > 9.99)
+    if( CNS_fraction > 9.99)    // Limit display to 999%
         CNS_fraction = 9.99;
     if( CNS_fraction < 0.0 )
         CNS_fraction = 0.0;
 
-    int_O_CNS_fraction = (unsigned int)(100.0 * CNS_fraction + 0.5);
+    int_O_CNS_fraction = (unsigned short)(100.0 * CNS_fraction + 0.5);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -2112,10 +2112,10 @@ void deco_calc_CNS_planning(void)
 void deco_calc_CNS_decrease_15min(void)
 {
     RESET_C_STACK
-    assert( 0.0 <= CNS_fraction && CNS_fraction <= 2.56 );
+    assert( 0.0 <= CNS_fraction && CNS_fraction <= 9.99 );
 
     CNS_fraction =  0.890899 * CNS_fraction;
-    int_O_CNS_fraction = (unsigned int)(CNS_fraction * 100.0 + 0.5);
+    int_O_CNS_fraction = (unsigned short)(CNS_fraction * 100.0 + 0.5);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -2259,7 +2259,7 @@ void deco_pull_tissues_from_vault(void)
 
     // Restore both CNS variable, too.
     CNS_fraction = cns_vault;
-    int_O_CNS_fraction = (unsigned int)(CNS_fraction * 100.0 + 0.5);
+    int_O_CNS_fraction = (unsigned short)(CNS_fraction * 100.0 + 0.5);
 
     // GF history too:
     low_depth = low_depth_vault;
