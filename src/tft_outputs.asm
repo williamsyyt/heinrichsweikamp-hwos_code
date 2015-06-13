@@ -990,6 +990,10 @@ TFT_velocity_VSIbar:
     btfss   neg_flag_velocity
     bra     TFT_velocity_VSIbar_desc
     call    TFT_velocity_VSIbar_desc_clr
+
+    TSTOSS  opt_vsigraph			; 0=skip, 1=draw
+    return
+
     btfsc   velocity_warn
     bra     TFT_velocity_VSIbar_warn
     ; if all ok or attention, use attn's values
@@ -1103,6 +1107,10 @@ TFT_velocity_VSIbar_draw:
 TFT_velocity_VSIbar_desc:
     ; clear the ascend part of the bar
     call    TFT_velocity_VSIbar_clr
+
+    TSTOSS  opt_vsigraph			; 0=skip, 1=draw
+    return
+
     ; divA+0=0 is descend, clear everything if it's actually zero
     movlw   .0
     cpfsgt  divA+0
@@ -4089,6 +4097,12 @@ TFT_LogOffset_Logtitle:
 	PUTC	" "
 	return			; No "_PRINT" here...
 	
+	global	TFT_VSImenu_dynamictitle
+TFT_VSImenu_dynamictitle:
+	STRCPY_TEXT tVSItext1
+	PUTC	" "
+	return			; No "_PRINT" here...
+
 
 	global	adjust_depth_with_salinity
 adjust_depth_with_salinity:			; computes salinity setting into lo:hi [mbar]

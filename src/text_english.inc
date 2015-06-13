@@ -136,7 +136,13 @@
     TCODE   tDvSalinity,"Salinity:"             ; Salinity
     TCODE   tFlip,      "Rotate Screen:"        ; Rotate Screen
     TCODE   tMODwarning,"MOD warning:"          ; MOD warning
-    TCODE   tVSItextv2, "Dyn asc rate lim:"     ; Dyn asc rate lim
+    TCODE   tDispSetVSI,"VSI Settings..."       ; VSI Settings...
+
+; VSI display Settings
+    TCODE   tDispSetVSItitle, "VSI Display Settings"     ; VSI display Settings
+    TCODE   tVSItext1,        "Depth based variable"     ; max 20 chars: "Depth based variable", first line of the option
+    TCODE   tVSItext2,        "   ascend limit: "        ; max 17 chars: "   ascend limit: ", second line, with space prefix
+    TCODE   tVSIgraph,        "Graphical VSI:   "        ; max 17 chars: "Graphical VSI:   "
 
 ; Setup Menu
     TCODE   tSystSets,  "Settings"
