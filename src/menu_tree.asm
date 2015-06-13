@@ -343,6 +343,10 @@ do_settings_menu:
         MENU_CALL   tExit,          do_continue_main_menu
     MENU_END
 
+
+do_return_settings_more:
+        call    menu_processor_pop              ; Drop exit entry
+        call    menu_processor_pop              ; Pop return line.
     
 do_settings_menu_more:
     btfsc   rechargeable            ; piezo buttons available
@@ -407,7 +411,7 @@ do_compass_menu:
     MENU_BEGIN  tSystSets, .2
         MENU_CALL   tCompassMenu,   compass_calibration_loop
 ;        MENU_OPTION tCompassGain,   oCompassGain,       0
-        MENU_CALL   tExit,          do_return_settings
+        MENU_CALL   tExit,          do_return_settings_more
     MENU_END
 
 ;=============================================================================
@@ -566,7 +570,7 @@ do_log_offset_menu:
 		MENU_CALL       tLogOffsetp10,				do_logoffset_plus10
 		MENU_CALL       tLogOffsetm1,				do_logoffset_minus1
 		MENU_CALL       tLogOffsetm10,				do_logoffset_minus10
-        MENU_CALL       tExit,                  	do_dispsets_menu_3stack
+        MENU_CALL       tExit,                  	do_return_settings_more
     MENU_END
 
 
@@ -619,10 +623,17 @@ do_dispsets_menu:
         MENU_CALL   tColorScheme,                 do_color_scheme
         MENU_OPTION tFlip,         oFlipScreen,   0
         MENU_OPTION tMODwarning,   oMODwarning,   0
-        MENU_OPTION tVSItextv2,    oVSItextv2,    0
+        MENU_CALL   tDispSetVSI,                  do_dispsets_VSI_menu
         MENU_CALL   tExit,                        do_return_settings
     MENU_END
 
+do_dispsets_VSI_menu:
+    MENU_BEGIN  tDispSetVSItitle, .4
+        MENU_DYNAMIC    TFT_VSImenu_dynamictitle,     0
+        MENU_OPTION     tVSItext2,     oVSItextv2,    0
+        MENU_OPTION     tVSIgraph,     oVSIgraph,     0
+        MENU_CALL       tExit,                        do_dispsets_menu_3stack
+    MENU_END
 
     extern  oColorSetDive
 do_color_scheme:
