@@ -87,7 +87,8 @@
 // 2013/05/08: [jDG] A. Salm remark: NOAA tables for CNS are in ATA, not bar.
 // 2013/12/21: [jDG] Fix CNS calculation in decoplan w/o marked gas switch
 // 2014/06/16: [jDG] Fix Helium diluant. Fix volumes with many travel mix.
-// 2014/06/29: [mH] Compute int_O_ceiling
+// 2014/06/29: [mH]  Compute int_O_ceiling
+// 2015/06/12: [jDG] Fix NDL prediction while desaturating with the Buhlmann model.
 //
 // TODO:
 //
@@ -190,22 +191,22 @@ static float pres_tissue_He_vault[NUM_COMP];
 #endif
 
 static unsigned char	ci;
-static float 		pres_respiration;
-static float		pres_surface;
-static float		temp_deco;
-static float		ppN2;
-static float		ppHe;
-static float		temp_tissue;
-static float		N2_ratio;       // Breathed gas nitrogen ratio.
-static float		He_ratio;       // Breathed gas helium ratio.
-static float 		var_N2_a;       // Buhlmann a, for current N2 tissue.
-static float 		var_N2_b;       // Buhlmann b, for current N2 tissue.
-static float 		var_He_a;       // Buhlmann a, for current He tissue.
-static float 		var_He_b;       // Buhlmann b, for current He tissue.
-static float  		var_N2_e;       // Exposition, for current N2 tissue.
-static float  		var_He_e;       // Exposition, for current He tissue.
-static float            var_N2_ht;      // Half-time for current N2 tissue.
-static float            var_He_ht;      // Half-time for current N2 tissue.
+static float            pres_respiration;
+static float            pres_surface;
+static float            temp_deco;
+static float            ppN2;
+static float            ppHe;
+static float            temp_tissue;
+static float            N2_ratio;                       // Breathed gas nitrogen ratio.
+static float            He_ratio;                       // Breathed gas helium ratio.
+static float            var_N2_a;                       // Buhlmann a, for current N2 tissue.
+static float            var_N2_b;                       // Buhlmann b, for current N2 tissue.
+static float            var_He_a;                       // Buhlmann a, for current He tissue.
+static float            var_He_b;                       // Buhlmann b, for current He tissue.
+static float            var_N2_e;                       // Exposition, for current N2 tissue.
+static float            var_He_e;                       // Exposition, for current He tissue.
+static float            var_N2_ht;                      // Half-time for current N2 tissue.
+static float            var_He_ht;                      // Half-time for current N2 tissue.
 
 static float            pres_diluent;                   // new in v.101
 static float            const_ppO2;                     // new in v.101
@@ -213,12 +214,12 @@ static float            const_ppO2;                     // new in v.101
 static unsigned char    sim_gas_last_depth;             // Depth of last used gas, to detected a gas switch.
 static unsigned char    sim_gas_last_used;              // Number of last used gas, to detected a gas switch.
 static unsigned short   sim_dive_mins;                  // Simulated dive time.
-static float		calc_N2_ratio;                  // Simulated (switched) nitrogen ratio.
-static float		calc_He_ratio;                  // Simulated (switched) helium ratio.
-static float		CNS_fraction;			// new in v.101
-static float		float_saturation_multiplier;    // new in v.101
-static float		float_desaturation_multiplier;  // new in v.101
-static float		float_deco_distance;            // new in v.101
+static float            calc_N2_ratio;                  // Simulated (switched) nitrogen ratio.
+static float            calc_He_ratio;                  // Simulated (switched) helium ratio.
+static float            CNS_fraction;                   // new in v.101
+static float            float_saturation_multiplier;    // new in v.101
+static float            float_desaturation_multiplier;  // new in v.101
+static float            float_deco_distance;            // new in v.101
 
 static unsigned char    deco_gas_change[NUM_GAS];       // new in v.109
 static unsigned char	internal_deco_gas  [NUM_STOPS];
@@ -1416,8 +1417,13 @@ static void calc_nullzeit(void)
             //---- Apply security margin when using the non-GF model
             if( char_I_deco_model == 0 )
             {
-                dTN2 *= float_saturation_multiplier;
-                dTHe *= float_saturation_multiplier;
+                // NDL can be computed while ascending... SO we have
+                // to check wether we are saturating or desaturating.
+                if( dTN2 > 0.0 ) dTN2 *= float_saturation_multiplier;
+                else             dTN2 *= float_desaturation_multiplier;
+
+                if( dTHe > 0.0 ) dTHe *= float_saturation_multiplier;
+                else             dTHe *= float_saturation_multiplier;
             }
             else // Or GF-based model
                 M0 = GF_high * (M0 - pres_surface) + pres_surface;
