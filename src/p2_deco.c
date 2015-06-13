@@ -87,7 +87,8 @@
 // 2013/05/08: [jDG] A. Salm remark: NOAA tables for CNS are in ATA, not bar.
 // 2013/12/21: [jDG] Fix CNS calculation in decoplan w/o marked gas switch
 // 2014/06/16: [jDG] Fix Helium diluant. Fix volumes with many travel mix.
-// 2014/06/29: [mH] Compute int_O_ceiling
+// 2014/06/29: [mH]  Compute int_O_ceiling
+// 2015/06/12: [jDG] Fix NDL prediction while desaturating with the Buhlmann model.
 //
 // TODO:
 //
@@ -190,22 +191,22 @@ static float pres_tissue_He_vault[NUM_COMP];
 #endif
 
 static unsigned char	ci;
-static float 		pres_respiration;
-static float		pres_surface;
-static float		temp_deco;
-static float		ppN2;
-static float		ppHe;
-static float		temp_tissue;
-static float		N2_ratio;       // Breathed gas nitrogen ratio.
-static float		He_ratio;       // Breathed gas helium ratio.
-static float 		var_N2_a;       // Buhlmann a, for current N2 tissue.
-static float 		var_N2_b;       // Buhlmann b, for current N2 tissue.
-static float 		var_He_a;       // Buhlmann a, for current He tissue.
-static float 		var_He_b;       // Buhlmann b, for current He tissue.
-static float  		var_N2_e;       // Exposition, for current N2 tissue.
-static float  		var_He_e;       // Exposition, for current He tissue.
-static float            var_N2_ht;      // Half-time for current N2 tissue.
-static float            var_He_ht;      // Half-time for current N2 tissue.
+static float            pres_respiration;
+static float            pres_surface;
+static float            temp_deco;
+static float            ppN2;
+static float            ppHe;
+static float            temp_tissue;
+static float            N2_ratio;                       // Breathed gas nitrogen ratio.
+static float            He_ratio;                       // Breathed gas helium ratio.
+static float            var_N2_a;                       // Buhlmann a, for current N2 tissue.
+static float            var_N2_b;                       // Buhlmann b, for current N2 tissue.
+static float            var_He_a;                       // Buhlmann a, for current He tissue.
+static float            var_He_b;                       // Buhlmann b, for current He tissue.
+static float            var_N2_e;                       // Exposition, for current N2 tissue.
+static float            var_He_e;                       // Exposition, for current He tissue.
+static float            var_N2_ht;                      // Half-time for current N2 tissue.
+static float            var_He_ht;                      // Half-time for current N2 tissue.
 
 static float            pres_diluent;                   // new in v.101
 static float            const_ppO2;                     // new in v.101
@@ -213,12 +214,12 @@ static float            const_ppO2;                     // new in v.101
 static unsigned char    sim_gas_last_depth;             // Depth of last used gas, to detected a gas switch.
 static unsigned char    sim_gas_last_used;              // Number of last used gas, to detected a gas switch.
 static unsigned short   sim_dive_mins;                  // Simulated dive time.
-static float		calc_N2_ratio;                  // Simulated (switched) nitrogen ratio.
-static float		calc_He_ratio;                  // Simulated (switched) helium ratio.
-static float		CNS_fraction;			// new in v.101
-static float		float_saturation_multiplier;    // new in v.101
-static float		float_desaturation_multiplier;  // new in v.101
-static float		float_deco_distance;            // new in v.101
+static float            calc_N2_ratio;                  // Simulated (switched) nitrogen ratio.
+static float            calc_He_ratio;                  // Simulated (switched) helium ratio.
+static float            CNS_fraction;                   // new in v.101
+static float            float_saturation_multiplier;    // new in v.101
+static float            float_desaturation_multiplier;  // new in v.101
+static float            float_deco_distance;            // new in v.101
 
 static unsigned char    deco_gas_change[NUM_GAS];       // new in v.109
 static unsigned char	internal_deco_gas  [NUM_STOPS];
@@ -729,7 +730,7 @@ void deco_calc_dive_interval(void)
 //
 static void gas_switch_find_current(void)
 {
-    assert( 0 < char_I_current_gas && char_I_current_gas <= (NUM_GAS+1) );
+    assert( 0 < char_I_current_gas && char_I_current_gas <= (2*NUM_GAS) );
 
     if( char_I_current_gas <= NUM_GAS )                 // Gas1..Gas5
     {
@@ -1416,8 +1417,13 @@ static void calc_nullzeit(void)
             //---- Apply security margin when using the non-GF model
             if( char_I_deco_model == 0 )
             {
-                dTN2 *= float_saturation_multiplier;
-                dTHe *= float_saturation_multiplier;
+                // NDL can be computed while ascending... SO we have
+                // to check wether we are saturating or desaturating.
+                if( dTN2 > 0.0 ) dTN2 *= float_saturation_multiplier;
+                else             dTN2 *= float_desaturation_multiplier;
+
+                if( dTHe > 0.0 ) dTHe *= float_saturation_multiplier;
+                else             dTHe *= float_saturation_multiplier;
             }
             else // Or GF-based model
                 M0 = GF_high * (M0 - pres_surface) + pres_surface;
@@ -1895,8 +1901,8 @@ static void calc_dive_interval(void)
         calc_tissue(2);  // period = 10min.
         CNS_fraction =  0.92587471 * CNS_fraction;  // Half-time = 90min: (1/2)^(1/9)
     }
-    assert( 0.0 <= CNS_fraction && CNS_fraction <= 2.56 );
-    int_O_CNS_fraction = (unsigned int)(CNS_fraction * 100.0 + 0.5);
+    assert( 0.0 <= CNS_fraction && CNS_fraction <= 9.99 ); // 999 %
+    int_O_CNS_fraction = (unsigned short)(CNS_fraction * 100.0 + 0.5);
 
     //---- Restore model -----------------------------------------------------
     char_I_deco_model = backup_model;
@@ -1928,7 +1934,7 @@ void deco_calc_CNS_fraction(void)
     overlay float time_factor = 1.0f;
     RESET_C_STACK
 
-    assert( 0.0 <= CNS_fraction && CNS_fraction <= 2.56 );
+    assert( 0.0 <= CNS_fraction && CNS_fraction <= 9.99 );
     assert( char_I_actual_ppO2 > 15 );
 
     if( char_I_step_is_1min == 1 )
@@ -1957,7 +1963,7 @@ void deco_calc_CNS_fraction(void)
         CNS_fraction += time_factor/(-222.11 * char_I_actual_ppO2 + 37350.0);
     //------------------------------------------------------------------------
     // Arieli et all.(2002): Modeling pulmonary and CNS O2 toxicity:
-    // J Appl Physiol 92: 248–256, 2002, doi:10.1152/japplphysiol.00434.2001
+    // J Appl Physiol 92: 248--256, 2002, doi:10.1152/japplphysiol.00434.2001
     // Formula (A1) based on value for 1.55 and c=20
     // example calculation: Sqrt((1.7/1.55)^20)*0.000404
     else if (char_I_actual_ppO2 < 172)
@@ -1979,12 +1985,12 @@ void deco_calc_CNS_fraction(void)
     else
         CNS_fraction += time_factor*0.0482; // value for 2.5
 
-    if( CNS_fraction > 9.99)
+    if( CNS_fraction > 9.99)    // Limit display to 999%
         CNS_fraction = 9.99;
     if( CNS_fraction < 0.0 )
         CNS_fraction = 0.0;
 
-    int_O_CNS_fraction = (unsigned int)(100.0 * CNS_fraction + 0.5);
+    int_O_CNS_fraction = (unsigned short)(100.0 * CNS_fraction + 0.5);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -2112,10 +2118,10 @@ void deco_calc_CNS_planning(void)
 void deco_calc_CNS_decrease_15min(void)
 {
     RESET_C_STACK
-    assert( 0.0 <= CNS_fraction && CNS_fraction <= 2.56 );
+    assert( 0.0 <= CNS_fraction && CNS_fraction <= 9.99 );
 
     CNS_fraction =  0.890899 * CNS_fraction;
-    int_O_CNS_fraction = (unsigned int)(CNS_fraction * 100.0 + 0.5);
+    int_O_CNS_fraction = (unsigned short)(CNS_fraction * 100.0 + 0.5);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -2259,7 +2265,7 @@ void deco_pull_tissues_from_vault(void)
 
     // Restore both CNS variable, too.
     CNS_fraction = cns_vault;
-    int_O_CNS_fraction = (unsigned int)(CNS_fraction * 100.0 + 0.5);
+    int_O_CNS_fraction = (unsigned short)(CNS_fraction * 100.0 + 0.5);
 
     // GF history too:
     low_depth = low_depth_vault;
