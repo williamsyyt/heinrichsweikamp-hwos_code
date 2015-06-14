@@ -940,12 +940,23 @@ TFT_velocity_std:
 	subwf	lo,W
 	btfsc	STATUS,C
     bra     TFT_velocity_std_warn
+    bcf     STATUS,C
+	movff	divA+0,lo
+	movlw	color_code_velocity_attn_high	; Velocity attn [m/min]
+	subwf	lo,W
+	btfsc	STATUS,C
+    bra     TFT_velocity_std_attn
     bra     TFT_velocity_disp
 
 TFT_velocity_std_warn:
 	call	TFT_warnings_color             ; Set to warning color
     bsf     velocity_warn
-    ;bsf     TFT_velocity_disp
+    bra     TFT_velocity_disp
+
+TFT_velocity_std_attn:
+	call	TFT_attention_color            ; Set to attention color
+    bsf     velocity_attn
+    ;bra     TFT_velocity_disp
 
 TFT_velocity_disp:
     WIN_SMALL	dm_velocity_text_column, dm_velocity_text_row
