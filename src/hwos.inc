@@ -152,6 +152,7 @@
 #DEFINE	color_code_cns_high		.100	; [%]
 #DEFINE	color_code_gf_warn_high .101	; [%]
 #DEFINE	color_code_velocity_warn_high .10   ;[m/min]
+#DEFINE	color_code_velocity_attn_high .8    ;[m/min]
 
 ; Velocity threshold
 #DEFINE	velocity_display_threshold_1	.7	; [m/min]
