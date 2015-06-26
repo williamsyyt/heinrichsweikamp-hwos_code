@@ -200,7 +200,8 @@ option_table_begin:
         OPTION_UINT8    obottom_usage,  .5,.50,   .20,tLitersMinute,  .154,    char_I_bottom_usage              ; l/min
         OPTION_UINT8    odeco_usage,    .5,.50,   .20,tLitersMinute,  .155,    char_I_deco_usage                ; l/min
         OPTION_BOOL     oMODwarning,    0,                            .156,    opt_modwarning                   ; =1: red depth blinking warning
-        OPTION_BOOL     oVSItextv2,     0,                            .157,    opt_vsitextv2                    ; =1: use the dynamic ascend rate limits
+        OPTION_BOOL     oVSItextv2,     0,                            .157,    opt_vsitextv2                    ; =1: use the dynamic (depends on depth) ascend rate limits
+        OPTION_BOOL     oVSIgraph,      0,                            .158,    opt_vsigraph                     ; =1: draw the graphical VSI bar
 
 ;=============================================================================
 ; Set Time/Set Date (RAM only)

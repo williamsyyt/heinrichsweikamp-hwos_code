@@ -253,9 +253,10 @@ menuview_mask:
     WIN_BOX_BLACK   dm_simtext_row, dm_simtext_row+.23, dm_simtext_column, dm_simtext_column+.49 ; top, bottom, left, right
     btfss   FLAG_gauge_mode
     bra     menuview_mask2
-    ; Clear some more in gauge mode  --
+    ; Clear some more in gauge mode  -- "Reset Avg." text is longer than normal simtext
     WIN_BOX_BLACK   dm_simtext_row, dm_simtext_row+.23, dm_simtext_column+.50, dm_simtext_column+.70  ; top, bottom, left, right
 menuview_mask2:
+    call    TFT_draw_gassep_line
     movlw   color_yellow
     call	TFT_set_color
     bsf     win_invert                  ; Set invert flag

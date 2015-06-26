@@ -258,6 +258,7 @@ restart:
     clrf    flag10
     ; Do not clear flag11 (Sensor calibration and charger status)
     clrf    flag12
+    clrf    flag13
     clrf    hardware_flag           ; hardware descriptor flag
 	bsf		tft_is_dimming          ; TFT is dimming up (soon), ignore ambient sensor!
 

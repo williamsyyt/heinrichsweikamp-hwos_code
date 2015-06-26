@@ -959,6 +959,8 @@ comm_read_setting:
     movff   opt_modwarning, TXREG1          ; RCREG1=0x3E
     dcfsnz  WREG
     movff   opt_vsitextv2, TXREG1           ; RCREG1=0x3F
+    dcfsnz  WREG
+    movff   opt_vsigraph, TXREG1            ; RCREG1=0x40
 
 
 comm_read_abort:
@@ -1244,6 +1246,8 @@ comm_write_setting:
     movff   RCREG1, opt_modwarning          ; RCREG1=0x3E
     dcfsnz  WREG
     movff   RCREG1, opt_vsitextv2           ; RCREG1=0x3F
+    dcfsnz  WREG
+    movff   RCREG1, opt_vsigraph            ; RCREG1=0x40
 
 
 comm_write_abort:

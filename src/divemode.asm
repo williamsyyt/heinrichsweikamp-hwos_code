@@ -458,6 +458,10 @@ calc_velocity2:
 
 	call	subU16						; sub_c = amb_pressure - last_pressure
 
+    bcf     neg_flag_velocity
+    btfsc   neg_flag
+    bsf     neg_flag_velocity
+
 	movff	sub_c+0,xA+0
 	movff	sub_c+1,xA+1
 	movlw	d'39'						; 77 when called every second....
@@ -567,6 +571,7 @@ timeout_divemode_menu2:                 ; Called from divemenu_tree.asm
     call    TFT_active_gas_divemode     ; Redraw gas/setpoint/diluent
     bcf     blinking_better_gas         ; Clear flag to have temperature updated once
     call	TFT_temp_divemode           ; Displays temperature
+    call    TFT_draw_gassep_line        ; Gas separator grid in spec mode only
 
     btfss   decostop_active             ; In deco mode ?
     bra     timeout_divemode_menu_ndl   ; No, show NDL again

@@ -536,6 +536,17 @@ TFT_divemode_mask:					; Displays mask in Dive-Mode
         WIN_TINY            dm_mask_divetime_column,dm_mask_divetime_row
         STRCAT_TEXT_PRINT   tDivetime
     endif
+
+    if dm_offset == 0
+        movlw       color_dark_red
+        call        TFT_set_color
+        WIN_FRAME_COLOR16 dm_velobar_top, dm_velobar_bot, dm_velobar_lft, dm_velobar_rgt ;top, bottom, left, right
+        WIN_FRAME_COLOR16 dm_sep_1_2_row, dm_sep_1_2_row, .0, .159 ;top, bottom, left, right
+        WIN_FRAME_COLOR16 dm_sep_2_3_row, dm_sep_2_3_row, .0, .159 ;top, bottom, left, right
+        WIN_FRAME_COLOR16 dm_warning_row-.1, dm_warning_row-.1, dm_warning_column, .159 ;top, bottom, left, right
+        call    TFT_draw_gassep_line
+    endif
+
     call	TFT_standard_color
     return
 
@@ -544,22 +555,49 @@ TFT_clear_customview_divemode:
     WIN_BOX_BLACK    dm_customview_row, dm_customview_bot, dm_customview_column, dm_customview_rgt	; top, bottom, left, right
 	return
 
+    global	TFT_draw_gassep_line
+TFT_draw_gassep_line:
+    btfsc	FLAG_apnoe_mode				; Ignore in Apnoe mode
+    return
+    btfsc   divemode_menu               ; Is the dive mode menu shown?
+    return                              ; Yes, return
+    if dm_offset == 0
+        movlw       color_dark_red
+        call        TFT_set_color
+        WIN_FRAME_COLOR16   dm_gassep_row, dm_gassep_bot, dm_gassep_column, dm_gassep_column
+    endif
+    call	TFT_standard_color
+    return
+
 ;=========================================================================
 
 	global	TFT_display_velocity
 TFT_display_velocity:						; With divA+0 = m/min
-
-    TSTOSS  opt_vsitextv2       			; 0=standard, 1=dynamic
-    bra     TFT_dispay_velocity_std
-
     ; Input is:
-    ;   neg_flag: ascend=1, descend=0
-    ;   divA+0:   rate in m/min
-
-	movlw	velocity_display_threshold_2	; lowest threshold for display vertical velocity
+    ;   neg_flag_velocity: ascend=1, descend=0
+    ;   divA+0:            rate in m/min
+    ; init flags used to store warning/attention
+    bcf     velocity_warn
+    bcf     velocity_attn
+    ; check if old/new ascend logic is used
+    TSTOSS  opt_vsitextv2       			; 0=standard, 1=dynamic
+    bra     TFT_velocity_std                ; static ascend rate limit
+    ; initialize the multiplier/offset values, also required for the
+    ; below-the-treshold bar
+    movlw   .7
+    movwf   xC+0
+    movlw   .6
+    movwf   xC+1
+    movlw   .1
+    movwf   xC+2
+    movlw   .0
+    movwf   xC+3
+    ; check if velocity is below the treshold level
+    bcf     STATUS,C
+	movlw	velocity_display_threshold_2
 	subwf	divA+0,W
 	btfss	STATUS,C
-	bra		TFT_display_velocity_clear
+	bra		TFT_velocity_ntr                ; ascend/descend rare is below limit
 	bsf		display_velocity
 
     ; use a depth-dependent ascent rate warning
@@ -568,26 +606,28 @@ TFT_display_velocity:						; With divA+0 = m/min
     ; depth(m):      <=6  >6 >12 >18 >23 >27  >31  >35  >39  >44  >50
     ; speed(m/min):    7   8   9  10  11  13   15   17   18   19   20 (warning)
 	; speed(m/min):    5   6   7   8   8  10   12   13   14   15   15 (attention)
+    ;
+    ; use different multipliers and offsets for the different ascend limits for
+    ;   a smoother bar
+    ; w-multip         7   6   5   5   4   3    3    2    2    2    2
+    ; a-multip         6   5   4   3   3   3    2    2    2    2    2
+    ; w-offset         1   2   5   0   6  11    5   16   14   12   10
+    ; a-offset         0   0   2   6   6   0    6    4    2    0    0
 
-    bcf     neg_flag_save
-    btfsc   neg_flag
-    bsf     neg_flag_save
-
-    ; no warning color if descending
+    ; check if descending: no warning color if descending
     call	TFT_standard_color
-	btfss	neg_flag                            ; Ignore for descent!
-	bra		TFT_display_velocity_out
-
+	btfss	neg_flag_velocity                   ; Ignore for descent!
+	bra		TFT_velocity_disp
+    ; get the actual depth
     SAFE_2BYTE_COPY rel_pressure, lo			; get the actual depth
 	call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
 	call 	convert_mbar_to_feet				; get depth in feet
-	; xA will be used to store the warning/attention limits passed to the verification
-	clrf	xA+0
-	clrf	xA+1
-
 	; store current depth (in feet) into sub_a
 	movff	lo,sub_a+0
 	movff	hi,sub_a+1
+	; xA will be used to store the warning/attention limits passed to the verification
+	clrf	xA+0
+	clrf	xA+1
 
 ;TFT_display_velocity_asc_164:
 	; store segment limit into sub_b
@@ -598,6 +638,15 @@ TFT_display_velocity:						; With divA+0 = m/min
 	movwf	xA+0
     movlw   .15                     ; store the attn limit to xA+1
     movwf   xA+1
+    ; graphical position helpers
+    movlw   .2
+    movwf   xC+0
+    movlw   .2
+    movwf   xC+1
+    movlw   .10
+    movwf   xC+2
+    movlw   .0
+    movwf   xC+3
 	; check if current depth > segment limit
 	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
 	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
@@ -612,6 +661,15 @@ TFT_display_velocity:						; With divA+0 = m/min
 	movwf	xA+0
     movlw   .15                     ; store the attn limit to xA+1
     movwf   xA+1
+    ; graphical position helpers
+    movlw   .2
+    movwf   xC+0
+    movlw   .2
+    movwf   xC+1
+    movlw   .12
+    movwf   xC+2
+    movlw   .0
+    movwf   xC+3
 	; check if current depth > segment limit
 	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
 	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
@@ -626,6 +684,15 @@ TFT_display_velocity:						; With divA+0 = m/min
 	movwf	xA+0
     movlw   .14                     ; store the attn limit to xA+1
     movwf   xA+1
+    ; graphical position helpers
+    movlw   .2
+    movwf   xC+0
+    movlw   .2
+    movwf   xC+1
+    movlw   .14
+    movwf   xC+2
+    movlw   .2
+    movwf   xC+3
 	; check if current depth > segment limit
 	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
 	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
@@ -640,6 +707,15 @@ TFT_display_velocity:						; With divA+0 = m/min
 	movwf	xA+0
     movlw   .13                     ; store the attn limit to xA+1
     movwf   xA+1
+    ; graphical position helpers
+    movlw   .2
+    movwf   xC+0
+    movlw   .2
+    movwf   xC+1
+    movlw   .16
+    movwf   xC+2
+    movlw   .4
+    movwf   xC+3
 	; check if current depth > segment limit
 	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
 	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
@@ -654,6 +730,15 @@ TFT_display_velocity:						; With divA+0 = m/min
 	movwf	xA+0
     movlw   .12                     ; store the attn limit to xA+1
     movwf   xA+1
+    ; graphical position helpers
+    movlw   .3
+    movwf   xC+0
+    movlw   .2
+    movwf   xC+1
+    movlw   .5
+    movwf   xC+2
+    movlw   .6
+    movwf   xC+3
 	; check if current depth > segment limit
 	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
 	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
@@ -668,6 +753,15 @@ TFT_display_velocity:						; With divA+0 = m/min
 	movwf	xA+0
     movlw   .10                     ; store the attn limit to xA+1
     movwf   xA+1
+    ; graphical position helpers
+    movlw   .3
+    movwf   xC+0
+    movlw   .3
+    movwf   xC+1
+    movlw   .11
+    movwf   xC+2
+    movlw   .0
+    movwf   xC+3
 	; check if current depth > segment limit
 	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
 	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
@@ -682,6 +776,15 @@ TFT_display_velocity:						; With divA+0 = m/min
 	movwf	xA+0
     movlw   .8                     ; store the attn limit to xA+1
     movwf   xA+1
+    ; graphical position helpers
+    movlw   .4
+    movwf   xC+0
+    movlw   .3
+    movwf   xC+1
+    movlw   .6
+    movwf   xC+2
+    movlw   .6
+    movwf   xC+3
 	; check if current depth > segment limit
 	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
 	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
@@ -696,6 +799,15 @@ TFT_display_velocity:						; With divA+0 = m/min
 	movwf	xA+0
     movlw   .8                     ; store the attn limit to xA+1
     movwf   xA+1
+    ; graphical position helpers
+    movlw   .5
+    movwf   xC+0
+    movlw   .3
+    movwf   xC+1
+    movlw   .0
+    movwf   xC+2
+    movlw   .6
+    movwf   xC+3
 	; check if current depth > segment limit
 	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
 	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
@@ -710,6 +822,15 @@ TFT_display_velocity:						; With divA+0 = m/min
 	movwf	xA+0
     movlw   .7                     ; store the attn limit to xA+1
     movwf   xA+1
+    ; graphical position helpers
+    movlw   .5
+    movwf   xC+0
+    movlw   .4
+    movwf   xC+1
+    movlw   .5
+    movwf   xC+2
+    movlw   .2
+    movwf   xC+3
 	; check if current depth > segment limit
 	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
 	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
@@ -724,6 +845,15 @@ TFT_display_velocity:						; With divA+0 = m/min
 	movwf	xA+0
     movlw   .6                     ; store the attn limit to xA+1
     movwf   xA+1
+    ; graphical position helpers
+    movlw   .6
+    movwf   xC+0
+    movlw   .5
+    movwf   xC+1
+    movlw   .2
+    movwf   xC+2
+    movlw   .0
+    movwf   xC+3
 	; check if current depth > segment limit
 	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
 	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
@@ -736,6 +866,15 @@ TFT_display_velocity:						; With divA+0 = m/min
 	movwf	xA+0
     movlw   .5
     movwf   xA+1
+    ; graphical position helpers
+    movlw   .7
+    movwf   xC+0
+    movlw   .6
+    movwf   xC+1
+    movlw   .1
+    movwf   xC+2
+    movlw   .0
+    movwf   xC+3
     ;bra     TFT_velocity_check                  ;  depth < 20ft / 6m
 
 TFT_velocity_check:
@@ -743,6 +882,7 @@ TFT_velocity_check:
 	clrf    hi
 	movff	divA+0,lo
 	; Velocity warn [m/min] - we receive it from xA+0
+    bcf     STATUS,C
     movff	xA+0,WREG
 	; compare the values
 	subwf	lo,W                            ; subtract W from lo,
@@ -750,6 +890,7 @@ TFT_velocity_check:
 	bra		TFT_velocity_warn    ; Skip if no carry flag otherwise set to warning color
     ; not eq or gt warning trashold, lets check if it reach the attention level
 	; Velocity attn [m/min] - we receive it from xA+1
+    bcf     STATUS,C
     movff	xA+1,WREG
 	; compare the values
 	subwf	lo,W                            ; subtract W from lo,
@@ -759,76 +900,352 @@ TFT_velocity_check:
 
 TFT_velocity_def:
 	call	TFT_standard_color
-    bra     TFT_display_velocity_out
+    bra     TFT_velocity_disp
 
 TFT_velocity_warn:
 	call	TFT_warnings_color             ; Set to warning color
     bsf     win_invert
-    bra     TFT_display_velocity_out
+    bsf     velocity_warn
+    bra     TFT_velocity_disp
 
 TFT_velocity_attn:
 	call	TFT_attention_color            ; Set to attention color
-    ;bra     TFT_display_velocity_out
+    bsf     velocity_attn
+    bra     TFT_velocity_disp
 
-TFT_display_velocity_out:
-    ; retain neg_flag value - restore
-    bcf     neg_flag
-    btfsc   neg_flag_save
-    bsf     neg_flag
-    bra     TFT_dispay_velocity_disp
+TFT_velocity_std:
+    ; initialize the multiplier/offset values for the graphical bar
+    movlw   .5
+    movwf   xC+0
+    movlw   .3
+    movwf   xC+1
+    movlw   .0
+    movwf   xC+2
+    movlw   .6
+    movwf   xC+3
 
-TFT_dispay_velocity_std:
-	movlw	velocity_display_threshold_1	; lowest threshold for display vertical velocity
+	bcf     STATUS,C
+    movlw	velocity_display_threshold_1	; lowest threshold for display vertical velocity
 	subwf	divA+0,W
 	btfss	STATUS,C
-	bra		TFT_display_velocity_clear
+	bra		TFT_velocity_ntr                ; under treshold, clear text and display VSIbar
 	bsf		display_velocity
 
 	call	TFT_standard_color
-	btfss	neg_flag                        ; Ignore for descent!
-	bra		TFT_dispay_velocity_disp		; Skip check!
+	btfss	neg_flag_velocity       ; Ignore for descent!
+	bra		TFT_velocity_disp		; Skip check!
+    bcf     STATUS,C
 	movff	divA+0,lo
 	movlw	color_code_velocity_warn_high	; Velocity warn [m/min]
 	subwf	lo,W
 	btfsc	STATUS,C
-	call		TFT_warnings_color             ; Set to warning color
+    bra     TFT_velocity_std_warn
+    bcf     STATUS,C
+	movff	divA+0,lo
+	movlw	color_code_velocity_attn_high	; Velocity attn [m/min]
+	subwf	lo,W
+	btfsc	STATUS,C
+    bra     TFT_velocity_std_attn
+    bra     TFT_velocity_disp
 
-TFT_dispay_velocity_disp:
+TFT_velocity_std_warn:
+	call	TFT_warnings_color             ; Set to warning color
+    bsf     velocity_warn
+    bra     TFT_velocity_disp
+
+TFT_velocity_std_attn:
+	call	TFT_attention_color            ; Set to attention color
+    bsf     velocity_attn
+    ;bra     TFT_velocity_disp
+
+TFT_velocity_disp:
     WIN_SMALL	dm_velocity_text_column, dm_velocity_text_row
     TSTOSS  opt_units			; 0=Meters, 1=Feets
-	bra		TFT_display_velocity_metric
-;TFT_display_velocity_imperial:
+	bra		TFT_velocity_metric
+;TFT_velocity_imperial:
 	movff	divA+0,WREG						; divA+0 = m/min
 	mullw	.100							; PRODL:PRODH = mbar/min
 	movff	PRODL,lo
 	movff	PRODH,hi
 	call	convert_mbar_to_feet			; convert value in lo:hi from mbar to feet
 	movlw	'-'
-	btfsc	neg_flag
+	btfsc	neg_flag_velocity
 	movlw	'+'
 	movwf	POSTINC2
 	bsf		leftbind
 	output_16
 	bcf		leftbind
 	STRCAT_TEXT_PRINT  tVelImperial			; Unit switch
-	call	TFT_standard_color
     bcf     win_invert
+    bcf     neg_flag
+    call    TFT_velocity_VSIbar
+	call	TFT_standard_color
     return
 
-TFT_display_velocity_metric:
+TFT_velocity_metric:
 	movff	divA+0,lo						; divA+0 = m/min
 	movlw	'-'
-	btfsc	neg_flag
+	btfsc	neg_flag_velocity
 	movlw	'+'
 	movwf	POSTINC2
 	output_99
 	STRCAT_TEXT_PRINT  tVelMetric			; Unit switch
-	call	TFT_standard_color
     bcf     win_invert
+    bcf     neg_flag
+    call    TFT_velocity_VSIbar
+	call	TFT_standard_color
     return
 
-	global	TFT_display_velocity_clear
-TFT_display_velocity_clear:
+TFT_velocity_VSIbar:
+    ; use another logic when descending
+    btfss   neg_flag_velocity
+    bra     TFT_velocity_VSIbar_desc
+    call    TFT_velocity_VSIbar_desc_clr
+
+    TSTOSS  opt_vsigraph			; 0=skip, 1=draw
+    return
+
+    btfsc   velocity_warn
+    bra     TFT_velocity_VSIbar_warn
+    ; if all ok or attention, use attn's values
+    movff   xC+1,sub_b+0    ; multiplier
+    movff   xC+3,sub_b+1    ; offset
+    bra     TFT_velocity_VSIbar_com
+
+TFT_velocity_VSIbar_warn:
+    ; save multiplier and offset out from the xC
+    movff   xC+0,sub_b+0    ; multiplier
+    movff   xC+2,sub_b+1    ; offset
+    ;bra     TFT_velocity_VSIbar_com
+
+TFT_velocity_VSIbar_com:
+    clrf    divB
+
+    movlw   .0
+    cpfsgt  divA+0
+    bra     TFT_velocity_VSIbar_clr
+
+    ; multiply
+    movff   divA+0,xA+0
+    clrf    xA+1
+    movff   sub_b+0,xB+0
+    clrf    xB+1
+    call    mult16x16               ; xA*xB=xC
+    movlw   .1
+    cpfslt  xC+3
+    bra     TFT_velocity_VSIbar_max
+    movlw   .1
+    cpfslt  xC+2
+    bra     TFT_velocity_VSIbar_max
+    movlw   .1
+    cpfslt  xC+1
+    bra     TFT_velocity_VSIbar_max
+    movlw   .60
+    cpfslt  xC+0
+    bra     TFT_velocity_VSIbar_max
+    ; add offset
+    bcf     STATUS,C
+    movff   sub_b+1,WREG
+    addwf   xC+0,1
+    btfsc   STATUS,C
+    bra     TFT_velocity_VSIbar_max
+    ; check if out-of-range
+    movff   xC+0,divB
+    movlw   .60
+    cpfsgt  divB
+    bra     TFT_velocity_VSIbar_draw
+
+TFT_velocity_VSIbar_max:
+    movlw   .60
+    movff   WREG,divB
+
+TFT_velocity_VSIbar_draw:
+    ; calculate top&height for the bar and mask
+    ; 1. Bar:  top=(bar_top+60-divB); height=divB
+    movlw   dm_velobar_top+.1
+    movff   WREG,sub_a+0              ; !!!!!!  bar position must fit into lo !!
+    movlw   .60
+    addwf   sub_a+0,1
+    clrf    sub_a+1
+    movff   divB,sub_b+0
+    clrf    sub_b+1
+    call    subU16
+
+    movlw       color_white
+    WIN_BOX_COLOR dm_velobar_top+.60, dm_velobar_top+.63, dm_velobar_lft+.1, dm_velobar_rgt-.1 ;top, bottom, left, right
+   
+    movff   sub_c+0,win_top
+    movff   divB,win_height
+    movlw   dm_velobar_width-.2
+    movff   WREG,win_width
+    movff   WREG,win_bargraph
+    movlw   dm_velobar_lft+.2
+    movff   WREG,win_leftx2
+    movlw   color_green
+    call    TFT_set_color
+    btfsc   velocity_attn
+    call    TFT_attention_color
+    btfsc   velocity_warn
+    call    TFT_warnings_color
+    call    TFT_box
+
+    ;clear the rest
+    movlw   .60
+    cpfslt  divB
+    return  ; divB !< 60 - the graph uses the full bar, no need to clear
+
+    ; 2. Mask: top=bar_top; height=60-divB
+    movlw   .60
+    movff   WREG,sub_a+0
+    clrf    sub_a+1
+    movff   divB,sub_b+0
+    clrf    sub_b+1
+    call    subU16              ; sub_c = sub_a - sub_b
+
+    movlw   dm_velobar_top+.1
+    movff   WREG,win_top
+    movff   sub_c+0,win_height
+    movlw   dm_velobar_width
+    movff   WREG,win_width
+    movff   WREG,win_bargraph
+    movlw   dm_velobar_lft+.1
+    movff   WREG,win_leftx2
+    movlw   color_black
+    call    TFT_set_color
+    call    TFT_box
+    return
+
+TFT_velocity_VSIbar_desc:
+    ; clear the ascend part of the bar
+    call    TFT_velocity_VSIbar_clr
+
+    TSTOSS  opt_vsigraph			; 0=skip, 1=draw
+    return
+
+    ; divA+0=0 is descend, clear everything if it's actually zero
+    movlw   .0
+    cpfsgt  divA+0
+    bra     TFT_velocity_VSIbar_desc_clr
+
+    clrf    divB
+    ; Desc uses a single multiplier/offset value: *1 / +3
+    movlw   .1
+    movff   WREG,sub_b+0    ; multiplier
+    movlw   .3
+    movff   WREG,sub_b+1    ; offset
+    ; multiply
+    movff   divA+0,xA+0
+    clrf    xA+1
+    movff   sub_b+0,xB+0
+    clrf    xB+1
+    call    mult16x16               ; xA*xB=xC
+    movlw   .1
+    cpfslt  xC+3
+    bra     TFT_velocity_VSIbar_desc_max
+    movlw   .1
+    cpfslt  xC+2
+    bra     TFT_velocity_VSIbar_desc_max
+    movlw   .1
+    cpfslt  xC+1
+    bra     TFT_velocity_VSIbar_desc_max
+    movlw   .22
+    cpfslt  xC+1
+    bra     TFT_velocity_VSIbar_desc_max
+    ; add offset
+    bcf     STATUS,C
+    movff   sub_b+1,WREG
+    addwf   xC+0,1
+    btfsc   STATUS,C
+    bra     TFT_velocity_VSIbar_desc_max
+    ; check if out-of-range
+    movff   xC+0,divB
+    movlw   .22
+    cpfsgt  divB
+    bra     TFT_velocity_VSIbar_desc_draw
+
+TFT_velocity_VSIbar_desc_max:
+    movlw   .22
+    movff   WREG,divB
+
+TFT_velocity_VSIbar_desc_draw:
+    ; calculate top&height for the bar and mask
+    ; 1. Bar:  top=(bar_top+63); height=divB
+    movlw   dm_velobar_top+.1
+    movff   WREG,sub_a+0
+    movlw   .62
+    addwf   sub_a+0,1
+
+    movlw       color_white
+    WIN_BOX_COLOR dm_velobar_top+.60, dm_velobar_top+.63, dm_velobar_lft+.1, dm_velobar_rgt-.1 ;top, bottom, left, right
+
+    movff   sub_a+0,win_top
+    movff   divB,win_height
+    movlw   dm_velobar_width-.2
+    movff   WREG,win_width
+    movff   WREG,win_bargraph
+    movlw   dm_velobar_lft+.2
+    movff   WREG,win_leftx2
+    movlw   color_green
+    call    TFT_set_color
+    call    TFT_box
+
+    ;clear the rest
+    movlw   .22
+    cpfslt  divB
+    return  ; divB !< 22 - the graph uses the full bar, no need to clear
+
+    ; 2. Mask: top=(bar_top+63+divB); height=(23-divB)
+    movlw   .24
+    movff   WREG,sub_a+0
+    clrf    sub_a+1
+    movff   divB,sub_b+0
+    clrf    sub_b+1
+    call    subU16              ; sub_c = sub_a - sub_b
+
+    movlw   dm_velobar_top
+    movff   WREG,sub_a+0
+    movlw   .61
+    addwf   sub_a+0,1
+    movff   divB,WREG
+    addwf   sub_a+0,1
+
+    movff   sub_a+0,win_top
+    movff   sub_c+0,win_height
+    movlw   dm_velobar_width
+    movff   WREG,win_width
+    movff   WREG,win_bargraph
+    movlw   dm_velobar_lft+.1
+    movff   WREG,win_leftx2
+    movlw   color_black
+    call    TFT_set_color
+    call    TFT_box
+    return
+
+TFT_velocity_VSIbar_clr: ; clears the ascend part of the bar
+    WIN_BOX_BLACK   dm_velobar_top+.1,dm_velobar_top+.63,dm_velobar_lft+.1,dm_velobar_rgt-.1
+    if dm_offset == 0
+        movlw       color_dark_red
+        WIN_BOX_COLOR dm_velobar_top+.60, dm_velobar_top+.63, dm_velobar_lft+.1, dm_velobar_rgt-.1 ;top, bottom, left, right
+    endif
+    return
+
+TFT_velocity_VSIbar_desc_clr: ; clears the descend part of the bar
+    WIN_BOX_BLACK   dm_velobar_top+.61,dm_velobar_bot-.1,dm_velobar_lft+.1,dm_velobar_rgt-.1
+    if dm_offset == 0
+        movlw       color_dark_red
+        WIN_BOX_COLOR dm_velobar_top+.60, dm_velobar_top+.63, dm_velobar_lft+.1, dm_velobar_rgt-.1 ;top, bottom, left, right
+    endif
+    return
+
+TFT_velocity_ntr:   ; velocity under treshold
+    call    TFT_velocity_clear
+    ; use another logic when descending
+    btfss   neg_flag_velocity
+    bra     TFT_velocity_VSIbar_desc
+    bra     TFT_velocity_VSIbar
+
+	global	TFT_velocity_clear
+TFT_velocity_clear:
 	btfss	display_velocity			; Velocity was not displayed, do not delete
 	return
 	bcf		display_velocity			; Velocity was displayed, delete velocity now
@@ -857,7 +1274,11 @@ TFT_display_ndl_mask:
     btfsc   divemode_menu               ; Is the dive mode menu shown?
     return                              ; Yes, return
 	rcall	TFT_clear_decoarea			; Clear Dekostop and Dekosum
-    call    TFT_divemask_color
+    if dm_offset != 0
+        call    TFT_divemask_color
+    else
+        call    TFT_attention_color
+    endif
    	WIN_STD 	dm_ndl_text_column, dm_ndl_text_row
 	STRCPY_TEXT_PRINT  tNDL             ; NDL
 	call	TFT_standard_color
@@ -906,7 +1327,11 @@ TFT_divemode_warning_clear:
 TFT_display_deko_mask:
 	rcall		TFT_clear_decoarea
    	WIN_STD 	dm_tts_text_column, dm_tts_text_row
-    call    TFT_divemask_color
+    if dm_offset != 0
+        call    TFT_divemask_color
+    else
+        call    TFT_attention_color
+    endif
 	STRCPY_TEXT_PRINT  tTTS             ; TTS
 	call	TFT_standard_color
     bcf		show_safety_stop            ; Clear safety stop flag
@@ -1593,6 +2018,7 @@ TFT_interval:
 	call	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
+    call    TFT_warning_set_window_com
 	STRCPY	"Int:"
 	movff	surface_interval+0,lo
 	movff	surface_interval+1,hi
@@ -1607,6 +2033,7 @@ TFT_interval:
     movlw   surf_warning_length         ; No, use surface string length
     call    TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""
+    call    TFT_warning_set_window_end
 	return
 
     global  TFT_surface_decosettings    ; Show all deco settings
@@ -1683,7 +2110,7 @@ TFT_divetimeout:
 	call	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
-
+    call    TFT_warning_set_window_com
     call	TFT_standard_color
     STRCPY  0x94                        ; "End of dive" icon
     movlw   LOW     divemode_timeout
@@ -1706,6 +2133,7 @@ TFT_divetimeout:
     movlw   dm_warning_length             ; Divemode string length
     call    TFT_fillup_with_spaces     ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""
+    call    TFT_warning_set_window_end
 	return
 
 	global	TFT_ftts
@@ -1720,7 +2148,10 @@ TFT_ftts:
         call    TFT_warning_set_window		; Sets the row and column for the current warning
         tstfsz  WREG                        ; Is there room for the warning?
         return                              ; No
+        call    TFT_warning_set_window_com
     else
+        btfsc   divemode_menu               ; Is the dive mode menu shown?
+        return                              ; Yes, return
         call    TFT_standard_color
         WIN_SMALL dm_ftts_value_column, dm_ftts_value_row
     endif
@@ -1745,6 +2176,7 @@ TFT_ftts:
     movlw   dm_warning_length             ; Divemode string length
     call    TFT_fillup_with_spaces     ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""
+    call    TFT_warning_set_window_end
 	return
 
 TFT_ftts2:
@@ -1753,6 +2185,7 @@ TFT_ftts2:
     movlw   dm_warning_length             ; Divemode string length
     call    TFT_fillup_with_spaces     ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT ""
+    call    TFT_warning_set_window_end
     return
 
 
@@ -2636,6 +3069,7 @@ TFT_max_pressure3:
 
 TFT_max_pressure2_metric:
     WIN_MEDIUM	dm_max_depth_column, dm_max_depth_row
+    call    TFT_standard_color
 
 	movlw	.039
 	cpfslt	hi
@@ -3138,6 +3572,7 @@ TFT_desaturation_time:
 	rcall	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
+    call    TFT_warning_set_window_com
 	STRCPY	"Desat:"
 	movff		desaturation_time+0,lo			; divide by 60...
 	movff		desaturation_time+1,hi
@@ -3156,6 +3591,7 @@ TFT_desaturation_time:
     movlw   .0
     movff   WREG,buffer+11
 	STRCAT_PRINT	""
+    call    TFT_warning_set_window_end
 	return
 
 	global	TFT_nofly_time
@@ -3163,6 +3599,7 @@ TFT_nofly_time:
 	rcall	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
+    call    TFT_warning_set_window_com
 	STRCPY	"NoFly:"
 	movff		nofly_time+0,lo			; divide by 60...
 	movff		nofly_time+1,hi
@@ -3181,6 +3618,7 @@ TFT_nofly_time:
     movlw   .0
     movff   WREG,buffer+11
 	STRCAT_PRINT	""
+    call    TFT_warning_set_window_end
 	return
 
     global  TFT_warning_agf
@@ -3188,12 +3626,14 @@ TFT_warning_agf:
 	rcall	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
+    call    TFT_warning_set_window_com
     call	TFT_warnings_color
 	STRCPY_TEXT tDiveaGF_active         ; "aGF!"
     movlw   dm_warning_length              ; Divemode string length
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT ""
 	call	TFT_standard_color
+    call    TFT_warning_set_window_end
     return
 
     global  TFT_warning_fallback
@@ -3214,6 +3654,7 @@ TFT_warning_gf:                         ;GF
 	rcall	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
+    call    TFT_warning_set_window_com
 	TFT_color_code		warn_gf		; Color-code Output
 	STRCPY  "GF:"
 	movff	char_O_gradient_factor,lo		; gradient factor
@@ -3227,6 +3668,7 @@ TFT_warning_gf:                         ;GF
     STRCAT_PRINT  ""
     bcf     leftbind
 	call	TFT_standard_color
+    call    TFT_warning_set_window_end
 	return
 
 TFT_warning_set_window:                 ; Sets the row and column for the current warning
@@ -3263,12 +3705,22 @@ TFT_warning_set_window4:
     bsf     second_row_warning          ; =1: The second row contains a warning
 	retlw   .0                          ; WREG=0 -> Warning window defined
 
+TFT_warning_set_window_com:
+    if dm_offset == 0
+        bsf     win_invert
+    endif
+    return
+
+TFT_warning_set_window_end:
+    bcf     win_invert
+    return
 
 	global	TFT_update_batt_percent_divemode
 TFT_update_batt_percent_divemode:
 	rcall	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
+    call    TFT_warning_set_window_com
     movff   batt_percent,lo         ; Get battery percent
     TFT_color_code		warn_battery; Color-code battery percent
     STRCPY  "Batt:"
@@ -3282,8 +3734,8 @@ TFT_update_batt_percent_divemode:
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT	""
 	call	TFT_standard_color
+    call    TFT_warning_set_window_end
 	return
-
 
     global  TFT_gf_mask                         ; Setup Mask
 TFT_gf_mask:
@@ -3599,6 +4051,7 @@ TFT_display_cns:
 	rcall	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
+    call    TFT_warning_set_window_com
 	TFT_color_code		warn_cns		; Color-code CNS output
 	STRCPY_TEXT tCNS2                   ; CNS:
 	movff	int_O_CNS_fraction+0,lo
@@ -3613,6 +4066,7 @@ TFT_display_cns:
     rcall   TFT_fillup_with_spaces          ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""
 	call	TFT_standard_color
+    call    TFT_warning_set_window_end
 	return
 
 	global	TFT_display_ppo2
@@ -3620,6 +4074,7 @@ TFT_display_ppo2:                       ; Show ppO2 (ppO2 stored in xC, in mbar!
 	rcall	TFT_warning_set_window		; Sets the row and column for the current warning
     tstfsz  WREG                        ; Is there room for the warning?
     return                              ; No
+    call    TFT_warning_set_window_com
 	TFT_color_code		warn_ppo2		; Color-code output (ppO2 stored in xC)
     STRCPY_TEXT tppO2                   ; ppO2:
 ; Check very high ppO2 manually
@@ -3634,6 +4089,7 @@ TFT_show_ppO2_2:
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT ""
 	call	TFT_standard_color
+    call    TFT_warning_set_window_end
 	return
 
 TFT_show_ppO2_3:
@@ -3652,6 +4108,12 @@ TFT_LogOffset_Logtitle:
 	PUTC	" "
 	return			; No "_PRINT" here...
 	
+	global	TFT_VSImenu_dynamictitle
+TFT_VSImenu_dynamictitle:
+	STRCPY_TEXT tVSItext1
+	PUTC	" "
+	return			; No "_PRINT" here...
+
 
 	global	adjust_depth_with_salinity
 adjust_depth_with_salinity:			; computes salinity setting into lo:hi [mbar]
