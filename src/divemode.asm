@@ -1547,6 +1547,8 @@ check_ppO2:							    ; check current ppO2 and display warning if required
 
 check_ppO2_0:
     ; Check if ppO2 should be displayed
+    movlw   .0
+    TSTOSS  opt_showppo2		; 0=no, 1=always show
     movlw   ppo2_display_high
 	mullw	d'100'				; ppo2_display_high*100
 	movff	PRODL,sub_a+0
