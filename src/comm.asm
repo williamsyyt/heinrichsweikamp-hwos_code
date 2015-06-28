@@ -961,6 +961,8 @@ comm_read_setting:
     movff   opt_vsitextv2, TXREG1           ; RCREG1=0x3F
     dcfsnz  WREG
     movff   opt_vsigraph, TXREG1            ; RCREG1=0x40
+    dcfsnz  WREG
+    movff   opt_extceiling, TXREG1          ; RCREG1=0x41
 
 
 comm_read_abort:
@@ -1248,6 +1250,8 @@ comm_write_setting:
     movff   RCREG1, opt_vsitextv2           ; RCREG1=0x3F
     dcfsnz  WREG
     movff   RCREG1, opt_vsigraph            ; RCREG1=0x40
+    dcfsnz  WREG
+    movff   RCREG1, opt_extceiling          ; RCREG1=0x41
 
 
 comm_write_abort:

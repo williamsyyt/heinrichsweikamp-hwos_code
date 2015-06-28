@@ -575,6 +575,7 @@ opt_cR_button_right     res 1   ; Right button sensitivity (cR hardware)
 opt_modwarning          res 1   ; =1:do a red blinking warning, =0:default behaviour
 opt_vsitextv2           res 1   ; =1:use the depth dependent ascend rate limits
 opt_vsigraph            res 1   ; =1:draw the graphical VSI bar
+opt_extceiling          res 1   ; =1:print ppO2 and currentGF on the Ceiling Custom View
 
 ;-----------------------------EEPROM DATA ------------------------------------
 ; Automatic reset of all options when this is changed:
