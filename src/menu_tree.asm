@@ -296,9 +296,10 @@ do_divemode_menu:
     MENU_END
 
 do_ppo2_menu:
-    MENU_BEGIN  tppO2settings, .3
+    MENU_BEGIN  tppO2settings, .4
 		MENU_DYNAMIC divesets_ppo2_max,         do_toggle_ppo2_max
 		MENU_DYNAMIC divesets_ppo2_min,         do_toggle_ppo2_min
+        MENU_OPTION  tShowppO2, oShowppO2,      0
         MENU_CALL    tExit,                  	do_return_divemode_menu
     MENU_END
 
@@ -618,29 +619,20 @@ do_dispsets_menu_3stack:
     call    menu_processor_pop
 
 do_dispsets_menu:
-    MENU_BEGIN  tDispSets, .7
+    MENU_BEGIN  tDispSets, .5
         MENU_OPTION tBright,       oBrightness,   0
         MENU_CALL   tColorScheme,                 do_color_scheme
         MENU_OPTION tFlip,         oFlipScreen,   0
-        MENU_OPTION tMODwarning,   oMODwarning,   0
-        MENU_CALL   tDispSetVSI,                  do_dispsets_VSI_menu
         MENU_CALL   tMore,                        do_dispsets_menu_more
         MENU_CALL   tExit,                        do_return_settings
     MENU_END
 
 do_dispsets_menu_more:
-    MENU_BEGIN  tDispSets, .3
-        MENU_OPTION tExtCeiling,   oExtCeiling,   0
-        MENU_OPTION tShowppO2,     oShowppO2,     0
+    MENU_BEGIN  tDispSets, .4
+        MENU_OPTION tMODwarning,   oMODwarning,   0
+        MENU_OPTION tVSItext2,     oVSItextv2,    0
+        MENU_OPTION tVSIgraph,     oVSIgraph,     0
         MENU_CALL   tExit,                        do_dispsets_menu_3stack
-    MENU_END
-
-do_dispsets_VSI_menu:
-    MENU_BEGIN  tDispSetVSItitle, .4
-        MENU_DYNAMIC    TFT_VSImenu_dynamictitle,     0
-        MENU_OPTION     tVSItext2,     oVSItextv2,    0
-        MENU_OPTION     tVSIgraph,     oVSIgraph,     0
-        MENU_CALL       tExit,                        do_dispsets_menu_3stack
     MENU_END
 
     extern  oColorSetDive

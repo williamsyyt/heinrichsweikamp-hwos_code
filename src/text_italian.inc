@@ -75,6 +75,7 @@
     TCODE   tCCRMode,   "Modo CCR:"             ; CCR Mode:
     TCODE   tCCRModeFixedSP,  "SP Fissi"        ; Fixed SP
     TCODE   tCCRModeSensor,   "Sensori"          ; Sensor
+    TCODE   tCCRModeAutoSP,   "Auto SP"         ; Auto SP
     TCODE   tSP,            "SP"                ; SP (SetPoint)
     TCODE   tSPPlus,    "pO2+"                  ; pO2+
     TCODE   tSensorFallback, "Fallback:"        ; Fallback:
@@ -133,18 +134,14 @@
     TCODE   tEco,       "Eco"
     TCODE   tMedium,    "Media"
     TCODE   tHigh,      "Alta"
-    TCODE   tDvSalinity,"Salinita':"             ; Salinity
-    TCODE   tFlip,      "Ruotare schermo:"       ; Rotate Screen
+    TCODE   tDvSalinity,"Salinita':"            ; Salinity
+    TCODE   tFlip,      "Ruotare schermo:"      ; Rotate Screen
     TCODE   tMODwarning,"MOD warning:"          ; MOD warning
-    TCODE   tDispSetVSI,"VSI Settings..."       ; VSI Settings...
-    TCODE   tExtCeiling,"Ext. Ceiling CV:"       ; Ext Ceiling CV
     TCODE   tShowppO2,  "Always show ppO2:"     ; Always show ppO2:
 
 ; VSI display Settings
-    TCODE   tDispSetVSItitle, "VSI Display Settings"     ; VSI display Settings
-    TCODE   tVSItext1,        "Depth based variable"     ; max 20 chars: "Depth based variable", first line of the option
-    TCODE   tVSItext2,        "   ascend limit: "        ; max 17 chars: "   ascend limit: ", second line, with space prefix
-    TCODE   tVSIgraph,        "Graphical VSI:   "        ; max 17 chars: "Graphical VSI:   "
+    TCODE   tVSItext2,  "Variable speed:"     ; Variable speed:
+    TCODE   tVSIgraph,  "Speed graph:"        ; Speed graph:
 
 ; Setup Menu
     TCODE   tSystSets,  "Impostazioni"

@@ -2332,8 +2332,9 @@ TFT_active_setpoint2:
 	output_16dp d'3'
     bcf		leftbind
     STRCAT_TEXT tbar
-    TSTOSS  opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor
-    bra     $+4
+    movff   opt_ccr_mode,WREG               ; =0: Fixed SP, =1: Sensor,  =2: Auto SP
+    sublw   .1                              ; opt_ccr_mode = 1 (Sensor)?
+    bnz     $+4                             ; No, skip
     PUTC    "*"
 	STRCAT_PRINT ""
     return
@@ -2362,8 +2363,9 @@ TFT_active_setpoint:         ; Show setpoint
 	output_16dp d'3'
     bcf		leftbind
     STRCAT_TEXT tbar
-    TSTOSS  opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor
-    bra     $+4
+    movff   opt_ccr_mode,WREG               ; =0: Fixed SP, =1: Sensor,  =2: Auto SP
+    sublw   .1                              ; opt_ccr_mode = 1 (Sensor)?
+    bnz     $+4                             ; No, skip
     PUTC    "*"
 	STRCAT_PRINT ""
 	bcf     win_invert                  ; Reset invert flag
@@ -2461,16 +2463,23 @@ TFT_display_decotype_surface2:
     call	TFT_standard_color
 	WIN_TINY surf_decotype_column+.18,surf_decotype_row+.12
 
-    TSTOSS  opt_ccr_mode        ; =0: Fixed SP, =1: Sensor
+    TSTOSS  opt_ccr_mode        ; =0: Fixed SP, =1: Sensor,  =2: Auto SP
     bra     TFT_display_decotype_cc_fixed
-    ; Sensor mode
+    ; Sensor mode or Auto
+    movff   opt_ccr_mode,WREG
+    sublw   .2
+    bz      TFT_display_decotype_cc_auto
     STRCPY_TEXT tCCRModeSensor ; Sensor
     bra     TFT_display_decotype_cc_common
+TFT_display_decotype_cc_auto:
+    STRCPY_TEXT tCCRModeAutoSP  ; Auto SP
+    bra     TFT_display_decotype_cc_common
 TFT_display_decotype_cc_fixed:
-    STRCPY_TEXT tCCRModeFixedSP ; Fixed
+    STRCPY_TEXT tCCRModeFixedSP ; Fixed SP
 TFT_display_decotype_cc_common:
     STRCAT_PRINT ""
     bra     TFT_display_decotype_exit
+
 TFT_display_decotype_surface3:
     decfsz  lo,F
     bra     TFT_display_decotype_surface4
@@ -4121,7 +4130,7 @@ TFT_display_ppo2_val:
 
     call    TFT_standard_color
 	TFT_color_code		warn_ppo2		; Color-code output (ppO2 stored in xC)
-    WIN_STD  dm_custom_ceiling_ppo2_val_col, dm_custom_ceiling_value_row
+    WIN_MEDIUM  dm_custom_ceiling_ppo2_val_col, dm_custom_ceiling_value_row
     ; hijacking neg_flag_velocity to know where the value is displayed
     bsf     neg_flag_velocity
     bra     TFT_display_ppo2_com
@@ -4171,13 +4180,6 @@ TFT_LogOffset_Logtitle:
 	PUTC	" "
 	return			; No "_PRINT" here...
 	
-	global	TFT_VSImenu_dynamictitle
-TFT_VSImenu_dynamictitle:
-	STRCPY_TEXT tVSItext1
-	PUTC	" "
-	return			; No "_PRINT" here...
-
-
 	global	adjust_depth_with_salinity
 adjust_depth_with_salinity:			; computes salinity setting into lo:hi [mbar]
 	btfsc	simulatormode_active	; Do apply salinity in Simulatormode

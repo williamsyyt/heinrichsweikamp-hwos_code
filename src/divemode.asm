@@ -370,9 +370,12 @@ calc_deko_divemode4:
     movwf   apnoe_mins
  	return                              ; done.
 
+calc_deko_divemode_sensor_done:
 calc_deko_divemode_sensor:                  ; External sensor stuff
-    TSTOSS  opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor
-    return
+    movff   opt_ccr_mode,WREG               ; =0: Fixed SP, =1: Sensor,  =2: Auto SP
+    sublw   .1                              ; opt_ccr_mode = 1 (Sensor)?
+    bnz     calc_deko_divemode_sensor_done  ; No, return
+
     rcall   divemode_setup_sensor_values    ; Setup sensor values
     call    check_sensors                   ; Check O2 sensor thresholds for fallback
     movff   sensor_setpoint,char_I_const_ppO2; Copy sensor result
