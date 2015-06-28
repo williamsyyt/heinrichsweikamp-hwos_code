@@ -203,6 +203,7 @@ option_table_begin:
         OPTION_BOOL     oVSItextv2,     0,                            .157,    opt_vsitextv2                    ; =1: use the dynamic (depends on depth) ascend rate limits
         OPTION_BOOL     oVSIgraph,      0,                            .158,    opt_vsigraph                     ; =1: draw the graphical VSI bar
         OPTION_BOOL     oExtCeiling,    0,                            .159,    opt_extceiling                   ; =1:print ppO2 and currentGF on the Ceiling Custom View
+        OPTION_BOOL     oShowppO2,      0,                            .160,    opt_showppo2                     ; =1:always show the ppO2 value in the warning position
 
 ;=============================================================================
 ; Set Time/Set Date (RAM only)

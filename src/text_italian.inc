@@ -138,6 +138,7 @@
     TCODE   tMODwarning,"MOD warning:"          ; MOD warning
     TCODE   tDispSetVSI,"VSI Settings..."       ; VSI Settings...
     TCODE   tExtCeiling,"Ext. Ceiling CV:"       ; Ext Ceiling CV
+    TCODE   tShowppO2,  "Always show ppO2:"     ; Always show ppO2:
 
 ; VSI display Settings
     TCODE   tDispSetVSItitle, "VSI Display Settings"     ; VSI display Settings
