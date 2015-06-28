@@ -624,8 +624,15 @@ do_dispsets_menu:
         MENU_OPTION tFlip,         oFlipScreen,   0
         MENU_OPTION tMODwarning,   oMODwarning,   0
         MENU_CALL   tDispSetVSI,                  do_dispsets_VSI_menu
-        MENU_OPTION tExtCeiling,   oExtCeiling,   0
+        MENU_CALL   tMore,                        do_dispsets_menu_more
         MENU_CALL   tExit,                        do_return_settings
+    MENU_END
+
+do_dispsets_menu_more:
+    MENU_BEGIN  tDispSets, .3
+        MENU_OPTION tExtCeiling,   oExtCeiling,   0
+        MENU_OPTION tShowppO2,     oShowppO2,     0
+        MENU_CALL   tExit,                        do_dispsets_menu_3stack
     MENU_END
 
 do_dispsets_VSI_menu:
