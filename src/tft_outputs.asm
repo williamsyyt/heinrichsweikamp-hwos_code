@@ -532,6 +532,8 @@ TFT_divemode_mask:					; Displays mask in Dive-Mode
         WIN_TINY            dm_mask_depth_column,dm_mask_depth_row
         STRCAT_TEXT_PRINT   tDepth
         WIN_TINY            dm_mask_maxdepth_column,dm_mask_maxdepth_row
+        TSTOSS  opt_vsigraph			; 0=skip, 1=draw
+        WIN_TINY            dm_mask_maxdepth_column_nvsi,dm_mask_maxdepth_row
         STRCAT_TEXT_PRINT   tMaxDepth
         WIN_TINY            dm_mask_divetime_column,dm_mask_divetime_row
         STRCAT_TEXT_PRINT   tDivetime
@@ -540,10 +542,15 @@ TFT_divemode_mask:					; Displays mask in Dive-Mode
     if dm_offset == 0
         movlw       color_dark_red
         call        TFT_set_color
+        TSTOSS  opt_vsigraph			; 0=skip, 1=draw
+        bra     $+4
         WIN_FRAME_COLOR16 dm_velobar_top, dm_velobar_bot, dm_velobar_lft, dm_velobar_rgt ;top, bottom, left, right
         WIN_FRAME_COLOR16 dm_sep_1_2_row, dm_sep_1_2_row, .0, .159 ;top, bottom, left, right
         WIN_FRAME_COLOR16 dm_sep_2_3_row, dm_sep_2_3_row, .0, .159 ;top, bottom, left, right
         WIN_FRAME_COLOR16 dm_warning_row-.1, dm_warning_row-.1, dm_warning_column, .159 ;top, bottom, left, right
+        TSTOSS  opt_vsigraph			; 0=skip, 1=draw
+        bra     $+4
+        WIN_FRAME_COLOR16 dm_warning_row-.1, dm_warning_row-.1, dm_max_depth_column_nvsi, .159 ;top, bottom, left, right
         call    TFT_draw_gassep_line
     endif
 
@@ -997,13 +1004,13 @@ TFT_velocity_metric:
     return
 
 TFT_velocity_VSIbar:
+    TSTOSS  opt_vsigraph			; 0=skip, 1=draw
+    return
+
     ; use another logic when descending
     btfss   neg_flag_velocity
     bra     TFT_velocity_VSIbar_desc
     call    TFT_velocity_VSIbar_desc_clr
-
-    TSTOSS  opt_vsigraph			; 0=skip, 1=draw
-    return
 
     btfsc   velocity_warn
     bra     TFT_velocity_VSIbar_warn
@@ -1222,6 +1229,8 @@ TFT_velocity_VSIbar_desc_draw:
     return
 
 TFT_velocity_VSIbar_clr: ; clears the ascend part of the bar
+    TSTOSS  opt_vsigraph		    	; 0=skip, 1=draw
+    return
     WIN_BOX_BLACK   dm_velobar_top+.1,dm_velobar_top+.63,dm_velobar_lft+.1,dm_velobar_rgt-.1
     if dm_offset == 0
         movlw       color_dark_red
@@ -1230,6 +1239,8 @@ TFT_velocity_VSIbar_clr: ; clears the ascend part of the bar
     return
 
 TFT_velocity_VSIbar_desc_clr: ; clears the descend part of the bar
+    TSTOSS  opt_vsigraph		    	; 0=skip, 1=draw
+    return
     WIN_BOX_BLACK   dm_velobar_top+.61,dm_velobar_bot-.1,dm_velobar_lft+.1,dm_velobar_rgt-.1
     if dm_offset == 0
         movlw       color_dark_red
@@ -3062,13 +3073,17 @@ TFT_max_pressure3:
 ;TFT_max_pressure2_imperial
 	call	convert_mbar_to_feet              	; convert value in lo:hi from mbar to feet
 	WIN_MEDIUM	dm_max_depth_column, dm_max_depth_row
+	TSTOSS  opt_vsigraph			; 0=skip, 1=draw
+	WIN_MEDIUM	dm_max_depth_column_nvsi, dm_max_depth_row
 	call	TFT_standard_color
 	output_16_3
 	STRCAT_PRINT ""
 	return
 
 TFT_max_pressure2_metric:
-    WIN_MEDIUM	dm_max_depth_column, dm_max_depth_row
+	WIN_MEDIUM	dm_max_depth_column, dm_max_depth_row
+	TSTOSS  opt_vsigraph			; 0=skip, 1=draw
+	WIN_MEDIUM	dm_max_depth_column_nvsi, dm_max_depth_row
     call    TFT_standard_color
 
 	movlw	.039
@@ -3113,6 +3128,8 @@ TFT_max_pressure2_metric:
 
 tft_max_depth2:
 	WIN_MEDIUM	dm_max_depth_column, dm_max_depth_row
+	TSTOSS  opt_vsigraph			; 0=skip, 1=draw
+	WIN_MEDIUM	dm_max_depth_column_nvsi, dm_max_depth_row
 	STRCAT	"0"
 
 tft_max_depth3:
@@ -3122,6 +3139,8 @@ tft_max_depth3:
 
 	; .1m in SMALL font
 	WIN_SMALL	dm_max_depth_dm_column, dm_max_depth_dm_row
+	TSTOSS  opt_vsigraph			; 0=skip, 1=draw
+	WIN_SMALL	dm_max_depth_dm_column_nvsi, dm_max_depth_dm_row
 
     SAFE_2BYTE_COPY max_pressure, lo
 	call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
