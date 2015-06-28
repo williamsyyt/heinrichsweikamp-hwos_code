@@ -3805,8 +3805,18 @@ TFT_gf_mask2:
     bcf     leftbind
     return
 
+    global  TFT_gf_mask_cGF                     ; Setup Mask
+TFT_gf_mask_cGF:
+    ; The mask
+    call    TFT_divemask_color
+    WIN_TINY          dm_custom_gf_title_col3, dm_custom_gf_title_row
+    STRCPY_TEXT_PRINT tGFInfo
+    call	TFT_standard_color
+    return
+
     global  TFT_gf_info                         ; Show GF informations
 TFT_gf_info:
+    call	TFT_standard_color
     ; Show current GF
 	movff	char_O_gradient_factor,lo			; gradient factor absolute (Non-GF model)
 	movff	char_I_deco_model,hi
@@ -4088,6 +4098,34 @@ TFT_display_cns:
     call    TFT_warning_set_window_end
 	return
 
+    global  TFT_mask_ppo2
+TFT_mask_ppo2:
+    call    TFT_divemask_color
+    WIN_TINY  dm_custom_ceiling_ppo2_column, dm_custom_ceiling_text_row
+    STRCPY_TEXT_PRINT tppO2
+    call	TFT_standard_color
+    return
+
+	global	TFT_display_ppo2_val
+TFT_display_ppo2_val:
+    SAFE_2BYTE_COPY amb_pressure, xA
+	movlw	d'10'
+	movwf	xB+0
+	clrf	xB+1
+	call	div16x16				; xC=p_amb/10
+	movff	xC+0,xA+0
+	movff	xC+1,xA+1
+    movff   char_I_O2_ratio,xB+0    ; =O2 ratio
+	clrf	xB+1
+	call	mult16x16               ; char_I_O2_ratio * p_amb/10
+
+    call    TFT_standard_color
+	TFT_color_code		warn_ppo2		; Color-code output (ppO2 stored in xC)
+    WIN_STD  dm_custom_ceiling_ppo2_val_col, dm_custom_ceiling_value_row
+    ; hijacking neg_flag_velocity to know where the value is displayed
+    bsf     neg_flag_velocity
+    bra     TFT_display_ppo2_com
+
 	global	TFT_display_ppo2
 TFT_display_ppo2:                       ; Show ppO2 (ppO2 stored in xC, in mbar!)
 	rcall	TFT_warning_set_window		; Sets the row and column for the current warning
@@ -4096,6 +4134,9 @@ TFT_display_ppo2:                       ; Show ppO2 (ppO2 stored in xC, in mbar!
     call    TFT_warning_set_window_com
 	TFT_color_code		warn_ppo2		; Color-code output (ppO2 stored in xC)
     STRCPY_TEXT tppO2                   ; ppO2:
+    ; hijacking neg_flag_velocity to know where the value is displayed
+    bcf     neg_flag_velocity
+TFT_display_ppo2_com:
 ; Check very high ppO2 manually
 	tstfsz	xC+2                        ; char_I_O2_ratio * p_amb/10 > 65536, ppO2>6,55bar?
 	bra		TFT_show_ppO2_3             ; Yes, display fixed Value!
@@ -4105,6 +4146,9 @@ TFT_display_ppo2:                       ; Show ppO2 (ppO2 stored in xC, in mbar!
 	output_16dp	d'1'
 TFT_show_ppO2_2:
     movlw   dm_warning_length              ; Divemode string length
+    ; neg_flag_velocity is hijacked, used to toggle the fillup lenght.
+    btfsc   neg_flag_velocity
+    movlw   .4
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT ""
 	call	TFT_standard_color

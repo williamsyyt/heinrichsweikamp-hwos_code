@@ -260,10 +260,12 @@
 ;******* Custom content / #8 - Ceiling value for GF_hi *******
 ; Title
 #DEFINE    dm_custom_ceiling_text_row       dm_customview_row+.1        ; 102
-#DEFINE    dm_custom_ceiling_text_column    .66                         ; 66
+#DEFINE    dm_custom_ceiling_text_column    .68                         ; 66
+#DEFINE    dm_custom_ceiling_ppo2_column    .8                          ; 8
 ; Value
 #DEFINE    dm_custom_ceiling_value_row      dm_customview_row+.18       ; 119
-#DEFINE    dm_custom_ceiling_value_column   .64                         ; 64
+#DEFINE    dm_custom_ceiling_value_column   .66                         ; 64
+#DEFINE    dm_custom_ceiling_ppo2_val_col   .2                          ; 2
 ; II. End of the custom conent row. (101-163)
 
 

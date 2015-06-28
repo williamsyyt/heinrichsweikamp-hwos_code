@@ -69,9 +69,11 @@ TFT_color_code macro color_code_temp
 	extern	TFT_divemode_warning_clear
 	extern	TFT_velocity_clear
 	extern	TFT_display_velocity
-	extern 	TFT_clear_customview_divemode
+	extern	TFT_clear_customview_divemode
 	extern	TFT_display_deko
+	extern	TFT_mask_ppo2
 	extern	TFT_display_ppo2
+	extern	TFT_display_ppo2_val
 	extern	TFT_update_batt_percent_divemode
 	extern	TFT_display_apnoe_descent
 	extern	TFT_apnoe_clear_surface
@@ -92,6 +94,7 @@ TFT_color_code macro color_code_temp
     extern  TFT_ead_end_tissues_clock_mask      ; Setup Mask
     extern  TFT_ead_end_tissues_clock           ; Show EAD/END, Tissues and clock
     extern  TFT_gf_mask                         ; Setup Mask
+    extern  TFT_gf_mask_cGF                     ; Setup Mask - current GF only
     extern  TFT_gf_info                         ; Show GF informations
     extern  TFT_warning_agf                     ; Show a warning if aGF is selected
 ;    extern  TFT_dive_compass_mask               ; Compass mask

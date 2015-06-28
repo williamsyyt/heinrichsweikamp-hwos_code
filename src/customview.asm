@@ -77,6 +77,19 @@ customview_1sec_view8:                      ; Sensor voltages
     return
 customview_1sec_view9:                      ; Ceiling
     call    TFT_ceiling                     ; Show Ceiling
+
+    TSTOSS  opt_extceiling      			; 0=skip, 1=draw
+    return
+    
+    ; ppO2 value
+    call    TFT_display_ppo2_val
+
+    ; current GF value
+    extern  char_I_deco_model
+    TSTOSS  char_I_deco_model               ; 0 = ZH-L16, 1 = ZH-L16-GF
+    return                                  ; No GF info for non-GF modes
+    call    TFT_gf_info                     ; Update GF informations
+
     return
 
 
@@ -478,6 +491,21 @@ customview_init_view9:                      ; Ceiling
 	bra		customview_toggle				; Yes, Call next view...
     call    TFT_ceiling_mask                ; Setup mask
     call    TFT_ceiling                     ; Show Ceiling
+
+    TSTOSS  opt_extceiling      			; 0=skip, 1=draw
+    bra		customview_toggle_exit
+
+    ; ppO2 value
+    call    TFT_mask_ppo2
+    call    TFT_display_ppo2_val
+
+    ; current GF value
+    extern  char_I_deco_model
+    TSTOSS  char_I_deco_model               ; 0 = ZH-L16, 1 = ZH-L16-GF
+    bra     customview_toggle_exit          ; No GF info for non-GF modes
+    call    TFT_gf_mask_cGF                 ; Setup Mask - current GF only
+    call    TFT_gf_info                     ; Show GF informations
+
     bra		customview_toggle_exit
 
 
