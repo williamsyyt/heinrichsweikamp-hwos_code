@@ -26,12 +26,13 @@
 ;    - header: has the titles (mask)
 ;    - content: has the values
 ;******* Upper content / header row *******
-#DEFINE    dm_mask_depth_row         .0
-#DEFINE    dm_mask_depth_column      .12
-#DEFINE    dm_mask_maxdepth_row      .0
-#DEFINE    dm_mask_maxdepth_column   .73
-#DEFINE    dm_mask_divetime_row      .0
-#DEFINE    dm_mask_divetime_column   .122
+#DEFINE    dm_mask_depth_row              .0
+#DEFINE    dm_mask_depth_column           .12
+#DEFINE    dm_mask_maxdepth_row           .0
+#DEFINE    dm_mask_maxdepth_column        .73
+#DEFINE    dm_mask_maxdepth_column_nvsi   .63
+#DEFINE    dm_mask_divetime_row           .0
+#DEFINE    dm_mask_divetime_column        .122
 
 ;   The content row contains 3 columns:
 ;    - depth and ascend rate warning
@@ -61,14 +62,17 @@
 #DEFINE    dm_velobar_width        .12
 
 ;******* Upper content / content row / 2nd col *******
-#DEFINE    dm_upcnt_2ndcol            .74                       ; 74
+#DEFINE    dm_upcnt_2ndcol              .74                            ; 74
+#DEFINE    dm_upcnt_2ndcol_nvsi         .64                            ; 64
 ; Max depth
-#DEFINE    dm_max_depth_row           dm_offset                 ; 14
-#DEFINE    dm_max_depth_column        dm_upcnt_2ndcol           ; 74
-#DEFINE    dm_max_depth_bot           dm_max_depth_row+.34      ; 48
-#DEFINE    dm_max_depth_rgt           dm_max_depth_column+.36   ; 100
-#DEFINE    dm_max_depth_dm_row        dm_max_depth_row+.11      ; 25
-#DEFINE    dm_max_depth_dm_column     dm_max_depth_column+.23   ; 87
+#DEFINE    dm_max_depth_row             dm_offset                      ; 14
+#DEFINE    dm_max_depth_column          dm_upcnt_2ndcol                ; 74
+#DEFINE    dm_max_depth_column_nvsi     dm_upcnt_2ndcol_nvsi           ; 64
+#DEFINE    dm_max_depth_bot             dm_max_depth_row+.34           ; 48
+#DEFINE    dm_max_depth_rgt             dm_max_depth_column+.36        ; 100
+#DEFINE    dm_max_depth_dm_row          dm_max_depth_row+.11           ; 25
+#DEFINE    dm_max_depth_dm_column       dm_max_depth_column+.23        ; 87
+#DEFINE    dm_max_depth_dm_column_nvsi  dm_max_depth_column_nvsi+.23   ; 77
 ; Warning area (combined)
 #DEFINE    dm_warning_row             dm_offset+.36             ; 50
 #DEFINE    dm_warning_column          dm_upcnt_2ndcol           ; 74
@@ -256,10 +260,12 @@
 ;******* Custom content / #8 - Ceiling value for GF_hi *******
 ; Title
 #DEFINE    dm_custom_ceiling_text_row       dm_customview_row+.1        ; 102
-#DEFINE    dm_custom_ceiling_text_column    .66                         ; 66
+#DEFINE    dm_custom_ceiling_text_column    .68                         ; 66
+#DEFINE    dm_custom_ceiling_ppo2_column    .8                          ; 8
 ; Value
 #DEFINE    dm_custom_ceiling_value_row      dm_customview_row+.18       ; 119
-#DEFINE    dm_custom_ceiling_value_column   .64                         ; 64
+#DEFINE    dm_custom_ceiling_value_column   .66                         ; 64
+#DEFINE    dm_custom_ceiling_ppo2_val_col   .2                          ; 2
 ; II. End of the custom conent row. (101-163)
 
 
