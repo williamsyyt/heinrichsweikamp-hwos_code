@@ -116,7 +116,7 @@ option_table_begin:
         OPTION_UINT8    oExtraTime,     0,  .9,   0,tMinutes,   .22,    char_I_extra_time               ; Future TTS
         OPTION_ENUM8    oBrightness,    3,  0,  tEco,           .23,    opt_brightness                  ; =0: Eco, =1:Medium, =2:Full
         OPTION_UINT8    oDiveSalinity,  0,  4, 0,  tPercent,    .24,    opt_salinity                    ; 0-4%
-        OPTION_ENUM8    oCCRMode,    2,  0,  tCCRModeFixedSP,   .25,    opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor
+        OPTION_ENUM8    oCCRMode,    3,  0,  tCCRModeFixedSP,   .25,    opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor, =2: Auto SP
         OPTION_ENUM8    oLanguage,      4,  0,  tEnglish,   .26,    opt_language                        ; 0=EN, 1=DE, 2=FR, 3=SP
 		OPTION_ENUM8    oDateFormat,    3,  1,  tDateformat,.27,    opt_dateformat                      ; =0:MMDDYY, =1:DDMMYY, =2:YYMMDD
         OPTION_ENUM8    oUnits,         2,  0,  tMetric,    .28,    opt_units                           ; 0=Meters, 1=Feets
@@ -202,8 +202,7 @@ option_table_begin:
         OPTION_BOOL     oMODwarning,    0,                            .156,    opt_modwarning                   ; =1: red depth blinking warning
         OPTION_BOOL     oVSItextv2,     0,                            .157,    opt_vsitextv2                    ; =1: use the dynamic (depends on depth) ascend rate limits
         OPTION_BOOL     oVSIgraph,      0,                            .158,    opt_vsigraph                     ; =1: draw the graphical VSI bar
-        OPTION_BOOL     oExtCeiling,    0,                            .159,    opt_extceiling                   ; =1:print ppO2 and currentGF on the Ceiling Custom View
-        OPTION_BOOL     oShowppO2,      0,                            .160,    opt_showppo2                     ; =1:always show the ppO2 value in the warning position
+        OPTION_BOOL     oShowppO2,      0,                            .159,    opt_showppo2                     ; =1:always show the ppO2 value in the warning position
 
 ;=============================================================================
 ; Set Time/Set Date (RAM only)

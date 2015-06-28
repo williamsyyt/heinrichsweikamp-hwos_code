@@ -78,9 +78,6 @@ customview_1sec_view8:                      ; Sensor voltages
 customview_1sec_view9:                      ; Ceiling
     call    TFT_ceiling                     ; Show Ceiling
 
-    TSTOSS  opt_extceiling      			; 0=skip, 1=draw
-    return
-    
     ; ppO2 value
     call    TFT_display_ppo2_val
 
@@ -478,8 +475,9 @@ customview_init_view8:                      ; Sensor millivolts
 	bra		customview_toggle				; yes, Call next view...
 	btfss	FLAG_ccr_mode					; In CC mode?
 	bra		customview_toggle				; no, Call next view...
-    TSTOSS  opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor
-	bra		customview_toggle				; no, Call next view...
+    movff   opt_ccr_mode,WREG               ; =0: Fixed SP, =1: Sensor,  =2: Auto SP
+    sublw   .1                              ; opt_ccr_mode = 1 (Sensor)?
+    bnz     customview_toggle				; no, Call next view...
     call    TFT_hud_mask                    ; Setup HUD mask
     call    TFT_hud_voltages                ; Show HUD details
     bra		customview_toggle_exit
@@ -491,9 +489,6 @@ customview_init_view9:                      ; Ceiling
 	bra		customview_toggle				; Yes, Call next view...
     call    TFT_ceiling_mask                ; Setup mask
     call    TFT_ceiling                     ; Show Ceiling
-
-    TSTOSS  opt_extceiling      			; 0=skip, 1=draw
-    bra		customview_toggle_exit
 
     ; ppO2 value
     call    TFT_mask_ppo2

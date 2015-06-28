@@ -33,6 +33,8 @@
     extern  compass_add_calibration
     extern  compass_solve_calibration
 
+    extern  menu_processor_bottom_line
+
 compass_ops code
 ;-----------------------------------------------------------------------------
 ; Filter compass values
@@ -196,7 +198,9 @@ compass_calibration_loop:               ; Compass calibration
     WIN_COLOR   color_greenish
 	WIN_SMALL	.16,.0
 	STRCPY_TEXT_PRINT	tCompassMenu
-    btfss		switch_right2           ; wait until button is released
+
+    call    menu_processor_bottom_line
+    btfss		switch_right2           ; wait until right button is released
     bra         $-4
 
     call	TFT_standard_color
