@@ -694,6 +694,10 @@ opt_showppo2            res 1   ; =1:always show the ppO2 value in the warning p
 #DEFINE neg_flag_velocity       flag13,0    ; neg_flag backup for velocity logic
 #DEFINE velocity_warn           flag13,1    ; flag set when ascend is in warning rate
 #DEFINE velocity_attn           flag13,2    ; flag set when ascend is in attention rate
+#DEFINE sp2_switched            flag13,3    ; =1: This setpoint has been autoselected already
+#DEFINE sp3_switched            flag13,4    ; =1: This setpoint has been autoselected already
+#DEFINE sp4_switched            flag13,5    ; =1: This setpoint has been autoselected already
+#DEFINE sp5_switched            flag13,6    ; =1: This setpoint has been autoselected already
 
 ;=============================================================================
 ; C-code Routines
