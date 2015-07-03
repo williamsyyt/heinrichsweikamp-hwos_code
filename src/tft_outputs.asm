@@ -2334,8 +2334,9 @@ TFT_active_setpoint2:
     STRCAT_TEXT tbar
     movff   opt_ccr_mode,WREG               ; =0: Fixed SP, =1: Sensor,  =2: Auto SP
     sublw   .1                              ; opt_ccr_mode = 1 (Sensor)?
-    bnz     $+4                             ; No, skip
+    bnz     TFT_active_setpoint2_a          ; No, skip
     PUTC    "*"
+TFT_active_setpoint2_a:
 	STRCAT_PRINT ""
     return
 
@@ -2365,8 +2366,9 @@ TFT_active_setpoint:         ; Show setpoint
     STRCAT_TEXT tbar
     movff   opt_ccr_mode,WREG               ; =0: Fixed SP, =1: Sensor,  =2: Auto SP
     sublw   .1                              ; opt_ccr_mode = 1 (Sensor)?
-    bnz     $+4                             ; No, skip
+    bnz     TFT_active_setpoint_a            ; No, skip
     PUTC    "*"
+TFT_active_setpoint_a:
 	STRCAT_PRINT ""
 	bcf     win_invert                  ; Reset invert flag
 
