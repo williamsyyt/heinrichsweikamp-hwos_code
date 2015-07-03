@@ -104,6 +104,9 @@ diveloop_loop1x:
     btfsc   toggle_gf                       ; =1: Toggle GF/aGF
     rcall   divemodemode_togglegf           ; Toggle aGF/GF
 
+    btfsc   FLAG_ccr_mode                   ; In CCR mode...
+    call    check_dive_autosp               ; ...check for Auto-SP
+
     call    compute_ppo2                    ; compute mv_sensorX and ppo2_sensorX arrays
 
 diveloop_loop3:
@@ -1264,10 +1267,90 @@ check_dil_common2:
 	bsf		better_gas_available	;=1: A better gas is available and a gas change is advised in divemode
     return
 
+
+;=============================================================================
+; Check for Auto-SP
+;
+check_dive_autosp:               ; Check for Auto-SP
+    movff   opt_ccr_mode,WREG               ; =0: Fixed SP, =1: Sensor,  =2: Auto SP
+    sublw   .2                              ; opt_ccr_mode = 2 (Auto SP)?
+    bz      check_dive_autosp2              ; Yes, check
+    return                                  ; No, return for Sensor or Fixed mode
+check_dive_autosp2:
+    SAFE_2BYTE_COPY rel_pressure,xA
+	movlw	d'100'
+	movwf	xB+0
+	clrf	xB+1
+	call	div16x16				; compute depth in full m -> result in xC+0
+    ; Check SP2
+    btfsc   sp2_switched            ;=1: This setpoint has been autoselected already
+    bra     check_dive_autosp3      ; Skip check
+    movff   char_I_setpoint_change+1,lo ; Get depth in m
+    tstfsz  lo                      ; =0?
+    bra     $+4                     ; No, continue
+    bra     check_dive_autosp3      ; Skip check
+    decf    lo,W                    ; -1 -> WREG
+    cpfsgt  xC+0                    ; Compare with depth
+    bra     check_dive_autosp3      ; lower depth, do not switch
+    ; auto switch to SP2
+	movff	char_I_setpoint_cbar+1, char_I_const_ppO2	; Use SetPoint
+    bsf     setpoint_changed        ; Set flag (For profile)
+    bsf		event_occured			; Set global event byte
+    bsf     sp2_switched            ; Set flag
+check_dive_autosp3:
+    ; Check SP3
+    btfsc   sp3_switched            ;=1: This setpoint has been autoselected already
+    bra     check_dive_autosp4      ; Skip check
+    movff   char_I_setpoint_change+2,lo ; Get depth in m
+    tstfsz  lo                      ; =0?
+    bra     $+4                     ; No, continue
+    bra     check_dive_autosp4      ; Skip check
+    decf    lo,W                    ; -1 -> WREG
+    cpfsgt  xC+0                    ; Compare with depth
+    bra     check_dive_autosp4      ; lower depth, do not switch
+    ; auto switch to SP3
+	movff	char_I_setpoint_cbar+2, char_I_const_ppO2	; Use SetPoint
+    bsf     setpoint_changed        ; Set flag (For profile)
+    bsf		event_occured			; Set global event byte
+    bsf     sp3_switched            ; Set flag
+check_dive_autosp4:
+    ; Check SP4
+    btfsc   sp4_switched            ;=1: This setpoint has been autoselected already
+    bra     check_dive_autosp5      ; Skip check
+    movff   char_I_setpoint_change+3,lo ; Get depth in m
+    tstfsz  lo                      ; =0?
+    bra     $+4                     ; No, continue
+    bra     check_dive_autosp5      ; Skip check
+    decf    lo,W                    ; -1 -> WREG
+    cpfsgt  xC+0                    ; Compare with depth
+    bra     check_dive_autosp5      ; lower depth, do not switch
+    ; auto switch to SP4
+	movff	char_I_setpoint_cbar+3, char_I_const_ppO2	; Use SetPoint
+    bsf     setpoint_changed        ; Set flag (For profile)
+    bsf		event_occured			; Set global event byte
+    bsf     sp4_switched            ; Set flag
+check_dive_autosp5:
+    ; Check SP5
+    btfsc   sp5_switched            ;=1: This setpoint has been autoselected already
+    bra     check_dive_autosp6      ; Skip check
+    movff   char_I_setpoint_change+4,lo ; Get depth in m
+    tstfsz  lo                      ; =0?
+    bra     $+4                     ; No, continue
+    bra     check_dive_autosp6      ; Skip check
+    decf    lo,W                    ; -1 -> WREG
+    cpfsgt  xC+0                    ; Compare with depth
+    bra     check_dive_autosp6      ; lower depth, do not switch
+    ; auto switch to SP5
+	movff	char_I_setpoint_cbar+4, char_I_const_ppO2	; Use SetPoint
+    bsf     setpoint_changed        ; Set flag (For profile)
+    bsf		event_occured			; Set global event byte
+    bsf     sp5_switched            ; Set flag
+check_dive_autosp6:
+    return
+
 ;=============================================================================
 ; Setup everything to enter divemode.
 ;
-
 dive_boot_oc:
     extern  get_first_gas_to_WREG
     call    get_first_gas_to_WREG           ; Gets first gas (0-4) into WREG
@@ -1288,8 +1371,14 @@ dive_boot_cc:
     bsf     voting_logic_sensor3
     rcall   divemode_setup_sensor_values    ; setup sensor values
 
+    ; Setup first SP for Fixed or Auto mode
     TSTOSS  opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor
     movff   char_I_setpoint_cbar+0,char_I_const_ppO2    ; Setup fixed Setpoint (Always start with SP1)
+    bcf     sp2_switched                    ; =1: This setpoint has been autoselected already
+    bcf     sp3_switched                    ; =1: This setpoint has been autoselected already
+    bcf     sp4_switched                    ; =1: This setpoint has been autoselected already
+    bcf     sp5_switched                    ; =1: This setpoint has been autoselected already
+
     extern  get_first_dil_to_WREG
     call    get_first_dil_to_WREG           ; Gets first gas (0-4) into WREG
     movff   WREG,char_I_first_gas           ; Copy for compatibility

@@ -6,9 +6,7 @@ NEW: MOD Warning (Can be disabled)
 NEW: Depth dependend ascend speed (Can be disabled)
 NEW: Graphical speed indicator (Can be disabled)
 NEW: Option to always show the ppO2, shows ppO2 for Diluent in CC mode
-
-
-
+NEW: Mode Auto SP: Automatically switches the SP during descent (CC Mode)
 
 [1.81]
 
