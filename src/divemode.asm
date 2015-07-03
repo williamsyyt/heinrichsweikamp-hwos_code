@@ -373,7 +373,6 @@ calc_deko_divemode4:
     movwf   apnoe_mins
  	return                              ; done.
 
-calc_deko_divemode_sensor_done:
 calc_deko_divemode_sensor:                  ; External sensor stuff
     movff   opt_ccr_mode,WREG               ; =0: Fixed SP, =1: Sensor,  =2: Auto SP
     sublw   .1                              ; opt_ccr_mode = 1 (Sensor)?
@@ -398,6 +397,7 @@ calc_deko_divemode_sensor:                  ; External sensor stuff
     ; No sensor in use -> fallback
     movff   char_I_setpoint_cbar+0,char_I_const_ppO2    ; Setup fixed Setpoint (Always fallback to SP1), overwrite sensor result
     bsf     setpoint_fallback               ; =1: Fallback to SP1 due to external O2 sensor failure
+calc_deko_divemode_sensor_done:
     return
    
 ;-----------------------------------------------------------------------------
