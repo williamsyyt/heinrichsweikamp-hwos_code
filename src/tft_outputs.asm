@@ -2044,8 +2044,8 @@ TFT_interval:
     movlw   surf_warning_length         ; No, use surface string length
     call    TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""
-    call    TFT_warning_set_window_end
-	return
+    bcf     win_invert
+    return
 
     global  TFT_surface_decosettings    ; Show all deco settings
 TFT_surface_decosettings:
@@ -2144,7 +2144,7 @@ TFT_divetimeout:
     movlw   dm_warning_length             ; Divemode string length
     call    TFT_fillup_with_spaces     ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""
-    call    TFT_warning_set_window_end
+    bcf     win_invert
 	return
 
 	global	TFT_ftts
@@ -2187,7 +2187,7 @@ TFT_ftts:
     movlw   dm_warning_length             ; Divemode string length
     call    TFT_fillup_with_spaces     ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""
-    call    TFT_warning_set_window_end
+    bcf     win_invert
 	return
 
 TFT_ftts2:
@@ -2196,7 +2196,7 @@ TFT_ftts2:
     movlw   dm_warning_length             ; Divemode string length
     call    TFT_fillup_with_spaces     ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT ""
-    call    TFT_warning_set_window_end
+    bcf     win_invert
     return
 
 
@@ -3621,7 +3621,7 @@ TFT_desaturation_time:
     movlw   .0
     movff   WREG,buffer+11
 	STRCAT_PRINT	""
-    call    TFT_warning_set_window_end
+    bcf     win_invert
 	return
 
 	global	TFT_nofly_time
@@ -3648,7 +3648,7 @@ TFT_nofly_time:
     movlw   .0
     movff   WREG,buffer+11
 	STRCAT_PRINT	""
-    call    TFT_warning_set_window_end
+    bcf     win_invert
 	return
 
     global  TFT_warning_agf
@@ -3663,7 +3663,7 @@ TFT_warning_agf:
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT ""
 	call	TFT_standard_color
-    call    TFT_warning_set_window_end
+    bcf     win_invert
     return
 
     global  TFT_warning_fallback
@@ -3698,7 +3698,7 @@ TFT_warning_gf:                         ;GF
     STRCAT_PRINT  ""
     bcf     leftbind
 	call	TFT_standard_color
-    call    TFT_warning_set_window_end
+    bcf     win_invert
 	return
 
 TFT_warning_set_window:                 ; Sets the row and column for the current warning
@@ -3741,10 +3741,6 @@ TFT_warning_set_window_com:
     endif
     return
 
-TFT_warning_set_window_end:
-    bcf     win_invert
-    return
-
 	global	TFT_update_batt_percent_divemode
 TFT_update_batt_percent_divemode:
 	rcall	TFT_warning_set_window		; Sets the row and column for the current warning
@@ -3764,7 +3760,7 @@ TFT_update_batt_percent_divemode:
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT	""
 	call	TFT_standard_color
-    call    TFT_warning_set_window_end
+    bcf     win_invert
 	return
 
     global  TFT_gf_mask                         ; Setup Mask
@@ -4106,7 +4102,7 @@ TFT_display_cns:
     rcall   TFT_fillup_with_spaces          ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""
 	call	TFT_standard_color
-    call    TFT_warning_set_window_end
+    bcf     win_invert
 	return
 
     global  TFT_mask_ppo2
@@ -4153,21 +4149,36 @@ TFT_display_ppo2_com:
 	bra		TFT_show_ppO2_3             ; Yes, display fixed Value!
 	movff	xC+0,lo
 	movff	xC+1,hi
-	bsf		ignore_digit4
+	bsf		ignore_digit4               ; no mbar resolution
 	output_16dp	d'1'
+
+; Set ".xx" to "0.xx" (bar)
+    banksel buffer
+    movlw   " "
+    cpfseq  buffer+5                    ; For ppO2 in warning area
+    bra     TFT_show_ppO2_1
+    movlw   "0"                         ; Replace Space with "0"
+    movwf   buffer+5
+TFT_show_ppO2_1:
+    movlw   " "
+    cpfseq  buffer+0                    ; For ppO2 in custom view
+    bra     TFT_show_ppO2_2
+    movlw   "0"                         ; Replace Space with "0"
+    movwf   buffer+0
 TFT_show_ppO2_2:
-    movlw   dm_warning_length              ; Divemode string length
+    banksel common
+    movlw   dm_warning_length           ; Divemode string length
     ; neg_flag_velocity is hijacked, used to toggle the fillup lenght.
     btfsc   neg_flag_velocity
     movlw   .4
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT ""
 	call	TFT_standard_color
-    call    TFT_warning_set_window_end
+    bcf     win_invert
 	return
 
 TFT_show_ppO2_3:
-    STRCAT  ">6.6"
+    STRCAT  "'6.6"                      ; Workaround until a ">" is available in STD font
 	bra		TFT_show_ppO2_2
 
 
