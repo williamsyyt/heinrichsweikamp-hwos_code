@@ -168,7 +168,7 @@ static float			GF_delta;
 static float			locked_GF_step;             // GF_delta / low_depth
 
 static unsigned char    temp_depth_limit;
-static unsigned char    low_depth;                  // Depth of deepest stop
+float                   low_depth;                  // Depth of deepest stop
 
 // Simulation context: used to predict ascent.
 static unsigned char	sim_lead_tissue_no;         // Leading compatiment number.
@@ -492,25 +492,27 @@ static unsigned char calc_nextdecodepth(void)
             goto no_deco_stop;          // We can surface directly...
 
         p *= BAR_TO_METER;
-        if( p < min_depth )
-            goto no_deco_stop;          // First stop is higher than 1' ascent.
-
-        first_stop = 3 * (short)(0.99999 + p*0.333333);
-        assert( first_stop < 128 );
-
-        // Apply correction for the shallowest stop.
-        if( first_stop == 3 )                           // new in v104
-            first_stop = char_I_depth_last_deco;        // Use last 3m..6m instead.
 
         // Store the deepest point needing a deco stop as the LOW reference for GF.
         // NOTE: following stops will be validated using this LOW-HIGH gf scale,
         //       so if we want to keep coherency, we should not validate this stop
         //       yet, but apply the search to it, as for all the following stops afterward.
-        if( first_stop > low_depth )
+        if( p > low_depth )
         {
-            low_depth = first_stop;
-            locked_GF_step = GF_delta / first_stop;
+            low_depth = p;
+            locked_GF_step = GF_delta / low_depth;
         }
+
+        if( p < min_depth )
+            goto no_deco_stop;          // First stop is higher than 1' ascent.
+
+        // Round to multiple of 3m.
+        first_stop = 3 * (short)(0.9995f + p*0.333333f);
+        assert( first_stop < 128 );
+
+        // Apply correction for the shallowest stop.
+        if( first_stop == 3 )                           // new in v104
+            first_stop = char_I_depth_last_deco;        // Use last 3m..6m instead.
 
         // We have a stop candidate.
         // But maybe ascending to the next stop will diminish the constraint,
@@ -518,7 +520,6 @@ static unsigned char calc_nextdecodepth(void)
         while(first_stop > 0)
         {
             overlay unsigned char next_stop;            // Next depth (0..90m)
-            overlay float pres_stop;                    // Next pressure (bar)
 
             // Check max speed, or reaching surface.
             if( first_stop <= min_depth )
@@ -531,31 +532,30 @@ static unsigned char calc_nextdecodepth(void)
             else
                 next_stop = first_stop - 3;             // Index of next (upper) stop.
 
-            // Just a check we are indeed above LOW ref.
-            assert( next_stop < low_depth );
-
             // Total preassure at the new stop candidate:
-            pres_stop =  next_stop * METER_TO_BAR
-                      + pres_surface;
+            p = next_stop * METER_TO_BAR
+              + pres_surface;
 
-            // Keep GF_low until a first stop depth is found:
-            sim_limit( GF_high - next_stop * locked_GF_step );
+            // Recompute limit for this new stop:
+            if( !low_depth || next_stop > low_depth )
+                sim_limit( GF_low );
+            else
+                sim_limit( GF_high - next_stop * locked_GF_step );
 
-            // Check upper limit (lowest pressure tolerated):
-            if( sim_lead_tissue_limit >= pres_stop )    // check if ascent to next deco stop is ok
-                goto deco_stop_found;
+            // Check upper limit (lowest ambiant pressure tolerated):
+            if( sim_lead_tissue_limit >= p )
+                goto deco_stop_found;       // Ascent to next_stop forbiden.
 
             // Else, validate that stop and loop...
             first_stop = next_stop;
         }
-        assert( first_stop == 0 );
 
 no_deco_stop:
         temp_depth_limit = min_depth;
         goto done;
 
-        // next stop is the last validated depth found, aka first_stop
 deco_stop_found:
+        // next stop is the last validated depth found, aka first_stop
         need_stop = 1;                  // Hit.
         temp_depth_limit = first_stop;  // Stop depth, in meter.
 
@@ -935,8 +935,8 @@ static void clear_tissue(void)
 //
 static void calc_hauptroutine(void)
 {
-    static unsigned char backup_gas_used;
-    static unsigned char backup_gas_depth;
+    static unsigned char backup_gas_used  = 0;
+    static unsigned char backup_gas_depth = 0;
 
     calc_hauptroutine_data_input();
 
@@ -959,7 +959,7 @@ static void calc_hauptroutine(void)
         // Values that should be reset just once for the full real dive.
         // This is used to record the lowest stop for the whole dive,
         // Including ACCROSS all simulated ascent.
-        low_depth = 0;
+        low_depth = 0.0;
         locked_GF_step = 0.0;
 
         // Reset gas switch history.
@@ -1168,7 +1168,7 @@ void calc_hauptroutine_calc_deco(void)
 
                 //---- We hit a stop at temp_depth_limit ---------------------
                 temp_deco = temp_depth_limit * METER_TO_BAR // Convert to relative bar,
-                              + pres_surface;                   // To absolute.
+                          + pres_surface;                   // To absolute.
                 if( !update_deco_table() )                  // Adds a one minute stops.
                     goto Surface;                           // Deco table full: abort...
             }
@@ -1578,7 +1578,6 @@ static void sim_limit(PARAMETER float GF_current)
               / (GF_current / var_N2_b + 1.0 - GF_current);
         else
             p = (p - var_N2_a) * var_N2_b;
-        if( p < 0.0 ) p = 0.0;
 
         if( p > sim_lead_tissue_limit )
         {
@@ -1723,10 +1722,13 @@ static void calc_gradient_factor(void)
         rgf = gf / rgf; // gf is already in percent
         if( rgf <   0.0 ) rgf =   0.0;
         if( rgf > 254.5 ) rgf = 255.0;
-            char_O_relative_gradient_GF  = (unsigned char)(rgf+0.5f);
+        char_O_relative_gradient_GF  = (unsigned char)(rgf+0.5f);
     }
     else
+    {
+        // calc relative gradient factor
         char_O_relative_gradient_GF = char_O_gradient_factor;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////
