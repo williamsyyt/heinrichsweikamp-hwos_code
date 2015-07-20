@@ -2,6 +2,7 @@
 
 - Stable Version -
 BUGFIX: Rotate button sensitivity with screen (OSTC 2 and cR)
+CHANGE: GF and aGF high range increased to 45-110%
 
 
 [1.82]
