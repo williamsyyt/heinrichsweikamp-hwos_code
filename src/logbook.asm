@@ -467,6 +467,7 @@ display_profile2:
 	movlw		.0
 	addwfc		PRODH,F					; PRODH:PRODL has end-of-dive time in minutes
 
+    ; TODO: Fix entry time when dive was during midnight
     LOG_POINT_TO    log_total_seconds
 	call		ext_flash_byte_read_plus	; Total sample time in seconds
 	movff		temp1,lo
