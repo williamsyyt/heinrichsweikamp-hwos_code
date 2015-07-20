@@ -169,10 +169,22 @@ disable_rs232:
     bsf     PORTE,0                 ; Stop comms
 	return
 
+    
+rs232_wait_tx_led:
+    bsf     LEDr            ; Flow control test mH
+
 	global	rs232_wait_tx
 rs232_wait_tx:
 	btfss	TXSTA1,TRMT			; RS232 Busy?
 	bra		rs232_wait_tx		; yes, wait...
+
+    btfss  ble_available        ; ble available?
+    return                      ; No, done.
+    
+    btfsc   NRTS                ; Wait for Bluetooth module
+    bra		rs232_wait_tx_led   ; yes, wait...
+
+    bcf     LEDr
 	return						; Done.
 
     global  rs232_wait_tx2
