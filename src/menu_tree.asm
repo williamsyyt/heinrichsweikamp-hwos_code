@@ -334,16 +334,27 @@ do_return_settings:
         
         extern  compass_calibration_loop
 do_settings_menu:
-    MENU_BEGIN  tSystSets, .7
+    btfsc   ble_available           ; ble available
+    bra     do_settings_menu_ble    ; Yes.
+    MENU_BEGIN  tSystSets, .6
         MENU_CALL   tInfoMenu,      do_info_menu
         MENU_CALL   tSetTimeDate,   do_date_time_menu
         MENU_CALL   tDispSets,      do_dispsets_menu
         MENU_OPTION tLanguage,      oLanguage,       0
-        MENU_CALL   tResetMenu,     do_reset_menu
         MENU_CALL   tMore,          do_settings_menu_more
         MENU_CALL   tExit,          do_continue_main_menu
     MENU_END
 
+do_settings_menu_ble:
+    MENU_BEGIN  tSystSets, .7
+        MENU_CALL   tInfoMenu,      do_info_menu
+        MENU_CALL   tBleTitle,      comm_mode0
+        MENU_CALL   tSetTimeDate,   do_date_time_menu
+        MENU_CALL   tDispSets,      do_dispsets_menu
+        MENU_OPTION tLanguage,      oLanguage,       0
+        MENU_CALL   tMore,          do_settings_menu_more
+        MENU_CALL   tExit,          do_continue_main_menu
+    MENU_END
 
 do_return_settings_more:
         call    menu_processor_pop              ; Drop exit entry
@@ -354,12 +365,13 @@ do_settings_menu_more:
     bra     do_settings_menu_more_piezo
     btfsc   ble_available           ; ble available
     bra     do_settings_menu_more_ostc3p
-    MENU_BEGIN  tSystSets, .6
+    MENU_BEGIN  tSystSets, .7
         MENU_CALL   tCompassMenu,   do_compass_menu
 		MENU_CALL	tLogOffset,					do_log_offset_menu
         MENU_OPTION tUnits,    oUnits,          0
         MENU_OPTION tSamplingrate,oSamplingRate,0
         MENU_OPTION tDvSalinity,oDiveSalinity,  0
+        MENU_CALL   tResetMenu,     do_reset_menu
         MENU_CALL   tExit,          do_return_settings
     MENU_END
 
@@ -370,32 +382,20 @@ do_settings_menu_more_piezo:
         MENU_OPTION tUnits,    oUnits,          0
         MENU_OPTION tSamplingrate,oSamplingRate,0
         MENU_OPTION tDvSalinity,oDiveSalinity,  0
-        MENU_CALL   tMore,          do_settings_cr_menu
+        MENU_CALL   tMore,          do_settings_piezo_menu
         MENU_CALL   tExit,          do_return_settings
     MENU_END
 
     extern  comm_mode0
 
-do_settings_cr_menu:        
-    btfsc   ble_available           ; ble available
-    bra     do_settings_menu_more_ostc2
-    ; Menu with features only available in cR hardware
+do_settings_piezo_menu:
+    ; Menu with features only available in piezo button hardware
     MENU_BEGIN  tSystSets, .4
-        MENU_CALL   tUsbTitle,  comm_mode0
+        MENU_CALL   tResetMenu,     do_reset_menu
         MENU_OPTION tButtonleft,ocR_button_left  ,0  ; left button sensitivity
         MENU_OPTION tButtonright,ocR_button_right,0  ; right button sensitivity
         MENU_CALL   tExit,          do_settings_menu_more_piezo
     MENU_END
-
-do_settings_menu_more_ostc2:
-    ; Menu OSTC2
-    MENU_BEGIN  tSystSets, .4
-        MENU_CALL   tBleTitle,  comm_mode0
-        MENU_OPTION tButtonleft,ocR_button_left  ,0  ; left button sensitivity
-        MENU_OPTION tButtonright,ocR_button_right,0  ; right button sensitivity
-        MENU_CALL   tExit,          do_settings_menu_more_piezo
-    MENU_END
-    
 
 do_settings_menu_more_ostc3p:  ; Menu with BLE feature
     MENU_BEGIN  tSystSets, .7
@@ -404,7 +404,7 @@ do_settings_menu_more_ostc3p:  ; Menu with BLE feature
         MENU_OPTION tUnits,    oUnits,          0
         MENU_OPTION tSamplingrate,oSamplingRate,0
         MENU_OPTION tDvSalinity,oDiveSalinity,  0
-        MENU_CALL   tBleTitle,  comm_mode0
+        MENU_CALL   tResetMenu,     do_reset_menu
         MENU_CALL   tExit,          do_return_settings
     MENU_END
 
