@@ -1,7 +1,13 @@
+[1.83]
+
+- Stable Version -
+BUGFIX: Rotate button sensitivity with screen (OSTC 2 and cR)
+
+
 [1.82]
 
 - Beta Version -
-CHANGE: change button sensitivity range and default (OSTC2)
+CHANGE: change button sensitivity range and default (OSTC2 and cR)
 NEW: MOD Warning (Can be disabled)
 NEW: Depth dependend ascend speed (Can be disabled)
 NEW: Graphical speed indicator (Can be disabled)

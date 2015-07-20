@@ -195,8 +195,8 @@ option_table_begin:
         OPTION_UINT8    oCalGasO2,      .21,.100,   .21,    tPercent, .149,    opt_calibration_O2_ratio         ; Calibration gas %O2
         OPTION_BOOL     oSensorFallback,1,                            .150,    opt_sensor_fallback              ; =1: Fallback to SP1 when sensor is lost
         OPTION_BOOL     oFlipScreen,    0,                            .151,    opt_flip_screen                  ; =1: Flip the screen
-        OPTION_UINT8p10 ocR_button_left, .20, .60,   .30,  tPercent,  .152,    opt_cR_button_left               ; left button sensitivity
-        OPTION_UINT8p10 ocR_button_right,.20, .60,   .30,  tPercent,  .153,    opt_cR_button_right              ; right button sensitivity
+        OPTION_UINT8p10 ocR_button_left, .20, .100,   .30,  tPercent,  .152,    opt_cR_button_left              ; left button sensitivity
+        OPTION_UINT8p10 ocR_button_right,.20, .100,   .30,  tPercent,  .153,    opt_cR_button_right             ; right button sensitivity
         OPTION_UINT8    obottom_usage,  .5,.50,   .20,tLitersMinute,  .154,    char_I_bottom_usage              ; l/min
         OPTION_UINT8    odeco_usage,    .5,.50,   .20,tLitersMinute,  .155,    char_I_deco_usage                ; l/min
         OPTION_BOOL     oMODwarning,    0,                            .156,    opt_modwarning                   ; =1: red depth blinking warning

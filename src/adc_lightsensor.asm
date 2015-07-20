@@ -439,9 +439,15 @@ get_analog_inputs4:
     global  piezo_config            ; Sets up piezo sensitivity of heinrichs weikamp Piezo buttons (~30ms)
 piezo_config:   ; Settings between 20 and 200
     movff   opt_cR_button_right,WREG; right button
+    btfsc   flip_screen             ; 180° rotation ?
+    movff   opt_cR_button_left,WREG ; Yes, left button
     rcall   piezo_config_tx
+
     movff   opt_cR_button_left,WREG ; left button
+    btfsc   flip_screen             ; 180° rotation ?
+    movff   opt_cR_button_right,WREG; Yes, right button
     rcall   piezo_config_tx
+
     movlw   .200                    ; reserved
     rcall   piezo_config_tx
     movlw   .200                    ; reserved
