@@ -503,6 +503,10 @@ comm_download_mode2:
 	cpfseq	RCREG1
 	bra		$+4
 	goto	comm_send_string			; Send a 15byte string to the screen
+	movlw	"m"
+	cpfseq	RCREG1
+	bra		$+4
+	goto	comm_send_compact_headers	; Send all 256 compact headers
 	movlw	"l"
 	cpfseq	RCREG1
 	bra		$+4
@@ -561,6 +565,62 @@ comm_download_mode2:
 	bra		$+4
 	bra 	comm_service_ll_bootloader  ; Start low-level bootloader
     bra		comm_download_mode0         ; Loop with timeout reset
+
+;-----------------------------------------------------------------------------
+
+comm_send_compact_headers:
+	movlw	"m"								; send echo
+	movwf	TXREG1
+	; Send 16 bytes/dive (Compact Header)
+	; 1st: 20000Ch-20001Ch
+	; 2nd: 20100Ch-20101Ch
+	; 3rd: 20200Ch-20201Ch
+	; 100: 26400Ch-26401Ch
+	; 256: 2FF00Ch-2FF01Ch
+	movlw	0x1F
+	movwf	ext_flash_address+2
+	movlw	0xF0
+	movwf	ext_flash_address+1
+
+comm_send_compact_headers2:
+	movlw	0x0C
+	movwf	ext_flash_address+0
+	; Adjust address for next dive
+	movlw	0x10
+	addwf	ext_flash_address+1
+	movlw	0x00
+	addwfc	ext_flash_address+2
+
+	movlw	0x30
+	cpfseq	ext_flash_address+2				; All 256 dive send?
+	bra		comm_send_compact_headers4			; No, continue
+	bra		comm_download_mode0		; Done. Loop with timeout reset
+
+comm_send_compact_headers4:
+    movlw   .10
+	movwf	lo							; Counter
+	call	rs232_wait_tx				; Wait for UART
+	call	ext_flash_read_block_start	; 1st byte
+	movwf	TXREG1
+	bra		comm_send_compact_headers3	; counter 24bit
+comm_send_compact_headers_loop:
+	call	ext_flash_read_block		; Read one byte
+	movwf	TXREG1						; Start new transmit
+comm_send_compact_headers3:
+	call	rs232_wait_tx				; Wait for UART
+	decfsz	lo,F
+	bra		comm_send_compact_headers_loop
+	call	ext_flash_read_block_stop
+    movlw   .6
+	movwf	lo							; Counter
+comm_send_compact_headers5:
+    movlw   0xFF
+    movwf   TXREG1
+    call	rs232_wait_tx				; Wait for UART
+	decfsz	lo,F
+	bra		comm_send_compact_headers5
+	bra		comm_send_compact_headers2		; continue
+
 
 ;-----------------------------------------------------------------------------
 
