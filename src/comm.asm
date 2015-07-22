@@ -571,19 +571,19 @@ comm_download_mode2:
 comm_send_compact_headers:
 	movlw	"m"								; send echo
 	movwf	TXREG1
-	; Send 16 bytes/dive (Compact Header)
-	; 1st: 20000Ch-20001Ch
-	; 2nd: 20100Ch-20101Ch
-	; 3rd: 20200Ch-20201Ch
-	; 100: 26400Ch-26401Ch
-	; 256: 2FF00Ch-2FF01Ch
+	; Send 13 bytes/dive (Compact Header)
+	; 1st: 200009h-200016h
+	; 2nd: 201009h-201016h
+	; 3rd: 202009h-202016h
+	; 100: 264009h-264016h
+	; 256: 2FF009h-2FF016h
 	movlw	0x1F
 	movwf	ext_flash_address+2
 	movlw	0xF0
 	movwf	ext_flash_address+1
 
 comm_send_compact_headers2:
-	movlw	0x0C
+	movlw	0x09
 	movwf	ext_flash_address+0
 	; Adjust address for next dive
 	movlw	0x10
@@ -597,7 +597,7 @@ comm_send_compact_headers2:
 	bra		comm_download_mode0		; Done. Loop with timeout reset
 
 comm_send_compact_headers4:
-    movlw   .10
+    movlw   .13
 	movwf	lo							; Counter
 	call	rs232_wait_tx				; Wait for UART
 	call	ext_flash_read_block_start	; 1st byte
@@ -611,14 +611,17 @@ comm_send_compact_headers3:
 	decfsz	lo,F
 	bra		comm_send_compact_headers_loop
 	call	ext_flash_read_block_stop
-    movlw   .6
-	movwf	lo							; Counter
-comm_send_compact_headers5:
-    movlw   0xFF
+
+    movlw   0xFF    ; Spare
     movwf   TXREG1
     call	rs232_wait_tx				; Wait for UART
-	decfsz	lo,F
-	bra		comm_send_compact_headers5
+    movlw   0xFF    ; Spare
+    movwf   TXREG1
+    call	rs232_wait_tx				; Wait for UART
+    movlw   0xFF    ; Spare
+    movwf   TXREG1
+    call	rs232_wait_tx				; Wait for UART
+
 	bra		comm_send_compact_headers2		; continue
 
 
