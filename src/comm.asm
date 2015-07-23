@@ -119,7 +119,7 @@ comm_mode3:
     goto	new_battery_menu            ; show "New battery dialog"
 
 comm_mode4:
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 
     btfss   vusb_in                     ; USB plugged in?
     bra     comm_service_exit_nousb_delay   ; Disconnected -> Exit
@@ -148,19 +148,19 @@ comm_mode2b:
 	movwf	TXREG1					; Send Answer
 	; Now, check comm command
 
-	call	rs232_get_byte				; first byte
+	rcall	comm_write_get_byte				; first byte
 	call	rs232_wait_tx               ; Wait for UART
     movff   RCREG1,TXREG1                 ; Echo
 	movlw	UPPER comm_service_key
 	cpfseq	RCREG1
     bra     comm_mode1               ; Wrong -> Restart
-	call	rs232_get_byte				; second byte
+	rcall	comm_write_get_byte				; second byte
 	call	rs232_wait_tx			; Wait for UART
     movff   RCREG1,TXREG1                 ; Echo
 	movlw	HIGH (comm_service_key & 0xFFFF)
 	cpfseq	RCREG1
     bra     comm_mode1               ; Wrong -> Restart
-	call	rs232_get_byte				; third byte
+	rcall	comm_write_get_byte				; third byte
 	call	rs232_wait_tx			; Wait for UART
     movff   RCREG1,TXREG1                 ; Echo
 	movlw	LOW comm_service_key
@@ -170,16 +170,13 @@ comm_mode2b:
 	; Enable comm service mode
 	WIN_SMALL	comm_status2_column, comm_status2_row
 	STRCPY_TEXT_PRINT	tUsbServiceMode	; Service mode enabled
-    bsf     comm_service_enabled
-	bra		comm_download_mode0		; Startbyte for download mode found
-
+    bsf     comm_service_enabled        ; Set flag...
+	bra		comm_download_mode0         ; ... but use common routine
 
 comm_service_exit_nousb_delay:
     WAITMS  d'200'
-    btfss   vusb_in                     ; USB plugged in?
-    bra     comm_service_exit_nousb     ; Disconnected -> Exit
+    btfsc   vusb_in                     ; USB plugged in?
     bra     comm_mode4a                 ; (Still) connected, return
-
 comm_service_exit_nousb:                ; Disconnected -> Exit
 	WIN_SMALL	comm_status3_column, comm_status3_row
 	STRCPY_TEXT_PRINT	tUsbClosed      ; Port closed
@@ -188,7 +185,6 @@ comm_service_exit_nousb:                ; Disconnected -> Exit
 comm_service_exit:
 	WIN_SMALL	comm_status3_column, comm_status3_row
 	STRCPY_TEXT_PRINT	tUsbExit        ; Exited
-
 comm_service_exit_common:
 	call	rs232_wait_tx				; Wait for UART
 	movlw	0xFF                        ; Reply FF
@@ -233,7 +229,7 @@ comm_send_firmware:
 	movwf   hi
 
 comm_send_firmware_loop:
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	bra		comm_send_firmware_abort   ; No, abort!
 	movf	RCREG1,W
@@ -302,7 +298,7 @@ comm_erase_range4kb:
     btfsc   rs232_recieve_overflow      ; Got Data?
     bra     comm_download_mode0         ; No, Done.
 
-    call    rs232_get_byte
+    rcall    comm_write_get_byte
     btfsc   rs232_recieve_overflow      ; Got byte?
     bra     comm_download_mode0         ; No, Done.
     movff   RCREG1,lo
@@ -346,7 +342,7 @@ comm_write_range:				; Get 3 bytes start address
 	bra		comm_download_mode0  		; No, Done.
 
 comm_write_range_loop:
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow      ; Got byte?
 	bra		comm_download_mode0         ; No, Done (and send OK byte too).
 	movf	RCREG1,W
@@ -367,15 +363,15 @@ comm_send_range:				; Get 3 bytes start address and 3 bytes amount
 	btfsc	rs232_recieve_overflow			; Got Data?
 	bra		comm_download_mode0				; No, Done.
 
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	bra		comm_download_mode0				; No, Done.
     movff   RCREG1,up
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	bra		comm_download_mode0				; No, Done.
 	movff	RCREG1,hi
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	bra		comm_download_mode0				; No, Done.
 	movff	RCREG1,lo
@@ -418,15 +414,15 @@ comm_send_range24:
 ;-----------------------------------------------------------------------------
 
 comm_get_flash_address:
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	return									; No, return
 	movff	RCREG1,ext_flash_address+2
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	return									; No, return
 	movff	RCREG1,ext_flash_address+1
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	return									; No, return
 	movff	RCREG1,ext_flash_address+0
@@ -457,7 +453,7 @@ comm_download_mode1:
 	dcfsnz 	timeout_counter,F
 	bra		comm_service_exit           ; Timeout -> Exit
 comm_download_mode2:
-	call	rs232_get_byte              ; Check for a byte
+	rcall	comm_write_get_byte              ; Check for a byte
     btfsc   comm_service_enabled
 	btg     LEDr                        ; Blink in Service mode
     btfss   vusb_in                     ; USB plugged in?
@@ -681,44 +677,48 @@ comm_option_reset_all:       ; Reset all options to factory default.
 
 ;-----------------------------------------------------------------------------
 
+comm_write_get_byte:
+    goto	rs232_get_byte                  ; returns...
+
+
 comm_set_time:
 	movlw	"b"								; send echo
 	movwf	TXREG1
 
 	call	rs232_wait_tx					; wait for UART
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	bra		comm_download_mode0             ; No, abort
 	movff	RCREG1, hours
 	movlw	d'24'
 	cpfslt	hours
 	clrf	hours
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	bra		comm_download_mode0             ; No, abort
 	movff	RCREG1, mins
 	movlw	d'60'
 	cpfslt	mins
 	clrf	mins
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	bra		comm_download_mode0             ; No, abort
 	movff	RCREG1, secs
 	movlw	d'60'
 	cpfslt	secs
 	clrf	secs
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	bra		comm_download_mode0             ; No, abort
 	movff	RCREG1, month
 	movlw	d'13'
 	cpfslt	month
 	movwf	month
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	bra		comm_download_mode0             ; No, abort
 	call	comm_check_day                  ; Check day
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	bra		comm_download_mode0             ; No, abort
 	movff	RCREG1, year
@@ -741,7 +741,7 @@ comm_set_custom_text:
     movlw	opt_name_length
     movwf	lo								; counter
 comm_set_ctext_loop:
-    call	rs232_get_byte
+    rcall	comm_write_get_byte
     btfsc	rs232_recieve_overflow          ; Got byte?
     bra		comm_set_ctext_loop_done        ; no, abort
     movff	RCREG1,POSTINC2                 ; Store character
@@ -819,7 +819,7 @@ comm_send_dive:
 	movlw	"f"								; send echo
 	movwf	TXREG1
 	
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	bra		comm_download_mode0		; No, abort!
 	movff	RCREG1,lo						; Store dive number (0-255)
@@ -918,7 +918,7 @@ comm_send_dive_profile:
 comm_read_setting:
     movlw   "r"
 	movwf	TXREG1
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	bra		comm_read_abort                 ; No, abort!
 	rcall   comm_read_setting_wait          ; Wait for UART
@@ -1328,10 +1328,6 @@ comm_write_abort:
     call    get_first_dil_to_WREG           ; Makes sure at least one Diluent is "First"
     bra		comm_download_mode0             ; Done. Loop with timeout reset
 
-comm_write_get_byte:
-    call	rs232_get_byte
-    return
-
 comm_write_dil1:
     movff   RCREG1,opt_dil_O2_ratio+0
     rcall	comm_write_get_byte
@@ -1414,7 +1410,7 @@ comm_send_string:
 	movlw	.16
 	movwf	lo								; counter
 comm_send_string_loop:
-	call	rs232_get_byte
+	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	bra		comm_send_string_abort          ; No, abort!
 	movff	RCREG1,POSTINC2					; Store character
