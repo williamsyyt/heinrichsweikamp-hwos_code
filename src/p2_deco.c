@@ -1187,7 +1187,7 @@ Surface:
                     calc_ascenttime();
                     char_O_deco_status = 0;         // calc nullzeit next time.
                     char_O_deco_last_stop = 0;      // Surface reached (to animate menu)
-                        return;
+                    return;
                 }
             }
         //---- Then update tissue --------------------------------------------
@@ -2194,7 +2194,8 @@ void deco_gas_volumes(void)
             * bottom_usage;                             // In liter/minutes.
 
     //---- Ascent usage ------------------------------------------------------
-    depth = lastGasStop = char_I_bottom_depth;
+    depth = char_I_bottom_depth;
+    lastGasStop = 255;          // Allow deco gas at or below bottom depth
 
     for(i=0; i<NUM_STOPS; ++i)
     {
@@ -2210,7 +2211,7 @@ void deco_gas_volumes(void)
         for(;;)
         {
             overlay unsigned char newGas  = 0;
-            overlay unsigned char newStop = 0;  // NO CHANGE yet
+            overlay unsigned char newStop = 0;  // Mark as NO CHANGE yet
             overlay unsigned char j;
 
             for(j=0; j<NUM_GAS; ++j)
