@@ -137,6 +137,8 @@ surfloop:
     movwf   TBLPTRU
     call    color_image
 
+    movlw   surface_sp                  ; in cbar
+    call    transmit_setpoint           ; Transmit current setpoint from WREG (in cbar) to external electronics
 	call	TFT_clock					; display time
     call    update_surfloop60
 	call	get_battery_voltage			; get battery voltage

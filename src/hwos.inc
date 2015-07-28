@@ -194,6 +194,9 @@
 ; IR Link timeout
 #DEFINE ir_timeout_value            .64         ; multiples of 62,5ms
 
+; Sp control constants
+#DEFINE surface_sp                  .50         ; in cbar
+
 ; Gaslist hard-coded limits
 #DEFINE gaslist_min_o2              .7          ; Minimum O2 [%]
 #DEFINE gaslist_max_change_depth    .99         ; Max. change depth [m]

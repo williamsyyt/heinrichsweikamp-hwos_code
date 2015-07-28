@@ -98,6 +98,8 @@ do_switch_sp:
     decf    menupos,W               ; 1-5 -> 0-4
     lfsr    FSR1,char_I_setpoint_cbar
     movff   PLUSW1,char_I_const_ppO2; Setup fixed Setpoint
+    movff   char_I_const_ppO2,WREG
+    call    transmit_setpoint           ; Transmit current setpoint from WREG (in cbar) to external electronics
     bsf     setpoint_changed        ; Set flag (For profile)
     bsf		event_occured			; Set global event byte
 

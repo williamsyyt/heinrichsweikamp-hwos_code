@@ -1294,8 +1294,7 @@ check_dive_autosp2:
     bra     check_dive_autosp3      ; lower depth, do not switch
     ; auto switch to SP2
 	movff	char_I_setpoint_cbar+1, char_I_const_ppO2	; Use SetPoint
-    bsf     setpoint_changed        ; Set flag (For profile)
-    bsf		event_occured			; Set global event byte
+    rcall   xmit_sp_set_flag
     bsf     sp2_switched            ; Set flag
 check_dive_autosp3:
     ; Check SP3
@@ -1310,8 +1309,7 @@ check_dive_autosp3:
     bra     check_dive_autosp4      ; lower depth, do not switch
     ; auto switch to SP3
 	movff	char_I_setpoint_cbar+2, char_I_const_ppO2	; Use SetPoint
-    bsf     setpoint_changed        ; Set flag (For profile)
-    bsf		event_occured			; Set global event byte
+    rcall   xmit_sp_set_flag
     bsf     sp3_switched            ; Set flag
 check_dive_autosp4:
     ; Check SP4
@@ -1326,8 +1324,7 @@ check_dive_autosp4:
     bra     check_dive_autosp5      ; lower depth, do not switch
     ; auto switch to SP4
 	movff	char_I_setpoint_cbar+3, char_I_const_ppO2	; Use SetPoint
-    bsf     setpoint_changed        ; Set flag (For profile)
-    bsf		event_occured			; Set global event byte
+    rcall   xmit_sp_set_flag
     bsf     sp4_switched            ; Set flag
 check_dive_autosp5:
     ; Check SP5
@@ -1342,10 +1339,16 @@ check_dive_autosp5:
     bra     check_dive_autosp6      ; lower depth, do not switch
     ; auto switch to SP5
 	movff	char_I_setpoint_cbar+4, char_I_const_ppO2	; Use SetPoint
-    bsf     setpoint_changed        ; Set flag (For profile)
-    bsf		event_occured			; Set global event byte
+    rcall   xmit_sp_set_flag
     bsf     sp5_switched            ; Set flag
 check_dive_autosp6:
+    return
+
+xmit_sp_set_flag:
+    movff   char_I_const_ppO2,WREG
+    call    transmit_setpoint           ; Transmit current setpoint from WREG (in cbar) to external electronics
+    bsf     setpoint_changed        ; Set flag (For profile)
+    bsf		event_occured			; Set global event byte
     return
 
 ;=============================================================================
@@ -1374,6 +1377,9 @@ dive_boot_cc:
     ; Setup first SP for Fixed or Auto mode
     TSTOSS  opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor
     movff   char_I_setpoint_cbar+0,char_I_const_ppO2    ; Setup fixed Setpoint (Always start with SP1)
+    movff   char_I_const_ppO2,WREG
+    call    transmit_setpoint           ; Transmit current setpoint from WREG (in cbar) to external electronics
+    bsf     setpoint_changed                ; Set flag (For profile)
     bcf     sp2_switched                    ; =1: This setpoint has been autoselected already
     bcf     sp3_switched                    ; =1: This setpoint has been autoselected already
     bcf     sp4_switched                    ; =1: This setpoint has been autoselected already
