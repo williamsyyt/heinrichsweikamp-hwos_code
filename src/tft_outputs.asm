@@ -557,11 +557,6 @@ TFT_divemode_mask:					; Displays mask in Dive-Mode
     call	TFT_standard_color
     return
 
-	global	TFT_clear_customview_divemode
-TFT_clear_customview_divemode:
-    WIN_BOX_BLACK    dm_customview_row, dm_customview_bot, dm_customview_column, dm_customview_rgt	; top, bottom, left, right
-	return
-
     global	TFT_draw_gassep_line
 TFT_draw_gassep_line:
     btfsc	FLAG_apnoe_mode				; Ignore in Apnoe mode

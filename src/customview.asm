@@ -375,7 +375,8 @@ customview_toggle_reset:					; Timeout occured
 	clrf	menupos3			            ; Reset to zero (Zero=no custom view)
     global  customview_mask
 customview_mask:	
-	call	TFT_clear_customview_divemode	
+    ; Clear custom view area in divemode
+    WIN_BOX_BLACK    dm_customview_row, dm_customview_bot, dm_customview_column, dm_customview_rgt	; top, bottom, left, right
 	WIN_SMALL	dm_customview_column,dm_customview_row
 	call	TFT_standard_color
 	movff	menupos3,WREG                   ; Menupos3 holds number of customview function

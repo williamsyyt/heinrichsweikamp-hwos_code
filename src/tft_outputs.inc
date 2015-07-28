@@ -69,7 +69,6 @@ TFT_color_code macro color_code_temp
 	extern	TFT_divemode_warning_clear
 	extern	TFT_velocity_clear
 	extern	TFT_display_velocity
-	extern	TFT_clear_customview_divemode
 	extern	TFT_display_deko
 	extern	TFT_mask_ppo2
 	extern	TFT_display_ppo2
