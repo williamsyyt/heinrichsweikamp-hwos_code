@@ -399,6 +399,32 @@ compute_mvolts_for_all_sensors:          ; Compute mV or all sensors (S8 Mode)
         bcf     new_s8_data_available       ; Clear flag
         return                  ; Done.
 
+	global	transmit_setpoint           ; Transmit current setpoint from WREG (in cbar) to external electronics
+transmit_setpoint:
+    btfss   s8_digital          ; S8 Digital?
+    return                      ; No, ignore
+
+    ; Yes, transmit setpoint from WREG
+    movwf   temp2               ; Store setpoint
+    clrf    temp1               ; Chksum
+    movlw   0xAA                ; Start Byte
+    addwf   temp1,F
+    movff   WREG,TXREG2
+    call    rs232_wait_tx2
+
+    movlw   0x60                ; New SP
+    addwf   temp1,F
+    movff   WREG,TXREG2
+    call    rs232_wait_tx2
+
+    movff   temp2,WREG         ; SP in cbar
+    addwf   temp1,F
+    movff   WREG,TXREG2
+    call    rs232_wait_tx2
+
+    movff   temp1,TXREG2                ; Chksum
+    call    rs232_wait_tx2
+    return
 
 
 	END
