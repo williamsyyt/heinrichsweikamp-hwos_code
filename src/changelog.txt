@@ -4,6 +4,7 @@
 BUGFIX: Rotate button sensitivity with screen (OSTC 2 and cR)
 CHANGE: GF and aGF high range increased to 45-110%
 NEW: New option to download "Compact Headers". Improved BLE support (OSTC 2 and OSTC 3+)
+NEW: Quit Simulator automatically when starting a real dive
 
 [1.82]
 

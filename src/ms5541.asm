@@ -173,6 +173,17 @@ pressure_extra_common:
 	btfss	simulatormode_active		; are we in simulator mode?
 	bra		calc_compensation_2			; no
 
+    banksel isr_xC+2
+    movlw   .5
+    cpfsgt  isr_xC+2                    ; >1280mbar ?
+    bra     pressure_extra_common2      ; No
+    ; Yes, reset sim_pressure:2 to 1000mbar (End of sim)
+    movlw   LOW     .1000
+    movwf   sim_pressure+0
+    movlw   HIGH    .1000
+    movwf   sim_pressure+1
+
+pressure_extra_common2:
 	movff	sim_pressure+0,isr_xC+1	    ; override readings with simulator values
 	movff	sim_pressure+1,isr_xC+2
 	
