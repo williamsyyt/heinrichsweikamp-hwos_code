@@ -143,25 +143,25 @@ comm_mode2a:
 
 comm_mode2b:
 	; Startbyte found
-	call	rs232_wait_tx			; Wait for UART
+	rcall	comm_rs232_wait_tx			; Wait for UART
 	movlw	0x4B
 	movwf	TXREG1					; Send Answer
 	; Now, check comm command
 
 	rcall	comm_write_get_byte				; first byte
-	call	rs232_wait_tx               ; Wait for UART
+	rcall	comm_rs232_wait_tx               ; Wait for UART
     movff   RCREG1,TXREG1                 ; Echo
 	movlw	UPPER comm_service_key
 	cpfseq	RCREG1
     bra     comm_mode1               ; Wrong -> Restart
 	rcall	comm_write_get_byte				; second byte
-	call	rs232_wait_tx			; Wait for UART
+	rcall	comm_rs232_wait_tx			; Wait for UART
     movff   RCREG1,TXREG1                 ; Echo
 	movlw	HIGH (comm_service_key & 0xFFFF)
 	cpfseq	RCREG1
     bra     comm_mode1               ; Wrong -> Restart
 	rcall	comm_write_get_byte				; third byte
-	call	rs232_wait_tx			; Wait for UART
+	rcall	comm_rs232_wait_tx			; Wait for UART
     movff   RCREG1,TXREG1                 ; Echo
 	movlw	LOW comm_service_key
 	cpfseq	RCREG1
@@ -186,7 +186,7 @@ comm_service_exit:
 	WIN_SMALL	comm_status3_column, comm_status3_row
 	STRCPY_TEXT_PRINT	tUsbExit        ; Exited
 comm_service_exit_common:
-	call	rs232_wait_tx				; Wait for UART
+	rcall	comm_rs232_wait_tx				; Wait for UART
 	movlw	0xFF                        ; Reply FF
 	movwf	TXREG1						; Send Answer
 
@@ -219,7 +219,7 @@ comm_service_ll_bootloader:
 comm_send_firmware:
     movlw   0x50                            ; send echo
     movwf   TXREG1
-    call    rs232_wait_tx                   ; Wait for UART
+    rcall    comm_rs232_wait_tx                   ; Wait for UART
 
     ; Read 5 bytes into buffer.
 	lfsr	FSR2,buffer
@@ -245,7 +245,7 @@ comm_send_firmware_loop:
 
     movlw   0x4C                            ; send OK
     movwf   TXREG1
-    call    rs232_wait_tx                   ; Wait for UART
+    rcall    comm_rs232_wait_tx                   ; Wait for UART
 
 	; Passed: goto second stage verification.
 	; NOTE: Bootloader is Bank0. With buffer at address 0x200.
@@ -290,7 +290,7 @@ comm_reset_battery_gauge:           ; Resets battery gauge registers
 comm_erase_range4kb:
     movlw   0x42                        ; send echo
     movwf   TXREG1
-    call    rs232_wait_tx               ; Wait for UART
+    rcall    comm_rs232_wait_tx               ; Wait for UART
 
     bcf     INTCON,GIE	; All interrups off!
 
@@ -333,7 +333,7 @@ comm_erase_4kb:				; Get 3 bytes start address
 comm_write_range:				; Get 3 bytes start address
     movlw   0x30                        ; send echo
 	movwf	TXREG1
-	call	rs232_wait_tx               ; Wait for UART
+	rcall	comm_rs232_wait_tx               ; Wait for UART
 
 	bcf		INTCON,GIE                  ; All interrups off!
 
@@ -355,7 +355,7 @@ comm_write_range_loop:
 comm_send_range:				; Get 3 bytes start address and 3 bytes amount
     movlw   0x20                        ; send echo
     movwf   TXREG1
-	call	rs232_wait_tx               ; Wait for UART
+	rcall	comm_rs232_wait_tx               ; Wait for UART
 
 	bcf		INTCON,GIE	; All interrups off!	
 
@@ -396,7 +396,7 @@ comm_send_range24_loop:
 	call	ext_flash_read_block		; Read one byte
 	movwf	TXREG1						; Start new transmit
 comm_send_range24:
-	call	rs232_wait_tx				; Wait for UART
+	rcall	comm_rs232_wait_tx				; Wait for UART
 	decfsz	lo,F
 	bra		comm_send_range24_loop
 	decf	hi,F
@@ -435,12 +435,12 @@ comm_download_mode:
 	WIN_SMALL	comm_status2_column, comm_status2_row
 	STRCPY_TEXT_PRINT	tUsbDownloadMode; Download mode enabled
 	bsf		INTCON,GIE					; All interrups on
-	call	rs232_wait_tx				; Wait for UART
+	rcall	comm_rs232_wait_tx				; Wait for UART
 	movlw	0xBB                        ; Command Echo
 	movwf	TXREG1						; Send Answer
 comm_download_mode0:
     bsf		INTCON,GIE					; All interrups on
-	call	rs232_wait_tx				; Wait for UART
+	rcall	comm_rs232_wait_tx				; Wait for UART
     movlw   0x4C                        ; 4C in service mode
     btfss   comm_service_enabled
 	movlw	0x4D                        ; 4D in download mode
@@ -595,7 +595,7 @@ comm_send_compact_headers2:
 comm_send_compact_headers4:
     movlw   .13
 	movwf	lo							; Counter
-	call	rs232_wait_tx				; Wait for UART
+	rcall	comm_rs232_wait_tx				; Wait for UART
 	call	ext_flash_read_block_start	; 1st byte
 	movwf	TXREG1
 	bra		comm_send_compact_headers3	; counter 24bit
@@ -603,20 +603,20 @@ comm_send_compact_headers_loop:
 	call	ext_flash_read_block		; Read one byte
 	movwf	TXREG1						; Start new transmit
 comm_send_compact_headers3:
-	call	rs232_wait_tx				; Wait for UART
+	rcall	comm_rs232_wait_tx				; Wait for UART
 	decfsz	lo,F
 	bra		comm_send_compact_headers_loop
 	call	ext_flash_read_block_stop
 
     movlw   0xFF    ; Spare
     movwf   TXREG1
-    call	rs232_wait_tx				; Wait for UART
+    rcall	comm_rs232_wait_tx				; Wait for UART
     movlw   0xFF    ; Spare
     movwf   TXREG1
-    call	rs232_wait_tx				; Wait for UART
+    rcall	comm_rs232_wait_tx				; Wait for UART
     movlw   0xFF    ; Spare
     movwf   TXREG1
-    call	rs232_wait_tx				; Wait for UART
+    rcall	comm_rs232_wait_tx				; Wait for UART
 
 	bra		comm_send_compact_headers2		; continue
 
@@ -653,7 +653,7 @@ comm_send_headers2:
 
 comm_send_headers4:
 	clrf	lo							; Counter	
-	call	rs232_wait_tx				; Wait for UART
+	rcall	comm_rs232_wait_tx				; Wait for UART
 	call	ext_flash_read_block_start	; 1st byte
 	movwf	TXREG1
 	bra		comm_send_headers3		; counter 24bit
@@ -661,7 +661,7 @@ comm_send_headers_loop:
 	call	ext_flash_read_block		; Read one byte
 	movwf	TXREG1						; Start new transmit
 comm_send_headers3:
-	call	rs232_wait_tx				; Wait for UART
+	rcall	comm_rs232_wait_tx				; Wait for UART
 	decfsz	lo,F
 	bra		comm_send_headers_loop
 	call	ext_flash_read_block_stop
@@ -680,12 +680,14 @@ comm_option_reset_all:       ; Reset all options to factory default.
 comm_write_get_byte:
     goto	rs232_get_byte                  ; returns...
 
+comm_rs232_wait_tx:
+    goto    rs232_wait_tx					; returns...
 
 comm_set_time:
 	movlw	"b"								; send echo
 	movwf	TXREG1
 
-	call	rs232_wait_tx					; wait for UART
+	rcall	comm_rs232_wait_tx					; wait for UART
 	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow			; Got byte?
 	bra		comm_download_mode0             ; No, abort
@@ -736,7 +738,7 @@ comm_set_time:
 comm_set_custom_text:
     movlw	"c"								; send echo
     movwf	TXREG1
-    call	rs232_wait_tx					; wait for UART
+    rcall	comm_rs232_wait_tx					; wait for UART
     lfsr	FSR2,opt_name
     movlw	opt_name_length
     movwf	lo								; counter
@@ -764,7 +766,7 @@ comm_set_ctext_loop_done2:
 comm_identify:
     movlw	"i"								; send echo
     movwf	TXREG1
-    call	rs232_wait_tx					; wait for UART
+    rcall	comm_rs232_wait_tx					; wait for UART
 
     ;---- Read serial from internal EEPROM address 0000
 	clrf	EEADRH
@@ -777,17 +779,17 @@ comm_identify:
 
     ;---- Emit serial number
 	movff   lo,TXREG1
-	call	rs232_wait_tx
+	rcall	comm_rs232_wait_tx
 	movff   hi,TXREG1
-	call	rs232_wait_tx
+	rcall	comm_rs232_wait_tx
 
 	;---- Emit fiwmware hi.lo
 	movlw   softwareversion_x
 	movwf   TXREG1
-	call	rs232_wait_tx
+	rcall	comm_rs232_wait_tx
 	movlw   softwareversion_y
 	movwf   TXREG1
-	call	rs232_wait_tx
+	rcall	comm_rs232_wait_tx
 
 	;---- Emit custom text
 	movlw   opt_name_length
@@ -796,7 +798,7 @@ comm_identify:
 
 common_identify_loop:
     movff   POSTINC2,TXREG1
-	call	rs232_wait_tx
+	rcall	comm_rs232_wait_tx
 	decfsz	hi,F
 	bra		common_identify_loop
 
@@ -809,7 +811,7 @@ common_identify_loop:
 comm_hardware_descriptor:
     movlw	"j"								; send echo
     movwf	TXREG1
-    call	rs232_wait_tx					; wait for UART
+    rcall	comm_rs232_wait_tx					; wait for UART
     movff   hardware_flag,TXREG1
     bra     comm_download_mode0             ; Done.
 
@@ -873,7 +875,7 @@ comm_send_dive:
 comm_send_dive1:
 	; Send header
 	clrf	hi							; Counter	
-	call	rs232_wait_tx				; Wait for UART
+	rcall	comm_rs232_wait_tx				; Wait for UART
 	call	ext_flash_read_block_start	; 1st byte
 	movwf	TXREG1
 	bra		comm_send_dive_header
@@ -881,7 +883,7 @@ comm_send_dive_header2:
 	call	ext_flash_read_block		; Read one byte
 	movwf	TXREG1						; Start new transmit
 comm_send_dive_header:
-	call	rs232_wait_tx				; Wait for UART
+	rcall	comm_rs232_wait_tx				; Wait for UART
 	decfsz	hi,F
 	bra		comm_send_dive_header2
 	call	ext_flash_read_block_stop
@@ -896,7 +898,7 @@ comm_send_dive_header:
 
 comm_send_dive_profile:
 	call	ext_flash_byte_read_plus_0x20	; Read one byte into temp1, takes care of banking at 0x200000
-	call	rs232_wait_tx					; Wait for UART
+	rcall	comm_rs232_wait_tx					; Wait for UART
 	movff	temp1,TXREG1						; Send a byte
 	
 	; 24bit compare with end address
@@ -1033,7 +1035,7 @@ comm_read_done:
     bra		comm_download_mode0             ; Done. Loop with timeout reset
 
 comm_read_setting_wait:
-    goto    rs232_wait_tx					; Wait for UART (and return!)
+    bra    comm_rs232_wait_tx					; Wait for UART (and return!)
 
 comm_read_gas1:
     movff   opt_gas_O2_ratio+0, TXREG1
@@ -1405,7 +1407,7 @@ comm_write_sp5:
 comm_send_string:
 	movlw	"n"								; send echo
 	movwf	TXREG1
-	call	rs232_wait_tx					; Wait for UART
+	rcall	comm_rs232_wait_tx					; Wait for UART
 	WIN_SMALL	comm_string_column, comm_string_row
 	movlw	.16
 	movwf	lo								; counter

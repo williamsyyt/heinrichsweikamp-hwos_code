@@ -87,8 +87,10 @@ surfloop:
 	clrf	ext_flash_address+1
 	clrf	ext_flash_address+2
 
+    movlw   surface_sp                  ; in cbar
+    call    transmit_setpoint           ; Transmit current setpoint from WREG (in cbar) to external electronics
     btfsc   rechargeable
-    call    piezo_config            ; Configure buttons
+    call    piezo_config                ; Configure buttons
 
 	clrf	timeout_counter2
 	clrf 	timeout_counter3
@@ -137,8 +139,6 @@ surfloop:
     movwf   TBLPTRU
     call    color_image
 
-    movlw   surface_sp                  ; in cbar
-    call    transmit_setpoint           ; Transmit current setpoint from WREG (in cbar) to external electronics
 	call	TFT_clock					; display time
     call    update_surfloop60
 	call	get_battery_voltage			; get battery voltage

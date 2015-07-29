@@ -243,7 +243,7 @@ get_ambient_level:              ; starts ADC and waits until finished
   	banksel isr_backup              ; Back to Bank0 ISR data
 	movff	opt_brightness,isr1_temp
 	incf	isr1_temp,F				; adjust 0-2 to 1-3
-	movlw	ambient_light_max_high_cr; cR hardware brightest setting
+	movlw	ambient_light_max_high_cr; cR and 2 hardware brightest setting
 	dcfsnz	isr1_temp,F
 	movlw	ambient_light_max_eco	; brightest setting
 	dcfsnz	isr1_temp,F
@@ -305,7 +305,7 @@ get_ambient_level2:
 	incf	isr1_temp,F				; adjust 0-2 to 1-3
 
     banksel common                  ; flag is in bank1
-	movlw	ambient_light_max_high_cr; cR hardware brightest setting
+	movlw	ambient_light_max_high_cr; cR and 2 hardware brightest setting
     btfss   rechargeable
     movlw	ambient_light_max_high_15V; 1,5V battery brightest setting
     btfsc	battery_is_36v          ; 3,6V battery in use?
@@ -369,7 +369,7 @@ get_analog_inputs:			; starts ADC and waits until finished
     clrf    o2_mv_sensor1+1
     clrf    o2_mv_sensor1+0
 get_analog_inputs2a:
-    ; Ignore 1,2mV noise for not-connected inputs
+    ; Ignore 1,9mV noise for not-connected inputs
     tstfsz  o2_mv_sensor1+1     ; >25,5mV?
     bra     get_analog_inputs2  ; Yes, skip here
     movlw   .19
@@ -397,7 +397,7 @@ get_analog_inputs2:
     clrf    o2_mv_sensor2+1
     clrf    o2_mv_sensor2+0
 get_analog_inputs3a:
-    ; Ignore 1,2mV noise for not-connected inputs
+    ; Ignore 1,9mV noise for not-connected inputs
     tstfsz  o2_mv_sensor2+1     ; >25,5mV?
     bra     get_analog_inputs3  ; Yes, skip here
     movlw   .19
@@ -425,7 +425,7 @@ get_analog_inputs3:
     clrf    o2_mv_sensor3+1
     clrf    o2_mv_sensor3+0
 get_analog_inputs4a:
-    ; Ignore 1,2mV noise for not-connected inputs
+    ; Ignore 1,9mV noise for not-connected inputs
     tstfsz  o2_mv_sensor3+1     ; >25,5mV?
     bra     get_analog_inputs4  ; Yes, skip here
     movlw   .19
