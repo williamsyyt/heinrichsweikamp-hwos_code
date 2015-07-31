@@ -22,6 +22,7 @@
 #include	"isr.inc"
 #include	"ghostwriter.inc"
 #include    "adc_lightsensor.inc"
+#include    "wait.inc"
 
         CBLOCK  tmp+0x40                ; Keep space for menu processor
             gaslist_gas ; Check ram position in gaslist.asm, too!
@@ -118,6 +119,7 @@ do_calibrate_menu2:
 do_calibrate_mix:
     extern  calibrate_mix
     call    calibrate_mix               ; Calibrate with opt_calibration_O2_ratio, also calibrate S8 HUD if connected
+    WAITMS  d'250'                      ; Wait for HUD v3
     goto    restart                     ; Restart into surface mode
 
 do_ccr_sensor:
