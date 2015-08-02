@@ -608,16 +608,20 @@ comm_send_compact_headers3:
 	bra		comm_send_compact_headers_loop
 	call	ext_flash_read_block_stop
 
-    movlw   0xFF    ; Spare
-    movwf   TXREG1
-    rcall	comm_rs232_wait_tx				; Wait for UART
-    movlw   0xFF    ; Spare
-    movwf   TXREG1
-    rcall	comm_rs232_wait_tx				; Wait for UART
-    movlw   0xFF    ; Spare
-    movwf   TXREG1
+    ; Offset to total dive counter
+	movlw	.80
+	movwf	ext_flash_address+0
+    call	ext_flash_read_block_start	; 1st byte
+    movwf	TXREG1
+    rcall	comm_rs232_wait_tx			; Wait for UART
+	call	ext_flash_read_block		; 2nd byte
+	movwf	TXREG1
+    call	ext_flash_read_block_stop
     rcall	comm_rs232_wait_tx				; Wait for UART
 
+    movlw   0xFF    ; Spare
+    movwf   TXREG1
+    rcall	comm_rs232_wait_tx				; Wait for UART
 	bra		comm_send_compact_headers2		; continue
 
 
