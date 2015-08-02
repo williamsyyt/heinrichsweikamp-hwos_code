@@ -501,7 +501,7 @@ isr_dimm_tft2:
 		cpfsgt		CCPR1L					; CCPR1L>max_CCPR1L-ambient_light_min_eco?
 		bra			isr_dimm_tft3			; No, dimm up slow
 		; dimm up faster
-		movlw		.5
+		movlw		.10
 		addwf		CCPR1L,F
 isr_dimm_tft3:
 		incf		CCPR1L,F				; +1
