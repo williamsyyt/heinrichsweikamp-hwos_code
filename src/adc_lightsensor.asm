@@ -291,10 +291,10 @@ get_ambient_level1:
     movwf   ambient_light+0         ; avoid ADC clipping
 
 get_ambient_level2:
-    movlw   .10
-    subwf   ambient_light+0,F       ; Subtract 10 (ADC Offset)
-    btfsc   STATUS,N
-    movwf   ambient_light+0         ; avoid clipping
+;    movlw   .10
+;    subwf   ambient_light+0,F       ; Subtract 10 (ADC Offset)
+;    btfsc   STATUS,N
+;    movwf   ambient_light+0         ; avoid clipping
 
   	banksel isr_backup              ; Back to Bank0 ISR data
 	movff	opt_brightness,isr1_temp
