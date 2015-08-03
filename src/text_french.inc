@@ -136,12 +136,12 @@
     TCODE   tHigh,      "Haute"
     TCODE   tDvSalinity,"Salinité:"             ; Salinity
     TCODE   tFlip,      "Pivoter l'écran:"      ; Rotate Screen
-    TCODE   tMODwarning,"MOD warning:"          ; MOD warning
-    TCODE   tShowppO2,  "Always show ppO2:"     ; Always show ppO2:
+    TCODE   tMODwarning,"Alerte MOD:"           ; MOD warning
+    TCODE   tShowppO2,  "Afficher pO2:"         ; Always show ppO2:
 
 ; VSI display Settings
-    TCODE   tVSItext2,  "Variable speed:"     ; Variable speed:
-    TCODE   tVSIgraph,  "Speed graph:"        ; Speed graph:
+    TCODE   tVSItext2,  "Vitesse Variable:"     ; Variable speed:
+    TCODE   tVSIgraph,  "Graph. Vitesse:"       ; Speed graph:
 
 ; Setup Menu
     TCODE   tSystSets,  "Réglages"
