@@ -96,7 +96,8 @@ do_ccr_menu_cR:                         ; cR menu
     MENU_END
 
 do_ccr_menu_ostc2:
-    MENU_BEGIN  tCCRSetup, .3           ; ostc2 menu
+    MENU_BEGIN  tCCRSetup, .4           ; ostc2 menu
+        MENU_OPTION     tCCRMode,    oCCRMode,    0
         MENU_CALL       tDiluentSetup,          do_diluent_setup
         MENU_CALL       tFixedSetpoints,        do_fixed_setpoints
         MENU_CALL       tExit,                  do_continue_main_menu
