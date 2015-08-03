@@ -6,6 +6,7 @@ CHANGE: GF and aGF high range increased to 45-110%
 NEW: New option to download "Compact Headers". Improved BLE support (OSTC 2 and OSTC 3+)
 NEW: Quit Simulator automatically when starting a real dive
 BUGFIX: Auto-Brightness clipped to lowest settings in bright sunlight on some devices
+CHANGE: Auto SP now available on OSTC 2
 
 [1.82]
 

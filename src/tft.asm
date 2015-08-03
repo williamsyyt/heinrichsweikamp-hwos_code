@@ -313,13 +313,16 @@ TFT_boot:
 	Parameter_out 0x00, 0x00
 	Parameter_out 0x00, 0x00
 
-;; Init through config table...     ; mH
-;    movlw   LOW     display1_config_table
-;    movwf   TBLPTRL
-;    movlw   HIGH    display1_config_table
-;    movwf   TBLPTRH
-;    movlw   UPPER   display1_config_table
-;    movwf   TBLPTRU
+    Index_out 0x00
+    rcall   TFT_CmdRead_PROD           ; Get ID into PRODL:PRODH
+    ; 5:197 -> display0
+    ;147:37 -> display1
+    movlw   .5
+    cpfseq  PRODL           ; display0?
+    bra     TFT_boot_1      ; No
+    movlw   .197
+    cpfseq  PRODH           ; display0?
+    bra     TFT_boot_1      ; No
 
 ; Init through config table...
     movlw   LOW     display0_config_table
@@ -328,17 +331,40 @@ TFT_boot:
     movwf   TBLPTRH
     movlw   UPPER   display0_config_table
     movwf   TBLPTRU
+    bcf     screen_type
+    bra     TFT_boot_com
+
+TFT_boot_1:
+; Init through config table...
+    movlw   LOW     display1_config_table
+    movwf   TBLPTRL
+    movlw   HIGH    display1_config_table
+    movwf   TBLPTRH
+    movlw   UPPER   display1_config_table
+    movwf   TBLPTRU
+    bsf     screen_type
+
+TFT_boot_com:
     rcall   display0_init_loop
 
     Index_out 0x03
     btfsc   flip_screen             ; 180° rotation ?
     bra     TFT_boot2               ; Yes
-    Parameter_out 0x50, 0x20
-;    Parameter_out 0x10, 0x00       ; mH
+
+    btfss   screen_type             ; display1?
+    bra     TFT_boot1a              ; no
+    Parameter_out 0x10, 0x00        ; display1
+    bra     TFT_boot3
+TFT_boot1a:
+    Parameter_out 0x50, 0x20        ; display0
     bra     TFT_boot3
 TFT_boot2:
-    Parameter_out 0x50, 0x10
-;    Parameter_out 0x10, 0x30       ; mH
+    btfss   screen_type             ; display1?
+    bra     TFT_boot2a              ; no
+    Parameter_out 0x10, 0x30        ; display1
+    bra     TFT_boot3
+TFT_boot2a:
+    Parameter_out 0x50, 0x10        ; display0
 TFT_boot3:
 	Index_out 0x22
 	rcall	TFT_ClearScreen
@@ -633,8 +659,29 @@ TFT_DataWrite_PROD:
 	WR_H                ; Tick
 	return
 
+;TFT_CmdRead_PROD:
+;    setf    TRISA                   ; PortA as input.
+;    setf    TRISH                   ; PortH as input.
+;	RS_H				; Data
+;	WR_H                ; Not write
+;    nop
+;    nop
+;    nop
+;	RD_L                ; Read!
+;    nop
+;    nop
+;    nop
+;	RD_H				; Tick
+;    movff   PORTA,PRODH
+;    movff   PORTH,PRODL
+;    nop
+;    clrf    TRISA                   ; PortA as output
+;    clrf    TRISH                   ; PortH as output
+;	return
+
 TFT_DataRead_PROD:
     Index_out 0x22                  ; Frame Memory Data Read start
+TFT_CmdRead_PROD:
     setf    TRISA                   ; PortA as input.
     setf    TRISH                   ; PortH as input.
 	RS_H				; Data
