@@ -351,6 +351,19 @@ restart_set_modes_and_flags2:
     decfsz  lo,F
     bra     restart_set_modes_and_flags3
     ; CC Mode
+    btfsc   analog_o2_input                 ; cR?
+    bra     restart_set_modes_and_flags2b   ; Yes, skip mode check
+    btfsc   optical_input                   ; 3
+    bra     restart_set_modes_and_flags2b   ; Yes, skip mode check
+    ; Make sure Sensor is not selected
+    ; opt_ccr_mode must be <> 1 (=0: Fixed SP, =1: Sensor, =2: Auto SP)
+    banksel opt_ccr_mode
+    movlw   .1
+    cpfseq  opt_ccr_mode                    ; = Sensor?
+    bra     restart_set_modes_and_flags2b   ; No
+    clrf    opt_ccr_mode                    ; Yes, reset to Fixed SP
+restart_set_modes_and_flags2b:
+    banksel common
 	bsf     FLAG_ccr_mode               ; =1: CCR mode (Fixed SP, Auto SP or Sensor) active
     call    enable_ir_s8                ; Enable IR/S8-Port
     return
