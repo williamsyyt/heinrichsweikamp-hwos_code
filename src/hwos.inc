@@ -415,7 +415,8 @@ ignore_digits   res 1
 #define ignore_digit3       cvt_flags,1
 #define ignore_digit4       cvt_flags,2
 #define ignore_digit5       cvt_flags,3
-#DEFINE enable_screen_dumps cvt_flags,4 ; =1: Ignore vin_usb, wait for "l" command (Screen dump)
+#DEFINE enable_screen_dumps cvt_flags,4 ; =1: Ignore vin_usb, wait for "l" command (Screen dump
+#DEFINE screen_type         cvt_flags,5 ; =1: display1, =0; display0
 
 ;---- Misc.
 nofly_time              res 2   		; No Fly time in Minutes (Calculated after Dive)
