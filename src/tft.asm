@@ -316,7 +316,7 @@ TFT_boot:
     Index_out 0x00
     rcall   TFT_CmdRead_PROD           ; Get ID into PRODL:PRODH
     ; 5:197 -> display0
-    ;147:37 -> display1
+    ;37:147 -> display1
     movlw   .5
     cpfseq  PRODL           ; display0?
     bra     TFT_boot_1      ; No
@@ -659,26 +659,6 @@ TFT_DataWrite_PROD:
 	WR_H                ; Tick
 	return
 
-;TFT_CmdRead_PROD:
-;    setf    TRISA                   ; PortA as input.
-;    setf    TRISH                   ; PortH as input.
-;	RS_H				; Data
-;	WR_H                ; Not write
-;    nop
-;    nop
-;    nop
-;	RD_L                ; Read!
-;    nop
-;    nop
-;    nop
-;	RD_H				; Tick
-;    movff   PORTA,PRODH
-;    movff   PORTH,PRODL
-;    nop
-;    clrf    TRISA                   ; PortA as output
-;    clrf    TRISH                   ; PortH as output
-;	return
-
 TFT_DataRead_PROD:
     Index_out 0x22                  ; Frame Memory Data Read start
 TFT_CmdRead_PROD:
@@ -719,9 +699,17 @@ TFT_box_write:
 
         global  TFT_box_write_16bit_win_left
 TFT_box_write_16bit_win_left:           ; With column in PRODL:PRODH
-    	btfsc  flip_screen              ; 180° rotation ?
+        btfsc   screen_type             ; display1?
+        bra     TFT_box_write_16bit_win_left_d1 ; Yes
+        ; Display0
+    	btfsc  flip_screen              ; 180° rotation?
     	bra    DISP_box_flip_H          ; Yes
-
+        bra     TFT_box_write_16bit_win_left_com    ; No
+TFT_box_write_16bit_win_left_d1:        ; Display1
+    	btfss  flip_screen              ; 180° rotation?
+    	bra    DISP_box_flip_H          ; Yes
+        ; No
+TFT_box_write_16bit_win_left_com:
         ;---- Normal horizontal window ---------------------------------------
 		Index_out 0x52				; Window Vertical Start Address
 		rcall   TFT_DataWrite_PROD          ; Output left
