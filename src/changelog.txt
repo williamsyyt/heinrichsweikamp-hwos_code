@@ -1,4 +1,9 @@
-[1.84]
+[1.86]
+
+- Stable Version -
+
+
+[1.85]
 
 - Beta Version -
 BUGFIX: Rotate button sensitivity with screen (OSTC 2 and cR)
@@ -13,7 +18,7 @@ CHANGE: Auto SP now available on OSTC 2
 - Beta Version -
 CHANGE: change button sensitivity range and default (OSTC2 and cR)
 NEW: MOD Warning (Can be disabled)
-NEW: Depth dependend ascend speed (Can be disabled)
+NEW: Depth dependent ascend speed (Can be disabled)
 NEW: Graphical speed indicator (Can be disabled)
 NEW: Option to always show the ppO2, shows ppO2 for Diluent in CC mode
 NEW: Mode Auto SP: Automatically switches the SP during descent (CC Mode)
