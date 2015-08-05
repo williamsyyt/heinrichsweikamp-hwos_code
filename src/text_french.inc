@@ -79,7 +79,7 @@
     TCODE   tSP,            "SP"                ; SP (SetPoint)
     TCODE   tSPPlus,    "pO2+"                  ; pO2+
     TCODE   tSensorFallback, "Fallback:"        ; Fallback:
-    TCODE   tppO2,      "ppO2:"                 ; ppO2:
+    TCODE   tppO2,      " pO2:"                 ; ppO2:
 
 ; New batteries menu
 	TCODE   tNewBattTitle,      "Nouvelle Batterie?"
@@ -126,7 +126,7 @@
     TCODE   taGF_high,  "aGF Haut:"              ; aGF High
     TCODE   taGF_enable,"aGF Possible:"        ; aGF Selectable
     TCODE   tDiveaGF_active,"aGF!"          ; aGF!
-    TCODE   tppO2settings,"Menu ppO2"        ; ppO2 Settings (max. 18 chars)
+    TCODE   tppO2settings,"Menu pO2"        ; ppO2 Settings (max. 18 chars)
     TCODE   tsafetystopmenu,"Palier sécurité:"   ; Safety Stop: (max. 16 chars)
 
 ; Display Settings
@@ -192,8 +192,8 @@
     TCODE   tMore,      "Suite..."          ; More...
     TCODE   tCNS,       "CNS"               ; CNS
     TCODE   tGasUsage,  "Util. Gaz"         ; Gas Usage
-    TCODE   tSetBotUse, "Bottom Gas: "      ; Bottom Gas: (space)
-    TCODE   tSetDecoUse,"Deco Gas: "        ; Deco Gas: (space)
+    TCODE   tSetBotUse, "Gaz Fond: "      ; Bottom Gas: (space)
+    TCODE   tSetDecoUse,"Gaz Déco: "        ; Deco Gas: (space)
 
 
 ; Information menu
