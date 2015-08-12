@@ -21,7 +21,7 @@
     TCODE   tDivemenu_Gaslist,  "Gasliste"    ; Gaslist
     TCODE   tDivemenu_ResetAvr, "Stoppuhr"    ; Reset Avr.
     TCODE   tDivemenu_Setpoint, "Setpoint"      ; Setpoint
-    TCODE   tDivemenu_UseSensor,"Ben. Sensor"    ; Use Sensor
+    TCODE   tDivemenu_UseSensor,"Akt. Sensor"    ; Use Sensor
     TCODE   tDivemenu_ToggleGF, "Toggle GF"     ; Toggle GF
 
 ; Main menu
@@ -92,7 +92,6 @@
     TCODE   tGasErr,    "Err"           ; Err  (3 chars)
 
 ; Communication Menu
-    TCODE   tUsbMode,  "Starte USB"
 	TCODE	tUsbTitle,	"USB Modus"
     TCODE   tBleTitle,  "Bluetooth Modus"
 	TCODE	tUsbStarting,  "Starte....."
