@@ -92,7 +92,6 @@
     TCODE   tGasErr,    "Err"           ; Err  (3 chars)
 
 ; Communication Menu
-    TCODE   tUsbMode,  "USB"
 	TCODE	tUsbTitle,		"Mode USB"
     TCODE   tBleTitle,      "Mode Bluetooth"
 	TCODE	tUsbStarting,  	"Début..."
