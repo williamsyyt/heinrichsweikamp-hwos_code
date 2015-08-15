@@ -641,17 +641,19 @@ TFT_CmdRead_PROD:
     setf    TRISA                   ; PortA as input.
     setf    TRISH                   ; PortH as input.
 	RS_H				; Data
-	WR_H                ; Not write
+;	WR_H                ; Not write
 	RD_L                ; Read!
     nop
     nop
     nop
 	RD_H				; Tick
     nop
+    nop
+    nop
 	RD_L                ; Read!
     nop
-    nop
-    nop
+ ;   nop
+ ;   nop
     movff   PORTA,PRODH
     movff   PORTH,PRODL
 	RD_H				; Tick
