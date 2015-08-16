@@ -580,6 +580,7 @@ opt_modwarning          res 1   ; =1:do a red blinking warning, =0:default behav
 opt_vsitextv2           res 1   ; =1:use the depth dependent ascend rate limits
 opt_vsigraph            res 1   ; =1:draw the graphical VSI bar
 opt_showppo2            res 1   ; =1:always show the ppO2 value in the warning position
+opt_temperature_adjust  res 1   ; SIGNED int (two's complement), -2.0/+2.0 °C max.
 
 ;-----------------------------EEPROM DATA ------------------------------------
 ; Automatic reset of all options when this is changed:

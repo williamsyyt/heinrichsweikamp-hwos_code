@@ -195,14 +195,16 @@ option_table_begin:
         OPTION_UINT8    oCalGasO2,      .21,.100,   .21,    tPercent, .149,    opt_calibration_O2_ratio         ; Calibration gas %O2
         OPTION_BOOL     oSensorFallback,1,                            .150,    opt_sensor_fallback              ; =1: Fallback to SP1 when sensor is lost
         OPTION_BOOL     oFlipScreen,    0,                            .151,    opt_flip_screen                  ; =1: Flip the screen
-        OPTION_UINT8p10 ocR_button_left, .20, .100,   .40,  tPercent,  .152,    opt_cR_button_left              ; left button sensitivity
-        OPTION_UINT8p10 ocR_button_right,.20, .100,   .40,  tPercent,  .153,    opt_cR_button_right             ; right button sensitivity
+        OPTION_UINT8p10 ocR_button_left, .20, .100,   .40,  tPercent, .152,    opt_cR_button_left               ; left button sensitivity
+        OPTION_UINT8p10 ocR_button_right,.20, .100,   .40,  tPercent, .153,    opt_cR_button_right              ; right button sensitivity
         OPTION_UINT8    obottom_usage,  .5,.50,   .20,tLitersMinute,  .154,    char_I_bottom_usage              ; l/min
         OPTION_UINT8    odeco_usage,    .5,.50,   .20,tLitersMinute,  .155,    char_I_deco_usage                ; l/min
         OPTION_BOOL     oMODwarning,    0,                            .156,    opt_modwarning                   ; =1: red depth blinking warning
         OPTION_BOOL     oVSItextv2,     0,                            .157,    opt_vsitextv2                    ; =1: use the dynamic (depends on depth) ascend rate limits
         OPTION_BOOL     oVSIgraph,      0,                            .158,    opt_vsigraph                     ; =1: draw the graphical VSI bar
         OPTION_BOOL     oShowppO2,      0,                            .159,    opt_showppo2                     ; =1:always show the ppO2 value in the warning position
+        OPTION_UINT8    oTemperatureAdjust, .0,.255,   .0,     -1,    .160,    opt_temperature_adjust           ; SIGNED int (-2.0/+2.0 °C max.)
+
 
 ;=============================================================================
 ; Set Time/Set Date (RAM only)

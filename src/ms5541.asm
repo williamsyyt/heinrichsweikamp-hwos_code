@@ -64,18 +64,12 @@ calc_loop_1:
 
     ; Calculate OFF = C2 + ((C4-250)*dT2)/2^12 + 10000
     ; (range +9.246 .. +18.887)
-    movff   C4+0,isr_xA+0
+    movff   C4+0,isr_xA+0               ; C4 - 250 --> A
     movff   C4+1,isr_xA+1
-;	movlw   LOW(-.250)                  ; C4 - 250 --> A
-;	addwf	C4+0,W
-;	movwf   isr_xA+0
-;	movlw   -1                          ; HIGH(- .250) is not understood...
-;	addwfc  C4+1,W
-;	movwf   isr_xA+1
-	
 	movff   xdT2+0,isr_xB+0             ; dT2 --> B
 	movff   xdT2+1,isr_xB+1
 	call    isr_signed_mult16x16
+
     movlw   .12-.8                      ; A 12bit shift = 1 byte + 4 bits.
     call    isr_shift_C31
 
@@ -147,7 +141,7 @@ calc_loop_1:
     comf    isr_xC+0,F
     incf    isr_xC+0,F
     ; Check for max. of 20mbar
-    movlw   .21
+    movlw   .22
     cpfslt  isr_xC+0
     clrf    isr_xC+0
     ; Subtract
@@ -212,6 +206,37 @@ calc_compensation_2:
     addwf   isr_xC+1,F
     movlw   HIGH(.200)
     addwfc  isr_xC+2,F
+
+    ; Add opt_temperature_adjust to result (SIGNED!)
+    movff   opt_temperature_adjust,isr_xC+0
+
+    btfss   isr_xC+0,7              ; <0?
+    bra     temperature_extra_add      ; No
+    ; Yes
+    comf    isr_xC+0,F
+    incf    isr_xC+0,F
+    ; Check for max. of 2.0°C
+    movlw   .22
+    cpfslt  isr_xC+0
+    clrf    isr_xC+0
+    ; Subtract
+    movf    isr_xC+0,W
+    subwf   isr_xC+1,F
+    movlw   .0
+    subwfb  isr_xC+2,F
+    bra     temperature_extra_common
+
+temperature_extra_add:
+    ; Check for max. of 2.0°C
+    movlw   .21
+    cpfslt  isr_xC+0
+    clrf    isr_xC+0
+    ; Add
+    movf    isr_xC+0,W
+    addwf   isr_xC+1,F
+    movlw   .0
+    addwfc  isr_xC+2,F
+temperature_extra_common:
 
     movf    isr_xC+1,W
     addwf   temperature_avg+0,F
