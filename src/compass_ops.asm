@@ -851,7 +851,23 @@ TFT_dive_compass_ruler_loop:
     rcall    TFT_dive_compass_clr_ruler
 TFT_dive_compass_ruler_loop_zz:
     ; 3. Draw the markers @ RM
-    rcall    TFT_dive_compass_ruler_print
+    ; we receive RM in lo and DD in hi
+    movlw   dm_custom_compass_tick_top_top
+    movff   WREG,win_top
+    movlw   dm_custom_compass_tick_height
+    movff   WREG,win_height
+    movlw   d'2'
+    movff   WREG,win_width
+    movff   WREG,win_bargraph
+    movff   lo,win_leftx2          ; 0..159
+    call    TFT_standard_color
+ ;   call    TFT_box
+    movlw   dm_custom_compass_tick_bot_top
+    movff   WREG,win_top
+    movlw   dm_custom_compass_tick_height
+    movff   WREG,win_height
+    call    TFT_standard_color  ; color in WREG is trashed, must be set again!
+;    call    TFT_box
     ; 4. If D<82 and RM>79: means we put something over the center line
     ;    redraw the center line
     movlw   d'82'
@@ -860,7 +876,9 @@ TFT_dive_compass_ruler_loop_zz:
     movlw   d'79'
     cpfsgt  lo,1
     bra     TFT_dive_compass_ruler_loop_zz2
-    rcall    TFT_dive_compass_cline ;enough to print cline as bearing marker is not in the ticker area
+    ;enough to print cline as bearing marker is not in the ticker area
+   	movlw   color_yellow
+    WIN_BOX_COLOR     dm_custom_compass_tick_top_top, dm_custom_compass_tick_bot_bot,.80,.81        ; center line in yellow
 TFT_dive_compass_ruler_loop_zz2:
     ; 5. set D = RM + 2 : position after the 2px tick
     movff   lo,hi
@@ -878,7 +896,7 @@ TFT_dive_compass_ruler_lend:    ; loop end
     cpfslt  hi,1
     bra     TFT_dive_compass_ruler_lend2    ; D >= W
     ; 9. position left to end of display to clear the remaining area
-    movlw   d'160'
+    movlw   d'159'
     movwf   lo
     ; 10. clear it
     rcall TFT_dive_compass_clr_ruler
@@ -1058,12 +1076,12 @@ TFT_dive_compass_label_end:
     movff   xLO,lo
     movff   xHI,hi
     ; clear the rest of the SQ area if there are more space
-    movlw   d'160'
+    movlw   d'159'
     cpfslt  hi
     bra     TFT_dive_compass_label_end2    ; D >= 160, no more space
     ; position left to end of display to clear the remaining area
-    movlw   d'160'
-    movff   WREG,lo
+    movlw   d'158'
+    movwf   lo
     ; clear it
     rcall    TFT_dive_compass_clr_label
 TFT_dive_compass_label_end2:
@@ -1140,8 +1158,8 @@ TFT_dive_compass_label_proc:
 
     ; 1/b. check if it's viewable ? sub_a(RP)+up(width) < sub_b(RD)+160
     ;      if already above, no need to process the rest of the labels
-    ;movff   up,WREG    ; don't worry about the width, low level call prevents overload
-    movlw   d'2'        ;   .. but still avoid thin mess on the side of the display
+    movff   up,WREG    ; don't worry about the width, low level call prevents overload
+;    movlw   d'2'        ;   .. but still avoid thin mess on the side of the display
     addwf   sub_a+0,1
     btfsc   STATUS, C
     incf    sub_a+1
@@ -1158,7 +1176,7 @@ TFT_dive_compass_label_proc:
     ; 3. Clear the segment from DD(hi) to lo
     ; don't do a clear if we are at 0 (zero) otherwise it will blink
     ;   ?because of the width underflow?
-    movlw   d'0'
+    movlw   d'1'
     cpfsgt  lo
     bra     TFT_dive_compass_label_proc_p
     rcall   TFT_dive_compass_clr_label
@@ -1185,7 +1203,8 @@ TFT_dive_compass_c_mk:
     ; Common task to draw center line and marker
     ;    until a proper implementation make it simple:
     rcall    TFT_dive_compass_mk
-    rcall    TFT_dive_compass_cline
+   	movlw   color_yellow
+    WIN_BOX_COLOR     dm_custom_compass_tick_top_top, dm_custom_compass_tick_bot_bot,.80,.81        ; center line in yellow
     return
 
 TFT_dive_compass_mk:
@@ -1279,6 +1298,7 @@ TFT_dive_compass_mk_print_4:
     return
 
 TFT_dive_compass_clr_label:
+    return
     movlw   dm_custom_compass_label_row-.2     ; set top & height
     movff   WREG,win_top
     movlw   dm_custom_compass_label_height+.2
@@ -1287,6 +1307,7 @@ TFT_dive_compass_clr_label:
     return
 
 TFT_dive_compass_clr_ruler:
+    return
     ; top tick
     movlw   dm_custom_compass_tick_top_top     ; set top & height
     movff   WREG,win_top
@@ -1305,39 +1326,33 @@ TFT_dive_compass_clear:
     ; calculate width = RM-D
     movff   hi,WREG
     subwf   lo,0
-    movff   WREG,win_width         ; RM-DD
+    bz      TFT_dive_compass_clear3 ; Do nothing if there is nothing to do
+    movff   WREG,win_width          ; RM-DD
     movff   WREG,win_bargraph
-;    incf    hi,W                   ; +1 pixel to avopid clipping of chars
-;    movff   WREG,win_leftx2
+    banksel win_width
+    movlw   .1
+    cpfsgt  win_width
+    bra     TFT_dive_compass_clear3 ; Do not clear a single pixel (or less)
+    banksel common
     movff   hi,win_leftx2
+;TFT_dive_compass_clear1:
+;    movff   win_leftx2,tft_temp1            ; Copy
+;    ; check right border
+;    movff   win_width,WREG
+;    addwf   tft_temp1,F
+;    movlw   .159
+;    cpfsgt  tft_temp1              ; >159?
+;    bra     TFT_dive_compass_clear2 ; no
+;    banksel win_width
+;    decf    win_width,F     ; -1
+;    banksel common
+;    bra     TFT_dive_compass_clear1
+;TFT_dive_compass_clear2:
     movlw   color_black
     call    TFT_set_color
     call    TFT_box
-    return
-
-TFT_dive_compass_ruler_print:
-    ; we receive RM in lo and DD in hi
-    movlw   dm_custom_compass_tick_top_top
-    movff   WREG,win_top
-    movlw   dm_custom_compass_tick_height
-    movff   WREG,win_height
-    movlw   d'2'
-    movff   WREG,win_width
-    movff   WREG,win_bargraph
-    movff   lo,win_leftx2          ; 0..159
-    call    TFT_standard_color
-    call    TFT_box
-    movlw   dm_custom_compass_tick_bot_top
-    movff   WREG,win_top
-    movlw   dm_custom_compass_tick_height
-    movff   WREG,win_height
-    call    TFT_standard_color  ; color in WREG is trashed, must be set again!
-    call    TFT_box
-    return
-
-TFT_dive_compass_cline:
-   	movlw   color_yellow
-    WIN_BOX_COLOR     dm_custom_compass_tick_top_top, dm_custom_compass_tick_bot_bot,.80,.81
+TFT_dive_compass_clear3:
+    banksel common
     return
 
 tft_compass_cardinal:
