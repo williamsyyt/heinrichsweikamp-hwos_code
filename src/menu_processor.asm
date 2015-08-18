@@ -133,7 +133,7 @@ menu_processor_bottom_line:
 ; (re-)draw menu title.
 ;
 menu_processor_title:        
-        WIN_BOX_BLACK  .2,.23,.0,.160	; Clear Menu title
+        WIN_BOX_BLACK  .2,.23,.0,.159	; Clear Menu title
         MENU_TITLE_FONT	.0, .2        	; Menu title positionning
 
         btfss   menu_flags,0            ; Static or dynmic title ?

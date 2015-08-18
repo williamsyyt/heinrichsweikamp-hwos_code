@@ -296,7 +296,7 @@
 #DEFINE    dm_active_dil_row         dm_3rdrow_top+.24 ; 189
 #DEFINE    dm_active_dil_column      .0                ; 0
 ; active gas for OC, blinking better gas, setpoint or bailout for CCR
-#DEFINE    dm_active_gas_row         .210              ; 210
+#DEFINE    dm_active_gas_row         .208              ; 208
 #DEFINE    dm_active_gas_column      .0                ; 0
 
 ;******* Bottom content / 2nd col *******

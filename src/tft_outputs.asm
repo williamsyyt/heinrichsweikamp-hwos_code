@@ -1688,7 +1688,9 @@ TFT_update_avr_stopwatch_metric:
     output_16dp  .3               ; yxz.a
     bcf     leftbind
     bcf     ignore_digit5
-    STRCAT_PRINT " "
+    clrf    WREG
+    movff   WREG,buffer+.4                  ; limit string length to 4
+    STRCAT_PRINT ""
     return
 
     global  TFT_ceiling_mask                        ; The ceiling mask
