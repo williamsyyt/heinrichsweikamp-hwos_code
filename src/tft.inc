@@ -186,7 +186,7 @@ PIXEL_WRITE macro   colRegister, rowRegister
         call    pixel_write
         endm
 
-INIT_PIXEL_WROTE macro colRegister
+INIT_PIXEL_WRITE macro colRegister
         movff   colRegister,win_leftx2
         call    init_pixel_write
         endm

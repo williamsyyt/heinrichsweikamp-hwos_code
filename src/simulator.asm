@@ -481,7 +481,10 @@ deco_plan_show_nstd_stop_common:
 	    movwf   up
 
 	    output_8					    ; Allow up to 240'
-        STRCAT_PRINT "'  "              ; 1 to 3 chars for depth.
+        STRCAT       "'  "              ; 1 to 3 chars for depth.
+        clrf    WREG
+        movff   WREG,buffer+.3          ; limit to 4 chars
+        STRCAT_PRINT 	""
 
 	    movf    lo,W                    ; Swap back up & lo
 	    movff   up,lo
@@ -514,14 +517,11 @@ deco_plan_show_nstd_stop_common:
 ; Inputs: win_top : last used area...
 deco_plan_show_clear_bottom:
         movf    win_top,W               ; Get back from bank0
-        btfsc   divemode                ; In dive mode ?
-        sublw   .168                    ; Yes: bottom row in divemode
-        btfss   divemode                ; In dive mode ?
-        sublw   .240                    ; No: bottom row in planning
+        sublw   .239                    ; No: bottom row in planning
         movwf   win_height
 
         WIN_LEFT .85                    ; Full divemenu width
-        movlw   .160-.85+1
+        movlw   .159-.85+1
         movwf   win_width
 
         clrf    win_color1              ; Fill with black
@@ -530,7 +530,7 @@ deco_plan_show_clear_bottom:
         goto	TFT_box
 
 ;-----------------------------------------------------------------------------
-; Display the decoplan (simulator or divemode).
+; Display the decoplan (simulator).
 ; Inputs: char_O_deco_table (array of stop times, in minutes)
 ;         decoplan_page = page number.
 ;
