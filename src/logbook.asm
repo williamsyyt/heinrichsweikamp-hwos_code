@@ -369,6 +369,10 @@ display_profile_or_exit:
 	movlw		logbook_row_number+.2		; exit?
 	cpfseq		menupos
 	bra			display_profile_or_exit2	; No, check for "Next Page"
+
+    call        TFT_DisplayOff
+    call        TFT_boot
+
 	goto		do_main_menu2
 
 display_profile_or_exit2:
@@ -779,7 +783,19 @@ display_profile2f:
     movlw       profile_top+profile_height_pixels
     movwf       logbook_max_temp_pos        ; Initialize for displaying the highest temperature
 
-    INIT_PIXEL_WROTE logbook_pixel_x_pos       ; pixel x2			(Also sets standard Color!)
+    movlw       profile_left
+    movff       WREG,win_leftx2
+    movlw       profile_top
+    movff       WREG,win_top
+    movlw       profile_height_pixels
+    movff       WREG,win_height
+    movlw       LOW (profile_width_pixels*.2)
+    movff       WREG,win_width+0
+    movlw       HIGH (profile_width_pixels*.2)
+    movff       WREG,win_width+1
+    call        TFT_box_write           ; open box for d1
+
+    INIT_PIXEL_WRITE logbook_pixel_x_pos       ; pixel x2			(Also sets standard Color!)
 
 profile_display_loop:
 	movff		profile_temp+0,profile_temp2+0
@@ -1383,6 +1399,8 @@ exit_profileview:
 	clrf		menupos3					; here: used row on current page
 	movlw		logbook_row_number
 	movwf		menupos						; here: active row on current page
+    call        TFT_DisplayOff
+    call        TFT_boot
     clrf        CCP1CON                     ; stop PWM
     bcf         PORTC,2                     ; Pull PWM out to GND
 	call		TFT_ClearScreen				; clear details/profile

@@ -533,9 +533,16 @@ pixel_write:
 
 	global	pixel_write_col320
 pixel_write_col320:
-        btfss   flip_screen             ; 180° rotation?
-        bra     pixel_write_noflip_H    ; No
-
+        btfsc   screen_type             ; display1?
+        bra     pixel_write_col320_d1   ; Yes
+        ; Display0
+    	btfss  flip_screen              ; 180° rotation?
+        bra    pixel_write_noflip_H     ; No
+        bra    pixel_write_flip_H       ; Yes
+pixel_write_col320_d1:                  ; Display1
+    	btfsc  flip_screen              ; 180° rotation?
+        bra    pixel_write_noflip_H     ; Yes for d1
+pixel_write_flip_H: ; Flip d0
         movf    PRODL,W                 ; 16bits 319 - PROD --> PROD
         sublw   LOW(.319)               ; 319-W --> W
         movwf   PRODL
@@ -547,7 +554,7 @@ pixel_write_col320:
 
 pixel_write_noflip_H:
 		Index_out 0x21					; Frame Memory Vertical Address
-		bra     TFT_DataWrite_PROD
+		bra     TFT_DataWrite_PROD      ; and return...
 
 ;-----------------------------------------------------------------------------
 ; Writes one half-pixel at position (win_top,win_leftx2).
@@ -560,12 +567,11 @@ half_pixel_write:
 half_pixel_write_1:
     	btfss   flip_screen             ; 180° rotation?
     	sublw   .239                    ; 239-Y --> Y
-    	mullw   1                       ; Copy row to PRODL (PRODH=0)
-
-		Index_out 0x20				; Frame Memory Horizontal Address
+        mullw   1                       ; Copy row to PRODL (PRODH=0)
+		Index_out 0x20                  ; Frame Memory Horizontal Address
 		rcall   TFT_DataWrite_PROD
 
-		Index_out 0x22				; Frame Memory Data Write start
+		Index_out 0x22                  ; Frame Memory Data Write start
 		RS_H				; Data
 		movff	win_color1,PORTA		; Upper
 		movff	win_color2,PORTH		; Lower
@@ -662,36 +668,6 @@ TFT_CmdRead_PROD:
     clrf    TRISH                   ; PortH as output
 	return
 
-
-
-;TFT_box_check_width:
-;        tstfsz  PRODH               ; right border > 256?
-;        bra     TFT_width_check1    ; Yes
-;        return                      ; No
-;TFT_width_check1:
-;        movlw   .1
-;        movwf   PRODH               ; limit to 1
-;        movlw   .64
-;        cpfsgt  PRODL               ; right border > 319?
-;        return
-;        movwf   PRODL               ; Yes, limit to 319
-;        return
-;
-;TFT_box_check_width_left:
-;        tstfsz  PRODH               ; right border > 256?
-;        bra     TFT_width_check_left1    ; Yes
-;        return
-;TFT_width_check_left1:
-;        movlw   .1
-;        movwf   PRODH               ; limit to 1
-;        movlw   .64
-;        cpfsgt  PRODL               ; right border > 319?
-;        return
-;        clrf    PRODL               ; Yes, set to zero
-;        clrf    PRODH
-;        return
-
-
 ;=============================================================================
 ; Output TFT Window Address commands.
 ; Inputs : win_top, win_leftx2, win_height, win_width.
@@ -717,7 +693,6 @@ TFT_box_write_16bit_win_left_d1:        ; Display1
         ; Yes for d1
 TFT_box_write_16bit_win_left_com:
         ;---- Normal horizontal window ---------------------------------------
-;        rcall   TFT_box_check_width_left ; Check the width
 		Index_out 0x52				; Window Vertical Start Address
 		rcall   TFT_DataWrite_PROD          ; Output left
 		Index_out 0x21				; Frame Memory Vertical Address
@@ -730,7 +705,6 @@ TFT_box_write_16bit_win_left_com:
 		decf	PRODL,F			    ; decrement result
 		btfss   STATUS,C
 		decf	PRODH,F
- ;       rcall   TFT_box_check_width ; Check the width
 
 		Index_out 0x53				; Window Vertical End Address
 		rcall   TFT_DataWrite_PROD
@@ -747,9 +721,7 @@ DISP_box_flip_H:
         sublw   HIGH(.319)
         movwf   PRODH
 
-  ;      rcall   TFT_box_check_width ; Check the width
-
-		Index_out 0x53				; Window Vertical Start Address
+  		Index_out 0x53				; Window Vertical Start Address
 		rcall   TFT_DataWrite_PROD  ; Output left
 		Index_out 0x21				; Frame Memory Vertical Address
 		rcall   TFT_DataWrite_PROD	; Output left
@@ -760,8 +732,6 @@ DISP_box_flip_H:
         subwfb  PRODH,F
         infsnz  PRODL                   ; PROD+1 --> PROD
         incf    PRODH
-
-   ;     rcall   TFT_box_check_width_left ; Check the width
 
 		Index_out 0x52				; Window Vertical End Address
 		rcall   TFT_DataWrite_PROD
