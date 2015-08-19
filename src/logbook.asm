@@ -292,7 +292,7 @@ logbook2:
 
 logbook3b:
 	btfss		logbook_page_not_empty	; Was there at least one dive?
-	goto		do_main_menu2			; Not a single header was found, leave logbook.
+	bra         exit_logbook            ; Not a single header was found, leave logbook.
 	bra			logbook_display_loop2
 
 logbook_reset:
@@ -361,7 +361,7 @@ logbook_loop:
 
     rcall       log_screendump_and_onesecond    ; Check if we need to make a screenshot and check for new second
 	btfsc		sleepmode					; Timeout?
-	goto		do_main_menu2				; Yes
+	bra         exit_logbook                ; Yes
 
 	bra         logbook_loop                ; Wait for something to do
 
@@ -370,9 +370,9 @@ display_profile_or_exit:
 	cpfseq		menupos
 	bra			display_profile_or_exit2	; No, check for "Next Page"
 
+exit_logbook:
     call        TFT_DisplayOff
     call        TFT_boot
-
 	goto		do_main_menu2
 
 display_profile_or_exit2:
@@ -763,9 +763,11 @@ display_profile2f:
 	movlw		profile_width_pixels+profile_left-.1
 	movwf		ignore_digits				; here: used as counter for x-pixels
 	bcf			end_of_profile				; clear flag
-	movlw		profile_left
+
+	movlw		profile_left+.1
 	movwf		logbook_pixel_x_pos			; here: used as colum x2 (Start at Colum 5)
-	movlw		profile_top					; Zero-m row
+
+	movlw		profile_top+.1					; Zero-m row
 	movwf		apnoe_mins					; here: used for fill between rows
     movwf       logbook_last_tp             ; Initialise for Tp° curve too.
 
@@ -778,7 +780,7 @@ display_profile2f:
     setf        logbook_cur_tp+1
     clrf        logbook_last_tp             ; Also reset previous Y for Tp°
     clrf        logbook_ceiling             ; Ceiling = 0, correct value for no ceiling.
-    movlw       profile_top
+    movlw       profile_top+.1
     movwf       logbook_min_temp_pos        ; Initialize for displaying the lowest temperature
     movlw       profile_top+profile_height_pixels
     movwf       logbook_max_temp_pos        ; Initialize for displaying the highest temperature
@@ -837,7 +839,7 @@ profile_display_loop2:
 	movff		y_scale+1,xB+1
 	call		div16x16					; xA/xB=xC
 
-	movlw		profile_top+.1                  ; Starts right after the top greenish line.
+	movlw		profile_top+.1                  ; Starts right after the top line.
 	movff		WREG,win_top
 	movff		logbook_pixel_x_pos,win_leftx2 ; Left border (0-159)
 	movff		xC+0,win_height				
@@ -873,7 +875,7 @@ profile_display_skip_deco:
     movwf       xC+0
 
 	; Check limits
-	movlw		profile_top
+	movlw		profile_top+.1
 	movwf		xC+1
 	cpfsgt		xC+0
 	movff		xC+1,xC+0
@@ -902,7 +904,7 @@ profile_display_skip_temp:
 	movff		logbook_cur_depth+0,xA+0
 	movff		logbook_cur_depth+1,xA+1
 	call		div16x16					; xA/xB=xC
-	movlw		profile_top
+	movlw		profile_top+.1
 	addwf		xC+0,F						; add 75 pixel offset to result
 	
 	btfsc		STATUS,C                    ; Ignore potential profile errors
@@ -914,8 +916,7 @@ profile_display_skip_temp:
 	call		profile_display_fill		; In this column between this row (xC+0) and the last row (xC+1)
 	movff		xC+0,apnoe_mins				; Store last row for fill routine
 
-    PIXEL_WRITE logbook_pixel_x_pos,xC+0     ; Set col(0..159) x row (0..239), put a std color pixel.
-	incf		logbook_pixel_x_pos,F		; Next row
+    PIXEL_WRITE logbook_pixel_x_pos,xC+0    ; Set col(0..159) x row (0..239), put a std color pixel.
 
     ;---- Draw CNS curve, if any ---------------------------------------------
     movf        divisor_cns,W
@@ -932,6 +933,7 @@ profile_display_skip_cns:
     ; TODO HERE 
     ;
 profile_display_skip_gf:
+	incf		logbook_pixel_x_pos,F		; Next column
 
     ;---- All curves done.
     
@@ -1399,8 +1401,8 @@ exit_profileview:
 	clrf		menupos3					; here: used row on current page
 	movlw		logbook_row_number
 	movwf		menupos						; here: active row on current page
-    call        TFT_DisplayOff
-    call        TFT_boot
+;    call        TFT_DisplayOff
+;    call        TFT_boot
     clrf        CCP1CON                     ; stop PWM
     bcf         PORTC,2                     ; Pull PWM out to GND
 	call		TFT_ClearScreen				; clear details/profile
