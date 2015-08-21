@@ -2,6 +2,7 @@
 
 - Stable Version -
 NEW: Additional temperature calibration via PC interface
+NEW: Hardware support (Screen)
 
 [1.86]
 
