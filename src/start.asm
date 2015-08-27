@@ -139,11 +139,15 @@ no_deco_restore:
     goto	use_old_batteries				; No, load last stored battery values
 
     call    lt2942_get_status               ; Check for gauge IC
-    btfsc   rechargeable                     ; cR hardware?
-    goto	use_old_batteries				; Yes, load last stored battery values
 
-    ; No, cR and we have a power-on reset
- 	goto	new_battery_menu				; show "New battery dialog"
+    btfss   rechargeable                    ; cR or 2 hardware?
+ 	goto	new_battery_menu				; No, show "New battery dialog"
+
+    movlw   .30
+    movff   WREG,opt_cR_button_right
+    movff   WREG,opt_cR_button_left         ; Reset on power-on reset
+    call    piezo_config                    ; Yes, configure buttons
+    goto	use_old_batteries				; Yes, load last stored battery values
 
 	global	power_on_return
 power_on_return:

@@ -378,6 +378,11 @@ do_settings_menu_more:
         MENU_CALL   tExit,          do_return_settings
     MENU_END
 
+do_settings_menu_more_piezo_exit:
+	call	TFT_ClearScreen
+    extern  piezo_config
+    call    piezo_config                ; Configure buttons
+
 do_settings_menu_more_piezo:
     MENU_BEGIN  tSystSets, .7
         MENU_CALL   tCompassMenu,   do_compass_menu
@@ -397,7 +402,7 @@ do_settings_piezo_menu:
         MENU_CALL   tResetMenu,     do_reset_menu
         MENU_OPTION tButtonleft,ocR_button_left  ,0  ; left button sensitivity
         MENU_OPTION tButtonright,ocR_button_right,0  ; right button sensitivity
-        MENU_CALL   tExit,          do_settings_menu_more_piezo
+        MENU_CALL   tExit,          do_settings_menu_more_piezo_exit
     MENU_END
 
 do_settings_menu_more_ostc3p:  ; Menu with BLE feature
