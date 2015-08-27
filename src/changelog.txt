@@ -1,3 +1,11 @@
+[1.88]
+
+- Stable Version -
+BUGFIX: Start with Sensor use from sleep (cR only)
+CHANGE: Apply button settings when button menu is closed
+NEW: Reset button settings on a magnet reset (cR and OSTC 2)
+
+
 [1.87]
 
 - Stable Version -

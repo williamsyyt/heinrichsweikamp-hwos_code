@@ -89,8 +89,6 @@ surfloop:
 
     movlw   surface_sp                  ; in cbar
     call    transmit_setpoint           ; Transmit current setpoint from WREG (in cbar) to external electronics
-    btfsc   rechargeable
-    call    piezo_config                ; Configure buttons
 
 	clrf	timeout_counter2
 	clrf 	timeout_counter3
@@ -146,6 +144,8 @@ surfloop:
 	call	TFT_update_surf_press		; display surface pressure
 	call	TFT_temp_surfmode			; Displays temperature
 	call	TFT_display_decotype_surface
+    call    compute_ppo2                ; compute mv_sensorX and ppo2_sensorX arrays
+    call    check_sensors               ; Set enable/disable flags
 
     movff   opt_dive_mode,lo            ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
     tstfsz  lo
