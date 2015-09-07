@@ -47,7 +47,7 @@ customview_second:
 	dcfsnz	WREG,F
 	bra		customview_1sec_view8
 	dcfsnz	WREG,F
-	bra		customview_1sec_view9
+	bra		customview_1sec_view9           ; Make sure to change value in "check_ppo2_display:" when moving around custom views
 	; Menupos3=0, do nothing
 	return
 

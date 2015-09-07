@@ -1,3 +1,8 @@
+[1.89]
+
+CHANGE: Do not show ppO2 in warning area if already shown in custom view
+BUGFIX: Logbook list view for more then 100 stored dives
+
 [1.88]
 
 - Stable Version -

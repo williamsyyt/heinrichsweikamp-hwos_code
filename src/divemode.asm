@@ -1635,8 +1635,7 @@ check_ppO2:							    ; check current ppO2 and display warning if required
 	btfsc	neg_flag
 	bra     check_ppO2_0        ; Not too low
     ; ppO2 low
-	incf	warning_counter,F	; increase counter
-	call	TFT_display_ppo2	; Show ppO2
+    rcall   check_ppo2_display  ; display if not already shown in custom view
 	movlw	d'4'				; Type of Alarm (ppO2 low)
 	movwf	AlarmType			; Copy to Alarm Register
 	bsf		event_occured		; Set Event Flag
@@ -1655,8 +1654,7 @@ check_ppO2_0:
 	btfss	neg_flag
 	return						; No Display, no warning
     ; Display ppO2, but warn?
-	incf	warning_counter,F	; increase counter
-	call	TFT_display_ppo2	; Show ppO2
+    rcall   check_ppo2_display  ; display if not already shown in custom view
 
 ;check if we are within our warning thresholds!
 	movff	xC+0,sub_b+0
@@ -1676,13 +1674,23 @@ check_ppO2_0:
 	return						; Done.
 
 check_ppO2_1:                   ; ppO2 very high
-	incf	warning_counter,F	; increase counter
-	call	TFT_display_ppo2	; Show ppO2
+    rcall   check_ppo2_display  ; display if not already shown in custom view
 	movlw	d'5'				; Type of Alarm
 	movwf	AlarmType			; Copy to Alarm Register
 	bsf		event_occured		; Set Event Flag
 	bsf		warning_active		; Set Warning flag
 	return						; Done.
+
+check_ppo2_display:
+    movlw   .9
+    cpfseq  menupos3            ; ppO2 shown in Custom View?
+    bra     check_ppO2_a        ; No
+    return                      ; Yes, do not show twice (in custom view and in warning area)
+check_ppO2_a:
+	incf	warning_counter,F	; increase counter
+    call	TFT_display_ppo2	; Show ppO2
+    return
+
 
     global  check_cns_violation
 check_cns_violation:
