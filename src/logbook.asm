@@ -467,9 +467,8 @@ display_profile2:
 	movf		lo,W
 	mullw		.60
 	movff		temp1,WREG
-	addwf		PRODL,F
-	movlw		.0
-	addwfc		PRODH,F					; PRODH:PRODL has end-of-dive time in minutes
+	infsnz		PRODL,F
+	incf        PRODH,F					; PRODH:PRODL has end-of-dive time in minutes
 
     ; TODO: Fix entry time when dive was during midnight
     LOG_POINT_TO    log_total_seconds
@@ -508,9 +507,8 @@ display_profile2:
 	call		div16x16				; does xA/xB=xC
 	movff		xC+0,y_scale+0		; holds LOW byte of y-scale   (mbar/pixel!)
 	movff		xC+1,y_scale+1		; holds HIGH byte of y-scale  (mbar/pixel!)
-	incf		y_scale+0,F		; increase one, because there may be a remainder
-	movlw		d'0'
-	addwfc		y_scale+1,F
+	infsnz		y_scale+0,F         ; increase one, because there may be a remainder
+	incf		y_scale+1,F
 	
 	movlw		LOW		((profile_height_pixels+1)*.1000)
 	movwf		xC+0
@@ -603,9 +601,8 @@ display_profile_offset4_common:
 	call		div16x16				; xA/xB=xC
 	movff		xC+0,profile_temp+0		; store value (use any #xC sample, skip xC-1) into temp registers
 	movff		xC+1,profile_temp+1		; store value (use any #xC sample, skip xC-1) into temp registers
-	incf		profile_temp+0,F		; Increase by one, there might be a remainder
-	movlw		d'0'
-	addwfc		profile_temp+1,F
+	infsnz		profile_temp+0,F		; Increase by one, there might be a remainder
+	incf		profile_temp+1,F
 
 	bsf			leftbind
 	output_99x							; divetime seconds
@@ -1217,9 +1214,8 @@ profile_display_fill_up:			; Fill upwards from xC+0 to apone_mins!
 
 
 profile_view_get_depth:
-	incf		logbook_sample_counter+0,F
-	movlw		d'0'
-	addwfc		logbook_sample_counter+1,F		; Count read pixels
+	infsnz		logbook_sample_counter+0,F
+    incf        logbook_sample_counter+1,F		; Count read pixels
 
 	movf		logbook_sample_counter+0,W
 	cpfseq		average_depth_hold_total+0
@@ -1506,7 +1502,10 @@ display_listdive3:
 	call		ext_flash_byte_read_plus
 	movff		temp1,hi
 	output_16_3								; Divetime minutes (0-999min)
-	STRCAT_TEXT_PRINT tMinutes             	; Display header-row in list
+	STRCAT_TEXT tMinutes                    
+    clrf    WREG
+    movff   WREG,buffer+.20                 ; limit to 20 chars
+    STRCAT_PRINT ""                         ; Display header-row in list
 	return
 
 logbook_show_divenumber:
@@ -1519,10 +1518,8 @@ logbook_show_divenumber:
 	bra			logbook_show_divenumber3	; Display now
 
 logbook_show_divenumber2:
-	movlw		d'1'
-	addwf		lo,F
-	movlw		d'0'
-	addwfc		hi,F						; hi:lo = hi:lo + 1
+    infsnz      lo,F
+	incf        hi,F                        ; hi:lo = hi:lo + 1
 	movff		lo,sub_a+0
 	movff		hi,sub_a+1
 	movff		divesecs,sub_b+0
