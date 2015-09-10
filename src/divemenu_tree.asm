@@ -81,6 +81,7 @@ do_divemode_resetavr:
 do_switch_gas6:
     movlw   .6
     movwf   active_gas              ; Gas6 selected
+    movff   WREG,char_I_current_gas ; for p2_deco.c
     bra     do_switch_gasX
     extern  diveloop_loop4
     extern  timeout_divemode_menu2

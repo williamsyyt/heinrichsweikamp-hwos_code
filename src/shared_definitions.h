@@ -139,7 +139,7 @@ VAR_UINT  (int_I_divemins);                // Dive time (minutes)
 VAR_UCHAR (char_I_temp);                   // new in v101
 VAR_UCHAR (char_I_actual_ppO2);            // 
 VAR_UCHAR (char_I_first_gas);              // Gas used at start of dive (bottom mix)
-VAR_UCHAR (char_I_current_gas);            // Current gas breathed (1..3).
+VAR_UCHAR (char_I_current_gas);            // Current gas breathed (1..6).
 VAR_UCHAR (char_I_N2_ratio);               //
 VAR_UCHAR (char_I_He_ratio);               //
 VAR_UCHAR (char_I_O2_ratio);               //
