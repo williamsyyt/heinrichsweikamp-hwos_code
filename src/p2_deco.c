@@ -576,7 +576,7 @@ done:
         pres_gradient = sim_lead_tissue_limit - pres_surface;
         if (pres_gradient >= 0)
         {
-            pres_gradient *= BAR_TO_METER/3;                        // Bar --> stop number;
+            pres_gradient *= BAR_TO_METER/3;                        // bar --> stop number;
             temp_depth_limit = 3 * (short) (pres_gradient + 0.99);  // --> metre : depth for deco
             need_stop = 1;                                          // Hit.
 
@@ -1032,7 +1032,7 @@ void calc_hauptroutine_data_input(void)
     pres_surface        = int_I_pres_surface     * 0.001;
     N2_ratio            = char_I_N2_ratio        * 0.01;
     He_ratio            = char_I_He_ratio        * 0.01;
-    float_deco_distance = char_I_deco_distance   * 0.01;     // Get offset in BAR
+    float_deco_distance = char_I_deco_distance   * 0.01;     // Get offset in mbar
 
     // ____________________________________________________
     //
