@@ -396,6 +396,7 @@ up				res 1
 ;---- RS232 temp variables
 uart1_temp      res 1
 uart2_temp      res 1
+uart3_temp      res 1
 
 ;---- Data for math subroutines
 divA            res 2
@@ -491,7 +492,6 @@ o2_mv_sensor3       res 2       ; in 0.1mV steps
 o2_ppo2_sensor1     res 1       ; Sensor1 ppO2 (in 0.01bar steps)
 o2_ppo2_sensor2     res 1       ; Sensor2 ppO2 (in 0.01bar steps)
 o2_ppo2_sensor3     res 1       ; Sensor3 ppO2 (in 0.01bar steps)
-hud_battery_mv      res 2
 hud_status_byte     res 1
 ;Status Byte/
 #DEFINE hud_connection_ok       hud_status_byte,0	;Bit0 = 1 -> HUD connection ok
@@ -526,6 +526,8 @@ common2          udata_ovr   common2     ; Bank1 general variables
 s8_rawdata_sensor1   res 3  ; 24bit A/D raw data from S8 HUD sensor 1
 s8_rawdata_sensor2   res 3  ; 24bit A/D raw data from S8 HUD sensor 2
 s8_rawdata_sensor3   res 3  ; 24bit A/D raw data from S8 HUD sensor 3
+
+hud_battery_mv      res 2   ; hud/ppo2 monitor battery voltage in mV
 
 ;-----------------------------------------------------------------------------
 ; Reserve BANK2 for general purpose buffer (strings, images, etc).

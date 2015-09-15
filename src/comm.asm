@@ -131,6 +131,9 @@ comm_mode4a:
 	btfsc	onesecupdate
 	bra		comm_mode1
 
+    btfsc   rs232_recieve_overflow
+    bra     comm_mode2				; Cycle
+
 	movlw	0xAA						; start byte=0xAA?
 	cpfseq	RCREG1
 	bra		comm_mode2a
@@ -483,7 +486,7 @@ comm_download_mode2:
 	cpfseq	RCREG1
 	bra		$+4
 	bra		comm_set_custom_text		; Send a opt_name_length byte string of custom text.
-	movlw	"f"
+	movlw	"f" ; 0x66
 	cpfseq	RCREG1
 	bra		$+4
 	bra		comm_send_dive				; Send header and profile for one dive
@@ -822,7 +825,7 @@ comm_hardware_descriptor:
 ;-----------------------------------------------------------------------------
 
 comm_send_dive:
-	movlw	"f"								; send echo
+	movlw	"f"; 0x66						; send echo
 	movwf	TXREG1
 	
 	rcall	comm_write_get_byte

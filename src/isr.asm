@@ -304,8 +304,10 @@ isr_tmr7_1a:
         clrf    o2_mv_sensor2+1
         clrf    o2_mv_sensor3+0
         clrf    o2_mv_sensor3+1
+        banksel hud_battery_mv
         clrf    hud_battery_mv+0
         clrf    hud_battery_mv+1
+        banksel hud_status_byte
         clrf    hud_status_byte
         clrf    o2_ppo2_sensor1
         clrf    o2_ppo2_sensor2
