@@ -172,7 +172,7 @@
 #DEFINE lithium_36v_25          .2600   ; [mV]
 #DEFINE lithium_36v_10          .2500   ; [mV]
 
-#DEFINE	current_sleepmode           .10
+#DEFINE	current_sleepmode           .31
 #DEFINE	current_backlight_multi     .115    ; *CCPR1L+current_backlight_offset
 #DEFINE	current_backlight_offset    .216
 #DEFINE	current_speed_eco           .1914

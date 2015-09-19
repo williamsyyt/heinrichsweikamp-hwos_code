@@ -2,7 +2,8 @@
 
 CHANGE: Do not show ppO2 in warning area if already shown in custom view
 BUGFIX: Logbook list view for more then 100 stored dives
-BUGFIX: BLE timings for MAC issues 
+BUGFIX: BLE timings for MAC issues
+BUGFIX: Battery consumption calculation in sleep mode (3,6V battery only)
 
 [1.88]
 
