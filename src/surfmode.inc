@@ -59,8 +59,11 @@
 
 #DEFINE surf_compass_mask_row       surf_customtext_row2
 #DEFINE surf_compass_mask_column    .10
-#DEFINE surf_compass_head_row       surf_customtext_row4-.5
+#DEFINE surf_compass_head_row       surf_customtext_row4-.8
 #DEFINE surf_compass_head_column    .10
+
+#DEFINE surf_compass_bear_column    .15
+#DEFINE surf_compass_bear_row       surf_customtext_row5
 
 #DEFINE surf_hud_sensor1_column .112
 #DEFINE surf_hud_sensor1_row    .87

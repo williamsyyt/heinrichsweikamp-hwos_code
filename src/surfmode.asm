@@ -93,6 +93,7 @@ surfloop:
 	clrf	timeout_counter2
 	clrf 	timeout_counter3
 	bcf		menubit						; clear menu flag
+    bcf     premenu
 	clrf	last_pressure+0
 	clrf	last_pressure+1
     bcf     is_bailout                  ; =1: Bailout
@@ -351,13 +352,48 @@ test_switches_surfmode:		; checks switches in surfacemode
 	return
 
 test_switches_surfmode3:
+    movlw   .6
+    cpfseq  menupos3                    ; in compass view?
+    bra     test_switches_surfmode3a    ; No
+
+    btfsc   premenu                     ; already shown "Bearing"
+    bra     test_switches_surfmode3b    ; Yes, remove it
+
+    extern  TFT_surf_set_bearing
+    call    TFT_surf_set_bearing        ; Yes.
+    bcf		switch_left
+    return
+
+test_switches_surfmode3a:
 	bcf		switch_left
 	bsf		menubit					; Enter Menu!
 	return
 
+test_switches_surfmode3b:
+    ; Clear "Heading?"
+    WIN_BOX_BLACK   .158,.190, .15, .99  ; top, bottom, left, right
+    bcf     premenu
+    bcf		switch_left
+    return
+
 test_switches_surfmode2:
+    movlw   .6
+    cpfseq  menupos3                    ; in compass view?
+    bra     test_switches_surfmode2a    ; No
+    btfss   premenu                     ; "Heading?" shown?
+    bra     test_switches_surfmode2a    ; No
+    ; Set new heading
+    bcf     premenu
+    bsf     compass_bearing_set
+    movff   compass_heading_shown+0,compass_bearing+0
+    movff   compass_heading_shown+1,compass_bearing+1
+	bcf		switch_right
+    return
+
+test_switches_surfmode2a:
 	bcf		switch_right
 	bsf		toggle_customview
+    bcf     premenu
     clrf	timeout_counter2        ; and reset timeout
 	return
 

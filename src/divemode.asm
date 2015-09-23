@@ -1404,10 +1404,6 @@ diveloop_boot:
 	clrf	WREG
 	movff	WREG,max_pressure+0				; clear some variables
 	movff	WREG,max_pressure+1
-    movff   WREG,compass_bearing+0
-    movff   WREG,compass_bearing+1
-
-    bcf     compass_bearing_set
 
     bcf     use_agf                         ; Start with normal GF set
     bcf     divemode_menu                   ; clear divemode menu flag
