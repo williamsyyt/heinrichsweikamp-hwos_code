@@ -392,6 +392,24 @@ TFT_compass_show_gain:       ; Show the current compass gain
     STRCAT_PRINT "!"
     return
 
+TFT_surface_compass_bearing:
+    WIN_SMALL   surf_compass_bear_column,surf_compass_bear_row
+    movff   compass_bearing+0,lo
+    movff   compass_bearing+1,hi
+    PUTC    "("
+    bsf     leftbind
+    output_16dp .2      ; Result is "0.000"
+    bcf     leftbind
+    ; rearrange figures to "000"
+    movff   buffer+3,buffer+1
+    movff   buffer+4,buffer+2
+    movff   buffer+5,buffer+3
+    lfsr	FSR2,buffer+4
+    STRCAT  "° "
+    rcall   tft_compass_cardinal        ; Add cardinal and ordinal to POSTINC2
+    STRCAT_PRINT ")"
+    return
+
     global  TFT_surface_compass_mask
 TFT_surface_compass_mask:
     WIN_SMALL   surf_compass_mask_column,surf_compass_mask_row
@@ -461,7 +479,15 @@ TFT_surface_compass_heading_com3:
     clrf    WREG
     movff   WREG,buffer+.7              ; limit to 7 chars
     STRCAT_PRINT ""
-    return
+
+    btfsc   divemode
+    return                  ; Done for divemode.
+    ; Show bearing on the surface?
+    btfss   compass_bearing_set
+    return                  ; No, return
+    btfsc   premenu         ; "Bearing?" shown?
+    return                  ; Yes, return
+    bra     TFT_surface_compass_bearing
 
     global  TFT_dive_compass_heading
 TFT_dive_compass_heading:
@@ -1461,5 +1487,17 @@ TFT_get_compass:
     banksel common
     return
 
+    global  TFT_surf_set_bearing
+TFT_surf_set_bearing:
+    btfsc   premenu
+    return                              ; Already shown, return
+    bsf     premenu                     ; set flag
+    WIN_BOX_BLACK   surf_compass_bear_row,surf_warning1_row-1, surf_compass_bear_column, surf_decotype_column-.1	; top, bottom, left, right
+    WIN_SMALL   surf_compass_bear_column,surf_compass_bear_row
+    WIN_COLOR   color_yellow
+    bsf     win_invert
+    STRCPY_TEXT_PRINT   tSetHeading         ; 7 chars
+    bcf     win_invert
+    return
 
         END
