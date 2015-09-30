@@ -77,9 +77,9 @@
     TCODE   tCCRModeSensor,   "Cellule"          ; Sensor
     TCODE   tCCRModeAutoSP,   "Auto SP"         ; Auto SP
     TCODE   tSP,            "SP"                ; SP (SetPoint)
-    TCODE   tSPPlus,    "pO2+"                  ; pO2+
+    TCODE   tSPPlus,    "ppO2+"                  ; pO2+
     TCODE   tSensorFallback, "Fallback:"        ; Fallback:
-    TCODE   tppO2,      " pO2:"                 ; ppO2:
+    TCODE   tppO2,      "ppO2:"                 ; ppO2:
 
 ; New batteries menu
 	TCODE   tNewBattTitle,      "Nouvelle Batterie?"
@@ -111,8 +111,8 @@
     TCODE   tDkMode,    "Modèle:"
     TCODE   tZHL16,     "ZH-L16"
     TCODE   tZHL16GF,   "ZH-L16+GF"
-    TCODE   tPPO2Max,   " pO2 Max:"
-    TCODE   tPPO2Min,   " pO2 Min:"
+    TCODE   tPPO2Max,   "ppO2 Max:"
+    TCODE   tPPO2Min,   "ppO2 Min:"
     TCODE   tLastDecostop, "Dern.Palier:"
     TCODE   tDecoparameters, "Paramètres Déco"
     TCODE   tGF_low,    "GF Bas:"
@@ -125,7 +125,7 @@
     TCODE   taGF_high,  "aGF Haut:"              ; aGF High
     TCODE   taGF_enable,"aGF Possible:"        ; aGF Selectable
     TCODE   tDiveaGF_active,"aGF!"          ; aGF!
-    TCODE   tppO2settings,"Menu pO2"        ; ppO2 Settings (max. 18 chars)
+    TCODE   tppO2settings,"Menu ppO2"        ; ppO2 Settings (max. 18 chars)
     TCODE   tsafetystopmenu,"Palier sécurité:"   ; Safety Stop: (max. 16 chars)
 
 ; Display Settings
@@ -136,7 +136,7 @@
     TCODE   tDvSalinity,"Salinité:"             ; Salinity
     TCODE   tFlip,      "Pivoter l'écran:"      ; Rotate Screen
     TCODE   tMODwarning,"Alerte MOD:"           ; MOD warning
-    TCODE   tShowppO2,  "Afficher pO2:"         ; Always show ppO2:
+    TCODE   tShowppO2,  "Afficher ppO2:"        ; Always show ppO2:
 
 ; VSI display Settings
     TCODE   tVSItext2,  "Vitesse Variable:"     ; Variable speed:
@@ -159,8 +159,8 @@
     TCODE   tDefName,   "HW OSTC"
 	TCODE	tbar,		"bar"				; bar
 
-    TCODE   tButtonleft,"Left button:"      ; Left button
-    TCODE   tButtonright,"Right button:"    ; Right button
+    TCODE   tButtonleft,"Bouton gauche:"     ; Left button
+    TCODE   tButtonright,"Bouton droit:"    ; Right button
 
 ; Units for all menu
     TCODE   tMeters,    "m"

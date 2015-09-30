@@ -115,7 +115,6 @@ init_ostc:
 
 ; Timer 0
 	movlw	b'00000001'				; Timer0 with 1:4 prescaler
-;	movlw	b'00001000'				; Timer0 with 1:1 prescaler
 	movwf	T0CON
 
 ; Timer 1 - Button hold-down timer
@@ -159,13 +158,9 @@ init_ostc:
 ;init serial port1 (TRISC6/7)
 	movlw	b'00001000'			; BRG16=1
 	movwf	BAUDCON1
-;	movlw 	b'00100100'			; BRGH=1, SYNC=0
-;	movwf 	TXSTA1
 	movlw 	.34					; SPBRGH:SPBRG = .34  : 114285 BAUD @ 16MHz (+0,79% Error to 115200 BAUD)
 	movwf 	SPBRG1				; SPBRGH:SPBRG = .207 :  19230 BAUD @ 16MHz (-0,16% Error to 19200 BAUD)
 	clrf	SPBRGH1				;
-;	movlw 	b'10010000'
-;	movwf 	RCSTA1
 
 	clrf	RCSTA1
 	clrf	TXSTA1					; UART disable
@@ -186,7 +181,6 @@ init_ostc:
 
 ; Timer3 for IR-RX Timeout
 	clrf	T3GCON				; Reset Timer3 Gate Control register
-;	movlw	b'10001101'			; 1:1 Prescaler -> 2seconds@32768Hz, not synced
 	movlw	b'10001001'			; 1:1 Prescaler -> 2seconds@32768Hz, synced
 ; 30,51757813µs/bit in TMR3L:TMR3H
 	movwf	T3CON
@@ -225,7 +219,6 @@ init_ostc:
 
 ; Timer5 for ISR-independent wait routines
 	clrf	T5GCON				; Reset Timer5 Gate Control register
-;	movlw	b'10001101'			; 1:1 Prescaler -> 2seconds@32768Hz, not synced
 	movlw	b'10001001'			; 1:1 Prescaler -> 2seconds@32768Hz, synced
 ; 30,51757813µs/bit in TMR5L:TMR5H
 	movwf	T5CON
@@ -233,7 +226,6 @@ init_ostc:
 ; Timer7 for 62,5ms Interrupt (Sensor states)
 	banksel 0xF16				; Addresses, F16h through F5Fh, are also used by SFRs, but are not part of the Access RAM.
 	clrf	T7GCON				; Reset Timer7 Gate Control register
-;	movlw	b'10001101'			; 1:1 Prescaler -> 2seconds@32768Hz, not synced
 	movlw	b'10001001'			; 1:1 Prescaler -> 2seconds@32768Hz, synced
 	movwf	T7CON
 	clrf	TMR7L
