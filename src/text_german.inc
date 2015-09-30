@@ -77,7 +77,7 @@
     TCODE   tCCRModeSensor,   "Sensor"          ; Sensor
     TCODE   tCCRModeAutoSP,   "Auto SP"         ; Auto SP
     TCODE   tSP,            "SP"                ; SP (SetPoint)
-    TCODE   tSPPlus,    "pO2+"                  ; pO2+
+    TCODE   tSPPlus,    "ppO2+"                  ; pO2+
     TCODE   tSensorFallback, "Fallback:"        ; Fallback:
     TCODE   tppO2,      "ppO2:"                 ; ppO2:
 
@@ -113,7 +113,7 @@
     TCODE   tZHL16GF,   "ZH-L16+GF"
     TCODE   tPPO2Max,   "ppO2 Max:"
     TCODE   tPPO2Min,   "ppO2 Min:"
-    TCODE   tLastDecostop, "Letzt. Stop:"
+    TCODE   tLastDecostop, "Letzter Stop:"
     TCODE   tDecoparameters, "Deko Parameter"
     TCODE   tGF_low,    "GF low:"
     TCODE   tGF_high,   "GF high:"
@@ -123,8 +123,8 @@
     TCODE   taGFMenu,   "Alternativ-GF"         ; Alternative GF
     TCODE   taGF_low,   "aGF low:"               ; aGF low
     TCODE   taGF_high,  "aGF high:"              ; aGF high
-    TCODE   taGF_enable,"aGF Wählbar:"        ; aGF Selectable
-    TCODE   tDiveaGF_active,"aGF Aktiv"      ; aGF Active
+    TCODE   taGF_enable,"aGF wählbar:"        ; aGF Selectable
+    TCODE   tDiveaGF_active,"aGF aktiv"      ; aGF Active
     TCODE   tppO2settings,"ppO2 Einstellungen" ; ppO2 Settings
     TCODE   tsafetystopmenu,"Sicherheitsstop:"       ; Safety Stop:
 

@@ -77,7 +77,7 @@
     TCODE   tCCRModeSensor,   "Sensor"          ; Sensor
     TCODE   tCCRModeAutoSP,   "Auto SP"         ; Auto SP
     TCODE   tSP,            "SP"                ; SP (SetPoint)
-    TCODE   tSPPlus,    "pO2+"                  ; pO2+
+    TCODE   tSPPlus,    "ppO2+"                  ; pO2+
     TCODE   tSensorFallback, "Fallback:"        ; Fallback:
     TCODE   tppO2,      "ppO2:"                 ; ppO2:
 
@@ -123,7 +123,7 @@
     TCODE   taGFMenu,   "Alternative GF"         ; Alternative GF
     TCODE   taGF_low,   "aGF low:"               ; aGF low
     TCODE   taGF_high,  "aGF high:"              ; aGF high
-    TCODE   taGF_enable,"aGF Selectable:"        ; aGF Selectable
+    TCODE   taGF_enable,"aGF selectable:"        ; aGF Selectable
     TCODE   tDiveaGF_active,"aGF!"               ; aGF!
     TCODE   tppO2settings,"ppO2 Settings"        ; ppO2 Settings
     TCODE   tsafetystopmenu,"Safety Stop:"       ; Safety Stop:

@@ -77,7 +77,7 @@
     TCODE   tCCRModeSensor,   "Sensori"          ; Sensor
     TCODE   tCCRModeAutoSP,   "Auto SP"         ; Auto SP
     TCODE   tSP,            "SP"                ; SP (SetPoint)
-    TCODE   tSPPlus,    "pO2+"                  ; pO2+
+    TCODE   tSPPlus,    "ppO2+"                  ; pO2+
     TCODE   tSensorFallback, "Fallback:"        ; Fallback:
     TCODE   tppO2,      "ppO2:"                 ; ppO2:
 
@@ -159,8 +159,8 @@
     TCODE   tDefName,   "HW OSTC"
 	TCODE	tbar,		"bar"				; bar
 
-    TCODE   tButtonleft,"Left button:"      ; Left button
-    TCODE   tButtonright,"Right button:"    ; Right button
+    TCODE   tButtonleft,"Bottone sinistra:"      ; Left button
+    TCODE   tButtonright,"Bottone destra:"    ; Right button
 
 ; Units for all menu
     TCODE   tMeters,    "m"
