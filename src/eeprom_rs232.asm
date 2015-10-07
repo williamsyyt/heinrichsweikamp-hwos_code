@@ -200,14 +200,14 @@ rs232_get_byte:
     clrf    uart3_temp
 rs232_get_byte2:
 	btfsc 	PIR1,RCIF		; data arrived?
-    bra     rs232_get_byte3 ; Yes
+    return                  ; Yes
 	decfsz 	uart3_temp,F
 	bra 	rs232_get_byte2
 	decfsz 	uart2_temp,F
 	bra		rs232_get_byte2
 	decfsz 	uart1_temp,F
 	bra		rs232_get_byte2
-						; timeout occoured (about 40ms)
+						; timeout occoured (about 400ms)
 	bsf		rs232_recieve_overflow		; set flag
 rs232_get_byte3:
 	bcf		RCSTA1,CREN		; Clear receiver status
