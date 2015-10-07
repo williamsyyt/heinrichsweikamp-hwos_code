@@ -5,6 +5,7 @@ BUGFIX: Logbook list view for more then 100 stored dives
 BUGFIX: BLE timings for MAC issues
 BUGFIX: Battery consumption calculation in sleep mode (3,6V battery only)
 NEW: Bearing can be set in surface mode
+BUGFIX: +5min for stopwatch during simulation did not work
 
 [1.88]
 
