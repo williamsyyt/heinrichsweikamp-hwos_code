@@ -1043,6 +1043,33 @@ divemode_option6:
     addwf   total_divetime_seconds+0,F
     movlw   HIGH    (.5*.60)
     addwfc  total_divetime_seconds+1,F  ; Add 5*60 seconds
+; 1. Add 300xdepth to the Sum of depths registers
+    SAFE_2BYTE_COPY rel_pressure, xB	; Buffer...
+    movlw   LOW     (.5*.60)
+    movwf   xA+0
+    movlw   HIGH    (.5*.60)
+    movwf   xA+1
+    call    mult16x16           		;xA*xB=xC
+
+	movf	xC+0,w
+	addwf	average_depth_hold+0,F
+	movf	xC+1,w
+	addwfc	average_depth_hold+1,F
+	movf	xC+2,w
+	addwfc	average_depth_hold+2,F
+    movf	xC+3,w
+	addwfc	average_depth_hold+3,F ; Will work up to 9999mbar*60*60*24=863913600mbar
+
+; Do the same for the _total registers (Non-Resettable)
+	movf	xC+0,w
+	addwf	average_depth_hold_total+0,F
+	movf	xC+1,w
+	addwfc	average_depth_hold_total+1,F
+	movf	xC+2,w
+	addwfc	average_depth_hold_total+2,F
+    movf	xC+3,w
+	addwfc	average_depth_hold_total+3,F ; Will work up to 9999mbar*60*60*24=863913600mbar
+
     movlw   .5
     movwf   up                          ; counter
 ; 1min mode
@@ -1418,8 +1445,8 @@ diveloop_boot:
 	movlw	d'1'
 	movwf	apnoe_max_pressure+0
 	clrf	apnoe_max_pressure+1
-	clrf	apnoe_surface_mins			
-	clrf	apnoe_surface_secs		
+;	clrf	apnoe_surface_mins
+;	clrf	apnoe_surface_secs		
 	clrf	apnoe_mins
 	clrf	divemins+0
 	clrf	divemins+1
@@ -1604,8 +1631,7 @@ check_divetimeout:
     btfsc		divemode2				
     return                              ; displayed divetime is not running
 	incf	warning_counter,F			; increase counter
-    call    TFT_divetimeout             ; Show timeout counter
-	return
+    goto    TFT_divetimeout             ; Show timeout counter  (and return)
 
 
 check_ppO2:							    ; check current ppO2 and display warning if required
@@ -1692,9 +1718,7 @@ check_ppo2_display:
     return                      ; Yes, do not show twice (in custom view and in warning area)
 check_ppO2_a:
 	incf	warning_counter,F	; increase counter
-    call	TFT_display_ppo2	; Show ppO2
-    return
-
+    goto    TFT_display_ppo2	; Show ppO2  (and return)
 
     global  check_cns_violation
 check_cns_violation:
@@ -1715,14 +1739,12 @@ check_cns_violation:
 	return                              ; No Display, no warning
     ; Display CNS
 	incf	warning_counter,F			; increase counter
-	call	TFT_display_cns				; Show CNS
-	return
+	goto	TFT_display_cns				; Show CNS  (and return)
 
 check_cns_violation2:
 	incf	warning_counter,F			; increase counter
-	call	TFT_display_cns				; Show CNS
-	bsf		warning_active		; Set Warning flag
-	return
+    bsf		warning_active              ; Set Warning flag
+	goto    TFT_display_cns				; Show CNS  (and return)
 
     global  check_and_store_gf_violation
 check_and_store_gf_violation:
@@ -1744,19 +1766,16 @@ check_and_store_gf_violation2:
     return                              ; No Display, no warning
     ; Display GF
 	incf	warning_counter,F			; increase counter
-    call    TFT_warning_gf              ; Show GF Warning
-	return
+    goto    TFT_warning_gf              ; Show GF Warning (and return)
 
 warn_agf:
 	incf	warning_counter,F			; increase counter
-	call	TFT_warning_agf             ; Show aGF warning
-    return
+	goto    TFT_warning_agf             ; Show aGF warning  (and return)
 
 warn_fallback:
     incf	warning_counter,F			; increase counter
-	call	TFT_warning_fallback        ; Show fallback warning
     bsf		warning_active              ; Set Warning flag
-    return
+	goto    TFT_warning_fallback        ; Show fallback warning  (and return)
 
 
  END

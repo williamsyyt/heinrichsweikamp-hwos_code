@@ -592,8 +592,7 @@ TFT_display_velocity:						; With divA+0 = m/min
     movwf   xC+1
     movlw   .1
     movwf   xC+2
-    movlw   .0
-    movwf   xC+3
+    clrf    xC+3
     ; check if velocity is below the treshold level
     bcf     STATUS,C
 	movlw	velocity_display_threshold_2
@@ -647,8 +646,7 @@ TFT_display_velocity:						; With divA+0 = m/min
     movwf   xC+1
     movlw   .10
     movwf   xC+2
-    movlw   .0
-    movwf   xC+3
+    clrf    xC+3
 	; check if current depth > segment limit
 	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
 	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
@@ -670,8 +668,7 @@ TFT_display_velocity:						; With divA+0 = m/min
     movwf   xC+1
     movlw   .12
     movwf   xC+2
-    movlw   .0
-    movwf   xC+3
+    clrf    xC+3
 	; check if current depth > segment limit
 	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
 	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
@@ -762,8 +759,7 @@ TFT_display_velocity:						; With divA+0 = m/min
     movwf   xC+1
     movlw   .11
     movwf   xC+2
-    movlw   .0
-    movwf   xC+3
+    clrf    xC+3
 	; check if current depth > segment limit
 	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
 	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
@@ -806,8 +802,7 @@ TFT_display_velocity:						; With divA+0 = m/min
     movwf   xC+0
     movlw   .3
     movwf   xC+1
-    movlw   .0
-    movwf   xC+2
+    clrf    xC+2
     movlw   .6
     movwf   xC+3
 	; check if current depth > segment limit
@@ -854,8 +849,7 @@ TFT_display_velocity:						; With divA+0 = m/min
     movwf   xC+1
     movlw   .2
     movwf   xC+2
-    movlw   .0
-    movwf   xC+3
+    clrf    xC+3
 	; check if current depth > segment limit
 	call	subU16								;  sub_c = sub_a - sub_b;  depth - sLimit
 	btfss	neg_flag							;  depth lower than segment limit? sLimit>depth?
@@ -875,8 +869,7 @@ TFT_display_velocity:						; With divA+0 = m/min
     movwf   xC+1
     movlw   .1
     movwf   xC+2
-    movlw   .0
-    movwf   xC+3
+    clrf    xC+3
     ;bra     TFT_velocity_check                  ;  depth < 20ft / 6m
 
 TFT_velocity_check:
@@ -921,8 +914,7 @@ TFT_velocity_std:
     movwf   xC+0
     movlw   .3
     movwf   xC+1
-    movlw   .0
-    movwf   xC+2
+    clrf    xC+2
     movlw   .6
     movwf   xC+3
 
@@ -2549,8 +2541,7 @@ TFT_gaslist_surfmode:				; Displays Gas List
     extern  gaslist_strcat_gas_mod
     ;Gas 1
     WIN_SMALL surf_gaslist_column,surf_gaslist_row
-    movlw   .0
-    movwf   PRODL
+    clrf    PRODL
     call    gaslist_strcat_gas_mod  ;Append gas description of gas #PRODL (0-4) to current string
     STRCAT_PRINT ""
     ;Gas 2

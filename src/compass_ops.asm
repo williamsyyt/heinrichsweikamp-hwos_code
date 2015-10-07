@@ -922,12 +922,9 @@ TFT_dive_compass_ruler_lend2:
     clrf    lo
     clrf    xLO
 
-    movlw   d'14'
-    movwf   up                  ; cardinal width in px
     movlw   low( d'219' )       ; position of the label
     movwf   sub_a+0
     movlw   high( d'219' )
-    movwf   sub_a+1
     rcall   TFT_dive_compass_label_proc     ; check if the label should be on screen
     btfss   print_compass_label             ; Yes?
     bra     dcr_1
@@ -935,12 +932,9 @@ TFT_dive_compass_ruler_lend2:
 dcr_1:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
-    movlw   d'14'
-    movwf   up                  ; cardinal width in px
     movlw   low( d'267' )       ; position of the label
     movwf   sub_a+0
     movlw   high( d'267' )
-    movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
     btfss   print_compass_label             ; Yes?
     bra     dcr_2
@@ -948,12 +942,9 @@ dcr_1:
 dcr_2:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
-    movlw   d'14'
-    movwf   up                  ; cardinal width in px
     movlw   low( d'309' )       ; position of the label
     movwf   sub_a+0
     movlw   high( d'309' )
-    movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
     btfss   print_compass_label             ; Yes?
     bra     dcr_3
@@ -961,12 +952,9 @@ dcr_2:
 dcr_3:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
-    movlw   d'14'
-    movwf   up                  ; cardinal width in px
     movlw   low( d'358' )       ; position of the label
     movwf   sub_a+0
     movlw   high( d'358' )
-    movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
     btfss   print_compass_label             ; Yes?
     bra     dcr_4
@@ -974,12 +962,9 @@ dcr_3:
 dcr_4:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
-    movlw   d'14'
-    movwf   up                  ; cardinal width in px
     movlw   low( d'399' )       ; position of the label
     movwf   sub_a+0
     movlw   high( d'399' )
-    movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
     btfss   print_compass_label             ; Yes?
     bra     dcr_5
@@ -987,12 +972,9 @@ dcr_4:
 dcr_5:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
-    movlw   d'14'
-    movwf   up                  ; cardinal width in px
     movlw   low( d'448' )       ; position of the label
     movwf   sub_a+0
     movlw   high( d'448' )
-    movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
     btfss   print_compass_label             ; Yes?
     bra     dcr_6
@@ -1000,12 +982,9 @@ dcr_5:
 dcr_6:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
-    movlw   d'14'
-    movwf   up                  ; cardinal width in px
     movlw   low( d'489' )       ; position of the label
     movwf   sub_a+0
     movlw   high( d'489' )
-    movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
     btfss   print_compass_label             ; Yes?
     bra     dcr_7
@@ -1013,12 +992,9 @@ dcr_6:
 dcr_7:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
-    movlw   d'14'
-    movwf   up                  ; cardinal width in px
     movlw   low( d'538' )       ; position of the label
     movwf   sub_a+0
     movlw   high( d'538' )
-    movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
     btfss   print_compass_label             ; Yes?
     bra     dcr_8
@@ -1026,12 +1002,9 @@ dcr_7:
 dcr_8:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
-    movlw   d'14'
-    movwf   up                  ; cardinal width in px
     movlw   low( d'579' )       ; position of the label
     movwf   sub_a+0
     movlw   high( d'579' )
-    movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
     btfss   print_compass_label             ; Yes?
     bra     dcr_9
@@ -1039,12 +1012,9 @@ dcr_8:
 dcr_9:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
-    movlw   d'14'
-    movwf   up                  ; cardinal width in px
     movlw   low( d'627' )       ; position of the label
     movwf   sub_a+0
     movlw   high( d'627' )
-    movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
     btfss   print_compass_label             ; Yes?
     bra     dcr_10
@@ -1052,12 +1022,9 @@ dcr_9:
 dcr_10:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
-    movlw   d'14'
-    movwf   up                  ; cardinal width in px
     movlw   low( d'669' )       ; position of the label
     movwf   sub_a+0
     movlw   high( d'669' )
-    movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
     btfss   print_compass_label             ; Yes?
     bra     dcr_11
@@ -1065,12 +1032,9 @@ dcr_10:
 dcr_11:
     rcall    TFT_dive_compass_c_mk           ; check if label is on the center line or the marker
 
-    movlw   d'14'
-    movwf   up                  ; cardinal width in px
     movlw   low( d'718' )       ; position of the label
     movwf   sub_a+0
     movlw   high( d'718' )
-    movwf   sub_a+1
     rcall    TFT_dive_compass_label_proc     ; check if the label should be on screen
     btfss   print_compass_label             ; Yes?
     bra     dcr_12
@@ -1149,6 +1113,9 @@ TFT_dive_compass_dir_rclr:
     return
 
 TFT_dive_compass_label_proc:
+    movwf   sub_a+1
+    movlw   d'14'
+    movwf   up                  ; cardinal width in px
     ; Input:
     ;   xHI:   DD  - display'a current position
     ;   xRD:   RD  - ruler display offset

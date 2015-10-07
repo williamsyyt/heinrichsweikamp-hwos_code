@@ -1,11 +1,13 @@
-[1.89]
+[1.90]
 
+- Stable Version -
 CHANGE: Do not show ppO2 in warning area if already shown in custom view
 BUGFIX: Logbook list view for more then 100 stored dives
 BUGFIX: BLE timings for MAC issues
 BUGFIX: Battery consumption calculation in sleep mode (3,6V battery only)
 NEW: Bearing can be set in surface mode
 BUGFIX: +5min for stopwatch during simulation did not work
+CHANGE: minor language updates
 
 [1.88]
 
