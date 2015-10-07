@@ -1035,6 +1035,14 @@ divemode_option6:
     addwf   divemins+0,F
     movlw   .0
     addwfc  divemins+1,F                ; Add 5 mins
+    movlw   LOW     (.5*.60)
+    addwf   average_divesecs+0,F
+    movlw   HIGH    (.5*.60)
+    addwfc  average_divesecs+1,F        ; Add 5*60 seconds
+    movlw   LOW     (.5*.60)
+    addwf   total_divetime_seconds+0,F
+    movlw   HIGH    (.5*.60)
+    addwfc  total_divetime_seconds+1,F  ; Add 5*60 seconds
     movlw   .5
     movwf   up                          ; counter
 ; 1min mode
@@ -1392,7 +1400,7 @@ dive_boot_cc:
     banksel char_I_first_gas
     incf    char_I_first_gas,F              ; 0-4 -> 1-5
     banksel common
-    rcall   calc_deko_divemode_sensor       ; External sensor stuff
+    call   calc_deko_divemode_sensor        ; External sensor stuff
     return
 
 diveloop_boot:
