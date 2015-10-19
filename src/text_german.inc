@@ -125,7 +125,7 @@
     TCODE   taGF_high,  "aGF high:"              ; aGF high
     TCODE   taGF_enable,"aGF wählbar:"        ; aGF Selectable
     TCODE   tDiveaGF_active,"aGF aktiv"      ; aGF Active
-    TCODE   tppO2settings,"ppO2 Einstellungen" ; ppO2 Settings
+    TCODE   tppO2settings,"ppO2 Parameter"   ; ppO2 Settings
     TCODE   tsafetystopmenu,"Sicherheitsstop:"       ; Safety Stop:
 
 ; Display Settings
@@ -136,7 +136,7 @@
     TCODE   tDvSalinity,"Salinität:"             ; Salinity
     TCODE   tFlip,      "Anzeige drehen:"        ; Rotate Screen
     TCODE   tMODwarning,"MOD Warnung:"           ; MOD warning
-    TCODE   tShowppO2,  "Zeige immer ppO2:"      ; Always show ppO2:
+    TCODE   tShowppO2,  "ppO2 Dauerhaft:"        ; Always show ppO2:
 
 ; VSI display Settings
     TCODE   tVSItext2,  "Variable Geschw.:"     ; Variable speed:

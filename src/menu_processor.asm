@@ -156,7 +156,10 @@ menu_processor_title_1:
         movf    PRODL,W                 ; Back to WREG
         sublw   .80                    	; 80 - width
         movwf   win_leftx2              ; Aligned to center.
-        
+
+        movlw   .0
+        movff   WREG,buffer+.17         ; limit to 17chars (Std font max.)
+
         call    aa_wordprocessor
         call    TFT_standard_color
         return
