@@ -87,7 +87,7 @@
 	#DEFINE	logbook_date_column			.100
 	#DEFINE logbook_date_row			.7
 	#DEFINE	logbook_time_column			.120
-	#DEFINE logbook_time_row			.33
+	#DEFINE logbook_time_row			.38
 ; Max. Depth
 	#DEFINE	log_max_value_row		.38
 	#DEFINE	log_max_value_column	.1
@@ -148,6 +148,7 @@
 
 
 ; Header coordinates
+    #DEFINE log_profile_version  .8
     #DEFINE log_date            .12
     #DEFINE log_time            .15
     #DEFINE log_max_depth       .17
@@ -464,36 +465,23 @@ display_profile2:
 	call		ext_flash_byte_read_plus		; hour
 	movff		temp1,lo
 	call		ext_flash_byte_read_plus		; Minutes
-	movf		lo,W
-	mullw		.60
-	movff		temp1,WREG
-	infsnz		PRODL,F
-	incf        PRODH,F					; PRODH:PRODL has end-of-dive time in minutes
-
-    ; TODO: Fix entry time when dive was during midnight
-    LOG_POINT_TO    log_total_seconds
-	call		ext_flash_byte_read_plus	; Total sample time in seconds
-	movff		temp1,lo
-	call		ext_flash_byte_read_plus	; Total sample time in seconds
 	movff		temp1,hi
-	call		convert_time			; converts hi:lo in seconds to mins (hi) and seconds (lo)
-	clrf		sub_b+1
-	movff		hi,sub_b+0
-	movff		PRODL,sub_a+0
-	movff		PRODH,sub_a+1
-	call		subU16					; sub_c = sub_a - sub_b (with UNSIGNED values)
-	; sub_c:2 holds entry time in minutes
-	movff		sub_c+0,lo
-	movff		sub_c+1,hi
-	call		convert_time			; converts hi:lo in minutes to hours (hi) and minutes (lo)	
-	movff		lo,PRODL				; temp
-	movff		hi,lo
 	output_99x							; hour
 	PUTC		':'
-	movff		PRODL,lo			
+	movff		hi,lo			
 	output_99x							; minute
 	STRCAT_PRINT	""					; Display 1st row of details
 
+    LOG_POINT_TO    log_profile_version
+    call		ext_flash_byte_read_plus	; Profile version
+    movlw       0x24
+    cpfslt      temp1                       ; <0x24?
+    bra         log_skip_extra_icon         ; Yes, skip
+    
+    WIN_SMALL	logbook_time_column-.8, logbook_time_row
+    STRCPY_PRINT	0x94                    ; "End of dive" icon
+
+log_skip_extra_icon:
     LOG_POINT_TO    log_max_depth
 	call		ext_flash_byte_read_plus	; read max depth
 	movff		temp1,lo				

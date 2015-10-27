@@ -1,3 +1,9 @@
+[1.92]
+- Stable Version -
+CHANGE: Logbook now shows end-of-dive date and time for dives made with firmware <1.92 indicated by an icon in the logbook
+CHANGE: Logbook shows start-of-dive date and time for dives made with firmware >=1.92
+BUGFIX: Text alignment in logbook
+
 [1.91]
 - Stable Version -
 BUGFIX: German texts in ppo2 menu were too long for screen resulting in resulting in text display issues
