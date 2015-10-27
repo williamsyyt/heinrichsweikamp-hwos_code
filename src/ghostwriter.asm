@@ -446,15 +446,15 @@ ghostwriter_end_dive:
     movf    ext_flash_dive_counter+2,W
 	rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
 
-	movf	year,W                     ; Date
+	movff	start_year,WREG         ; Date
 	rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
-	movf	month,W
+	movff	start_month,WREG
 	rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
-	movf	day,W
+	movff	start_day,WREG
 	rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
-	movf	hours,W						; End of dive time
+	movff	start_hours,WREG    	; Start of dive time
 	rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
-	movf	mins,W
+	movff	start_mins,WREG
 	rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
 
 	btfss	FLAG_apnoe_mode				; Store apnoe max or normal max (Which is only max from the last descent)

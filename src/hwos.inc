@@ -20,7 +20,7 @@
 
 ; Firmware definition
 #DEFINE	softwareversion_x		d'1'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'91'		; Software version  XX.YY
+#DEFINE	softwareversion_y		d'92'		; Software version  XX.YY
 #DEFINE softwareversion_beta 	0 			; (and 0 for release)
 ; Firmware version will appear in "Change Firmware" style
 #DEFINE firmware_expire_year    .16
@@ -81,7 +81,7 @@
 #DEFINE ignore_mv           .3500       ; = 350mV (To suppress ghost readings for long, open cables)
 
 ; Profile recording parameters
-#DEFINE	logbook_profile_version	0x23
+#DEFINE	logbook_profile_version	0x24
 #DEFINE	samplingrate_apnoe	.1	; [seconds]
 ; Warning: Divisors must be <.16 !
 #DEFINE	div_temperature		.6	; x samplingrate [s]
@@ -528,6 +528,11 @@ s8_rawdata_sensor2   res 3  ; 24bit A/D raw data from S8 HUD sensor 2
 s8_rawdata_sensor3   res 3  ; 24bit A/D raw data from S8 HUD sensor 3
 
 hud_battery_mv      res 2   ; hud/ppo2 monitor battery voltage in mV
+start_day           res 1   ; At start of dive (For logbook)
+start_month         res 1   ; At start of dive (For logbook)
+start_year          res 1   ; At start of dive (For logbook)
+start_hours         res 1   ; At start of dive (For logbook)
+start_mins          res 1   ; At start of dive (For logbook)
 
 ;-----------------------------------------------------------------------------
 ; Reserve BANK2 for general purpose buffer (strings, images, etc).

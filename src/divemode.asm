@@ -1450,6 +1450,14 @@ diveloop_boot:
 	clrf	apnoe_mins
 	clrf	divemins+0
 	clrf	divemins+1
+    
+; Copy date and time for logbook
+    movff   year,start_year
+    movff   month,start_month
+    movff   day,start_day
+    movff   hours,start_hours
+    movff   mins,start_mins
+
     bcf     no_more_divesecs            ; =1: Do no longer show seconds in divemode
 	bcf		divemode_menu_active
     clrf    menupos
