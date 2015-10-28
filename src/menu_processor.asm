@@ -116,7 +116,7 @@ menu_processor1:
 menu_processor_bottom_line:
         ;---- Draw bottomline ------------------------------------------------
         TEXT_TINY 	.5,       .240-.16, tNext
-        TEXT_TINY	.160-6*5, .240-.16, tEnter
+        TEXT_TINY	.160-.6*.6, .240-.16, tEnter
 
         WIN_COLOR   color_greenish
         ; Serial and Firmware Version
