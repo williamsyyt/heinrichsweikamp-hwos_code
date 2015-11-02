@@ -622,8 +622,11 @@ comm_send_compact_headers3:
     call	ext_flash_read_block_stop
     rcall	comm_rs232_wait_tx				; Wait for UART
 
-    movlw   0xFF    ; Spare
-    movwf   TXREG1
+    ; Offset to Logbook-Profile version
+	movlw	.8
+	movwf	ext_flash_address+0
+    call	ext_flash_byte_read         	; Get byte
+    movwf	TXREG1
     rcall	comm_rs232_wait_tx				; Wait for UART
 	bra		comm_send_compact_headers2		; continue
 
