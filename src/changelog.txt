@@ -3,6 +3,8 @@
 CHANGE: Logbook now shows end-of-dive date and time for dives made with firmware <1.92 indicated by an icon in the logbook
 CHANGE: Logbook shows start-of-dive date and time for dives made with firmware >=1.92
 BUGFIX: Text alignment in logbook
+NEW: Show actual dive count in logbook list view (If <1000)
+BUGFIX: Minor language and text aligment fixes
 
 [1.91]
 - Stable Version -

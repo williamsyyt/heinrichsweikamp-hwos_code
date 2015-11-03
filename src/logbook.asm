@@ -66,7 +66,7 @@
 
 	
 ; Logbook Coordinates
-	#DEFINE	logbook_list_left	.18			; Column of dive# in list
+	#DEFINE	logbook_list_left	.10			; Column of dive# in list
 	#DEFINE	logbook_row_offset	.28			; Distance between rows of list
 	#DEFINE	logbook_row_number	.6			; Amount of rows in the list
 
@@ -196,11 +196,11 @@ logbook code
 
 TFT_logbook_cursor:
 ;	call		speed_fastest
-    WIN_BOX_BLACK   .0, .240-.16, logbook_list_left-.16, logbook_list_left-.1		;top, bottom, left, right
+    WIN_BOX_BLACK   .0, .240-.16, logbook_list_left-.8, logbook_list_left-.1		;top, bottom, left, right
 
-	WIN_LEFT	logbook_list_left-.16
+	WIN_LEFT	logbook_list_left-.8
 	WIN_FONT 	FT_SMALL
-	bcf     win_invert              ; Reset invert flag
+;	bcf     win_invert              ; Reset invert flag
 	call	TFT_standard_color
 
 	movff	menupos,temp1
@@ -233,7 +233,7 @@ logbook:
     clrf        CCP1CON                     ; stop PWM
     bcf         PORTC,2                     ; Pull PWM out to GND
     call		TFT_ClearScreen				; Clear screen
-	call		TFT_standard_color
+;	call		TFT_standard_color
 	clrf		menupos3					; Here: used rows on current logbook-page	
 	clrf		logbook_page_number			; Here: # of current displayed page
 	clrf		logbook_divenumber			; # of dive in list during search
@@ -1118,8 +1118,7 @@ log_screendump_and_onesecond2:
     movlw       "l"
     cpfseq      RCREG1
     return
-    call        TFT_dump_screen             ; Dump the screen contents
-    return
+    goto        TFT_dump_screen             ; Dump the screen contents and return
 
 log_show_gas_common:
     extern  customview_show_mix
@@ -1131,8 +1130,7 @@ log_show_gas_common:
     call		customview_show_mix				; Put "Nxlo", "Txlo/hi", "Air" or "O2" into Postinc2
 	STRCAT_PRINT	""
 	call		ext_flash_byte_read_plus					; Gas2 change depth
-    call		ext_flash_byte_read_plus					; Gas2 Type
-    return
+    goto		ext_flash_byte_read_plus					; Gas2 Type and return
 
 ;=============================================================================
 profile_display_color:
@@ -1445,8 +1443,37 @@ display_listdive:
 	movff		PRODL,win_top
 
 	lfsr		FSR2,buffer
-	movff		logbook_divenumber,lo
-	output_8								; # of dive
+	call		do_logoffset_common_read	; Read into lo:hi
+	tstfsz		lo							; lo=0?
+	bra			display_listdive1       	; No, adjust offset
+	tstfsz		hi							; hi=0?
+	bra			display_listdive1           ; No, adjust offset
+	bra			display_listdive1b          ; Display now
+
+display_listdive1:
+	; Check limit (lo:hi must be <1000)
+	movlw	LOW		d'1000'            ; Compare to 1000
+	subwf   lo,W
+	movlw	HIGH	d'1000'
+	subwfb  hi,W
+	bc      display_listdive1b ; carry = no-borrow = > 1000, skip!
+
+	infsnz      lo,F
+	incf        hi,F						; hi:lo = hi:lo + 1
+	movff		lo,sub_a+0
+	movff		hi,sub_a+1
+	movff		logbook_divenumber,sub_b+0
+	clrf		sub_b+1
+	call		subU16						;  sub_c = sub_a - sub_b
+	movff		sub_c+0,lo
+	movff		sub_c+1,hi
+    bra         display_listdive1a
+
+display_listdive1b:
+    clrf        hi
+	movff		logbook_divenumber,lo		; lo=0 and hi=0 -> show without applied offset
+display_listdive1a:
+	output_16_3                     ; displays only last three figures from a 16Bit value (0-999), # of dive
 	PUTC		' '
     LOG_POINT_TO    log_date+1              ; Point to month
 	call		ext_flash_byte_read_plus	
@@ -1492,7 +1519,7 @@ display_listdive3:
 	output_16_3								; Divetime minutes (0-999min)
 	STRCAT_TEXT tMinutes                    
     clrf    WREG
-    movff   WREG,buffer+.20                 ; limit to 20 chars
+    movff   WREG,buffer+.21                 ; limit to 21 chars
     STRCAT_PRINT ""                         ; Display header-row in list
 	return
 
@@ -1779,8 +1806,7 @@ logbook_preloop_tasks:
 	bcf			switch_right
 	bcf			switch_left
 	clrf		timeout_counter2
-	call    	speed_normal
-    return
+	goto    	speed_normal                ; and return
 
 log_show_sp_common:
     lfsr		FSR2,buffer
