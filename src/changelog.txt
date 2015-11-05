@@ -1,3 +1,7 @@
+[1.93]
+- Stable Version -
+
+
 [1.92]
 - Stable Version -
 CHANGE: Logbook now shows end-of-dive date and time for dives made with firmware <1.92 indicated by an icon in the logbook
