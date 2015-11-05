@@ -102,37 +102,24 @@ comm_mode1:
 	dcfsnz 	timeout_counter,F
 	bra		comm_service_exit           ; Timeout -> Exit
 comm_mode2:
-    btfsc   rechargeable
-    bra     comm_mode4                  ; Skip
-
-	call	get_battery_voltage			; gets battery voltage
-    movlw   .3
-    cpfslt  batt_voltage+1              ; Batt Voltage less then 3*256mV?
-    bra     comm_mode3                  ; No
-    ; Set flag
-    bsf     battery_removed_in_usb      ; =1: The battery has been removed in USB
-    bra     comm_mode4
-
-comm_mode3:
-    ; Voltage ok. Do we have a new battery now?
-    btfsc   battery_removed_in_usb      ; =1: The battery has been removed in USB
-    goto	new_battery_menu            ; show "New battery dialog"
-
-comm_mode4:
+;    btfsc   rechargeable
+;    bra     comm_mode4                  ; Skip
+;
+;	call	get_battery_voltage			; gets battery voltage
+;    movlw   .3
+;    cpfslt  batt_voltage+1              ; Batt Voltage less then 3*256mV?
+;    bra     comm_mode3                  ; No
+;    ; Set flag
+;    bsf     battery_removed_in_usb      ; =1: The battery has been removed in USB
+;    bra     comm_mode4
+;
+;comm_mode3:
+;    ; Voltage ok. Do we have a new battery now?
+;    btfsc   battery_removed_in_usb      ; =1: The battery has been removed in USB
+;    goto	new_battery_menu            ; show "New battery dialog"
+;
+;comm_mode4:
 	rcall	comm_write_get_byte
-
-    btfss   vusb_in                     ; USB plugged in?
-    bra     comm_service_exit_nousb_delay   ; Disconnected -> Exit
-comm_mode4a:
-
-	btfsc	switch_right				; Abort with right
-	bra		comm_service_exit
-
-	btfsc	onesecupdate
-	bra		comm_mode1
-
-    btfsc   rs232_recieve_overflow
-    bra     comm_mode2				; Cycle
 
 	movlw	0xAA						; start byte=0xAA?
 	cpfseq	RCREG1
@@ -141,8 +128,20 @@ comm_mode4a:
 comm_mode2a:
 	movlw	0xBB						; start byte=0xBB?
 	cpfseq	RCREG1
-	bra		comm_mode2				; Cycle
+	bra		comm_mode2c
 	bra		comm_download_mode		; Startbyte for download mode found
+
+comm_mode2c:
+    btfss   vusb_in                     ; USB plugged in?
+    bra     comm_service_exit_nousb_delay   ; Disconnected -> Exit
+comm_mode4a:
+	btfsc	switch_right				; Abort with right
+	bra		comm_service_exit
+
+	btfsc	onesecupdate
+	bra		comm_mode1
+
+    bra     comm_mode2				; Cycle
 
 comm_mode2b:
 	; Startbyte found
