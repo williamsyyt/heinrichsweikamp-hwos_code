@@ -432,7 +432,7 @@ DISP_active_gas_surfmode5:
     bra     DISP_active_gas_surfmode6       ; No, skip box
     WIN_FRAME_STD   surf_decotype_boxes_top, surf_decotype_boxes_bottom, surf_decotype_boxes_left4, surf_decotype_boxes_left4+.8    ;top, bottom, left, right
 DISP_active_gas_surfmode6:
-    call    TFT_disabled_color
+    rcall    TFT_disabled_color
     movff   opt_gas_type+4,hi         ; 0=Disabled, 1=First, 2=Travel, 3=Deco
     tstfsz  hi
     rcall    TFT_standard_color
@@ -2399,7 +2399,8 @@ TFT_show_dil_divemode2:
 	return
 
 TFT_active_setpoint_bail:
-    STRCPY_TEXT_PRINT   tDiveBailout        ; Bailout
+    WIN_SMALL   dm_active_gas_column, dm_active_gas_row+.3  ; colides with diluent in FT_MEDIUM
+    STRCPY_TEXT_PRINT   tDiveBailout    ; Bailout
     bra     TFT_active_setpoint_diluent
 
 	global	TFT_active_gas_divemode
