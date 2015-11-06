@@ -1,6 +1,6 @@
 [1.93]
 - Stable Version -
-
+BUGFIX: minor text allignment in CCR mode
 
 [1.92]
 - Stable Version -
