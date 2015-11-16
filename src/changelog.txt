@@ -1,6 +1,7 @@
 [1.93]
 - Stable Version -
 BUGFIX: minor text allignment in CCR mode
+CHANGE: fix timing issues during Bluetooth download (Bluetooth models only)
 
 [1.92]
 - Stable Version -
