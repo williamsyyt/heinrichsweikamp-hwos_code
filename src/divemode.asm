@@ -1410,8 +1410,9 @@ dive_boot_cc:
     rcall   divemode_setup_sensor_values    ; setup sensor values
 
     ; Setup first SP for Fixed or Auto mode
-    TSTOSS  opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor
-    movff   char_I_setpoint_cbar+0,char_I_const_ppO2    ; Setup fixed Setpoint (Always start with SP1)
+    movff   opt_ccr_mode,WREG               ; =0: Fixed SP, =1: Sensor,  =2: Auto SP
+    sublw   .1                              ; opt_ccr_mode = 1 (Sensor)?
+    movff   char_I_setpoint_cbar+0,char_I_const_ppO2    ; No, setup fixed Setpoint (Always start with SP1)
     movff   char_I_const_ppO2,WREG
     call    transmit_setpoint           ; Transmit current setpoint from WREG (in cbar) to external electronics
     bsf     setpoint_changed                ; Set flag (For profile)

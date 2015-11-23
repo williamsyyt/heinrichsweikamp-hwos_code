@@ -155,8 +155,7 @@
 #DEFINE	color_code_velocity_attn_high .8    ;[m/min]
 
 ; Velocity threshold
-#DEFINE	velocity_display_threshold_1	.7	; [m/min]
-#DEFINE	velocity_display_threshold_2	.5	; [m/min]
+#DEFINE	velocity_display_threshold_1	.5	; [m/min]
 
 ; Battery thresholds
 #DEFINE lithium_36v_empty       .2400   ; [mV] Saft 3,6V LS14500 AA - threshold for battery percent display
