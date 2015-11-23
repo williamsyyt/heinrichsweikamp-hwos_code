@@ -464,9 +464,9 @@ do_reset_logbook:
 	clrf    EEADRH                      ; Make sure to select eeprom bank 0
 	clrf	EEDATA
     read_int_eeprom     .2
-    write_int_eeprom    .15         
+    write_int_eeprom    .16
     read_int_eeprom     .3
-    write_int_eeprom    .16             ; Copy number of dives
+    write_int_eeprom    .17             ; Copy number of dives
     clrf	EEDATA
     write_int_eeprom    .2
     write_int_eeprom    .3              ; Clear total dives

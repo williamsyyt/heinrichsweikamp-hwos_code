@@ -276,8 +276,8 @@ comm_reset_logbook_pointers:
 	write_int_eeprom	.6
 	write_int_eeprom	.2				; Also, delete total dive counter
 	write_int_eeprom	.3
-    write_int_eeprom    .15
-    write_int_eeprom    .16             ; And the backup counter, too
+    write_int_eeprom    .16
+    write_int_eeprom    .17             ; And the backup counter, too
 	call	ext_flash_erase_logbook		; And complete logbook (!)
 	bra		comm_download_mode0			; Done.
 
