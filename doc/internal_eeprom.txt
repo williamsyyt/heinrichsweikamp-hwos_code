@@ -1,0 +1,32 @@
+- PIC has 1024bytes in 4 banks (bank0-bank3)
+
+bank0 (Byte 0-255), EEADRH=0:
+Add:	Length:         Description:                        	Default:	Comment:				User:
+-----------------------------------------------------------------------------------------------------------------------------
+ 0 -  1     2		Serial number LOW:HIGH 			0		Set in production			mH
+ 2 -  3     2		number of dives LOW:HIGH 		0		Cleared in production			mH
+ 4 -  6     3		Profile pointer for logbook buffer	0		Cleared in production			mH
+ 7 - 12     6		Battery gauge registers LOW:HIGH	0		Cleared when new battery is used 	mH
+13 - 14     2		Logbook Offset LOW:HIGH 		0		Cleared in production   		mH
+15	    1 		Unused					0		Cleared in production   		mH
+16 - 17     2		Backup of number of dives		0		Copied with "Logbook reset"		mH
+18 - 			Options					x		
+
+bank1 (Byte 256-511), EEADRH=1:
+Do not use, may be used from options in a future release
+
+
+bank2 (Byte 512-767), EEADRH=2:
+Decodata Vault
+Add:	Length:         Description:                        		Default:	Comment:				User:
+-------------------------------------------------------------------------------------------------------------------------------------
+512	1		0xAA here indicates valid data in vault		0		Cleared in production			mH
+513-518	6		YYMMDDHHMMSS of stored data			0		Cleared in production			mH
+519-520	2		CNS (16bit)					0		Cleared in production			mH521-522	2		Desat-Time (16bit)				0		Cleared in production			mH
+523-524	2		Surface Interval (16bit)			0		Cleared in production			mH
+525	1		char_O_gradient_factor				0		Cleared in production			mH
+526-527	2		NoFly-Time (16bit)				0		Cleared in production			mH
+528-656 128		Tissue Data, 32*4Byte Float = 128Bytes		0		Cleared in production			mH
+
+bank3 (Byte 768-1023), EEADRH=3:
+unused
