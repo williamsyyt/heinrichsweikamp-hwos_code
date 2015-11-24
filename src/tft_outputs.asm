@@ -47,36 +47,27 @@ TFT_divemask_color_dive:
     movff   opt_dive_color_scheme,WREG  ; 0-3
     incf    WREG
 	dcfsnz	WREG
-	bra		TFT_divemask_colordive0  	;0
+	retlw   color_scheme_divemode_mask1 ;0
 	dcfsnz	WREG
-	bra		TFT_divemask_colordive1  	;1
+	retlw   color_scheme_divemode_mask2 ;1
 	dcfsnz	WREG
-	bra		TFT_divemask_colordive2  	;2
-	dcfsnz	WREG
-	bra		TFT_divemask_colordive3  	;3
-TFT_divemask_colordive0:
-    movlw   color_scheme_divemode_mask1
-    return
-TFT_divemask_colordive1:
-    movlw   color_scheme_divemode_mask2
-    return
-TFT_divemask_colordive2:
-    movlw   color_scheme_divemode_mask3
-    return
-TFT_divemask_colordive3:
-    movlw   color_scheme_divemode_mask4
-    return
+	retlw   color_scheme_divemode_mask3 ;2
+	retlw   color_scheme_divemode_mask4 ;3
 
 
     global  TFT_attention_color
 TFT_attention_color:
-    movlw   color_yellow
+    movlw   color_yellow           ; TODO
 	bra		TFT_standard_color0
+TFT_attention_color_dive:
+    retlw   color_yellow           ; TODO
 
     global  TFT_warnings_color
 TFT_warnings_color:
     movlw   color_red           ; TODO
 	bra		TFT_standard_color0
+TFT_warnings_color_dive:
+    retlw   color_red           ; TODO
 
     global  TFT_disabled_color
 TFT_disabled_color:
@@ -88,25 +79,12 @@ TFT_disabled_color_dive:
     movff   opt_dive_color_scheme,WREG  ; 0-3
     incf    WREG
 	dcfsnz	WREG
-	bra		TFT_disabled_colordive0  	;0
+	retlw   color_scheme_divemode_dis1  ;0
 	dcfsnz	WREG
-	bra		TFT_disabled_colordive1  	;1
+	retlw   color_scheme_divemode_dis2  ;1
 	dcfsnz	WREG
-	bra		TFT_disabled_colordive2  	;2
-	dcfsnz	WREG
-	bra		TFT_disabled_colordive3  	;3
-TFT_disabled_colordive0:
-    movlw   color_scheme_divemode_dis1
-    return
-TFT_disabled_colordive1:
-    movlw   color_scheme_divemode_dis2
-    return
-TFT_disabled_colordive2:
-    movlw   color_scheme_divemode_dis3
-    return
-TFT_disabled_colordive3:
-    movlw   color_scheme_divemode_dis4
-    return
+	retlw   color_scheme_divemode_dis3  ;2
+	retlw   color_scheme_divemode_dis4  ;3
 
     global  TFT_standard_color
 TFT_standard_color:
@@ -120,25 +98,12 @@ TFT_standard_color_dive:
     movff   opt_dive_color_scheme,WREG  ; 0-3
     incf    WREG
 	dcfsnz	WREG
-	bra		TFT_standard_colordive0  	;0
+	retlw   color_scheme_divemode_std1  ;0
 	dcfsnz	WREG
-	bra		TFT_standard_colordive1  	;1
+	retlw   color_scheme_divemode_std2  ;1
 	dcfsnz	WREG
-	bra		TFT_standard_colordive2  	;2
-	dcfsnz	WREG
-	bra		TFT_standard_colordive3  	;3
-TFT_standard_colordive0:
-    movlw   color_scheme_divemode_std1
-    return
-TFT_standard_colordive1:
-    movlw   color_scheme_divemode_std2
-    return
-TFT_standard_colordive2:
-    movlw   color_scheme_divemode_std3
-    return
-TFT_standard_colordive3:
-    movlw   color_scheme_divemode_std4
-    return
+	retlw   color_scheme_divemode_std3  ;2
+    retlw   color_scheme_divemode_std4  ;3
 
 TFT_color_code macro color_code_temp
 	movlw	color_code_temp
@@ -575,10 +540,6 @@ TFT_draw_gassep_line:
 
 	global	TFT_display_velocity
 TFT_display_velocity:						; With divA+0 = m/min, neg_flag_velocity: ascend=1, descend=0
-    ; init flags used to store warning/attention
-    bcf     velocity_warn
-    bcf     velocity_attn
-
 	bcf     STATUS,C
     movlw	velocity_display_threshold_1	; lowest threshold for display vertical velocity
 	subwf	divA+0,W
@@ -589,12 +550,10 @@ TFT_display_velocity:						; With divA+0 = m/min, neg_flag_velocity: ascend=1, d
 	bsf		display_velocity                ; Set flag
     ; check if descending: no warning color if descending
     call	TFT_standard_color
-	btfss	neg_flag_velocity                   ; Ignore for descent!
-    rcall   TFT_velocity_set_color
+	btfsc	neg_flag_velocity                   ; Ignore for descent!
+    rcall   TFT_velocity_set_color              ; Set color for text and set threshold for graph
 
 	rcall   TFT_velocity_disp                   ; Show the text
-    bcf     win_invert
-    bcf     neg_flag
 
     TSTOSS  opt_vsigraph                        ; =1: draw the graphical VSI bar
 	bra     TFT_display_velocity_done           ; No graph
@@ -628,24 +587,60 @@ TFT_speed_table:
     DB  .50,.19,.15,.0
     DB  .200,.20,.15,.0
 
-TFT_velocity_set_color:         ; Set color based on speed table
+TFT_velocity_set_color:         ; Set color based on speed table or use static thresholds, with divA+0 = m/min
     ; check if old/new ascend logic is used
-;    TSTOSS  opt_vsitextv2       			; 0=standard, 1=dynamic
-;    bra     TFT_velocity_std                ; static ascend rate limit
+    TSTOSS  opt_vsitextv2       			; 0=standard, 1=dynamic
+    bra     TFT_velocity_set_color_static   ; static ascend rate limit
 
-    ; get the actual depth
-    SAFE_2BYTE_COPY rel_pressure, lo			; get the actual depth
+    ; get the actual depth in m
+    SAFE_2BYTE_COPY rel_pressure, lo
 	call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
-	call 	convert_mbar_to_feet				; get depth in feet into lo:hi
-;	; store current depth (in feet) into sub_a
-;	movff	lo,sub_a+0
-;	movff	hi,sub_a+1
-;	; xA will be used to store the warning/attention limits passed to the verification
-;	clrf	xA+0
-;	clrf	xA+1
-;
+	movff	hi,xA+1
+	movff	lo,xA+0
+	movlw	LOW		d'100'
+	movwf	xB+0
+	clrf	xB+1						; Devide/100 -> xC+0 = Depth in m
+	call	div16x16					; xA/xB=xC with xA as remainder 	
+	;movf	xC+0,W						; Depth in m
+    
+    ; point to speed table
+    movlw   LOW     (TFT_speed_table-.3)
+    movwf   TBLPTRL
+    movlw   HIGH    (TFT_speed_table-.3)
+    movwf   TBLPTRH
+    movlw   UPPER   (TFT_speed_table-.3)
+    movwf   TBLPTRU
 
-    return      ; Done.
+TFT_velocity_set_color_skip:
+    TBLRD*+         ; 3 dummy reads
+    TBLRD*+
+    TBLRD*+
+
+    TBLRD*+         ; Get speed threshold
+    movf	xC+0,W						; Depth in m
+    cpfsgt  TABLAT  ; Threshold > current depth ?
+    bra     TFT_velocity_set_color_skip ; No
+    
+    TBLRD*+         ; Get warning speed threshold
+    movf    TABLAT,W
+    movwf   divA+1                          ; Copy for graph routine
+    cpfslt  divA+0                          ; smaller then actual value (in m/min)?
+    bra     TFT_warnings_color              ; Set Warning color (And return)
+    TBLRD*+         ; Get attention speed threshold
+    movf    TABLAT,W
+    cpfslt  divA+0                          ; smaller then actual value (in m/min)?
+    bra     TFT_attention_color             ; Set Attention color (And return)
+    bra     TFT_standard_color              ; ...and return
+
+TFT_velocity_set_color_static:
+    movlw   color_code_velocity_warn_high   ; in m/min
+    movwf   divA+1                          ; Copy for graph routine
+    cpfslt  divA+0                          ; smaller then actual value (in m/min)?
+    bra     TFT_warnings_color              ; Set Warning color (And return)
+    movlw   color_code_velocity_attn_high   ; in m/min
+    cpfslt  divA+0                          ; smaller then actual value (in m/min)?
+    bra     TFT_attention_color             ; Set Attention color (And return)
+    bra     TFT_standard_color              ; ...and return
 
 TFT_velocity_disp:
     WIN_SMALL	dm_velocity_text_column, dm_velocity_text_row
@@ -677,10 +672,80 @@ TFT_velocity_metric:
 	STRCAT_TEXT_PRINT  tVelMetric			; Unit switch
     return
 
-TFT_velocity_graph:
-    movlw   color_white
-    WIN_BOX_COLOR dm_velobar_top, dm_velobar_bot, dm_velobar_lft, dm_velobar_rgt ;top, bottom, left, right
-    return
+TFT_velocity_graph:                         ; divA+0 = m/min
+	; divA+0 holding the ascend speed in m/min
+	movff	divA+0,hi	; Copy
+	WIN_BOX_BLACK   dm_velobar_top, dm_velobar_bot, dm_velobar_lft, dm_velobar_rgt ;top, bottom, left, right -> outer frame
+	rcall   TFT_divemask_color_dive     ; Color -> WREG
+    WIN_FRAME_COLOR   dm_velobar_top, dm_velobar_bot, dm_velobar_lft, dm_velobar_rgt ;inner frame
+	rcall   TFT_divemask_color_dive     ; Color -> WREG
+	WIN_FRAME_COLOR   dm_velobar_top+.10, dm_velobar_bot-.10, dm_velobar_lft, dm_velobar_rgt ;inner frame
+	rcall   TFT_divemask_color_dive     ; Color -> WREG
+	WIN_FRAME_COLOR   dm_velobar_top+.20, dm_velobar_bot-.20, dm_velobar_lft, dm_velobar_rgt ;inner frame
+	rcall   TFT_divemask_color_dive     ; Color -> WREG
+	WIN_FRAME_COLOR   dm_velobar_top+.30, dm_velobar_bot-.30, dm_velobar_lft, dm_velobar_rgt ;inner frame
+	
+    movff   divA+1,xA+0                     ; m/min for warning level (upper two blocks)
+	clrf	xA+1
+	movlw	.5
+	movwf	xB+0							; Threshold for color warning (5 color normal + 2 color warning)
+	clrf	xB+1
+	call	div16x16						;xA/xB=xC with xA as remainder 	
+	; xC+0 holds stepsize in m/min (e.g. =3 for 15m/min warning treshold)
+	movff	hi,xA+0							; Velocity in m/min
+	clrf	xA+1
+	movff	xC+0,xB+0						; Step size
+	clrf	xB+1
+	call	div16x16						;xA/xB=xC with xA as remainder 	
+	; xC+0 now holds amount of segments to show
+
+	movff	hi,divA+0	; Copy back for numeric output
+	movlw	d'7'
+	cpfslt	xC+0
+	bra		DISP_graph_vel_7
+	movlw	d'6'
+	cpfslt	xC+0
+	bra		DISP_graph_vel_6
+	movlw	d'5'
+	cpfslt	xC+0
+	bra		DISP_graph_vel_5
+	movlw	d'4'
+	cpfslt	xC+0
+	bra		DISP_graph_vel_4
+	movlw	d'3'
+	cpfslt	xC+0
+	bra		DISP_graph_vel_3
+	movlw	d'2'
+	cpfslt	xC+0
+	bra		DISP_graph_vel_2
+	movlw	d'1'
+	cpfslt	xC+0
+	bra		DISP_graph_vel_1
+	bra		DISP_graph_vel_0			; Should not happen...
+
+DISP_graph_vel_7:
+	rcall   TFT_warnings_color_dive     ; Color -> WREG
+    WIN_BOX_COLOR   dm_velobar_top+.2, dm_velobar_top+.8, dm_velobar_lft+.2, dm_velobar_rgt-.2 ;top, bottom, left, right
+DISP_graph_vel_6:
+	rcall   TFT_warnings_color_dive     ; Color -> WREG
+    WIN_BOX_COLOR   dm_velobar_top+.12, dm_velobar_top+.18, dm_velobar_lft+.2, dm_velobar_rgt-.2 ;top, bottom, left, right
+DISP_graph_vel_5:
+    rcall   TFT_attention_color_dive     ; Color -> WREG
+    WIN_BOX_COLOR   dm_velobar_top+.22, dm_velobar_top+.28, dm_velobar_lft+.2, dm_velobar_rgt-.2 ;top, bottom, left, right
+DISP_graph_vel_4:
+    rcall   TFT_standard_color_dive     ; Color -> WREG
+    WIN_BOX_COLOR   dm_velobar_top+.32, dm_velobar_top+.38, dm_velobar_lft+.2, dm_velobar_rgt-.2 ;top, bottom, left, right
+DISP_graph_vel_3:
+    rcall   TFT_standard_color_dive     ; Color -> WREG
+    WIN_BOX_COLOR   dm_velobar_top+.42, dm_velobar_top+.48, dm_velobar_lft+.2, dm_velobar_rgt-.2 ;top, bottom, left, right
+DISP_graph_vel_2:
+    rcall   TFT_standard_color_dive     ; Color -> WREG
+    WIN_BOX_COLOR   dm_velobar_top+.52, dm_velobar_top+.58, dm_velobar_lft+.2, dm_velobar_rgt-.2 ;top, bottom, left, right
+DISP_graph_vel_1:
+    rcall   TFT_standard_color_dive     ; Color -> WREG
+    WIN_BOX_COLOR   dm_velobar_top+.62, dm_velobar_top+.68, dm_velobar_lft+.2, dm_velobar_rgt-.2 ;top, bottom, left, right
+DISP_graph_vel_0:
+    return          ; Done.
 
 	global	TFT_velocity_clear
 TFT_velocity_clear:

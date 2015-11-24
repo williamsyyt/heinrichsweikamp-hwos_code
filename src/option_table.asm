@@ -204,6 +204,10 @@ option_table_begin:
         OPTION_BOOL     oVSIgraph,      0,                            .158,    opt_vsigraph                     ; =1: draw the graphical VSI bar
         OPTION_BOOL     oShowppO2,      0,                            .159,    opt_showppo2                     ; =1:always show the ppO2 value in the warning position
         OPTION_UINT8    oTemperatureAdjust, .0,.255,   .0,     -1,    .160,    opt_temperature_adjust           ; SIGNED int (-2.0/+2.0 °C max.)
+        OPTION_UINT8    oSafetyStopLength, .60,.240,   .180,   -1,    .161,    opt_safety_stop_length           ; [s]
+        OPTION_UINT8    oSafetyStopStart,  .21,.61,     .51,   -1,    .162,    opt_safety_stop_start            ; [cbar], default 510mbar, min 210mbar, max 610mbar
+        OPTION_UINT8    oSafetyStopEnd,    .19,.39,     .29,   -1,    .163,    opt_safety_stop_end              ; [cbar], default 290mbar, min 190mbar, max 390mbar
+        OPTION_UINT8    oSafetyStopReset,  .81,.151,    .101,  -1,    .164,    opt_safety_stop_reset            ; [cbar], default 1010mbar, min 810mbar, max 1510mbar
 
 
 ;=============================================================================
