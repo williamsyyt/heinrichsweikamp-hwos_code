@@ -452,10 +452,11 @@ divemode_setup_sensor_values4:
     return
 
 calc_velocity:								; called every two seconds
-	btfss	divemode						
-	return                      			; display velocity only in divemode (Not at the surface after dive)
-
-calc_velocity2:
+    btfsc   display_velocity                
+    bra     calc_velocity1                  ; Always update if already displayed
+	btfss	divemode2						
+	return                      			; display velocity only if deepter then 1m (Not at the surface after the dive)
+calc_velocity1:
     SAFE_2BYTE_COPY amb_pressure, sub_a
 	movff	last_pressure_velocity+0,sub_b+0
 	movff	last_pressure_velocity+1,sub_b+1
@@ -486,6 +487,28 @@ calc_velocity2:
 	movwf	divA+0						; divA=99
 
 calc_velocity3:
+    ; Copy old speeds
+    movff   old_velocity+2,old_velocity+3
+    movff   old_velocity+1,old_velocity+2
+    movff   old_velocity+0,old_velocity+1
+    movff   divA+0,old_velocity+0
+    
+;    movff   old_velocity+3,WREG
+;    addwf   divA+0,F                    ; add old speed
+;    bcf     STATUS,C
+;    rrcf    divA+0,F                    ; /2
+;    movff   old_velocity+2,WREG
+;    addwf   divA+0,F                    ; add old speed
+;    bcf     STATUS,C
+;    rrcf    divA+0,F                    ; /2
+;    movff   old_velocity+1,WREG
+;    addwf   divA+0,F                    ; add old speed
+;    bcf     STATUS,C
+;    rrcf    divA+0,F                    ; /2
+;    movff   old_velocity+0,WREG
+;    addwf   divA+0,F                    ; add old speed
+;    bcf     STATUS,C
+;    rrcf    divA+0,F                    ; /2
 	call	TFT_display_velocity		; With divA+0 = m/min...
 	return
 
@@ -498,41 +521,41 @@ set_reset_safety_stop:						; Set flags for safety stop and/or reset safety stop
 
 	btfsc	decostop_active					; Is a deco stop displayed?
 	bra		delete_safety_stop				; Yes, don't show safety stop
-	; Below "safety_stop_reset"? Set flag and reset count-down timer
+	; Below "opt_safety_stop_reset"? Set flag and reset count-down timer
     SAFE_2BYTE_COPY rel_pressure, lo
 	call	adjust_depth_with_salinity		; computes salinity setting into lo:hi [mbar]
 	movff	lo,sub_a+0
 	movff	hi,sub_a+1
-	movlw	LOW		safety_stop_reset
-	movwf	sub_b+0
-	movlw	HIGH	safety_stop_reset
-	movwf	sub_b+1
+    movff   opt_safety_stop_reset,WREG      ; [cbar]
+    mullw   .10                             ; mbar in PRODL:H
+    movff   PRODL,sub_b+0
+    movff   PRODH,sub_b+1
 	call	subU16							;  sub_c = sub_a - sub_b
 	btfss	neg_flag
 	bra		reset_safety_stop				; Below 10m, reset safety stop
 
-	; Above "safety_stop_end"? Clear flag.
+	; Above "opt_safety_stop_end"? Clear flag.
     SAFE_2BYTE_COPY rel_pressure, lo
 	call	adjust_depth_with_salinity		; computes salinity setting into lo:hi [mbar]
 	movff	lo,sub_a+0
 	movff	hi,sub_a+1
-	movlw	LOW		safety_stop_end
-	movwf	sub_b+0
-	movlw	HIGH	safety_stop_end
-	movwf	sub_b+1
+    movff   opt_safety_stop_end,WREG      ; [cbar]
+    mullw   .10                             ; mbar in PRODL:H
+    movff   PRODL,sub_b+0
+    movff   PRODH,sub_b+1
 	call	subU16							;  sub_c = sub_a - sub_b
 	btfsc	neg_flag
 	bra		delete_safety_stop				; Above 3m, remove safety stop
 
-	; Above "safety_stop_start"? Activate safety stop
+	; Above "opt_safety_stop_start"? Activate safety stop
     SAFE_2BYTE_COPY rel_pressure, lo
 	call	adjust_depth_with_salinity		; computes salinity setting into lo:hi [mbar]
 	movff	lo,sub_a+0
 	movff	hi,sub_a+1
- 	movlw	LOW		safety_stop_start
-    movwf	sub_b+0
-    movlw	HIGH	safety_stop_start
-	movwf	sub_b+1
+    movff   opt_safety_stop_start,WREG      ; [cbar]
+    mullw   .10                             ; mbar in PRODL:H
+    movff   PRODL,sub_b+0
+    movff   PRODH,sub_b+1
 	call	subU16							;  sub_c = sub_a - sub_b
 	btfsc	neg_flag
 	bra		acivate_safety_stop				; Above 5m, activate safety stop
@@ -548,8 +571,7 @@ delete_safety_stop:
 	bra		reset_safety_stop2				; Remove safety stop from display
 
 reset_safety_stop:
-	movlw	safety_stop_length				;[s]
-	movwf	safety_stop_countdown			; reset timer
+    movff   opt_safety_stop_length,safety_stop_countdown	; reset timer
 reset_safety_stop2:
 	bcf		show_safety_stop				; Clear flag
 	btfss	safety_stop_active				; Safety stop shown
@@ -1407,7 +1429,7 @@ dive_boot_cc:
     bsf     voting_logic_sensor1
     bsf     voting_logic_sensor2
     bsf     voting_logic_sensor3
-    rcall   divemode_setup_sensor_values    ; setup sensor values
+    call   divemode_setup_sensor_values     ; setup sensor values
 
     ; Setup first SP for Fixed or Auto mode
     movff   opt_ccr_mode,WREG               ; =0: Fixed SP, =1: Sensor,  =2: Auto SP

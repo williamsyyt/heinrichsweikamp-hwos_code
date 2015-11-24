@@ -1039,7 +1039,14 @@ comm_read_setting:
     movff   opt_showppo2, TXREG1            ; RCREG1=0x41
     dcfsnz  WREG
     movff   opt_temperature_adjust, TXREG1  ; RCREG1=0x42
-
+    dcfsnz  WREG
+    movff   opt_safety_stop_length, TXREG1  ; RCREG1=0x43
+    dcfsnz  WREG
+    movff   opt_safety_stop_start, TXREG1   ; RCREG1=0x44
+    dcfsnz  WREG
+    movff   opt_safety_stop_end, TXREG1     ; RCREG1=0x45
+    dcfsnz  WREG
+    movff   opt_safety_stop_reset, TXREG1   ; RCREG1=0x46
 
 comm_read_abort:
 comm_read_done:
@@ -1330,6 +1337,14 @@ comm_write_setting:
     movff   RCREG1, opt_showppo2            ; RCREG1=0x41
     dcfsnz  WREG
     movff   RCREG1, opt_temperature_adjust  ; RCREG1=0x42
+    dcfsnz  WREG
+    movff   RCREG1, opt_safety_stop_length  ; RCREG1=0x43
+    dcfsnz  WREG
+    movff   RCREG1, opt_safety_stop_start   ; RCREG1=0x44
+    dcfsnz  WREG
+    movff   RCREG1, opt_safety_stop_end     ; RCREG1=0x45
+    dcfsnz  WREG
+    movff   RCREG1, opt_safety_stop_reset   ; RCREG1=0x46
 
 
 comm_write_abort:

@@ -57,7 +57,7 @@
 ; Ascend/Descend bar
 #DEFINE    dm_velobar_top          dm_offset           ; 14
 #DEFINE    dm_velobar_lft          dm_depth_rgt+.1     ; 62
-#DEFINE    dm_velobar_bot          dm_offset+.85       ; 99  // must fit into 8b
+#DEFINE    dm_velobar_bot          dm_offset+.70       ; 84
 #DEFINE    dm_velobar_rgt          .73                 ; 73
 #DEFINE    dm_velobar_width        .12
 

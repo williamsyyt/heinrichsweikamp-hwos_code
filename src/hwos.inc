@@ -142,20 +142,14 @@
 #DEFINE no_fly_time_ratio		.60		; [%]
 #DEFINE	deco_distance			.10		; [dm]
 
-; Safety stop parameters
-#DEFINE	safety_stop_length		.180	; [s]
-#DEFINE	safety_stop_start		.510	; [mbar]
-#DEFINE	safety_stop_end			.290	; [mbar]
-#DEFINE	safety_stop_reset		.1010	; [mbar]
-
 ; Color-code parameters for the divemode
 #DEFINE	color_code_cns_high		.100	; [%]
 #DEFINE	color_code_gf_warn_high .101	; [%]
-#DEFINE	color_code_velocity_warn_high .10   ;[m/min]
-#DEFINE	color_code_velocity_attn_high .8    ;[m/min]
+#DEFINE	color_code_velocity_warn_high .11   ;[m/min]
+#DEFINE	color_code_velocity_attn_high .10   ;[m/min]
 
 ; Velocity threshold
-#DEFINE	velocity_display_threshold_1	.5	; [m/min]
+#DEFINE	velocity_display_threshold_1	.3	; [m/min]
 
 ; Battery thresholds
 #DEFINE lithium_36v_empty       .2400   ; [mV] Saft 3,6V LS14500 AA - threshold for battery percent display
@@ -533,6 +527,8 @@ start_year          res 1   ; At start of dive (For logbook)
 start_hours         res 1   ; At start of dive (For logbook)
 start_mins          res 1   ; At start of dive (For logbook)
 
+old_velocity        res 4   ; Strores the last 4 speeds (8 seconds) in m/min
+
 ;-----------------------------------------------------------------------------
 ; Reserve BANK2 for general purpose buffer (strings, images, etc).
 ; NOTE: Needs to be aligned with a bank (LOW(buffer)==0).
@@ -587,6 +583,10 @@ opt_vsitextv2           res 1   ; =1:use the depth dependent ascend rate limits
 opt_vsigraph            res 1   ; =1:draw the graphical VSI bar
 opt_showppo2            res 1   ; =1:always show the ppO2 value in the warning position
 opt_temperature_adjust  res 1   ; SIGNED int (two's complement), -2.0/+2.0 °C max.
+opt_safety_stop_length  res 1   ; [s]
+opt_safety_stop_start   res 1   ; [cbar]
+opt_safety_stop_end     res 1   ; [cbar]
+opt_safety_stop_reset   res 1   ; [cbar]
 
 ;-----------------------------EEPROM DATA ------------------------------------
 ; Automatic reset of all options when this is changed:
@@ -703,8 +703,8 @@ opt_temperature_adjust  res 1   ; SIGNED int (two's complement), -2.0/+2.0 °C ma
 #DEFINE blinking_depth_toggle   flag12,7    ; toggle to blink
 
 #DEFINE neg_flag_velocity       flag13,0    ; neg_flag backup for velocity logic
-#DEFINE velocity_warn           flag13,1    ; flag set when ascend is in warning rate
-#DEFINE velocity_attn           flag13,2    ; flag set when ascend is in attention rate
+;#DEFINE unused
+;#DEFINE unused
 #DEFINE sp2_switched            flag13,3    ; =1: This setpoint has been autoselected already
 #DEFINE sp3_switched            flag13,4    ; =1: This setpoint has been autoselected already
 #DEFINE sp4_switched            flag13,5    ; =1: This setpoint has been autoselected already
