@@ -35,12 +35,19 @@ do_continue_main_divemenu:
         bcf     is_bailout_menu
         movlw   .1
         movwf   menupos                 ; Set to first option in divemode menu
-    MENU_BEGIN  tMainMenu, .4
+    MENU_BEGIN  tMainMenu, .5
         MENU_CALL   tDivemenu_Gaslist,  do_divemode_gaslist
         MENU_CALL   tDivemenu_ResetAvr, do_divemode_resetavr
         MENU_CALL   tDivemenu_ToggleGF, do_divemode_togglegf
+        MENU_CALL   tDivemenu_Marker,   do_set_marker
         MENU_CALL   tExit,              do_exit_divemode_menu
     MENU_END
+
+do_set_marker:
+	movlw	d'6'					; Type of Alarm (Manual Marker)
+	movwf	AlarmType				; Copy to Alarm Register
+	bsf		event_occured			; Set Event Flag
+    bra     do_exit_divemode_menu   ; And exit
 
 main_divemenu_ccr:
     bsf     ccr_diluent_setup      ; For diluents
