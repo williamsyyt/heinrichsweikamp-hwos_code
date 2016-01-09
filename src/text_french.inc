@@ -23,6 +23,7 @@
     TCODE   tDivemenu_Setpoint, "Setpoint"      ; Setpoint
     TCODE   tDivemenu_UseSensor,"Cellules"    ; Use Sensor
     TCODE   tDivemenu_ToggleGF, "Bascul.GF"     ; Toggle GF
+    TCODE   tDivemenu_Marker,   "Repère"        ; Set Marker
 
 ; Main menu
     TCODE   tNext,      "<Suivant"        ; <Next

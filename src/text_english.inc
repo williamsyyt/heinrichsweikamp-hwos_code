@@ -23,6 +23,7 @@
     TCODE   tDivemenu_Setpoint, "Setpoint"      ; Setpoint
     TCODE   tDivemenu_UseSensor,"Use Sensor"    ; Use Sensor
     TCODE   tDivemenu_ToggleGF, "Toggle GF"     ; Toggle GF
+    TCODE   tDivemenu_Marker,   "Set Marker"    ; Set Marker
 
 ; Main menu
     TCODE   tNext,      "<Next"         ; <Next
