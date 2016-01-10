@@ -1,10 +1,14 @@
-[1.94]
+[2.00]
 - Stable Version -
+NEW: Logbook marker can be set in dive mode menu (OC only)
+NEW: Logbook shows markers with small orange boxes in the profile
+
+[1.94]
+- Beta Version -
 CHANGE: Show velocity from 5m/min or more (Ascend or descent)
 BUGFIX: Make sure SP1 is always selected on start in Auto-SP mode
 CHANGE: New segmented speed graph in divemode
 NEW: Safety Stop can be configured (Start-, End- and reset-depth + length of stop) via PC
-NEW: Logbook marker can be set in dive mode menu (OC only)
 
 [1.93]
 - Stable Version -

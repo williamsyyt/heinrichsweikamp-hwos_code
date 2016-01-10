@@ -63,6 +63,7 @@
 	#DEFINE	logbook_page_not_empty	logbook_flags,2
 	#DEFINE	end_of_profile			logbook_flags,3
     #DEFINE keep_cursor_new_page    logbook_flags,4
+    #DEFINE log_marker_found        logbook_flags,5
 
 	
 ; Logbook Coordinates
@@ -902,7 +903,28 @@ profile_display_skip_temp:
 	movff		xC+0,apnoe_mins				; Store last row for fill routine
 
     PIXEL_WRITE logbook_pixel_x_pos,xC+0    ; Set col(0..159) x row (0..239), put a std color pixel.
+    incf		logbook_pixel_x_pos,F		; Next column
 
+    ;---- Draw Marker square , if any ----------------------------------------
+    btfss       log_marker_found            ; Any marker to draw?
+    bra         profile_display_skip_marker ; No
+
+    ; 2x2 square
+    incf        apnoe_mins,W
+    movff       WREG,win_top
+    movlw       .4
+    movff       WREG,win_height
+    movlw       .2
+    movff       WREG,win_width
+    decf        logbook_pixel_x_pos,W
+    movff       WREG,win_leftx2
+
+    movlw       color_orange
+    call        TFT_set_color
+    call        TFT_box                     ; Draw 2x2 Box
+    bcf         log_marker_found            ; Clear flag
+
+profile_display_skip_marker:
     ;---- Draw CNS curve, if any ---------------------------------------------
     movf        divisor_cns,W
     bz          profile_display_skip_cns
@@ -918,7 +940,6 @@ profile_display_skip_cns:
     ; TODO HERE 
     ;
 profile_display_skip_gf:
-	incf		logbook_pixel_x_pos,F		; Next column
 
     ;---- All curves done.
     
@@ -1232,7 +1253,7 @@ profile_view_get_depth_no_line:
 	call		ext_flash_byte_read_plus_0x20	; read depth first
 	movff		temp1,logbook_cur_depth+1   	; high value
 	call		ext_flash_byte_read_plus_0x20	; read Profile Flag Byte
-	movff		temp1,timeout_counter2			; Read Profile Flag Byte
+	movff		temp1,timeout_counter2			; store Profile Flag Byte
 
 	bcf			event_occured				; clear flag
 	btfsc		timeout_counter2,7
@@ -1330,6 +1351,14 @@ profile_no_second_eventbyte:
 	rcall       logbook_event3				; Yes!
 	btfsc		EventByte2,0				; Bailout?
 	rcall       logbook_event2				; Yes!
+    ; Any Alarm?
+    bcf         EventByte,4                 ; Clear bits already tested
+    bcf         EventByte,5
+    bcf         EventByte,6
+    movlw       .6                          ; manual marker?
+    cpfseq      EventByte
+    return	   ; No, return
+    bsf         log_marker_found            ; Manual marker! Draw small yellow rectancle here
     return
 
 logbook_event4: ; Stored Gas changed!

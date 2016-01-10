@@ -19,13 +19,13 @@
 #include <ports.inc>                        ; Portmap
 
 ; Firmware definition
-#DEFINE	softwareversion_x		d'1'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'94'		; Software version  XX.YY
+#DEFINE	softwareversion_x		d'2'		; Software version  XX.YY
+#DEFINE	softwareversion_y		d'00'		; Software version  XX.YY
 #DEFINE softwareversion_beta 	1 			; (and 0 for release)
 ; Firmware version will appear in "Change Firmware" style
-#DEFINE firmware_expire_year    .16
-#DEFINE firmware_expire_month   .10
-#DEFINE firmware_expire_day     .1
+#DEFINE firmware_expire_year    .17
+#DEFINE firmware_expire_month   .1
+#DEFINE firmware_expire_day     .10
 
 #DEFINE comm_service_key        0xABCDEF
 
@@ -175,13 +175,13 @@
 #DEFINE current_compass             .28
 
 ; Brightness thresholds (between zero (off) and 255 (max. power))
-#DEFINE	ambient_light_max_high_36V	.175
+#DEFINE	ambient_light_max_high_36V	.170
 #DEFINE	ambient_light_max_high_cr  	.240
-#DEFINE	ambient_light_max_high_15V  .150
+#DEFINE	ambient_light_max_high_15V  .140
 #DEFINE	ambient_light_min_high		.35
-#DEFINE	ambient_light_max_medium 	.135
+#DEFINE	ambient_light_max_medium 	.125
 #DEFINE	ambient_light_min_medium 	.25
-#DEFINE	ambient_light_max_eco		.75
+#DEFINE	ambient_light_max_eco		.70
 #DEFINE	ambient_light_min_eco		.10         ; Must be the lowest value!
 
 ; IR Link timeout
