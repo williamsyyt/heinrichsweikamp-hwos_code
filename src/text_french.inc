@@ -24,6 +24,7 @@
     TCODE   tDivemenu_UseSensor,"Cellules"    ; Use Sensor
     TCODE   tDivemenu_ToggleGF, "Bascul.GF"     ; Toggle GF
     TCODE   tDivemenu_Marker,   "Repère"        ; Set Marker
+    TCODE   tDivemenu_LostGas,  "Gaz perdu"     ; Lost Gas
 
 ; Main menu
     TCODE   tNext,      "<Suivant"        ; <Next

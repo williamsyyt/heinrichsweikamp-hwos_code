@@ -2,6 +2,7 @@
 - Stable Version -
 NEW: Logbook marker can be set in dive mode menu (OC only)
 NEW: Logbook shows markers with small orange boxes in the profile
+NEW: "Lost Gas" feature allows disabling gases during the dive
 
 [1.94]
 - Beta Version -
