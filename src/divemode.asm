@@ -1491,6 +1491,25 @@ diveloop_boot:
     btfsc   FLAG_ccr_mode
     rcall   dive_boot_cc
 
+    ; Copy opt_dil_types into backup (For "lost gas" feature)
+    movff   opt_dil_type+0,opt_dil_type_backup+0    ; 0=Disabled, 1=First, 2=Normal
+    movff   opt_dil_type+1,opt_dil_type_backup+1    ; 0=Disabled, 1=First, 2=Normal
+    movff   opt_dil_type+2,opt_dil_type_backup+2    ; 0=Disabled, 1=First, 2=Normal
+    movff   opt_dil_type+3,opt_dil_type_backup+3    ; 0=Disabled, 1=First, 2=Normal
+    movff   opt_dil_type+4,opt_dil_type_backup+4    ; 0=Disabled, 1=First, 2=Normal
+    ; Copy opt_gas_types into backup (For "lost gas" feature)
+    movff   opt_gas_type+0,opt_gas_type_backup+0    ; 0=Disabled, 1=First, 2=Travel, 3=Deco
+    movff   opt_gas_type+1,opt_gas_type_backup+1    ; 0=Disabled, 1=First, 2=Travel, 3=Deco
+    movff   opt_gas_type+2,opt_gas_type_backup+2    ; 0=Disabled, 1=First, 2=Travel, 3=Deco
+    movff   opt_gas_type+3,opt_gas_type_backup+3    ; 0=Disabled, 1=First, 2=Travel, 3=Deco
+    movff   opt_gas_type+4,opt_gas_type_backup+4    ; 0=Disabled, 1=First, 2=Travel, 3=Deco
+    ; Also copy change depths into backup (For "lost gas" feature)
+    movff   opt_OC_bail_gas_change+0,opt_OC_bail_gas_change_backup+0 ; Gas change depths OC/Bailout
+    movff   opt_OC_bail_gas_change+1,opt_OC_bail_gas_change_backup+1 ; Gas change depths OC/Bailout
+    movff   opt_OC_bail_gas_change+2,opt_OC_bail_gas_change_backup+2 ; Gas change depths OC/Bailout
+    movff   opt_OC_bail_gas_change+3,opt_OC_bail_gas_change_backup+3 ; Gas change depths OC/Bailout
+    movff   opt_OC_bail_gas_change+4,opt_OC_bail_gas_change_backup+4 ; Gas change depths OC/Bailout
+
 	bcf		better_gas_available        ;=1: A better gas is available and a gas change is advised in divemode
 	clrf	better_gas_number           ; Clear better gas register
 

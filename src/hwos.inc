@@ -21,7 +21,7 @@
 ; Firmware definition
 #DEFINE	softwareversion_x		d'2'		; Software version  XX.YY
 #DEFINE	softwareversion_y		d'00'		; Software version  XX.YY
-#DEFINE softwareversion_beta 	1 			; (and 0 for release)
+#DEFINE softwareversion_beta 	0 			; (and 0 for release)
 ; Firmware version will appear in "Change Firmware" style
 #DEFINE firmware_expire_year    .17
 #DEFINE firmware_expire_month   .1
@@ -528,6 +528,10 @@ start_hours         res 1   ; At start of dive (For logbook)
 start_mins          res 1   ; At start of dive (For logbook)
 
 old_velocity        res 4   ; Strores the last 4 speeds (8 seconds) in m/min
+opt_gas_type_backup res 5   ; 0=Disabled, 1=First, 2=Travel, 3=Deco
+opt_dil_type_backup res 5   ; 0=Disabled, 1=First, 2=Normal
+opt_OC_bail_gas_change_backup  res 5   ; Gas change depths OC/Bailout
+
 
 ;-----------------------------------------------------------------------------
 ; Reserve BANK2 for general purpose buffer (strings, images, etc).

@@ -24,6 +24,7 @@
     TCODE   tDivemenu_UseSensor,"Use Sensor"    ; Use Sensor
     TCODE   tDivemenu_ToggleGF, "Toggle GF"     ; Toggle GF
     TCODE   tDivemenu_Marker,   "Set Marker"    ; Set Marker
+    TCODE   tDivemenu_LostGas,  "Lost Gas"      ; Lost Gas
 
 ; Main menu
     TCODE   tNext,      "<Next"         ; <Next

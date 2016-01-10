@@ -154,16 +154,63 @@ do_divemode_gaslist_more0:
     movwf   menupos                 ; Set to first option in divemode menu
 do_divemode_gaslist_more:
     MENU_BEGIN  tGaslist, .6
-        MENU_DYNAMIC    gaslist_strcat_gasx,    do_dive_nothing
         MENU_CALL       tO2Plus,                do_dive_pO2
         MENU_CALL       tO2Minus,               do_dive_mO2
         MENU_CALL       tHePlus,                do_dive_pHe
         MENU_CALL       tHeMinus,               do_dive_mHe
-        MENU_CALL       tExit,                  do_switch_gas6
+        MENU_DYNAMIC    gaslist_strcat_gasx,    do_switch_gas6
+        MENU_CALL       tDivemenu_LostGas,      do_lost_gas
     MENU_END
 
-do_dive_nothing:
-        bra     do_divemode_gaslist_more
+do_lost_gas:
+    movlw   .1
+    movwf   menupos                 ; Set to first option in divemode menu
+do_lost_gas0:
+    bcf     ccr_diluent_setup       ; use OC gases
+    bsf     is_bailout_menu         ; =1: Bailout
+    bsf     short_gas_decriptions
+    MENU_BEGIN  tDivemenu_LostGas, .6
+        MENU_DYNAMIC    gaslist_strcat_gas_mod, do_toggle_active    ; Toggle the gas (in)active
+        MENU_DYNAMIC    gaslist_strcat_gas_mod, do_toggle_active    ; Toggle the gas (in)active
+        MENU_DYNAMIC    gaslist_strcat_gas_mod, do_toggle_active    ; Toggle the gas (in)active
+        MENU_DYNAMIC    gaslist_strcat_gas_mod, do_toggle_active    ; Toggle the gas (in)active
+        MENU_DYNAMIC    gaslist_strcat_gas_mod, do_toggle_active    ; Toggle the gas (in)active
+        MENU_CALL   tExit,              do_exit_divemode_menu
+    MENU_END
+
+do_toggle_active:
+    decf    menupos,W               ; 1-5 -> 0-4
+    lfsr    FSR1,opt_gas_type+0
+    movff   PLUSW1,lo
+    tstfsz  lo                      ; Already disabled?
+    bra     do_toggle_active2       ; No, disable now!
+
+    ; Copy opt_gas_type_backup+W back to opt_gas_type+W
+    decf    menupos,W               ; 1-5 -> 0-4
+    lfsr    FSR1,opt_gas_type_backup+0
+    movff   PLUSW1,lo
+    decf    menupos,W               ; 1-5 -> 0-4
+    lfsr    FSR1,opt_gas_type+0
+    movff   lo,PLUSW1
+
+    ; Copy opt_OC_bail_gas_change_backup+W back to opt_OC_bail_gas_change+W
+    decf    menupos,W               ; 1-5 -> 0-4
+    lfsr    FSR1,opt_OC_bail_gas_change_backup+0
+    movff   PLUSW1,lo
+    decf    menupos,W               ; 1-5 -> 0-4
+    lfsr    FSR1,opt_OC_bail_gas_change+0
+    movff   lo,PLUSW1
+
+    bra     do_lost_gas0            ; Return to list and show updated result
+
+do_toggle_active2:
+    clrf    PLUSW1                  ; 0=Disabled, 1=First, 2=Travel, 3=Deco
+
+    ; Also delete change depth here to have the menu updated immediately
+    lfsr    FSR1,opt_OC_bail_gas_change+0
+    clrf    PLUSW1
+
+    bra     do_lost_gas0            ; Return to list and show updated result
 
 do_dive_pO2:
         banksel char_I_O2_ratio
