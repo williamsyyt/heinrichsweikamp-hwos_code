@@ -94,7 +94,7 @@
 ; Dive time
 #DEFINE    dm_divetime_row                dm_offset              ; 14
 #DEFINE    dm_divetime_column             .115                   ; 115
-#DEFINE    dm_divetime_minsonly_column    .113                   ; 113
+#DEFINE    dm_divetime_minsonly_column    .111                   ; 111
 #DEFINE    dm_divetime_bot                dm_divetime_row+.34    ; 48
 #DEFINE    dm_divetime_rgt                .159                   ; 159
 #DEFINE    dm_divetime_secs_row           dm_divetime_row+.11    ; 25
