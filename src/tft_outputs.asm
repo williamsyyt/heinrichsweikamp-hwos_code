@@ -1092,26 +1092,21 @@ TFT_dyn_gaslist:                            ; Show the dynamic gaslist
 ;    call	TFT_standard_color
 
     WIN_SMALL   dm_custom_dyn_gas_column1,dm_custom_dyn_gas_row1
-    movlw   .1
-    movwf   uart1_temp
     bsf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
+    clrf    uart1_temp
     rcall   TFT_dyn_gaslist_common
     WIN_SMALL   dm_custom_dyn_gas_column1,dm_custom_dyn_gas_row2
-    incf    uart1_temp,F     ; +1
-    movf    uart1_temp,W     ; into W
     rcall   TFT_dyn_gaslist_common
     WIN_SMALL   dm_custom_dyn_gas_column2,dm_custom_dyn_gas_row1
-    incf    uart1_temp,F     ; +1
-    movf    uart1_temp,W     ; into W
     rcall   TFT_dyn_gaslist_common
     WIN_SMALL   dm_custom_dyn_gas_column2,dm_custom_dyn_gas_row2
-    incf    uart1_temp,F     ; +1
-    movf    uart1_temp,W     ; into W
     rcall   TFT_dyn_gaslist_common
     call	TFT_standard_color
     return
 
 TFT_dyn_gaslist_common:
+    incf    uart1_temp,F     ; +1
+    movf    uart1_temp,W     ; into W
     cpfseq  active_gas  ;1-5
     bra     TFT_dyn_gaslist_common2
     incf    uart1_temp,F     ; +1
@@ -1128,6 +1123,7 @@ TFT_dyn_gaslist_common2:
     movlw   0x00
     movff   WREG,buffer+.11  ; limit to 11 chars
     STRCAT_PRINT ""
+    bcf     win_invert
     return
 
 
@@ -2724,94 +2720,57 @@ TFT_display_apnoe_last_m_metric:
 TFT_divemins:
 	movff	divemins+0,lo
 	movff	divemins+1,hi
+	
+;	movlw	.99
+;	addwf	lo,F
+;	movlw	.0
+;	addwfc	hi,F	
 
     ; Already showing divemins > 99min
-	btfsc	no_more_divesecs		; Ignore seconds?
+	btfsc	no_more_divesecs	; Ignore seconds?
 	bra     TFT_divemins2           ; Show minutes only
 
-    ; check if divemins has hi, definitely > 99min
-    movlw   .1
-    cpfslt  hi                      ; HI less than 1?
-    bra     TFT_divemins_clr        ; No, show mins only
+	tstfsz	hi                      ; hi = 0?
+	bra	TFT_divemins_clr	; No, show mins only
 
-    ; check if divemins (when HI is zero) > 99min
 	movlw	.99
 	cpfsgt	lo                      ; bigger than 99?
-	bra		TFT_divemins1           ; No show mins:secs
+	bra	TFT_divemins1		; No show mins:secs
 
 TFT_divemins_clr:
 	; Yes, remove second display for the rest of the dive and clear seconds
 	bsf		no_more_divesecs        ; Set flag
 	; Clear rest of seconds
 	WIN_BOX_BLACK   dm_divetime_row, dm_divetime_bot, dm_divetime_column, dm_divetime_rgt ;top, bottom, left, right
-    bra     TFT_divemins2           ; Show minutes only
+	bra     TFT_divemins2           ; Show minutes only
 
 TFT_divemins1:
     ; Print out the minutes, up to 99min, only 2chars !
 	call	TFT_standard_color
 	WIN_MEDIUM	dm_divetime_column, dm_divetime_row
-
-    movlw	.9
-	cpfsgt	lo                      ; bigger then 9?
-    bra     TFT_divemins1_pad       ; No, need padding
-    ; Yes, just print out the value
-	bsf		leftbind
-	movff	divemins+0,lo
-	output_99x                     ; displays only last two figures from a 8Bit value (00-99)
-	bcf     leftbind
-	STRCAT_PRINT ""                 ; Show minutes in large font
-    bra     TFT_divemins1_sec
-
-TFT_divemins1_pad:
-	bcf     leftbind
-	PUTC    " "                     ; Add a padding space
-	bsf		leftbind
-	movff	divemins+0,lo
-	output_99                     ; displays only last two figures from a 8Bit value (0-99)
+	bcf	leftbind
+	output_99                       ; displays only last two figures from a 8Bit value (0-99)
 	bcf     leftbind
 	STRCAT_PRINT ""                 ; Show minutes in large font
 
-TFT_divemins1_sec:
     ; Print out the seconds
 	WIN_SMALL  dm_divetime_secs_column, dm_divetime_secs_row   		; left position for two sec figures
 	PUTC    ':'
-	bsf		leftbind
+	bsf	leftbind
 	movff   divesecs,lo
-	output_99x
+	output_99x			; displays only last two figures from a 8Bit value with leading zero (00-99) 
 	bcf     leftbind
 	STRCAT_PRINT ""                 ; Show seconds in small font
 	return
 
 TFT_divemins2:
+	; Full minutes only
 	call	TFT_standard_color
 	WIN_MEDIUM	dm_divetime_minsonly_column, dm_divetime_row
-    bcf		leftbind
-
-    ; if we are at or over the limit, do a WARNIGN color
-    ; 9999 = 27 0F = [39][15]
-    movlw   .38
-    cpfsgt  hi                  ; hi > 38 ?
-    bra     TFT_divemins2_out   ; No, hi <= 38, no need to warn
-
-    movlw   .40
-    cpfslt  hi                  ; hi < 40 ?
-    bra     TFT_divemins2_warn  ; No, hi >= 40, need to warn
-    
-    ; hi = 39, check lo. check 14 as 9999 should be already WARN!
-    movlw   .14
-    cpfsgt  lo
-    bra     TFT_divemins2_out   ; No, lo <= 14, no need to warn
-    ; Yes, lo > 14, need to warn
-
-TFT_divemins2_warn:
-    call    TFT_warnings_color
-    bsf     win_invert
-
-TFT_divemins2_out:
-	output_16_4
-	STRCAT_PRINT ""                 ; Show minutes in large font
-    bcf     win_invert
-    return
+        bcf		leftbind
+        output_16_4
+        STRCAT_PRINT ""                 ; Show minutes in large font
+        return
 
 ;=============================================================================
 	global	TFT_display_apnoe_surface

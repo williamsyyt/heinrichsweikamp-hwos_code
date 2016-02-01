@@ -1,3 +1,8 @@
+[2.01]
+- Stable Version -
+BUGFIX: Divetime >99mins was not displayed (Only OSTC2 with serial >= )
+BUGFIX: Minor layout fix in divemode (Dynamic gaslist)
+
 [2.00]
 - Stable Version -
 NEW: Logbook marker can be set in dive mode menu (OC only)
