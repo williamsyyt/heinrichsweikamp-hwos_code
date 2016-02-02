@@ -1,7 +1,8 @@
 [2.01]
 - Stable Version -
-BUGFIX: Divetime >99mins was not displayed (Only OSTC2 with serial >= )
+BUGFIX: Divetime >99mins was not displayed (Only OSTC2 with serial > 10500)
 BUGFIX: Minor layout fix in divemode (Dynamic gaslist)
+BUGFIX: Minor language updates
 
 [2.00]
 - Stable Version -
