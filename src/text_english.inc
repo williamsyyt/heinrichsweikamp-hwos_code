@@ -221,7 +221,7 @@
     TCODE   tDiveHudMask3,  "Sensor 3"
     TCODE   tDiveTotalAvr,  "Total Avr"
     TCODE   tDiveStopwatch, "Stopwatch"
-    TCODE   tDiveStopAvr,   "Stopped Avr"
+    TCODE   tDiveStopAvr,   "Stopped Avr"   ; 11chars max
     TCODE   tApnoeTotal,    " Total"        ; Total (Six chars, right alligned)
     TCODE   tApnoeMax,      "Last Descent"  ; Last descent
     TCODE   tApnoeSurface,  "Surface Time"  ; Surface Time
