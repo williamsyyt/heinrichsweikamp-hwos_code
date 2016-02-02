@@ -221,9 +221,9 @@
     TCODE   tDiveHudMask3,   "cell. 3"
     TCODE   tDiveTotalAvr,  "Prof. Moy."
     TCODE   tDiveStopwatch, "Chrono"
-    TCODE   tDiveStopAvr,   "P.Moy.Chrono"
+    TCODE   tDiveStopAvr,   "P.Moy.Chron"   ; 11chars max
     TCODE   tApnoeTotal,    "Totale"        ; Total (Six chars, right alligned)
-    TCODE   tApnoeMax,      "Dern.Plongée"  ; Last Decend
+    TCODE   tApnoeMax,      "Dern.Plongée"  ; Last Descend
     TCODE   tApnoeSurface,  "Tps.Surface"   ; Surface Time
     TCODE   tDiveDecoplan,  "Runtime"       ; Decoplan
     TCODE   tDiveClock,     "Heure"         ; Clock

@@ -218,11 +218,11 @@
     TCODE   tDiveHudMask1,  "Sensor 1"
     TCODE   tDiveHudMask2,  "Sensor 2"
     TCODE   tDiveHudMask3,  "Sensor 3"
-    TCODE   tDiveTotalAvr,  "Durchschn.1"
+    TCODE   tDiveTotalAvr,  "Durchschn.1"   
     TCODE   tDiveStopwatch, "Stoppuhr"
-    TCODE   tDiveStopAvr,   "Durchschn.2"
+    TCODE   tDiveStopAvr,   "Durchschn.2"   ; 11chars max
     TCODE   tApnoeTotal,    " Total"        ; Total (Six chars, right alligned)
-    TCODE   tApnoeMax,      "  Letzter TG"  ; Last decend
+    TCODE   tApnoeMax,      "  Letzter TG"  ; Last descend
     TCODE   tApnoeSurface,  "Oberflächenzeit"  ; Surface Time
     TCODE   tDiveDecoplan,  "Dekoplan"      ; Decoplan
     TCODE   tDiveClock,     "Uhr"           ; Clock

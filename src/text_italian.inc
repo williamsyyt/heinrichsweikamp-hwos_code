@@ -221,9 +221,9 @@
     TCODE   tDiveHudMask3,  "Sensor 3"
     TCODE   tDiveTotalAvr,  "Media"
     TCODE   tDiveStopwatch, "Cronometro"
-    TCODE   tDiveStopAvr,   "Media Interrotta"
+    TCODE   tDiveStopAvr,   "Media Inter"   ; 11chars max
     TCODE   tApnoeTotal,    "Totale"        ; Total (Six chars, right alligned)
-    TCODE   tApnoeMax,      "Ultima Discesa"  ; Last decend
+    TCODE   tApnoeMax,      "Ultima Discesa"  ; Last descend
     TCODE   tApnoeSurface,  "Tempo Superficie"  ; Surface Time
     TCODE   tDiveDecoplan,  "Piano Deco"      ; Decoplan
     TCODE   tDiveClock,     "Orologio"         ; Clock
