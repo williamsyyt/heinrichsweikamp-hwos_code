@@ -2721,10 +2721,6 @@ TFT_divemins:
 	movff	divemins+0,lo
 	movff	divemins+1,hi
 	
-;	movlw	.99
-;	addwf	lo,F
-;	movlw	.0
-;	addwfc	hi,F	
 
     ; Already showing divemins > 99min
 	btfsc	no_more_divesecs	; Ignore seconds?
