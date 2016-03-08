@@ -213,6 +213,8 @@ check_firmware_new:
 
     call    fix_180_dives           ; fix dives made with the 1.80
 
+    rcall   backup_flash_page       ; backup the first 128bytes from flash to EEPROM
+
 	movlw	d'1'					; store current version in EEPROM
 	movwf	EEADR                   ; =1
 	movwf	EEADRH                  ; =1
@@ -383,5 +385,29 @@ restart_set_modes_and_flags4:
     ; Apnea Mode
 	bsf		FLAG_apnoe_mode
     return							    ; start in Surfacemode
+
+backup_flash_page:       ; backup the first 128bytes from flash to EEPROM
+    	; Start address in internal flash
+    	movlw   0x00
+        movwf   TBLPTRL
+        movwf   TBLPTRH
+        movwf   TBLPTRU
+
+        movlw	.128
+        movwf	lo              ; Byte counter
+        clrf    EEADR
+        movlw   .3
+        movwf   EEADRH          ; Setup backup address
+
+        TBLRD*-					; Dummy read to be in 128 byte block
+backup_flash_loop:
+        tblrd+*					; Table Read with Pre-Increment
+        movff	TABLAT,EEDATA	; put 1 byte
+        call    write_eeprom    ; save it in EEPROM
+        incf    EEADR,F
+        decfsz 	lo,F            ; 128byte done?
+        bra 	backup_flash_loop ; No
+        clrf    EEADRH          ; Reset EEADRH
+        return                  ; Done.
 
 	END

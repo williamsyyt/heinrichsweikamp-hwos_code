@@ -13,6 +13,7 @@
 #include "shared_definitions.h"         ; Mailbox from/to p2_deco.c
 #include "ms5541.inc"
 #include "adc_lightsensor.inc"
+#include "eeprom_rs232.inc"
 
 ;=============================================================================
 
@@ -61,6 +62,48 @@ HighInt:
         movff   isr_prod+1,PRODH
         movff   isr_prod+0,PRODL
 		retfie FAST						; Restores BSR, STATUS and WREG
+
+isr_set_speed_to_normal:
+	; Set Speed to normal
+		movlw	b'01110010'
+		movwf	OSCCON				; 16MHz INTOSC
+		movlw	b'00000000'			
+		movwf	OSCTUNE				; 4x PLL Disable (Bit6) - only works with 8 or 16MHz (=32 or 64MHz)
+		movlw	b'00001101'			; 1:2 Postscaler, 1:4 Prescaler, Timer 2 start -> 1960Hz (no-flicker)
+		movwf	T2CON
+		btfss	OSCCON,HFIOFS
+		bra		$-2					; Wait until clock is stable
+		return
+
+isr_dimm_tft:				; Adjust until max_CCPR1L=CCPR1L !
+        banksel     common
+		btfsc		tft_is_dimming			; Ignore while dimming
+		return
+        banksel     isr_backup
+		movf		max_CCPR1L,W
+		cpfsgt		CCPR1L					; CCPR1L>max_CCPR1L?
+		bra			isr_dimm_tft2			; No, dimm up
+	; dimm down
+		decf		CCPR1L,F				; -1
+		return
+isr_dimm_tft2:
+		movf		max_CCPR1L,W
+		sublw		ambient_light_min_eco
+		cpfsgt		CCPR1L					; CCPR1L>max_CCPR1L-ambient_light_min_eco?
+		bra			isr_dimm_tft3			; No, dimm up slow
+		; dimm up faster
+		movlw		.10
+		addwf		CCPR1L,F
+isr_dimm_tft3:
+		incf		CCPR1L,F				; +1
+		return
+        nop
+        nop         ; block flash here
+
+isr_restore CODE    0x00080             ; Restore first flash page from EEPROM
+restore_flash_0x00080:
+        goto    restore_flash
+
 
 ;=============================================================================
 
@@ -320,18 +363,6 @@ isr_tmr7_2:
 		banksel isr_backup              ; Back to Bank0 ISR data
 		return						
 
-isr_set_speed_to_normal:
-	; Set Speed to normal
-		movlw	b'01110010'
-		movwf	OSCCON				; 16MHz INTOSC
-		movlw	b'00000000'			
-		movwf	OSCTUNE				; 4x PLL Disable (Bit6) - only works with 8 or 16MHz (=32 or 64MHz)
-		movlw	b'00001101'			; 1:2 Postscaler, 1:4 Prescaler, Timer 2 start -> 1960Hz (no-flicker)
-		movwf	T2CON
-		btfss	OSCCON,HFIOFS
-		bra		$-2					; Wait until clock is stable
-		return
-
 isr_sensor_state2:
 		banksel	common
         movff   sensor_state_counter,WREG
@@ -486,28 +517,6 @@ sensor_int_state_exit:
 		return
 ;=============================================================================
 
-isr_dimm_tft:				; Adjust until max_CCPR1L=CCPR1L !
-        banksel     common
-		btfsc		tft_is_dimming			; Ignore while dimming
-		return
-        banksel     isr_backup
-		movf		max_CCPR1L,W
-		cpfsgt		CCPR1L					; CCPR1L>max_CCPR1L?
-		bra			isr_dimm_tft2			; No, dimm up
-	; dimm down
-		decf		CCPR1L,F				; -1
-		return
-isr_dimm_tft2:
-		movf		max_CCPR1L,W
-		sublw		ambient_light_min_eco
-		cpfsgt		CCPR1L					; CCPR1L>max_CCPR1L-ambient_light_min_eco?
-		bra			isr_dimm_tft3			; No, dimm up slow
-		; dimm up faster
-		movlw		.10
-		addwf		CCPR1L,F
-isr_dimm_tft3:
-		incf		CCPR1L,F				; +1
-		return
 
 
 isr_rtcc:								; each second
@@ -851,5 +860,49 @@ isr_restore_exit:
 		btfss	OSCCON,HFIOFS
 		bra		isr_restore_exit	; loop until PLL is stable
 		return
+
+
+restore_flash:      ; Restore first flash page from eeprom
+        banksel     common
+    	; Start address in internal flash
+    	movlw   0x00
+        movwf   TBLPTRL
+        movwf   TBLPTRH
+        movwf   TBLPTRU
+
+    	movlw	b'10010100'		; Setup erase
+    	rcall 	Write			; Write!
+
+        movlw	.128
+        movwf	lo              ; Byte counter
+        clrf    EEADR
+        movlw   .3
+        movwf   EEADRH          ; Setup backup address
+
+        TBLRD*-					; Dummy read to be in 128 byte block
+restore_flash_loop:
+        call    read_eeprom
+        incf    EEADR,F
+        movff	EEDATA,TABLAT	; put 1 byte
+        tblwt+*					; Table Write with Pre-Increment
+        decfsz 	lo,F            ; 128byte done?
+        bra 	restore_flash_loop ; No
+
+    	movlw	b'10000100'		; Setup writes
+    	rcall 	Write			; Write!
+
+        reset           ; Done, reset CPU
+
+Write:
+        movwf 	EECON1				; Type of memory to write in
+        movlw 	0x55
+        movwf 	EECON2
+        movlw 	0xAA
+        movwf 	EECON2
+        bsf 	EECON1,WR			; Write
+        nop
+        nop		
+        return
+
 
 		END

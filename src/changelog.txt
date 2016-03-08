@@ -1,3 +1,7 @@
+[2.02]
+- Stable Version -
+BUGFIX: Fix rare issue after battery change (OSTC3 did not start properly)
+
 [2.01]
 - Stable Version -
 BUGFIX: Divetime >99mins was not displayed (Only OSTC2 with serial > 10500)

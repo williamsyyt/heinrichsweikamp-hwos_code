@@ -29,4 +29,6 @@ Add:	Length:         Description:                        		Default:	Comment:				
 528-656 128		Tissue Data, 32*4Byte Float = 128Bytes		0		Cleared in production			mH
 
 bank3 (Byte 768-1023), EEADRH=3:
-unused
+Add:	Length:         Description:                        		Default:	Comment:				User:
+-------------------------------------------------------------------------------------------------------------------------------------
+768	128		Backup of first 128bytes from flash		x		Copies automatically after update	mH
