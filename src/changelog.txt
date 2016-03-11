@@ -1,3 +1,7 @@
+[2.03]
+- Stable Version -
+BUGFIX: Fix missing ccr setup menu (From 2.02)
+
 [2.02]
 - Stable Version -
 BUGFIX: Fix rare issue after battery change (OSTC3 did not start properly)
