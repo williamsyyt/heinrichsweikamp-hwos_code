@@ -1290,8 +1290,8 @@ TFT_update_hud1:
     WIN_MEDIUM dm_custom_hud_sensor1_column,dm_custom_hud_data_row
     movff   o2_ppo2_sensor1,lo
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
-    btfss   voting_logic_sensor1        ; Sensor within voting logic?
-    bsf     win_invert                  ; No, invert output...
+    btfss   voting_logic_sensor1        ; Sensor within voting logic?       ; Make this configurable?
+    bsf     win_invert                  ; No, invert output...              ; Make this configurable?
     btfss   voting_logic_sensor1
     call    TFT_warnings_color          ; ... and draw in red
     clrf    hi
@@ -1314,8 +1314,8 @@ TFT_update_hud3:
     WIN_MEDIUM dm_custom_hud_sensor2_column,dm_custom_hud_data_row
     movff   o2_ppo2_sensor2,lo
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
-    btfss   voting_logic_sensor2        ; Sensor within voting logic?
-    bsf     win_invert                  ; No, invert output...
+    btfss   voting_logic_sensor2        ; Sensor within voting logic?       ; Make this configurable?
+    bsf     win_invert                  ; No, invert output...              ; Make this configurable?
     btfss   voting_logic_sensor2
     call    TFT_warnings_color          ; ... and draw in red
     clrf    hi
@@ -1338,8 +1338,8 @@ TFT_update_hud5:
     WIN_MEDIUM dm_custom_hud_sensor3_column,dm_custom_hud_data_row
     movff   o2_ppo2_sensor3,lo
     TFT_color_code  warn_ppo2_hud       ; With ppO2 [cbar] in lo
-    btfss   voting_logic_sensor3        ; Sensor within voting logic?
-    bsf     win_invert                  ; No, invert output...
+    btfss   voting_logic_sensor3        ; Sensor within voting logic?       ; Make this configurable?
+    bsf     win_invert                  ; No, invert output...              ; Make this configurable?
     btfss   voting_logic_sensor3
     call    TFT_warnings_color          ; ... and draw in red
     clrf    hi
