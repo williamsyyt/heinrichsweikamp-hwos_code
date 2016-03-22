@@ -48,6 +48,8 @@ customview_second:
 	bra		customview_1sec_view8
 	dcfsnz	WREG,F
 	bra		customview_1sec_view9           ; Make sure to change value in "check_ppo2_display:" when moving around custom views
+	dcfsnz	WREG,F
+	bra		customview_1sec_view10
 	; Menupos3=0, do nothing
 	return
 
@@ -87,6 +89,10 @@ customview_1sec_view9:                      ; Ceiling
     return                                  ; No GF info for non-GF modes
     call    TFT_gf_info                     ; Update GF informations
 
+    return
+
+customview_1sec_view10:                     ; Sensor check
+    call    TFT_sensor_check                ; Show ppO2 of O2 and Diluent
     return
 
 
@@ -368,7 +374,7 @@ menuview_view8:
 customview_toggle:
 	bcf		switch_right
 	incf	menupos3,F			            ; Number of customview to show
-	movlw	d'9'							; Max number of customsviews in divemode
+	movlw	d'10'							; Max number of customsviews in divemode
 	cpfsgt	menupos3			            ; Max reached?
 	bra		customview_mask		            ; No, show
 customview_toggle_reset:					; Timeout occured
@@ -398,6 +404,8 @@ customview_mask:
 	bra		customview_init_view8           ; HUD voltages
 	dcfsnz	WREG,F
 	bra		customview_init_view9           ; Ceiling
+	dcfsnz	WREG,F
+	bra		customview_init_view10          ; Sensor check
 customview_init_nocustomview:
     call    I2C_sleep_accelerometer         ; Stop accelerometer
     call    I2C_sleep_compass               ; Stop compass
@@ -501,9 +509,17 @@ customview_init_view9:                      ; Ceiling
     bra     customview_toggle_exit          ; No GF info for non-GF modes
     call    TFT_gf_mask_cGF                 ; Setup Mask - current GF only
     call    TFT_gf_info                     ; Show GF informations
-
     bra		customview_toggle_exit
 
+customview_init_view10:                     ; Sensor check
+	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
+	bra		customview_toggle				; yes, Call next view...
+	btfsc	FLAG_gauge_mode					; In Gauge mode?
+	bra		customview_toggle				; Yes, Call next view...
+
+    call    TFT_sensor_check_mask           ; Show ppO2 of O2 and Diluent mask
+    call    TFT_sensor_check                ; Show ppO2 of O2 and Diluent
+    bra		customview_toggle_exit
 
 customview_toggle_exit:
 	call	TFT_standard_color

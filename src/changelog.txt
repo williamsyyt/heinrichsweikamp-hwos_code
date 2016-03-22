@@ -1,3 +1,7 @@
+[2.04]
+- Beta Version -
+NEW: New Customview shows ppO2(O2) and ppO2(Diluent) during CCR mode
+
 [2.03]
 - Stable Version -
 BUGFIX: Fix missing ccr setup menu (From 2.02)

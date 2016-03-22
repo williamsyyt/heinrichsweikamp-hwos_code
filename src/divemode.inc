@@ -21,7 +21,7 @@
 ;   - custom content view with selectable views
 ;   - bottom content: temp, gas, ndl, tts, etc.
 
-; I. The upper conent row. (0-99)
+; I. The upper content row. (0-99)
 ;   The top row can be divided 2 areas: 
 ;    - header: has the titles (mask)
 ;    - content: has the values
@@ -116,7 +116,7 @@
 #DEFINE    dm_apnoe_total_divetime_secs_col       dm_divetime_apnoe_column+.36     ; 139
 #DEFINE    dm_total_apnoe_text_row                dm_apnoe_total_divetime_row-.11  ; 53
 #DEFINE    dm_total_apnoe_text_column             .132                             ; 132
-; I. End of the upper conent row. (0-99)
+; I. End of the upper content row. (0-99)
 
 
 
@@ -266,7 +266,18 @@
 #DEFINE    dm_custom_ceiling_value_row      dm_customview_row+.18       ; 119
 #DEFINE    dm_custom_ceiling_value_column   .66                         ; 64
 #DEFINE    dm_custom_ceiling_ppo2_val_col   .2                          ; 2
-; II. End of the custom conent row. (101-163)
+
+;******* Custom content / #10 - Sensor check view *******
+; Title
+#DEFINE    dm_custom_s_check_text_row       dm_customview_row+.1        ; 102
+#DEFINE    dm_custom_s_check_text_column    .50                         ; 50
+#DEFINE    dm_custom_ppO2_text_column       .2                          ; 2
+#DEFINE    dm_custom_ppDil_text_column      .115                        ; 115
+; Value
+#DEFINE    dm_custom_s_check_ppo2_o2_column .8                          ; 8
+#DEFINE    dm_custom_s_check_ppo2_dil_col   .108                        ; 108
+#DEFINE    dm_custom_s_check_value_row      dm_customview_row+.18       ; 119
+; II. End of the custom content row. (101-163)
 
 
 
