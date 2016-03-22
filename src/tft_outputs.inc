@@ -107,6 +107,9 @@ TFT_color_code macro color_code_temp
     extern  TFT_ceiling                         ; Ceiling
     extern  TFT_clear_safety_stop               ; Clear safety stop
     extern  TFT_warning_fallback                ; Show fallback warning
+    extern  TFT_sensor_check_mask               ; Show ppO2 of O2 and Diluent mask
+    extern  TFT_sensor_check                    ; Show ppO2 of O2 and Diluent
+
 
 ; Misc
     extern	TFT_standard_color

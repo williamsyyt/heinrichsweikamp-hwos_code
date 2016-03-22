@@ -3402,6 +3402,58 @@ TFT_end_ead_common_exit:
     STRCAT_PRINT    ""
     return
 
+    global  TFT_sensor_check_mask               ; Show ppO2 of O2 and Diluent mask
+TFT_sensor_check_mask:
+    call    TFT_divemask_color
+    WIN_TINY    dm_custom_s_check_text_column, dm_custom_s_check_text_row
+    STRCPY_TEXT_PRINT   tSensorCheck
+    WIN_TINY    dm_custom_ppO2_text_column, dm_custom_s_check_text_row
+    STRCPY_PRINT "ppO2(O2)"
+    WIN_TINY    dm_custom_ppDil_text_column, dm_custom_s_check_text_row
+    STRCPY_PRINT "ppO2(Dil)"
+    return
+
+    global  TFT_sensor_check                    ; Show ppO2 of O2 and Diluent
+TFT_sensor_check:
+    ; Show ppO2 of O2 in this depth
+    SAFE_2BYTE_COPY amb_pressure, xA
+	movlw	d'10'
+	movwf	xB+0
+	clrf	xB+1
+	call	div16x16				; xC=p_amb/10
+	movff	xC+0,xA+0
+	movff	xC+1,xA+1
+    movlw   .100
+    movwf   xB+0                    ; =O2 ratio
+	clrf	xB+1
+	call	mult16x16               ; char_I_O2_ratio * p_amb/10
+    call    TFT_standard_color
+	TFT_color_code		warn_ppo2		; Color-code output (ppO2 stored in xC)
+    WIN_MEDIUM   dm_custom_s_check_ppo2_o2_column, dm_custom_s_check_value_row
+;    ; hijacking neg_flag_velocity to know where the value is displayed
+    bsf     neg_flag_velocity
+    call    TFT_display_ppo2_com
+
+    ; Show ppO2 of the diluent in this depth
+    SAFE_2BYTE_COPY amb_pressure, xA
+	movlw	d'10'
+	movwf	xB+0
+	clrf	xB+1
+	call	div16x16				; xC=p_amb/10
+	movff	xC+0,xA+0
+	movff	xC+1,xA+1
+    movff   char_I_O2_ratio,xB+0    ; =O2 ratio
+	clrf	xB+1
+	call	mult16x16               ; char_I_O2_ratio * p_amb/10
+    call    TFT_standard_color
+	TFT_color_code		warn_ppo2		; Color-code output (ppO2 stored in xC)
+    WIN_MEDIUM   dm_custom_s_check_ppo2_dil_col, dm_custom_s_check_value_row
+;    ; hijacking neg_flag_velocity to know where the value is displayed
+    bsf     neg_flag_velocity
+    call    TFT_display_ppo2_com
+    return              ; Done.
+
+
     global  TFT_surface_tissues
 TFT_surface_tissues:             ; Show Tissue diagram in surface mode
     WIN_SMALL    surf_tissue_N2_column,surf_tissue_N2_row
@@ -3633,7 +3685,8 @@ TFT_show_ppO2_2:
 	return
 
 TFT_show_ppO2_3:
-    STRCAT  "'6.6"                      ; Workaround until a ">" is available in STD font
+;    STRCAT  "'6.6"                      ; Workaround until a ">" is available in STD font
+    STRCAT  "6.65"                      ; Workaround until a ">" is available in STD font
 	bra		TFT_show_ppO2_2
 
 

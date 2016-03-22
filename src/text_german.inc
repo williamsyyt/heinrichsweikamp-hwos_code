@@ -238,6 +238,7 @@
     TCODE   tCeiling,       "Ceiling"       ; Ceiling
     TCODE   tDiveSafetyStop,"Stop"         ; Stop (Four chars, right alligned)
     TCODE   tDiveFallback,  "Fallback!"     ; Fallback! (max. nine chars)
+    TCODE   tSensorCheck,   "Sensor Test"   ; Sensor Check
 
 ; Divemode menu
     TCODE   tDivePreMenu,   "Menü?"         ; Menu?
