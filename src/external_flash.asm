@@ -199,6 +199,7 @@ ext_flash_byte_write:
 	
 	global	ext_flash_disable_protection		; Disable write protection
 ext_flash_disable_protection:
+    ; unlock old memory
 	bsf			flash_ncs			; CS=1
 	movlw		0x50				; EWSR command
 	rcall		write_spi
@@ -209,10 +210,20 @@ ext_flash_disable_protection:
 	movlw		b'00000000'			; New status
 	rcall		write_spi
 	bsf			flash_ncs			; CS=1
+
+    ; unlock new memory
+	bsf			flash_ncs			; CS=1
+	movlw		0x06				; WREN command
+	rcall		write_spi
+	bsf			flash_ncs			; CS=1
+	movlw		0x98				; ULBPR command
+	rcall		write_spi
+	bsf			flash_ncs			; CS=1
 	return
 
 	global	ext_flash_enable_protection
 ext_flash_enable_protection:
+    ; lock old memory
 	bsf			flash_ncs			; CS=1
 	movlw		0x50				; EWSR command
 	rcall		write_spi
@@ -223,6 +234,22 @@ ext_flash_enable_protection:
 	movlw		b'00011100'			; New status (Write protect on)
 	rcall		write_spi
 	bsf			flash_ncs			; CS=1
+
+    ; lock new memory
+	bsf			flash_ncs			; CS=1
+	movlw		0x06				; WREN command
+	rcall		write_spi
+	bsf			flash_ncs			; CS=1
+	movlw		0x42				; WBPR command
+	rcall		write_spi
+    movlw       .18
+    movwf       temp1
+ext_flash_enable_protection2:
+    movlw       0xFF
+    rcall		write_spi
+    decfsz      temp1,F             ; 18 bytes with 0xFF
+    bra         ext_flash_enable_protection2
+    bsf			flash_ncs			; CS=1
 	return
 
 
@@ -247,29 +274,31 @@ ext_flash_wait_write:
 	bra			ext_flash_wait_write	; Yes, wait more..
 	return
 
-	global	ext_flash_erase_logbook	; erases logbook memory (000000h -> 2FFFFFh -> 3MByte)
+	global	ext_flash_erase_logbook	; erases logbook memory (000000h -> 2FFFFFh -> 3MByte -> 3145728 Bytes)
 ext_flash_erase_logbook:
 	bsf			flash_ncs			; CS=1
 	clrf		ext_flash_address+0
 	clrf		ext_flash_address+1
 	clrf		ext_flash_address+2
 
-	movlw		d'48'
-	movwf		temp1				; 48*64kB=917504 Bytes
+	setf		temp1				; 256*12kB=3145728 Bytes
 ext_flash_erase_logbook_loop:
-	movlw		0x06				; WREN command
-	rcall		write_spi
-	bsf			flash_ncs			; CS=1
-	movlw		0xD8				; 64kB erase command
-	rcall		write_spi
-    rcall       ext_flash_write_address ; Write 24bit address ext_flash_address:3 via SPI
-	bsf			flash_ncs			; CS=1
-	rcall		ext_flash_wait_write	; Wait for write...
-
-	incf		ext_flash_address+2,F	; 64kB ahead
+    rcall       ext_flash_erase4kB  ; 4kB
+    rcall       ext_flash_add_4kB   ; Increase ext_flash_address:3 by 4kB
+    rcall       ext_flash_erase4kB  ; 4kB
+    rcall       ext_flash_add_4kB   ; Increase ext_flash_address:3 by 4kB
+    rcall       ext_flash_erase4kB  ; 4kB
+    rcall       ext_flash_add_4kB   ; Increase ext_flash_address:3 by 4kB
 	decfsz		temp1,F
 	bra			ext_flash_erase_logbook_loop
 	return
+
+ext_flash_add_4kB:
+    movlw       0x10
+    addwf       ext_flash_address+1,F
+    movlw		d'0'
+    addwfc		ext_flash_address+2,F
+    return
 
 
 write_spi:		; With data in WREG...
