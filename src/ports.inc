@@ -50,7 +50,7 @@
 ; PORTE
 #DEFINE	RE0_unused		PORTE,0	; unused
 #DEFINE	ir_power		PORTE,1	; Power supply for IR
-#DEFINE	mcp_ncs			PORTE,2	; RX /CS
+#DEFINE	charge_disable		PORTE,2	; ex. mcp_ncs (RX /CS) (Available from hardware rev x.x only)
 #DEFINE	LEDr			PORTE,3	; LED red
 #DEFINE	power_sw2		PORTE,4	; Power supply for switch1 circuit
 #DEFINE	RE5_unused		PORTE,5	; unused
