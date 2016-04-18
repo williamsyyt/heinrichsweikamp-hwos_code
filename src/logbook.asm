@@ -499,7 +499,7 @@ log_skip_extra_icon:
 	infsnz		y_scale+0,F         ; increase one, because there may be a remainder
 	incf		y_scale+1,F
 	
-	movlw		LOW		((profile_height_pixels+1)*.1000)
+	movlw		LOW	((profile_height_pixels+1)*.1000)
 	movwf		xC+0
 	movlw		HIGH	(((profile_height_pixels+1)*.1000) & h'FFFF')
 	movwf		xC+1
