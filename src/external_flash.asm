@@ -212,7 +212,7 @@ ext_flash_disable_protection:
 	bsf			flash_ncs			; CS=1
 
     ; unlock new memory
-	bsf			flash_ncs			; CS=1
+;	bsf			flash_ncs			; CS=1
 	movlw		0x06				; WREN command
 	rcall		write_spi
 	bsf			flash_ncs			; CS=1
@@ -233,7 +233,7 @@ ext_flash_enable_protection:
 	rcall		write_spi
 	movlw		b'00011100'			; New status (Write protect on)
 	rcall		write_spi
-	bsf			flash_ncs			; CS=1
+;	bsf			flash_ncs			; CS=1
 
     ; lock new memory
 	bsf			flash_ncs			; CS=1
@@ -265,7 +265,7 @@ ext_flash_erase4kB:
 	bsf			flash_ncs			; CS=1
 ;	bra			ext_flash_wait_write	; Wait for write... and return
 ext_flash_wait_write:
-	WAITMS		d'1'				; TBE=25ms...
+	WAITMS		d'5'				; TBE/TSE=25ms...
 	movlw		0x05				; RDSR command
 	rcall		write_spi			; Read status
 	rcall		write_spi			; Read status into WREG

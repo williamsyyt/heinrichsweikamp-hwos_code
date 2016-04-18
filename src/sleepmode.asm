@@ -36,7 +36,7 @@ sleeploop:							; enter sleepmode!
     call    mcp_sleep
 	bcf		LEDg
 	bcf		LEDr
-    movff   menupos3,customview_surfmode; save last customview
+	movff   menupos3,customview_surfmode; save last customview
 	call	TFT_Display_FadeOut
 	call	TFT_DisplayOff			; display off
 	call	disable_rs232			; USB off

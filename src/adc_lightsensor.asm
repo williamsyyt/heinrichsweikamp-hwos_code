@@ -438,6 +438,20 @@ get_analog_inputs4:
 
     global  piezo_config            ; Sets up piezo sensitivity of heinrichs weikamp Piezo buttons (~30ms)
 piezo_config:   ; Settings between 20 and 200
+        clrf	TMR5H
+	clrf	TMR5L	    ; ~2sec
+	bcf		PIR5,TMR5IF			; Clear flag
+	bcf	switch_right
+	bcf	switch_left
+piezo_config0:
+	btfsc	switch_right
+	bra	piezo_config
+	btfsc	switch_left
+	bra	piezo_config		; Restart on button press
+    
+	btfss	PIR5,TMR5IF
+	bra	piezo_config0			; Wait loop
+    
     movff   opt_cR_button_right,WREG; right button
     btfsc   flip_screen             ; 180° rotation ?
     movff   opt_cR_button_left,WREG ; Yes, left button
