@@ -1,3 +1,7 @@
+[2.05]
+NEW: Support for new logbook memory chip (minor hardware change)
+BUGFIX: Button sensitivity was not reset after update in some cases
+
 [2.04]
 - Beta Version -
 NEW: New Customview shows ppO2(O2) and ppO2(Diluent) during CCR mode

@@ -135,24 +135,25 @@ no_deco_restore:
 	; "new_battery_menu" and "use_old_batteries" 'goto' back to "power_on_return"
     ; *****************************************************************************
 
-	btfsc	RCON,POR						; Was this a power-on reset?
-    goto	use_old_batteries				; No, load last stored battery values
+    btfsc	RCON,POR					; Was this a power-on reset?
+    goto	use_old_batteries				; No, load last stored battery values and return to "power_on_return:"
+    goto	new_battery_menu				; No, show "New battery dialog" and return to "power_on_return:"
+
+	global	power_on_return
+power_on_return:
+    bsf		RCON,POR						; Set bit for next detection
 
     call    lt2942_get_status               ; Check for gauge IC
-
     btfss   rechargeable                    ; cR or 2 hardware?
- 	goto	new_battery_menu				; No, show "New battery dialog"
+    bra	    power_on_return2		    ; no
 
     movlw   .30
     movff   WREG,opt_cR_button_right
     movff   WREG,opt_cR_button_left         ; Reset on power-on reset
     call    piezo_config                    ; Yes, configure buttons
-    goto	use_old_batteries				; Yes, load last stored battery values
+    call    piezo_config                    ; Yes, configure buttons (2 times)
 
-	global	power_on_return
-power_on_return:
-	bsf		RCON,POR						; Set bit for next detection
-
+power_on_return2:
 ; check firmware and reset Custom Functions after an update
 	movlw	d'1'
 	movwf	EEADR                   ; =1
