@@ -58,7 +58,7 @@
             aa_start:2                  ; PROM ptr to start of encoded bitmap
             aa_end:2                    ; and end of it.
             aa_temp:2                   ; Current color, divided by 2 or 4
-            ; Reserved to tmp+0x07...
+            ; Reserved to tmp+0x08...
         ENDC
 ; Flags allocation:
 #define		aa_antialias	aa_flags,0

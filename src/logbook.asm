@@ -30,7 +30,7 @@
 
    	extern   do_main_menu2,comm_mode
 
-    CBLOCK tmp+0x35		        ; Keep space for menu processor.
+    CBLOCK tmp+0x36		        ; Keep space for menu processor.
         count_temperature       ; Current sample count for temperature divisor
         count_deco              ; Current sample count for deco (ceiling) divisor
         logbook_cur_depth:2     ; Current depth, for drawing profile.
@@ -39,23 +39,23 @@
         logbook_min_tp:2        ; Min temperature, for drawing profile.
         logbook_max_tp:2        ; Maximum temperature, for drawing profile.
         logbook_ceiling         ; Current ceiling, for drawing profile.
-		logbook_flags			; Flags only used in logbook.asm
-		logbook_page_number		; Page# in logbook
-		logbook_divenumber		; # of dive in list during search
-		logbook_divenumber_temp	; # of dive in list during search
-		logbook_menupos_temp	; Last position of cursor
-		profile_temp:2			; Temp for profile display
-		profile_temp2:2			; Temp for profile display
-		logbook_max_dive_counter	; Counts dive# to zero 
-		logbook_max_dive_counter_temp; Counts dive# to zero 
-		logbook_sample_counter:2	; Amount of read samples
-		divemins_backup				; Backup of divemins+0
-		y_scale:2					; y-scale (The horizontal lines)
-		x_scale:2					; x-scale (The vertical lines)
-		logbook_pixel_x_pos		; x2 position of current pixel in X-direction
+	logbook_flags		; Flags only used in logbook.asm
+	logbook_page_number	; Page# in logbook
+	logbook_divenumber	; # of dive in list during search
+	logbook_divenumber_temp	; # of dive in list during search
+	logbook_menupos_temp	; Last position of cursor
+	profile_temp:2		; Temp for profile display
+	profile_temp2:2		; Temp for profile display
+	logbook_max_dive_counter	; Counts dive# to zero 
+	logbook_max_dive_counter_temp; Counts dive# to zero 
+	logbook_sample_counter:2; Amount of read samples
+	divemins_backup		; Backup of divemins+0
+	y_scale:2		; y-scale (The horizontal lines)
+	x_scale:2		; x-scale (The vertical lines)
+	logbook_pixel_x_pos	; x2 position of current pixel in X-direction
         logbook_min_temp_pos    ; lowest row in the temp graph
         logbook_max_temp_pos    ; lowest row in the temp graph
-		;+.33, reserved to tmp+0x56
+		;+.33, reserved to tmp+0x57
     ENDC
 
 	#DEFINE	return_from_profileview	logbook_flags,0
