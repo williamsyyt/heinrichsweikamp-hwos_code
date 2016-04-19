@@ -20,8 +20,8 @@
 
 ; Firmware definition
 #DEFINE	softwareversion_x		d'2'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'05'		; Software version  XX.YY
-#DEFINE softwareversion_beta 	0 			; (and 0 for release)
+#DEFINE	softwareversion_y		d'06'		; Software version  XX.YY
+#DEFINE softwareversion_beta 	1 			; (and 0 for release)
 ; Firmware version will appear in "Change Firmware" style
 #DEFINE firmware_expire_year    .17
 #DEFINE firmware_expire_month   .3
@@ -509,7 +509,7 @@ safety_stop_countdown	res 1	; counts seconds of safety stop
 
 tmp             udata_ovr   0x1A0       ; Bank1 shared TMP space
 tmp             equ         0x1A0       ; Alias for CBLOCK directive.
-                res         0x060       ; RESERVED area.
+                res         0x05F       ; RESERVED area.
 
 ;---------------------------- Common2 DATA ------------------------------------
 

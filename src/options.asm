@@ -36,7 +36,7 @@
 
 
 ;=============================================================================
-        CBLOCK  tmp+0x10                ; Reserve space for wordprocessor & convert
+        CBLOCK  tmp+0x12                ; Reserve space for wordprocessor & convert
             opt_type
             opt_default
             opt_inc                     ; Also default+1 (string), and enum low
@@ -45,7 +45,7 @@
             opt_unit:2                  ; Multi-lingual unit text.
             opt_eeprom
             opt_backup_tbl:3
-            ; Reserved to tmp+0x1F...
+            ; Reserved to tmp+0x1C...
         ENDC
 
 gui     CODE                            ; Appends to other GUI segment

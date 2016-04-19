@@ -38,14 +38,14 @@ gui     CODE
     extern  do_planner_menu
 
 ;---- Private temp variables -------------------------------------------------
-        CBLOCK  tmp+0x10                ; Reserved space for wordprocessor and convert
+        CBLOCK  tmp+0x12                ; Reserved space for wordprocessor and convert
             decoplan_index              ; within each page
             decoplan_gindex             ; global index
             decoplan_last               ; Depth of last stop (CF#29)
             decoplan_flags              ; Various private flags.
             decoplan_CNS:2              ; Backup CNS before vault restore
             decoplan_page               ; page number
-            ; Reserved to tmp+0x16...
+            ; Reserved to tmp+0x18...
         ENDC
 #define decoplan_last_ceiling_shown   decoplan_flags,0
 

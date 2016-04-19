@@ -15,11 +15,11 @@
 
 ;=============================================================================
 
-        CBLOCK  tmp+0x08                ; space for aa_wordprocessor
+        CBLOCK  tmp+0x09                ; space for aa_wordprocessor
         	temp3
         	temp4
         	cvt_flags2
-            ; Reserved to tmp+0x10...
+            ; Reserved to tmp+0x11...
         ENDC
 
 #define pre_zero_flag   cvt_flags2,0
