@@ -1,3 +1,6 @@
+[2.06]
+CHANGE: Remove ppO2 [Dil] from OC dive mode screen
+
 [2.05]
 NEW: Support for new logbook memory chip (minor hardware change)
 BUGFIX: Button sensitivity was not reset after update in some cases
