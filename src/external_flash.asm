@@ -182,13 +182,16 @@ ext_flash_byte_write:
 	movlw		0x06				; WREN command
 	rcall		write_spi
 	bsf			flash_ncs			; CS=1
-	movlw		0x02				; Write command
+	movlw		0x02				; Write (PP, Page-Program) command
 	rcall		write_spi
 	rcall       ext_flash_write_address ; Write 24bit address ext_flash_address:3 via SPI
 	movf		temp1,W				; load data byte
 	rcall		write_spi			; write one byte of data!
 	bsf			flash_ncs			; CS=1
-	return
+	bra	ext_flash_wait_write	    ; And return...
+;	
+;	
+;	return
 	
 	global	ext_flash_disable_protection		; Disable write protection
 ext_flash_disable_protection:
@@ -273,7 +276,7 @@ ext_flash_erase4kB:
 	bsf			flash_ncs			; CS=1
 ;	bra			ext_flash_wait_write	; Wait for write... and return
 ext_flash_wait_write:
-	WAITMS		d'5'				; TBE/TSE=25ms...
+	WAITMS		d'1'				; TBE/TSE=25ms...
 	movlw		0x05				; RDSR command
 	rcall		write_spi			; Read status
 	rcall		write_spi			; Read status into WREG
