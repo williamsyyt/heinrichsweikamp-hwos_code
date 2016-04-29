@@ -304,7 +304,8 @@ comm_erase_range4kb:
     btfsc   rs232_recieve_overflow      ; Got byte?
     bra     comm_download_mode0         ; No, Done.
     movff   RCREG1,lo
-; Got 4bytes: 3bytes address and 1 bytes (lo) amount of 4kB blocks
+
+    ; Got 4bytes: 3bytes address and 1 bytes (lo) amount of 4kB blocks
 
 comm_erase_range4kb1:
     call    ext_flash_erase4kB          ; Erase block!
@@ -346,11 +347,11 @@ comm_write_range:				; Get 3 bytes start address
 comm_write_range_loop:
 	rcall	comm_write_get_byte
 	btfsc	rs232_recieve_overflow      ; Got byte?
-	bra		comm_download_mode0         ; No, Done (and send OK byte too).
+	bra	comm_download_mode0         ; No, Done (and send OK byte too).
 	movf	RCREG1,W
 	call	ext_flash_byte_write        ; write one byte
 	call	incf_ext_flash_address_p1   ; increase address+1
-	bra		comm_write_range_loop
+	bra	comm_write_range_loop
 
 ;-----------------------------------------------------------------------------
 

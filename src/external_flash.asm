@@ -68,13 +68,6 @@ decf_ext_flash_address0:
 	setf		ext_flash_address+0
 	return
 
-	global	ext_flash_power_down
-ext_flash_power_down:
-	movlw		0x04				; Write disable
-	rcall		write_spi
-	bsf			flash_ncs			; CS=1
-	return
-
 	global	ext_flash_byte_read_plus	; Return data read in WREG and SSP2BUF and 
 ext_flash_byte_read_plus:				; increase address after read
 	rcall	ext_flash_byte_read
@@ -191,7 +184,7 @@ ext_flash_byte_write:
 	bsf			flash_ncs			; CS=1
 	movlw		0x02				; Write command
 	rcall		write_spi
-    rcall       ext_flash_write_address ; Write 24bit address ext_flash_address:3 via SPI
+	rcall       ext_flash_write_address ; Write 24bit address ext_flash_address:3 via SPI
 	movf		temp1,W				; load data byte
 	rcall		write_spi			; write one byte of data!
 	bsf			flash_ncs			; CS=1
@@ -213,12 +206,27 @@ ext_flash_disable_protection:
 
     ; unlock new memory
 ;	bsf			flash_ncs			; CS=1
+;	movlw		0x06				; WREN command
+;	rcall		write_spi
+;	bsf			flash_ncs			; CS=1
+;	movlw		0x98				; ULBPR command
+;	rcall		write_spi
+;	bsf			flash_ncs			; CS=1
+
+	;bsf			flash_ncs			; CS=1
 	movlw		0x06				; WREN command
 	rcall		write_spi
 	bsf			flash_ncs			; CS=1
-	movlw		0x98				; ULBPR command
+	movlw		0x42				; WBPR command
 	rcall		write_spi
-	bsf			flash_ncs			; CS=1
+	movlw       .18
+	movwf       temp1
+ext_flash_disable_protection2:
+	movlw       0x00
+	rcall		write_spi
+        decfsz      temp1,F             ; 18 bytes with 0x00
+	bra         ext_flash_disable_protection2
+        bsf			flash_ncs			; CS=1
 	return
 
 	global	ext_flash_enable_protection
