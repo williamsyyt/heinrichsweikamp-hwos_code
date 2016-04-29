@@ -9,8 +9,7 @@
 ;  2011-08-12 : [mH] creation
 
 ; Misc
- extern	ext_flash_power_down		; Put Flash in Deep Power Down
- extern	incf_ext_flash_address_p1	; +1 for the ext_flash_address:3
+  extern	incf_ext_flash_address_p1	; +1 for the ext_flash_address:3
  extern ext_flash_disable_protection; Disables write protection
  extern	ext_flash_enable_protection	; Enables write protection
  extern fix_180_dives               ; fix dives made with the 1.80
