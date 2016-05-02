@@ -349,7 +349,9 @@ comm_write_range_loop:
 	btfsc	rs232_recieve_overflow      ; Got byte?
 	bra	comm_download_mode0         ; No, Done (and send OK byte too).
 	movf	RCREG1,W
-	call	ext_flash_byte_write        ; write one byte
+;	bsf	NCTS	    ; Hold Bluetooth Chip (Requires PC/Android/iOS side to use flow control...)
+	call	ext_flash_byte_write_comms        ; write one byte
+;	bcf	NCTS	    ; Release Bluetooth Chip (Requires PC/Android/iOS side to use flow control...)
 	call	incf_ext_flash_address_p1   ; increase address+1
 	bra	comm_write_range_loop
 

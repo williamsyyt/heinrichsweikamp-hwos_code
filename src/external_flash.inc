@@ -20,6 +20,7 @@
  extern write_byte_ext_flash_plus_nodel ; Does NOT delete 4kB Page when required
  extern write_byte_ext_flash_plus_header ; Write from WREG and increase address after write
  extern ext_flash_byte_write		; Writes one byte from WREG @ext_flash_address:3
+ extern	ext_flash_byte_write_comms	; without wait, ~86us fixed delay due to 115200 Bauds (Use with caution)
  extern	write_spi1					; Just (dummy)write to read a byte
 
 ; Delelte
