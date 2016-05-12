@@ -1050,7 +1050,9 @@ comm_read_setting:
     movff   opt_safety_stop_end, TXREG1     ; RCREG1=0x45
     dcfsnz  WREG
     movff   opt_safety_stop_reset, TXREG1   ; RCREG1=0x46
-
+    dcfsnz  WREG
+    clrf    TXREG1			    ; RCREG1=0x47, ignore conservatism for standard hwOS
+    
 comm_read_abort:
 comm_read_done:
     bra		comm_download_mode0             ; Done. Loop with timeout reset
@@ -1348,6 +1350,8 @@ comm_write_setting:
     movff   RCREG1, opt_safety_stop_end     ; RCREG1=0x45
     dcfsnz  WREG
     movff   RCREG1, opt_safety_stop_reset   ; RCREG1=0x46
+    dcfsnz  WREG
+    nop					    ; RCREG1=0x47, ignore conservatism for standard hwOS
 
 
 comm_write_abort:
