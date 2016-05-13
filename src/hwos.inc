@@ -674,7 +674,7 @@ opt_safety_stop_reset   res 1   ; [cbar]
 #DEFINE in_color_menu           flag9,1 ; =1: In the color scheme menu
 #DEFINE bailoutgas_event        flag9,2 ; =1: bailout was selected or a gaschange during bailout
 #DEFINE win_invert              flag9,3 ; =1: Invert font output
-#DEFINE show_safety_stop		flag9,4	; =1: Show the safety stop
+#DEFINE show_safety_stop	flag9,4	; =1: Show the safety stop
 #DEFINE	safety_stop_active      flag9,5	; =1: The safety stop is currently displayed
 #DEFINE new_s8_data_available   flag9,6 ; =1: New data frame recieved
 #DEFINE print_compass_label     flag9,7 ; =1: print the graphical comapss label
