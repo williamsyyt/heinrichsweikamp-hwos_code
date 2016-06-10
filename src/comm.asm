@@ -27,7 +27,7 @@
     extern  option_check_all, gaslist_cleanup_list, get_first_gas_to_WREG, get_first_dil_to_WREG
     extern  vault_decodata_into_eeprom
 
-#DEFINE timeout_comm_pre_mode   .120        ; Pre-loop
+#DEFINE timeout_comm_pre_mode   .240        ; Pre-loop
 #DEFINE timeout_comm_mode       .120        ; Download mode
 #DEFINE timeout_service_mode    .120        ; Service mode
 
