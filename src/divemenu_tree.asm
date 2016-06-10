@@ -71,7 +71,7 @@ do_togglegf:
 
 do_switch_to_sensor:
     movlw   .1                      ; Switch to Sensor
-    movff   WREG,opt_ccr_mode       ; =0: Fixed SP, =1: Sensor
+    movff   WREG,opt_ccr_mode       ; =0: Fixed SP, =1: Sensor,  =2: Auto SP
     bsf     voting_logic_sensor1
     bsf     voting_logic_sensor2
     bsf     voting_logic_sensor3
@@ -119,7 +119,7 @@ do_switch_sp:
     call    setup_dil_registers     ; With WREG=Gas 0-4
 
     clrf    WREG                    ; Switch to fixed SP
-    movff   WREG,opt_ccr_mode       ; =0: Fixed SP, =1: Sensor
+    movff   WREG,opt_ccr_mode       ; =0: Fixed SP, =1: Sensor,  =2: Auto SP
     clrf    WREG
     movff   WREG,char_O_deco_status ; Restart decoplan computation
 
