@@ -24,7 +24,7 @@
 #DEFINE softwareversion_beta 	1 			; (and 0 for release)
 ; Firmware version will appear in "Change Firmware" style
 #DEFINE firmware_expire_year    .17
-#DEFINE firmware_expire_month   .3
+#DEFINE firmware_expire_month   .6
 #DEFINE firmware_expire_day     .10
 
 #DEFINE comm_service_key        0xABCDEF
@@ -411,6 +411,7 @@ ignore_digits   res 1
 #define ignore_digit5       cvt_flags,3
 #DEFINE enable_screen_dumps cvt_flags,4 ; =1: Ignore vin_usb, wait for "l" command (Screen dump
 #DEFINE screen_type         cvt_flags,5 ; =1: display1, =0; display0
+#DEFINE	compass_type	    cvt_flags,6 ; =1: compass1, =0: compass0
 
 ;---- Misc.
 nofly_time              res 2   		; No Fly time in Minutes (Calculated after Dive)

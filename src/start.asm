@@ -189,9 +189,9 @@ check_firmware_new:
     call    color_image             ; Show logo
 	call	TFT_standard_color
 	WIN_SMALL   .10,.100
-	STRCPY_TEXT_PRINT	tNewFirmware1	; "Update successfull!"
+	STRCPY_PRINT	"Update successful!"		; Hard coded since language switch does not work here
 	WIN_SMALL   .10,.140
-	STRCPY_TEXT	tNewFirmware2			; "New Firmware: "
+	STRCPY		"New Firmware: "
 	movlw	softwareversion_x
 	movwf	lo
 	bsf		leftbind
