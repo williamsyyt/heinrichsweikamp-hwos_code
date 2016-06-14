@@ -283,10 +283,6 @@
 	TCODE	tSetMonth,	"Set Month"			; Set Month
 	TCODE	tSetYear,	"Set Year"			; Set Year
 
-; After update texts
-	TCODE	tNewFirmware1, "Update successful!"	; Update successful!
-	TCODE	tNewFirmware2, "New Firmware: "		; New Firmware: 
-
 ; Logbook Offset Menu
 	TCODE	tLogOffset,		"Logbook offset"	; Logbook offset
 	TCODE	tLogOffsetp1,	"+1"				; +1
