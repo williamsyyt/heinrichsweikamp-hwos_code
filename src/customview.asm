@@ -31,52 +31,45 @@ gui     CODE
 customview_second:
 	movff	menupos3,WREG               ; copy
 	dcfsnz	WREG,F
-	bra		customview_1sec_view1
+	goto    TFT_update_ppo2_sensors         ; Update Sensor data ; and return;		  bra		customview_1sec_view1
 	dcfsnz	WREG,F
-	bra		customview_1sec_view2
+	goto    TFT_update_avr_stopwatch        ; Update average depth and stopwatch; and return ;bra		customview_1sec_view2
 	dcfsnz	WREG,F
-	bra		customview_1sec_view3
+	goto    TFT_decoplan                    ; Show decoplan ; and return;			  bra		customview_1sec_view3
 	dcfsnz	WREG,F
-	bra		customview_1sec_view4
+	goto    TFT_ead_end_tissues_clock       ; Update EAD/END, Tissues and clock ; and return; bra		customview_1sec_view4
 	dcfsnz	WREG,F
-	bra		customview_1sec_view5
+	goto    TFT_gf_info                     ; Update GF informations ; and return		  bra		customview_1sec_view5
 	dcfsnz	WREG,F
-	bra		customview_1sec_view6
+        return  ; Compass updated seperately (Faster) in divemode;				  bra		customview_1sec_view6
 	dcfsnz	WREG,F
-	bra		customview_1sec_view7
+	goto    TFT_dyn_gaslist                 ; Update the gaslist ; and return		  bra		customview_1sec_view7
 	dcfsnz	WREG,F
-	bra		customview_1sec_view8
+	goto    TFT_hud_voltages                ; Show HUD details	; and return	          bra		customview_1sec_view8
 	dcfsnz	WREG,F
 	bra		customview_1sec_view9           ; Make sure to change value in "check_ppo2_display:" when moving around custom views
 	dcfsnz	WREG,F
-	bra		customview_1sec_view10
+	goto    TFT_sensor_check                ; Show ppO2 of O2 and Diluent ; and return	  bra		customview_1sec_view10
 	; Menupos3=0, do nothing
 	return
 
-customview_1sec_view3:
-    call    TFT_decoplan                    ; Show decoplan
-    return
-customview_1sec_view2:
-    call    TFT_update_avr_stopwatch        ; Update average depth and stopwatch
-    return
-customview_1sec_view1:
-    call    TFT_update_ppo2_sensors         ; Update Sensor data
-    return
-customview_1sec_view4:
-    call    TFT_ead_end_tissues_clock       ; Update EAD/END, Tissues and clock
-    return
-customview_1sec_view5:
-    call    TFT_gf_info                     ; Update GF informations
-    return
-customview_1sec_view6:
-    ; Compass updated seperately (Faster) in divemode
-    return
-customview_1sec_view7:                      ; Dynamic gaslist
-    call    TFT_dyn_gaslist                 ; Update the gaslist
-    return
-customview_1sec_view8:                      ; Sensor voltages
-    call    TFT_hud_voltages                ; Show HUD details
-    return
+;customview_1sec_view3:
+;    goto    TFT_decoplan                    ; Show decoplan ; and return
+;customview_1sec_view2:
+;    goto    TFT_update_avr_stopwatch        ; Update average depth and stopwatch; and return
+;customview_1sec_view1:
+;    goto    TFT_update_ppo2_sensors         ; Update Sensor data ; and return
+;customview_1sec_view4:
+;    goto    TFT_ead_end_tissues_clock       ; Update EAD/END, Tissues and clock ; and return
+;customview_1sec_view5:
+;    goto    TFT_gf_info                     ; Update GF informations ; and return
+;customview_1sec_view6:
+;    return  ; Compass updated seperately (Faster) in divemode
+;
+;customview_1sec_view7:                      ; Dynamic gaslist
+;    goto    TFT_dyn_gaslist                 ; Update the gaslist ; and return
+;customview_1sec_view8:                      ; Sensor voltages
+;    goto    TFT_hud_voltages                ; Show HUD details	; and return
 customview_1sec_view9:                      ; Ceiling
     call    TFT_ceiling                     ; Show Ceiling
 
@@ -87,13 +80,10 @@ customview_1sec_view9:                      ; Ceiling
     extern  char_I_deco_model
     TSTOSS  char_I_deco_model               ; 0 = ZH-L16, 1 = ZH-L16-GF
     return                                  ; No GF info for non-GF modes
-    call    TFT_gf_info                     ; Update GF informations
+    goto    TFT_gf_info                     ; Update GF informations ; and return
 
-    return
-
-customview_1sec_view10:                     ; Sensor check
-    call    TFT_sensor_check                ; Show ppO2 of O2 and Diluent
-    return
+;customview_1sec_view10:                     ; Sensor check
+;    goto    TFT_sensor_check                ; Show ppO2 of O2 and Diluent ; and return
 
 
 ;=============================================================================
@@ -331,12 +321,12 @@ menuview_view2:
 menuview_view3:
     btfss  	simulatormode_active			; View only for simulator mode
 	bra		menuview_toggle 				; Call next option
-	STRCPY_TEXT_PRINT tDescent1m			; "Descent 1m"
+	STRCPY_PRINT "Sim:-1m"
     bra     menuview_exit                   ; Done.
 menuview_view4:
     btfss  	simulatormode_active			; View only for simulator mode
 	bra		menuview_toggle 				; Call next option
-	STRCPY_TEXT_PRINT tAscent1m				; "Ascend 1m"
+	STRCPY_PRINT "Sim:+1m"
     bra     menuview_exit                   ; Done.
 menuview_view5:
 	btfss	FLAG_apnoe_mode					; In Apnoe mode?
@@ -358,7 +348,7 @@ menuview_view7:
 	bra		menuview_toggle 				; Yes, call next option
 	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
 	bra		menuview_toggle 				; Yes, call next option
-	STRCPY_TEXT_PRINT	tplus5min           ; "Sim:+5mins"
+	STRCPY_PRINT	"Sim:+5'"
 	bra     menuview_exit                   ; Done.
 menuview_view8:
     movlw   .6

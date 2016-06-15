@@ -39,8 +39,7 @@ do_main_menu2:
 		call    menu_processor_reset    ; restart from first icon.
 
 do_continue_main_menu:
-        call    menu_processor_pop      ; drop exit line.
-        call    menu_processor_pop      ; back to last icon.
+	rcall	menu_tree_double_pop	; drop exit line and back to last line
 
         extern  do_demo_divemode, restart
     MENU_BEGIN  tMainMenu, .7
@@ -66,8 +65,7 @@ do_info_menu:
 ; CCR Setup
 
 return_ccr_menu:
-        call    menu_processor_pop      ; drop exit line.
-        call    menu_processor_pop      ; back to last gas.
+    	rcall	menu_tree_double_pop	; drop exit line and back to last line
 
 do_ccr_menu:
     bcf     menu_show_sensors           ; Clear flag
@@ -148,8 +146,7 @@ do_diluent_setup:
     MENU_END
 
 do_return_fixed_setpoints:
-        call    menu_processor_pop      ; drop exit line.
-        call    menu_processor_pop      ; back to last gas.
+    	rcall	menu_tree_double_pop	; drop exit line and back to last line
 
 do_fixed_setpoints:
         bcf     short_gas_decriptions   ; =1: Use short versions of gaslist_strcat_gas_mod and gaslist_strcat_setpoint
@@ -176,8 +173,7 @@ do_edit_sp_menu:
 ; OC Gas Setup
 
 return_gas_menu:
-        call    menu_processor_pop      ; drop exit line.
-        call    menu_processor_pop      ; back to last gas.
+    	rcall	menu_tree_double_pop	; drop exit line and back to last line
 
         btfsc   ccr_diluent_setup       ; Return to CCR-Menu?
         bra     do_diluent_setup        ; Yes.
@@ -195,8 +191,7 @@ do_gas_menu:
     MENU_END
 
 return_gas_depth:
-        call    menu_processor_pop      ; drop exit line.
-        call    menu_processor_pop      ; back to last gas.
+    	rcall	menu_tree_double_pop	; drop exit line and back to last line
         bra     do_edit_gas_menu_1
 
 do_edit_gas_menu:
@@ -222,6 +217,11 @@ do_setup_mix:
         MENU_CALL       tExit,                  return_gas_depth
     MENU_END
 
+menu_tree_double_pop:    
+        call    menu_processor_pop      ; drop exit line.
+        goto	menu_processor_pop      ; back to last gas and return
+
+    
     global  do_gas_depth_menu
 do_gas_depth_menu:
     movff   gaslist_gas,WREG
@@ -284,8 +284,7 @@ do_planner_config:
 ; Divemode menu
 
 do_return_divemode_menu:
-        call    menu_processor_pop      ; drop exit line.
-        call    menu_processor_pop      ; back to last gas.
+    	rcall	menu_tree_double_pop	; drop exit line and back to last line
 
 do_divemode_menu:
     MENU_BEGIN  tDiveModeMenu, .7
@@ -307,8 +306,7 @@ do_ppo2_menu:
     MENU_END
 
 do_return_decoparameters_menu:
-        call    menu_processor_pop      ; drop exit line.
-        call    menu_processor_pop      ; back to setting
+    	rcall	menu_tree_double_pop	; drop exit line and back to last line
 do_decoparameters_menu:
     MENU_BEGIN  tDecoparameters, .7
         MENU_OPTION  tGF_low,   oGF_low,        0
@@ -332,8 +330,7 @@ do_aGF_menu:
 
 do_return_settings:
 		bcf		settime_setdate					; Clear flag
-        call    menu_processor_pop              ; Drop exit entry
-        call    menu_processor_pop              ; Pop return line.
+	rcall	menu_tree_double_pop	; drop exit line and back to last line
         
         extern  compass_calibration_loop
 do_settings_menu:
@@ -360,8 +357,7 @@ do_settings_menu_ble:
     MENU_END
 
 do_return_settings_more:
-        call    menu_processor_pop              ; Drop exit entry
-        call    menu_processor_pop              ; Pop return line.
+    	rcall	menu_tree_double_pop	; drop exit line and back to last line
     
 do_settings_menu_more:
     btfsc   rechargeable            ; piezo buttons available
@@ -623,8 +619,7 @@ do_logoffset_plus10:
 
 do_dispsets_menu_3stack:
     bcf		in_color_menu
-    call    menu_processor_pop
-    call    menu_processor_pop
+    rcall	menu_tree_double_pop	; drop exit line and back to last line
 
 do_dispsets_menu:
     MENU_BEGIN  tDispSets, .5

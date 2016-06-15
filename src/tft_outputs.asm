@@ -92,8 +92,7 @@ TFT_standard_color:
     btfsc   divemode            ; in Divemode?
     rcall   TFT_standard_color_dive
 TFT_standard_color0:
-	call	TFT_set_color
-	return
+	goto	TFT_set_color	; and return...
 TFT_standard_color_dive:
     movff   opt_dive_color_scheme,WREG  ; 0-3
     incf    WREG
@@ -183,9 +182,8 @@ TFT_color_code_ceiling:
 	movf	xC+0,W						; Depth in m
 	subwf	lo,W
 	btfsc	STATUS,C
-	bra		TFT_warnings_color     	; Set to warning color
-	call	TFT_standard_color
-	return
+	bra	TFT_warnings_color     	; Set to warning color
+	bra	TFT_standard_color  ; and return...
 
 TFT_color_code_depth:
 	movff	hi,hi_temp
@@ -208,16 +206,16 @@ TFT_color_code_depth:
 ;TFT_color_code_depth_blink:
 	call	subU16			;  sub_c = sub_a - sub_b
 	btfss	neg_flag
-	bra		TFT_color_code_depth_warn ; Set to warning color
-    call    TFT_color_code_ppo2_depth  ; check depth against MOD
-    return
+	bra	TFT_color_code_depth_warn ; Set to warning color
+	bra    TFT_color_code_ppo2_depth  ; check depth against MOD	; and return...
+
 
 TFT_color_code_depth_std:
 	call	subU16			   ; sub_c = sub_a - sub_b
 	btfss	neg_flag
-	bra		TFT_warnings_color ; Set to warning color
-    call    TFT_standard_color
-	return
+	bra	TFT_warnings_color ; Set to warning color
+	bra    TFT_standard_color   ; and return...
+	
 
 TFT_color_code_ppo2_depth:
     SAFE_2BYTE_COPY amb_pressure, xA
@@ -280,18 +278,16 @@ TFT_color_code_cns:
 	movlw	color_code_cns_high		; CNS Warn [%]
 	subwf	lo,W
 	btfsc	STATUS,C
-	bra		TFT_warnings_color		; Set to warning color
-	call	TFT_standard_color
-	return
+	bra	TFT_warnings_color		; Set to warning color
+	bra	TFT_standard_color		; and return...
 
 TFT_color_code_gf:
 	movff	char_O_gradient_factor,lo		; gradient factor
 	movlw	color_code_gf_warn_high 	; GF Warn [%]
 	subwf	lo,W
 	btfsc	STATUS,C
-	bra		TFT_warnings_color         ; Set to warning color
-	call	TFT_standard_color
-	return
+	bra	TFT_warnings_color         ; Set to warning color
+	bra	TFT_standard_color	    ; and return...
 
 TFT_color_code_ppo2:
 ; Check if ppO2>6,55bar
@@ -319,9 +315,8 @@ TFT_color_code_ppo2:
 	movff	PRODH,sub_b+1
 	call	subU16			  		; sub_c = sub_a - sub_b
 	btfsc	neg_flag
-	bra		TFT_warnings_color     ; Set to warning color
-	call	TFT_standard_color
-	return
+	bra	TFT_warnings_color     ; Set to warning color
+	bra	TFT_standard_color	; and return...
 
 TFT_color_code_ppo2_hud:            ; With ppO2 [cbar] in lo
 	movff	opt_ppO2_max,WREG		; PPO2 Max for MOD calculation and color coding in divemode
@@ -334,15 +329,13 @@ TFT_color_code_ppo2_hud1:
     bra     TFT_color_code_ppo2_hud2; No
     bra     TFT_warnings_color     ; Yes
 TFT_color_code_ppo2_hud2:
-    call	TFT_standard_color
-    return
+    bra	   TFT_standard_color	; and return...
 
 TFT_color_code_battery:             ; With battery percent in lo
     movlw   color_code_battery_low
     cpfsgt  lo                      ; lo < color_code_battery_low ?
     bra     TFT_warnings_color     ; No
-    call	TFT_standard_color
-    return
+    bra	    TFT_standard_color	    ; and return...
 
 ; ****************************************************************************
 
@@ -519,8 +512,7 @@ TFT_divemode_mask:					; Displays mask in Dive-Mode
         call    TFT_draw_gassep_line
     endif
 
-    call	TFT_standard_color
-    return
+    bra		TFT_standard_color ; and return...
 
     global	TFT_draw_gassep_line
 TFT_draw_gassep_line:
@@ -533,8 +525,7 @@ TFT_draw_gassep_line:
         call        TFT_set_color
         WIN_FRAME_COLOR16   dm_gassep_row, dm_gassep_bot, dm_gassep_column, dm_gassep_column
     endif
-    call	TFT_standard_color
-    return
+    bra		TFT_standard_color ; and return...
 
 ;=========================================================================
 
@@ -660,7 +651,7 @@ TFT_velocity_disp:
 	output_16
 	bcf		leftbind
 	STRCAT_TEXT_PRINT  tVelImperial			; Unit switch
-    return
+        return
 
 TFT_velocity_metric:
 	movff	divA+0,lo						; divA+0 = m/min
@@ -670,7 +661,7 @@ TFT_velocity_metric:
 	movwf	POSTINC2
 	output_99
 	STRCAT_TEXT_PRINT  tVelMetric			; Unit switch
-    return
+        return
 
 TFT_velocity_graph:                         ; divA+0 = m/min
 	; divA+0 holding the ascend speed in m/min
@@ -790,8 +781,7 @@ TFT_display_ndl_mask:
     endif
    	WIN_STD 	dm_ndl_text_column, dm_ndl_text_row
 	STRCPY_TEXT_PRINT  tNDL             ; NDL
-	call	TFT_standard_color
-	return
+	bra	TFT_standard_color  ; and return...
 
 	global	TFT_show_TTS_divemode
 TFT_show_TTS_divemode:
@@ -897,15 +887,14 @@ TFT_display_deko:
 	movff	char_O_first_deco_time,lo   ; length of first stop in min
 	output_99
 	STRCAT_PRINT "'"
-	call	TFT_standard_color
-    return
+	bra	TFT_standard_color	; and return...
 
     global  TFT_decoplan
 TFT_decoplan:
     call    TFT_divemask_color
     WIN_TINY    dm_custom_decoplan_title_column, dm_custom_decoplan_title_row
     STRCPY_TEXT_PRINT tDiveDecoplan
-	call	TFT_standard_color
+	rcall	TFT_standard_color
 
 	movff	char_O_deco_depth+1,lo
 	tstfsz	lo							; Show another stop?
@@ -1031,8 +1020,7 @@ TFT_show_safety_stop:
 	bcf		safety_stop_active				; Clear flag
     btfsc   divemode_menu                   ; Is the dive mode menu shown?
     return                                  ; Yes, return
-    rcall	TFT_clear_safety_stop           ; Yes, Clear stop
-    return
+    bra		TFT_clear_safety_stop           ; Yes, Clear stop ; and return...
 
 TFT_show_safety_stop2:
     bsf     safety_stop_active				; Set flag
@@ -1067,8 +1055,7 @@ TFT_show_safety_stop3:
 	output_99x
 	STRCAT_PRINT ""
 	WIN_FONT 	FT_SMALL
-	call	TFT_standard_color
-	return
+	goto	TFT_standard_color; and return...
 
     global  TFT_mask_avr_stopwatch             ; Show mask for average depth and stopwatch
 TFT_mask_avr_stopwatch:
@@ -1080,8 +1067,7 @@ TFT_mask_avr_stopwatch:
     STRCPY_TEXT_PRINT tDiveStopwatch
     WIN_TINY          dm_custom_avr_stop_title_column3,dm_custom_avr_stop_title_row
     STRCPY_TEXT_PRINT tDiveStopAvr
-    call	TFT_standard_color
-    return
+    goto	TFT_standard_color  ; and return...
 
     global  TFT_dyn_gaslist
 TFT_dyn_gaslist:                            ; Show the dynamic gaslist
@@ -1101,8 +1087,7 @@ TFT_dyn_gaslist:                            ; Show the dynamic gaslist
     rcall   TFT_dyn_gaslist_common
     WIN_SMALL   dm_custom_dyn_gas_column2,dm_custom_dyn_gas_row2
     rcall   TFT_dyn_gaslist_common
-    call	TFT_standard_color
-    return
+    goto	TFT_standard_color  ; and return...
 
 TFT_dyn_gaslist_common:
     incf    uart1_temp,F     ; +1
@@ -1197,8 +1182,7 @@ TFT_ceiling_mask:
     call    TFT_divemask_color
     WIN_TINY  dm_custom_ceiling_text_column,dm_custom_ceiling_text_row
     STRCPY_TEXT_PRINT tCeiling
-    call	TFT_standard_color
-    return
+    goto	TFT_standard_color ; and return...
 
     global  TFT_ceiling                             ; Ceiling
 TFT_ceiling:
@@ -1234,8 +1218,7 @@ TFT_hud_mask:
     STRCPY_TEXT_PRINT tDiveHudMask2
     WIN_TINY          dm_custom_hud_column3,dm_custom_hud_row
     STRCPY_TEXT_PRINT tDiveHudMask3
-    call	TFT_standard_color
-    return
+    goto	TFT_standard_color ; and return...
 
     global  TFT_hud_voltages
 TFT_hud_voltages:                    ; Show HUD details
@@ -1269,8 +1252,7 @@ TFT_hud_voltages:                    ; Show HUD details
     output_16dp  .4         ; x.xx
     bcf     leftbind
     STRCAT_PRINT "mV  "
-    call	TFT_standard_color
-    return
+    goto	TFT_standard_color  ; and return...
 
     global  TFT_update_ppo2_sensors         ; Update Sensor data
 TFT_update_ppo2_sensors:
@@ -1349,8 +1331,8 @@ TFT_update_hud5:
     bsf     dive_hud3_displayed         ; Set display flag
 TFT_update_hud6:
     bcf     leftbind
-   	call	TFT_standard_color
-    return
+    goto	TFT_standard_color  ; and return...
+
 
     global  TFT_surface_sensor             ; Update Sensor data in surface mode
 TFT_surface_sensor:
@@ -1401,8 +1383,7 @@ TFT_surface_sensor5:
     STRCAT_PRINT ""
 TFT_surface_sensor6:
     bcf     leftbind
-   	call	TFT_standard_color
-    return
+    goto    TFT_standard_color; and return...
 
     global  TFT_menu_hud
 TFT_menu_hud:            ; Yes, update HUD data
@@ -1478,9 +1459,8 @@ TFT_menu_calibrate:     ; update mV data in calibration menu
 ;    output_16
 ;    STRCAT_TEXT tMBAR     ; mbar
 ;    STRCAT_PRINT " "
-    call    TFT_standard_color
-    bcf     leftbind
-    return
+    bcf	    leftbind
+    goto     TFT_standard_color	; and return...
 
     	global	TFT_clock
 TFT_clock:
@@ -1897,8 +1877,7 @@ TFT_active_setpoint_diluent:
     movff   char_I_He_ratio,hi          ; hi now stores He in %
 	rcall	TFT_show_dil_divemode2      ; Show gas
 	bcf     win_invert                  ; Reset invert flag
-	call	TFT_standard_color
-	return                              ; Done.
+	goto	TFT_standard_color; and return...
 
 TFT_show_dil_divemode2:
     call    customview_show_mix         ; Put "Nxlo", "Txlo/hi", "Air" or "O2" into Postinc2
@@ -1988,8 +1967,7 @@ TFT_display_decotype_surface3_1:
 TFT_display_decotype_surface4:
     STRCAT_TEXT_PRINT	tDvApnea	; Apnea
 TFT_display_decotype_exit:
-    call	TFT_standard_color
-    return
+    goto	TFT_standard_color  ; and return...
 
     global  TFT_display_decotype_surface1   ; Used from logbook!
 TFT_display_decotype_surface1:  ; Used from logbook!
@@ -2322,8 +2300,8 @@ TFT_custom_text:            ; Show the custom text
     return                              ; No, all done.
     lfsr        FSR0, opt_name+.48      ; Source
     WIN_SMALL   surf_customtext_column,surf_customtext_row5 ; Fifth row
-    rcall       TFT_custom_text_2       ; Show up to 12 chars and print
-    return                              ; Done.
+    bra		TFT_custom_text_2       ; Show up to 12 chars and print ; and return...
+    
 
 TFT_custom_text_2:
     lfsr        FSR2, buffer            ; destination
@@ -2383,8 +2361,8 @@ update_surf_press2:
 	movff	hi,sub_b+1
 	movff	last_surfpressure_30min+0,sub_a+0
 	movff	last_surfpressure_30min+1,sub_a+1
-	call	subU16					; sub_c = sub_a - sub_b
-	return
+	goto	subU16					; sub_c = sub_a - sub_b	; and return...
+
 
 ;=============================================================================
 
@@ -2881,8 +2859,8 @@ TFT_serial_common:
         WIN_LEFT    .160-4*9/2          ; Right pad.
         STRCPY_TEXT_PRINT tBeta
     endif
-    call	TFT_standard_color
-	return
+    goto	TFT_standard_color  ; and return...
+
 
 	
 
@@ -2921,9 +2899,8 @@ TFT_cat_firmware:
 
     ; Show in "change firmware" style
     movlw   color_yellow
-    call	TFT_set_color
-    bsf     win_invert              ; Set invert flag
-    return
+    bcf	    win_invert
+    goto    TFT_set_color   ; and return...
 
 ;-----------------------------------------------------------------------------
 ; For the Information menu: append serial number 
@@ -3131,8 +3108,7 @@ TFT_warning_fallback:                ; Show fallback warning
     movlw   dm_warning_length              ; Divemode string length
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT ""
-	call	TFT_standard_color
-    return
+    goto	TFT_standard_color  ; and return...
 
     global  TFT_warning_gf
 TFT_warning_gf:                         ;GF
@@ -3152,9 +3128,8 @@ TFT_warning_gf:                         ;GF
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT  ""
     bcf     leftbind
-	call	TFT_standard_color
-    bcf     win_invert
-	return
+    bcf	    win_invert
+    goto    TFT_standard_color	; and return...
 
 TFT_warning_set_window:                 ; Sets the row and column for the current warning
     ; ignore warning (now)?
@@ -3214,9 +3189,8 @@ TFT_update_batt_percent_divemode:
     movlw   surf_warning_length         ; No, use surface string length
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT	""
-	call	TFT_standard_color
-    bcf     win_invert
-	return
+	bcf	win_invert
+	goto	TFT_standard_color  ; and return...
 
     global  TFT_gf_mask                         ; Setup Mask
 TFT_gf_mask:
@@ -3258,8 +3232,7 @@ TFT_gf_mask:
     output_8
     STRCAT_PRINT   ""
     bcf     leftbind
-    call	TFT_standard_color
-    return
+    goto	TFT_standard_color  ; and return...
 
 TFT_gf_mask2:
     WIN_STD   dm_custom_agf_column+.10, dm_custom_agf_row
@@ -3273,8 +3246,7 @@ TFT_gf_mask_cGF:
     call    TFT_divemask_color
     WIN_TINY          dm_custom_gf_title_col3, dm_custom_gf_title_row
     STRCPY_TEXT_PRINT tGFInfo
-    call	TFT_standard_color
-    return
+    goto    	TFT_standard_color; and return...
 
     global  TFT_gf_info                         ; Show GF informations
 TFT_gf_info:
@@ -3305,8 +3277,7 @@ TFT_ead_end_tissues_clock_mask:
 TFT_ead_end_tissues_clock_mask2:            ; Show only clock
     WIN_TINY    dm_custom_clock_column,  dm_custom_clock_title_row
     STRCPY_TEXT_PRINT tDiveClock
-    call	TFT_standard_color
-    return
+    goto	TFT_standard_color; and return...
 
     global  TFT_ead_end_tissues_clock           ; Show EAD/END, Tissues and clock
 TFT_ead_end_tissues_clock:
@@ -3373,8 +3344,7 @@ TFT_ead_end_tissues_clock:
     STRCPY_TEXT_PRINT   tHe
  	call    deco_calc_desaturation_time         ; calculate desaturation time (and char_O_tissue_N2_saturation and char_O_tissue_He_saturation)
 	movlb	b'00000001'                         ; select ram bank 1
-    rcall   DISP_tissue_saturation_graph        ; Show char_O_tissue_N2_saturation and char_O_tissue_He_saturation
-    return
+    bra   DISP_tissue_saturation_graph        ; Show char_O_tissue_N2_saturation and char_O_tissue_He_saturation    ; and return...
 
 TFT_end_ead_common:           ; print "lo m" (or ft) and limit to 8 chars
     bsf     leftbind
@@ -3450,8 +3420,7 @@ TFT_sensor_check:
     WIN_MEDIUM   dm_custom_s_check_ppo2_dil_col, dm_custom_s_check_value_row
 ;    ; hijacking neg_flag_velocity to know where the value is displayed
     bsf     neg_flag_velocity
-    call    TFT_display_ppo2_com
-    return              ; Done.
+    goto    TFT_display_ppo2_com; and return...
 
 
     global  TFT_surface_tissues
@@ -3524,8 +3493,7 @@ surf_tissue_saturation_loop:
 	cpfslt	temp1                       ; skip if WREG < win_width
 	movwf	temp1
 	movff   temp1,win_bargraph
-	call	TFT_box
-    return
+	goto	TFT_box	; and return...
 
 ;=============================================================================
 ; Draw saturation graph, is surface mode or in dive mode.
@@ -3608,17 +3576,15 @@ TFT_display_cns:
     movlw   surf_warning_length         ; No, use surface string length
     rcall   TFT_fillup_with_spaces          ; Fillup FSR2 with spaces (Total string length in #WREG)
 	STRCAT_PRINT ""
-	call	TFT_standard_color
-    bcf     win_invert
-	return
+	bcf	win_invert
+	goto	TFT_standard_color; and return...
 
     global  TFT_mask_ppo2
 TFT_mask_ppo2:
     call    TFT_divemask_color
     WIN_TINY  dm_custom_ceiling_ppo2_column, dm_custom_ceiling_text_row
     STRCPY_TEXT_PRINT tppO2
-    call	TFT_standard_color
-    return
+    goto    TFT_standard_color; and return...
 
 	global	TFT_display_ppo2_val
 TFT_display_ppo2_val:
@@ -3680,9 +3646,8 @@ TFT_show_ppO2_2:
     movlw   .4
     rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT ""
-	call	TFT_standard_color
-    bcf     win_invert
-	return
+    bcf	win_invert
+    goto	TFT_standard_color; and return...
 
 TFT_show_ppO2_3:
 ;    STRCAT  "'6.6"                      ; Workaround until a ">" is available in STD font
