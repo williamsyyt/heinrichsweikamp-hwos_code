@@ -231,11 +231,8 @@ calc_deko_divemode:
     movff   WREG,char_I_step_is_1min    ; Make sure to be in 2sec mode.
 	call	deco_calc_CNS_fraction		; calculate CNS
 	movlb	b'00000001'					; rambank 1 selected
-
 ; Check for a gas change
-	rcall	check_gas_change			; Checks if a better gas should be selected (by user)
-
- 	return
+	bra	check_gas_change			; Checks if a better gas should be selected (by user) and return...
 
     global  set_actual_ppo2
 set_actual_ppo2:                        ; calculate ppO2 in 0.01bar (e.g. 150 = 1.50 bar ppO2)
@@ -292,8 +289,7 @@ check_fallback_clear:
     btfsc   use_O2_sensor3
     bsf     voting_logic_sensor3
     rcall   divemode_setup_sensor_values    ; Setup sensor values
-    call    check_sensors                   ; Check O2 sensor thresholds for fallback
-    return
+    goto    check_sensors                   ; Check O2 sensor thresholds for fallback customview_minute
 
 calc_deko_divemode2:
 	bcf		twosecupdate
@@ -342,8 +338,7 @@ calc_deko_divemode2:
 	clrf	decodata+0
 	movff	char_O_nullzeit,decodata+1  ; NDL
 	
-	call	TFT_display_ndl            ; display no deco limit
-	return
+	goto	TFT_display_ndl            ; display no deco limit, and return...
 
 calc_deko_divemode3:
 	btfss	decostop_active            ; Already in deco mode ?
@@ -509,8 +504,7 @@ calc_velocity3:
 ;    addwf   divA+0,F                    ; add old speed
 ;    bcf     STATUS,C
 ;    rrcf    divA+0,F                    ; /2
-	call	TFT_display_velocity		; With divA+0 = m/min...
-	return
+	goto	TFT_display_velocity		; With divA+0 = m/min..., and return...
 
 
 ;=============================================================================
@@ -577,8 +571,8 @@ reset_safety_stop2:
 	btfss	safety_stop_active				; Safety stop shown
 	return									; No, don't delete it
 	bcf		safety_stop_active				; Clear flag
-    call    TFT_clear_safety_stop           ; Clear safety stop
-    return
+    goto    TFT_clear_safety_stop           ; Clear safety stop, and return...
+
 
 ;=============================================================================
 
@@ -606,12 +600,11 @@ timeout_divemode_menu2:                 ; Called from divemenu_tree.asm
     ; Show deco
 	call	TFT_display_deko_mask      ; clear nostop time, display decodata
     call    TFT_display_deko
-    call    TFT_show_TTS_divemode
-    return
+    goto    TFT_show_TTS_divemode; and return...
+
 timeout_divemode_menu_ndl:              ; Show NDL
 	call	TFT_display_ndl_mask       	; Clear deco data, display nostop time
-    call    TFT_display_ndl
-    return
+    goto    TFT_display_ndl; and return...
 
 timeout_divemode:
     btfsc   divemode_menu               ; Divemode menu active?
@@ -710,8 +703,7 @@ set_max_depth:
                                         ; max_pressure<rel_pressure
 	movff	sub_b+0,max_pressure+0
 	movff	sub_b+1,max_pressure+1
-	call	TFT_max_pressure			; No, use normal max. depth
-	return
+	goto	TFT_max_pressure			; No, use normal max. depth; and return...
 
 set_min_temp:
 	movff	minimum_temperature+0,sub_a+0
@@ -850,7 +842,7 @@ test_switches_divemode:		; checks switches in divemode
     btfsc   divemode_menu               ; Divemode menu shown?
     bra     test_switches_divemode_menu ; Yes, use menu processor
 	btfsc	switch_left
-	bra		test_switches_divemode2		; Enter button pressed, check if we need to do something
+	goto    menuview_toggle         ; Menu or Simulator tasks; and return...; bra		test_switches_divemode2		; Enter button pressed, check if we need to do something
 	btfss	switch_right
 	return                              ; No button press
     tstfsz  menupos2                    ; any option shown?
@@ -909,9 +901,9 @@ test_switches_divemode1:
 	bra		divemode_option7			; Store heading
     return
 
-test_switches_divemode2:
-    call    menuview_toggle         ; Menu or Simulator tasks
-    return
+;test_switches_divemode2:
+;    goto    menuview_toggle         ; Menu or Simulator tasks; and return...
+;    return
 
 gas_switched_common:
     bcf     divemode_gaschange      ; Clear flag
@@ -1105,16 +1097,14 @@ divemode_option6_2:
     decfsz  up,F                        ; Done?
     bra     divemode_option6_2          ; Not yet
     bsf     divemode2                   ; continue divetime
-    call    menuview_toggle_reset
-    return
+    goto    menuview_toggle_reset	; and return...
 
 divemode_option7:
     ; Store heading for compass view
     movff   compass_heading_shown+0,compass_bearing+0
     movff   compass_heading_shown+1,compass_bearing+1
     bsf     compass_bearing_set         ; set flag
-    call    menuview_toggle_reset       ; Done.
-    return
+    goto    menuview_toggle_reset       ; Done and return...
 
 divemode_simulator_check_limits:
 	; Check limits (150m and 0m)
@@ -1196,8 +1186,7 @@ check_gas_change_exit:
     bcf     blinking_better_gas     ; No, Clear blinking flag
     btfss	better_gas_available	; Is a better gas available
     clrf    better_gas_number		; No, Clear better_gas_number (For gaslist display)
-    call    TFT_active_gas_divemode ; Display gas/Setpoint
-	return
+    goto    TFT_active_gas_divemode ; Display gas/Setpoint and return...
 
 check_gas_common:                   ; With Gas 0-4 in WREG
     btfsc   better_gas_available	; Better Gas already found?
@@ -1450,8 +1439,7 @@ dive_boot_cc:
     banksel char_I_first_gas
     incf    char_I_first_gas,F              ; 0-4 -> 1-5
     banksel common
-    call   calc_deko_divemode_sensor        ; External sensor stuff
-    return
+    goto  calc_deko_divemode_sensor        ; External sensor stuff and return...
 
 diveloop_boot:
 	call	restart_set_modes_and_flags

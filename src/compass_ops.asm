@@ -198,9 +198,7 @@ compass_calibration_loop:               ; Compass calibration
     WIN_COLOR   color_greenish
 	WIN_SMALL	.16,.0
 	STRCPY_TEXT_PRINT	tCompassMenu
-
-    call    menu_processor_bottom_line
-    btfss		switch_right2           ; wait until right button is released
+    btfss		switch_right2           ; wait until button is released
     bra         $-4
 
     call	TFT_standard_color
@@ -208,6 +206,7 @@ compass_calibration_loop:               ; Compass calibration
 ;    STRCPY_TEXT_PRINT  tExit
     WAITMS  d'255'
     WAITMS  d'255'
+    
     movlw   .7                          ; Gain init
     movff   WREG,opt_compass_gain
 compass_calibration_gainset:            ; Reduce the gain, set bank here!
@@ -219,7 +218,11 @@ compass_calibration_gainset:            ; Reduce the gain, set bank here!
     banksel common
     call    I2C_init_accelerometer
     call    I2C_init_compass_fast
-    rcall   TFT_compass_show_gain       ; Show the current compass gain
+    
+    btfsc   compass_type	    ; compass1?
+    bra	    compass_calibration_loop1	; Yes, skip gain stuff
+
+;    rcall   TFT_compass_show_gain       ; Show the current compass gain
 
     WAITMS  d'100'
 
@@ -256,6 +259,7 @@ compass_calibration_gainset:            ; Reduce the gain, set bank here!
     bra     compass_calibration_gainset
     banksel common
 
+compass_calibration_loop1: ; Done with Gain
     rcall   compass_filter_init         ; set DX_f values
     call	compass_reset_calibration   ; Reset CX_f values
     banksel common
@@ -271,6 +275,9 @@ compass_calibration_loop2:
     call    I2C_RX_accelerometer        ; Test Accelerometer
     rcall   compass_filter              ; Filter compass raw data
     banksel common
+    
+    btfsc   compass_type	    ; compass1?
+    bra	    compass_calibration_loop3	; Yes, skip gain stuff
 
     ; Test all axes for +4096 (Hi byte=16)
     banksel compass_DX+1
@@ -309,6 +316,7 @@ compass_calibration_loop2:
 ;    call    I2C_RX_accelerometer        ; Test Accelerometer
 ;    call    compass_filter              ; Filter compass raw data
 
+compass_calibration_loop3:
     ; And register only one value out of four:
     call    compass_add_calibration     ; check and store new max/min values
     banksel common
