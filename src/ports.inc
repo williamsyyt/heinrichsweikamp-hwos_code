@@ -54,7 +54,7 @@
 #DEFINE	LEDr			PORTE,3	; LED red
 #DEFINE	power_sw2		PORTE,4	; Power supply for switch1 circuit
 #DEFINE	RE5_unused		PORTE,5	; unused
-#DEFINE	lightsen_power 	PORTE,6	; Power supply for lightsensor
+#DEFINE	lightsen_power		PORTE,6	; Power supply for lightsensor
 #DEFINE	flash_ncs		PORTE,7	; /CS
 ; TRIS=b'00000000'
 

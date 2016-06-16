@@ -498,6 +498,7 @@ I2C_init_compass1:
     rcall       I2C_TX
     movlw	b'01100100'	; CTRL5 HIGH res, 6,25Hz
     rcall       I2C_TX
+init_compass1_common:
     ;movlw	b'01100000'	; CTRL6 Full scale (+/-12 Gauss -> 2730LSB/Gauss)
     movlw	b'00000000'	; CTRL6 (+/-2 Gauss)
     rcall       I2C_TX
@@ -526,13 +527,7 @@ I2C_init_compass_fast1:
     rcall       I2C_TX
     movlw	b'01110100'	; CTRL5 HIGH res, 100Hz
     rcall       I2C_TX
-    movlw	b'01100000'	; CTRL6 Full scale (+/-12 Gauss -> 2730LSB/Gauss)
-    rcall       I2C_TX
-    movlw	b'00000000'	; CTRL7 Continuous Mode
-    rcall       I2C_TX
-    bsf		SSP1CON2,PEN		; Stop condition
-    rcall	WaitMSSP
-    return
+    bra		init_compass1_common
     
     global  I2C_sleep_compass
 I2C_sleep_compass:

@@ -249,20 +249,20 @@ restart:
 	btfsc	menubit					; Return from Menu/COMM mode or timeout?
 	call	option_save_all			; Yes, save all settings into EEPROM
 
-    call    option_restore_all      ; Restore everything from EEPROM
+    call    option_restore_all      ; Restore everything from EEPROM into RAM
     call    option_check_all        ; Check all options (and reset if not within their min/max boundaries)
-    call	option_save_all			; Save all settings into EEPROM after they have been checked
+    call    option_save_all	    ; Save all settings into EEPROM after they have been checked
 
-	clrf	flag1					; clear all flags
-	clrf	flag2
-	clrf	flag3
-	clrf	flag4
-	clrf	flag5
-	clrf	flag6
+    clrf	flag1					; clear all flags
+    clrf	flag2
+    clrf	flag3
+    clrf	flag4
+    clrf	flag5
+    clrf	flag6
     clrf	flag7
     clrf	flag8
-    clrf    flag9
-    clrf    flag10
+    clrf	flag9
+    clrf	flag10
     ; Do not clear flag11 (Sensor calibration and charger status)
     clrf    flag12
     clrf    flag13
@@ -271,17 +271,24 @@ restart:
 
     ; configure hardware_flag byte
 
-    bsf     ambient_sensor          ; Clear flag
-    bsf     optical_input           ; Clear flag
+    bsf     ambient_sensor          ; Set flag
+    bsf     optical_input           ; Set flag
 
     call    lt2942_get_status       ; Check for gauge IC
-    btfss   rechargeable            ; cR hardware?
+    btfss   rechargeable            ; cR/2 hardware?
     bra     restart2                ; No
 
     call    lt2942_init             ; Yes, init battery gauge IC
-    bcf     ambient_sensor          ; Clear flag
     bcf     optical_input           ; Clear flag
-
+    
+    bcf	    ANCON0,7		    ; AN7 Digital input
+    bcf	    lightsen_power	    ; Power-down ambient light sensor
+    bcf     ambient_sensor          ; Clear flag
+    btfss   PORTF,2		    ; Light sensor available?
+    bsf	    ambient_sensor          ; Yes.
+    bsf	    ANCON0,7		    ; AN7 Analog again
+    bsf	    lightsen_power	    ; Power-up ambient light sensor
+    
 restart2:
     btfsc   vusb_in
     bra     restart3                ; USB (and powered on)
@@ -303,6 +310,7 @@ restart4:
     ; cR: 0x05
     ; 2 with BLE: 0x11
     ; 3 with BLE: 0x1A 
+    ; 2 with ambient: 0x13
 
 	; Select high altitude (Fly) mode?
 	movff	last_surfpressure_30min+0,sub_b+0
