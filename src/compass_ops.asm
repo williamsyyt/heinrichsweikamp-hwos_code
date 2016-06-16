@@ -1124,12 +1124,6 @@ TFT_dive_compass_label_proc:
     movwf   sub_a+1
     movlw   d'14'
     movwf   up                  ; cardinal width in px
-    ; Input:
-    ;   xHI:   DD  - display'a current position
-    ;   xRD:   RD  - ruler display offset
-    ;   sub_a: RP  - item's ruler display offset
-    ; get the RD abck to sub_b
-;    movff   xHI,hi ; mH
     bcf     print_compass_label
     ; 1/a. check if it's viewable ? sub_a(RP) >= sub_b(RD) ?
     ;    set the carry flag if sub_b(xRD) is equal to or greater than sub_a(xRP):
@@ -1176,7 +1170,6 @@ TFT_dive_compass_label_proc_p:
     movlw   FT_SMALL
     movff   WREG,win_font
     ; 6. retain the new display positions
-;    movff   hi,divB     ; old-hi will be used by the c_mk : clear+marker printing mH
     movff   lo,hi
     movff   up,WREG
     addwf   hi,F

@@ -1587,7 +1587,7 @@ TFT_debug_output:
     WIN_TINY   .80,.0
 	call	TFT_standard_color
 	lfsr	FSR2,buffer
-    movff   active_gas,lo
+    movff   hardware_flag,lo
     output_8
 	STRCAT_PRINT ""
     return
