@@ -910,13 +910,13 @@ profile_display_skip_temp:
     bra         profile_display_skip_marker ; No
 
     ; 2x2 square
-    incf        apnoe_mins,W
+    incf        apnoe_mins,W	; increase row (Y)
     movff       WREG,win_top
     movlw       .4
     movff       WREG,win_height
     movlw       .2
     movff       WREG,win_width
-    decf        logbook_pixel_x_pos,W
+    decf        logbook_pixel_x_pos,W	; decrease column (X)
     movff       WREG,win_leftx2
 
     movlw       color_orange
