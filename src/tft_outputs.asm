@@ -3516,8 +3516,6 @@ DISP_tissue_saturation_graph:
 	clrf	waitms_temp                 ; Row offset
 tissue_saturation_graph_N2:
     movlw   dm_custom_tissue_diagram_top+.3        ; divemode
-	addwf	waitms_temp,W
-	movff	WREG,win_top                ; row top (0-239)
     rcall   tissue_saturation_graph_loop    ; Show one tissue
 	decfsz	wait_temp,F
 	bra		tissue_saturation_graph_N2
@@ -3529,9 +3527,6 @@ tissue_saturation_graph_N2:
 	clrf	waitms_temp                 ; Row offset
 tissue_saturation_graph_He:
     movlw   dm_custom_tissue_diagram_top+.3+.22    ; divemode
-	addwf	waitms_temp,W
-	movff	WREG,win_top                ; row top (0-239)
-
     rcall   tissue_saturation_graph_loop    ; Show one tissue
 
 	decfsz	wait_temp,F
@@ -3539,6 +3534,9 @@ tissue_saturation_graph_He:
 	return
 
 tissue_saturation_graph_loop:
+    	addwf	waitms_temp,W
+	movff	WREG,win_top                ; row top (0-239)
+
     call	TFT_standard_color
 	incf	waitms_temp,F
 	movf	POSTINC2,W

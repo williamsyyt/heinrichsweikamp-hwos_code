@@ -757,8 +757,8 @@ DISP_box_noflip_H:
 
 		Index_out 0x20				; Frame Memory Horizontal Address
 		movf	PRODH,W
-		rcall	TFT_DataWrite		; Lower (and tick)
-		return
+		bra	TFT_DataWrite		; Lower (and tick) and return
+;		return
 
 
 TFT_box_noflip_V:
@@ -783,8 +783,8 @@ TFT_box_noflip_V:
 
 		Index_out 0x20				; Frame Memory Horizontal Address
 		movf	PRODL,W
-		rcall	TFT_DataWrite		; Lower (and tick)
-		return
+		bra	TFT_DataWrite		; Lower (and tick)  and return
+		;return
 
 
 ;=============================================================================
@@ -841,10 +841,12 @@ TFT_frame:
 
 TFT_box:
     ;---- Define Window ------------------------------------------------------
-	movf	win_width,W
+;	movf	win_width+0,W
+;	bcf     STATUS,C
+;	rlcf    WREG
+;	movwf   win_width+0
 	bcf     STATUS,C
-	rlcf    WREG
-	movwf   win_width+0
+	rlcf    win_width+0,F
 	movlw   0
 	rlcf    WREG
 	movwf   win_width+1
@@ -852,9 +854,10 @@ TFT_box:
 
     global  TFT_box_16bit_win_left
 TFT_box_16bit_win_left:
-    rrcf    win_width+1,W               ; width /= 2
-    rrcf    win_width+0,W
-    movwf   win_width
+    bcf     STATUS,C
+    rrcf    win_width+1,F               ; width /= 2
+    rrcf    win_width+0,F
+;    movwf   win_width
 
     ;---- Fill Window --------------------------------------------------------
 	Index_out 0x22						; Frame Memory Data Write start
