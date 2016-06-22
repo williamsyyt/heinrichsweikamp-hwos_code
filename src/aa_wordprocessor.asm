@@ -421,7 +421,7 @@ aa_decode_4:
 		cpfseq	aa_end+0
 		bra		aa_decode_1             ; Loop if LOW is different
 		movf	TBLPTRH,W
-		cpfseq	aa_end+1                ; Loop to if HIGH is different
+		cpfseq	aa_end+1			; Loop too if HIGH is different
 		bra		aa_decode_1
 		
 		return
@@ -434,13 +434,13 @@ aa_decode_4:
         global  aa_wordprocessor        ; Callable from C-code.
 aa_wordprocessor:
         banksel win_font                ; Bank1, just to be sure.
-		rcall	aa_string_width		    ; Set win_height, compute win_width
+		rcall	aa_string_width		    ; Set win_height, compute win_width:2
 		call	TFT_box_write		    ; Use that for the box.
 
 		; Restart the loop for each char to print
 		lfsr	FSR2, buffer		    ; FSR2 pointer to start of string.
 
-		; DATA bloc commande:
+		; DATA block comand
 		Index_out	0x22
 
 aa_wordprocessor_1:

@@ -722,27 +722,26 @@ logbook_find_first_gas_done:
     WIN_FRAME_COLOR16 profile_top-1,profile_top+profile_height_pixels+1,profile_left-1,profile_left+profile_width_pixels+1
 
 	movlw		profile_top
-	movff		WREG,win_top
+	movwf		win_top
 	movlw		profile_left
-	movff		WREG,win_leftx2				; Left border (0-159)
+	movwf		win_leftx2				; Left border (0-159)
 	movlw		d'1'
-	movff		WREG,win_height
+	movwf		win_height
 	movlw		profile_width_pixels+.1
-	movff		WREG,win_width				; Right border (0-159)
-	bra			display_profile2f			; No 0m line
+	movwf		win_width+0				; Right border (0-159)
+	bra		display_profile2f			; No 0m line
 display_profile2e:
 	call		TFT_box						; Inputs:  win_top, win_leftx2, win_height, win_width, win_color1, win_color2
 display_profile2f:
-	movff		win_top,WREG				; Get row
+	movf		win_top,W				; Get row
 	addwf		x_scale+0,W					; Add line interval distance to win_top
 	tstfsz		x_scale+1					; >255?
 	movlw		d'255'						; Yes, make win_top>239 -> Abort here
 	btfsc		STATUS,C					; A Cary from the addwf above?
 	movlw		d'255'						; Yes, make win_top>239 -> Abort here
-	movff		WREG,win_top				; Result in win_top again
-	movff		win_top,lo					; Get win_top in Bank1...
+	movwf		win_top						; Result in win_top again
 	movlw		profile_top+profile_height_pixels+.1 ; Limit
-	cpfsgt		lo							; >239?
+	cpfsgt		win_top						; >239?
 	bra			display_profile2e			; No, draw another line
 
 	clrf		timeout_counter2			; here: used as counter for depth readings
@@ -772,15 +771,15 @@ display_profile2f:
     movwf       logbook_max_temp_pos        ; Initialize for displaying the highest temperature
 
     movlw       profile_left
-    movff       WREG,win_leftx2
+    movwf       win_leftx2
     movlw       profile_top
-    movff       WREG,win_top
+    movwf       win_top
     movlw       profile_height_pixels
-    movff       WREG,win_height
+    movwf       win_height
     movlw       LOW (profile_width_pixels*.2)
-    movff       WREG,win_width+0
+    movwf       win_width+0
     movlw       HIGH (profile_width_pixels*.2)
-    movff       WREG,win_width+1
+    movwf       win_width+1
     call        TFT_box_write           ; open box for d1
 
     INIT_PIXEL_WRITE logbook_pixel_x_pos       ; pixel x2			(Also sets standard Color!)
@@ -826,7 +825,7 @@ profile_display_loop2:
 	call		div16x16					; xA/xB=xC
 
 	movlw		profile_top+.1                  ; Starts right after the top line.
-	movff		WREG,win_top
+	movwf		win_top
 	movff		logbook_pixel_x_pos,win_leftx2 ; Left border (0-159)
 	movff		xC+0,win_height				
 	call		half_vertical_line			; Inputs:  win_top, win_leftx2, win_height, win_color1, win_color2
@@ -911,13 +910,14 @@ profile_display_skip_temp:
 
     ; 2x2 square
     incf        apnoe_mins,W	; increase row (Y)
-    movff       WREG,win_top
+    movwf       win_top
     movlw       .4
-    movff       WREG,win_height
+    movwf       win_height
     movlw       .2
-    movff       WREG,win_width
+    movwf       win_width+0
+    clrf	win_width+1
     decf        logbook_pixel_x_pos,W	; decrease column (X)
-    movff       WREG,win_leftx2
+    movwf       win_leftx2
 
     movlw       color_orange
     call        TFT_set_color
@@ -1007,15 +1007,11 @@ profile_display_loop_done_nogas6:
 	addwfc		ext_flash_address+2,F
 	; pointer at the first 0xFA of header
 
-;    movlw   .2                              ; negative offset
-;    addwf   logbook_last_tp,W
-;    movff   WREG,win_top                    ; Line below temp
     movff   logbook_min_temp_pos,win_top     ; Y position at lowest temperature
-    movff   logbook_pixel_x_pos,lo
+    movff   logbook_pixel_x_pos,win_leftx2
     movlw   .130
-    cpfslt  lo                              ; limit left border to 130
-    movwf   lo
-    movff   lo,win_leftx2
+    cpfslt  win_leftx2                              ; limit left border to 130
+    movwf   win_leftx2
     WIN_FONT   FT_TINY
 	movlw   color_orange            ; Use same color as tp° curve
 	call    TFT_set_color
@@ -1058,7 +1054,7 @@ logbook_show_temp_metric:
     ; Now, the max. temperature
     movlw   .15
     subwf   logbook_max_temp_pos,W
-    movff   WREG,win_top        ; Y position at max temperature
+    movwf   win_top        ; Y position at max temperature
     movff   logbook_max_tp+0,lo
 	movff   logbook_max_tp+1,hi
     lfsr    FSR2,buffer
@@ -1238,13 +1234,13 @@ profile_view_get_depth:
 	movlw       color_deepblue
 	call		TFT_set_color						; Make this configurable?
 	movlw		profile_top+.1
-	movff		WREG,win_top
+	movwf		win_top
 	incf		logbook_pixel_x_pos,W	; draw one line to right to make sure it's the background of the profile
-	movff		WREG,win_leftx2		; Left border (0-159)
+	movwf		win_leftx2		; Left border (0-159)
 	movlw		profile_height_pixels
-	movff		WREG,win_height				
+	movwf		win_height				
 	movlw		profile_height_pixels
-	movff		WREG,win_width				; "Window" height
+	movwf		win_width				; "Window" height
 	call		half_horizontal_line        ; Inputs:  win_top, win_leftx2, win_width, win_color1, win_color2
 
 profile_view_get_depth_no_line:
