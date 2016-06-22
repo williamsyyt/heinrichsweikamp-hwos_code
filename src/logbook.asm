@@ -224,7 +224,7 @@ TFT_logbook_cursor:
 	dcfsnz	temp1,F
 	movlw	.8*logbook_row_offset
 
-	movff	WREG,win_top
+	movwf	win_top
 	STRCPY_PRINT "\xB7"
 	return
 
@@ -729,6 +729,7 @@ logbook_find_first_gas_done:
 	movwf		win_height
 	movlw		profile_width_pixels+.1
 	movwf		win_width+0				; Right border (0-159)
+	clrf		win_width+1
 	bra		display_profile2f			; No 0m line
 display_profile2e:
 	call		TFT_box						; Inputs:  win_top, win_leftx2, win_height, win_width, win_color1, win_color2
