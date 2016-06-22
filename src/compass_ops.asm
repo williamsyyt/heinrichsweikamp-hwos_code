@@ -466,9 +466,9 @@ TFT_surface_compass_heading_com1:
 TFT_surface_compass_heading_com2:
     banksel compass_heading_shown
     movlw	d'1'
-	subwf	compass_heading_shown+0,F
-	movlw	d'0'
-	subwfb	compass_heading_shown+1,F               ; -1
+    subwf	compass_heading_shown+0,F
+    movlw	d'0'
+    subwfb	compass_heading_shown+1,F               ; -1
 
 TFT_surface_compass_heading_com3:
     banksel common
@@ -870,19 +870,20 @@ TFT_dive_compass_ruler_loop_zz:
     ; 3. Draw the markers @ RM
     ; we receive RM in lo and DD in hi
     movlw   dm_custom_compass_tick_top_top
-    movff   WREG,win_top
+    movwf   win_top
     movlw   dm_custom_compass_tick_height
-    movff   WREG,win_height
+    movwf   win_height
     movlw   d'2'
-    movff   WREG,win_width
-    movff   WREG,win_bargraph
+    movwf   win_width+0
+    clrf    win_width+1
+    movwf   win_bargraph
     movff   lo,win_leftx2          ; 0..159
     call    TFT_standard_color
     call    TFT_box
     movlw   dm_custom_compass_tick_bot_top
-    movff   WREG,win_top
+    movwf   win_top
     movlw   dm_custom_compass_tick_height
-    movff   WREG,win_height
+    movwf   win_height
     call    TFT_standard_color  ; color in WREG is trashed, must be set again!
     call    TFT_box
     ; 4. If D<82 and RM>79: means we put something over the center line
@@ -1252,27 +1253,26 @@ TFT_dive_compass_mk_print_2:
 ;    rcall   TFT_dive_compass_mk_print_3
 ;    return
 TFT_dive_compass_mk_print_3:
-    movff   WREG,win_leftx2
+    movwf   win_leftx2
     movlw   dm_custom_compass_label_row
-    movff   WREG,win_top
+    movwf   win_top
     movlw   dm_custom_compass_label_height-.2
-    movff   WREG,win_height
+    movwf   win_height
     bra     TFT_dive_compass_mk_print_4
 TFT_dive_compass_mk_print_dot:
-    movff   WREG,win_leftx2
+    movwf   win_leftx2
     movlw   dm_custom_compass_label_row + .9
-    movff   WREG,win_top
+    movwf   win_top
     movlw   d'4'
-    movff   WREG,win_height
+    movwf   win_height
 TFT_dive_compass_mk_print_4:
-    banksel win_leftx2
     movlw   .158
     cpfslt  win_leftx2
     bra     TFT_dive_compass_mk_print_5
     movlw   d'2'
-    movwf   win_width
+    movwf   win_width+0
+    clrf    win_width+1
     movwf   win_bargraph
-    banksel common
     movlw   color_green
     btfss   print_compass_label
     movlw   color_red
@@ -1310,32 +1310,17 @@ TFT_dive_compass_clear:
     movff   hi,WREG
     subwf   lo,W
     bz      TFT_dive_compass_clear3 ; Do nothing if there is nothing to do
-    movff   WREG,win_width          ; RM-DD
-    movff   WREG,win_bargraph
-    banksel win_width
+    movwf   win_width+0         ; RM-DD
+    movwf   win_bargraph
+    clrf    win_width+1
     movlw   .1
-    cpfsgt  win_width
+    cpfsgt  win_width+0
     bra     TFT_dive_compass_clear3 ; Do not clear a single pixel (or less)
-    banksel common
     movff   hi,win_leftx2
-;TFT_dive_compass_clear1:
-;    movff   win_leftx2,tft_temp1            ; Copy
-;    ; check right border
-;    movff   win_width,WREG
-;    addwf   tft_temp1,F
-;    movlw   .159
-;    cpfsgt  tft_temp1              ; >159?
-;    bra     TFT_dive_compass_clear2 ; no
-;    banksel win_width
-;    decf    win_width,F     ; -1
-;    banksel common
-;    bra     TFT_dive_compass_clear1
-;TFT_dive_compass_clear2:
     movlw   color_black
     call    TFT_set_color
     call    TFT_box
 TFT_dive_compass_clear3:
-    banksel common
     return
 
 tft_compass_cardinal:

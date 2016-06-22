@@ -506,7 +506,7 @@ box_frame_color16:
 ; Trashed: WREG, PROD
         global init_pixel_write
 init_pixel_write:
-        movff   win_leftx2,WREG
+        movf   win_leftx2,W
         mullw   2
         rcall   pixel_write_col320      ; Start Address Vertical (.0 - .319)
         setf    WREG
@@ -518,12 +518,12 @@ init_pixel_write:
 ; Trashed: WREG, PROD
     global  pixel_write
 pixel_write:
-        movff   win_leftx2,WREG
+        movf   win_leftx2,W
         mullw   2						; win_leftx2 x 2 -> PRODH:PRODL
         rcall   pixel_write_col320      ; Start Address Vertical (.0 - .319)
         rcall   half_pixel_write        ; Write this half-one.
 
-        movff   win_leftx2,WREG         ; Address of next one
+        movf   win_leftx2,W	        ; Address of next one
         mullw   2
         infsnz  PRODL                   ; +1
         incf    PRODH
@@ -562,7 +562,7 @@ pixel_write_noflip_H:
 ; Trashed: WREG, PROD
         global  half_pixel_write
 half_pixel_write:
-    	movff  	win_top,WREG            ; d'0' ... d'239'
+    	movf  	win_top,W               ; d'0' ... d'239'
     ; Variant with Y position in WREG.
 half_pixel_write_1:
     	btfss   flip_screen             ; 180° rotation?
@@ -588,18 +588,18 @@ half_vertical_line:
         clrf    TABLAT                  ; Loop index.
 
 half_vertical_line_loop:
-        movff   win_leftx2,WREG         ; Init X position.
+        movf	win_leftx2,W	        ; Init X position.
         mullw   2
         movf    TABLAT,W                ; Get loop index
         andlw   1                       ; Just low bit
         xorwf   PRODL,F                 ; And use it to jitter current X position
         rcall   pixel_write_col320      ; Start Address Vertical (.0 - .319)
 
-        movff   win_height,WREG         ; Index reached height (Bank0 read) ?
+        movf    win_height,W            ; Index reached height (Bank0 read) ?
         xorwf   TABLAT,W
         btfsc   STATUS,Z                ; Equals ?
         return                          ; Yes: done.
-        movff   win_top,WREG            ; Y = top + index (Bank0 read)
+        movf    win_top,W              ; Y = top + index (Bank0 read)
         addwf   TABLAT,W
         rcall   half_pixel_write_1
         incf    TABLAT,F                ; index++
@@ -614,14 +614,14 @@ half_horizontal_line:
         clrf    TABLAT                  ; Loop index.
 
 half_horizontal_line_loop:
-        movff   win_leftx2,WREG         ; Init X position.
+        movf   win_leftx2,W	        ; Init X position.
         mullw   2
         rcall   pixel_write_col320      ; Start Address Vertical (.0 - .319)
-        movff   win_width,WREG          ; Index reached height (Bank0 read) ?
+        movf    win_width,W             ; Index reached height (Bank0 read) ?
         xorwf   TABLAT,W
         btfsc   STATUS,Z                ; Equals ?
         return                          ; Yes: done.
-        movff   win_top,WREG            ; Y = top + index (Bank0 read)
+        movf    win_top,W               ; Y = top + index (Bank0 read)
         addwf   TABLAT,W
         rcall   half_pixel_write_1
         incf    TABLAT,F                ; index++
@@ -636,7 +636,7 @@ TFT_DataWrite_PROD:
 ;	RD_H				; Keep high
 	RS_H				; Data
 	movff	PRODH,PORTA	; Move high byte to PORTA
-    movff	PRODL,PORTH	; Move low byte to PORTH
+	movff	PRODL,PORTH	; Move low byte to PORTH
 	WR_L
 	WR_H                ; Tick
 	return
@@ -676,8 +676,8 @@ TFT_CmdRead_PROD:
 ;
         global  TFT_box_write
 TFT_box_write:
-		movff	win_leftx2,WREG         ; Compute left = 2*leftx2 --> PROD
-		mullw	2
+	movf	win_leftx2,W            ; Compute left = 2*leftx2 --> PROD
+	mullw	2
 
         global  TFT_box_write_16bit_win_left
 TFT_box_write_16bit_win_left:           ; With column in PRODL:PRODH
@@ -693,22 +693,22 @@ TFT_box_write_16bit_win_left_d1:        ; Display1
         ; Yes for d1
 TFT_box_write_16bit_win_left_com:
         ;---- Normal horizontal window ---------------------------------------
-		Index_out 0x52				; Window Vertical Start Address
-		rcall   TFT_DataWrite_PROD          ; Output left
-		Index_out 0x21				; Frame Memory Vertical Address
-		rcall   TFT_DataWrite_PROD			; Output left
+	Index_out 0x52				; Window Vertical Start Address
+	rcall   TFT_DataWrite_PROD          ; Output left
+	Index_out 0x21				; Frame Memory Vertical Address
+	rcall   TFT_DataWrite_PROD			; Output left
 
-		movff	win_width+0,WREG	    ; right = left + width - 1
-		addwf	PRODL,F
-		movff	win_width+1,WREG
-		addwfc	PRODH,F
-		decf	PRODL,F			    ; decrement result
-		btfss   STATUS,C
-		decf	PRODH,F
+	movf	win_width+0,W   	    ; right = left + width - 1
+	addwf	PRODL,F
+	movf	win_width+1,W
+	addwfc	PRODH,F
+	decf	PRODL,F			    ; decrement result
+	btfss   STATUS,C
+	decf	PRODH,F
 
-		Index_out 0x53				; Window Vertical End Address
-		rcall   TFT_DataWrite_PROD
-		bra     DISP_box_noflip_H
+	Index_out 0x53				; Window Vertical End Address
+	rcall   TFT_DataWrite_PROD
+	bra     DISP_box_noflip_H
 
         ;---- Flipped horizontal window --------------------------------------
 DISP_box_flip_H:
@@ -721,71 +721,70 @@ DISP_box_flip_H:
         sublw   HIGH(.319)
         movwf   PRODH
 
-  		Index_out 0x53				; Window Vertical Start Address
-		rcall   TFT_DataWrite_PROD  ; Output left
-		Index_out 0x21				; Frame Memory Vertical Address
-		rcall   TFT_DataWrite_PROD	; Output left
+  	Index_out 0x53				; Window Vertical Start Address
+	rcall   TFT_DataWrite_PROD  ; Output left
+	Index_out 0x21				; Frame Memory Vertical Address
+	rcall   TFT_DataWrite_PROD	; Output left
 
-        movff   win_width+0,WREG        ; 16bits PROD - width --> PROD
+        movf    win_width+0,W           ; 16bits PROD - width --> PROD
         subwf   PRODL,F                 ; PRODL - WREG --> PRODL
-        movff   win_width+1,WREG
+        movf    win_width+1,W
         subwfb  PRODH,F
         infsnz  PRODL                   ; PROD+1 --> PROD
         incf    PRODH
 
-		Index_out 0x52				; Window Vertical End Address
-		rcall   TFT_DataWrite_PROD
+	Index_out 0x52				; Window Vertical End Address
+	rcall   TFT_DataWrite_PROD
 
 DISP_box_noflip_H:
     	btfss   flip_screen             ; 180° rotation ?
     	bra     TFT_box_noflip_V        ; No.
 
    ;---- Flipped vertical window -----------------------------------------
-		movff	win_top,PRODH           ; top --> PRODH (first byte)
-		movff   win_height,WREG
-		addwf   PRODH,W
-        decf	WREG
-		movwf	PRODL                   ; top+height-1 --> PRODL (second byte)
+	movff	win_top,PRODH           ; top --> PRODH (first byte)
+	movf    win_height,W
+	addwf   PRODH,W
+	decf	WREG
+	movwf	PRODL                   ; top+height-1 --> PRODL (second byte)
 
-		Index_out 0x50				; Window Horizontal Start Address
-		movf	PRODH,W
-		rcall	TFT_DataWrite		; Lower (and tick)
+	Index_out 0x50				; Window Horizontal Start Address
+	movf	PRODH,W
+	rcall	TFT_DataWrite		; Lower (and tick)
 
-		Index_out 0x51				; Window Horizontal End Address
-		movf	PRODL,W
-		rcall	TFT_DataWrite		; Lower (and tick)
+	Index_out 0x51				; Window Horizontal End Address
+	movf	PRODL,W
+	rcall	TFT_DataWrite		; Lower (and tick)
 
-		Index_out 0x20				; Frame Memory Horizontal Address
-		movf	PRODH,W
-		bra	TFT_DataWrite		; Lower (and tick) and return
-;		return
+	Index_out 0x20				; Frame Memory Horizontal Address
+	movf	PRODH,W
+	bra	TFT_DataWrite		; Lower (and tick) and return
+;	return
 
 
 TFT_box_noflip_V:
         ;---- Normal vertical window ----------------------------------------
-		movff   win_top,PRODL
-		movff   win_height,WREG
-		addwf   PRODL,W
-		sublw   .240                 ; 240 - top - height
-		movwf   PRODH                ; First byte
+	movff   win_top,PRODL
+	movf    win_height,W
+	addwf   PRODL,W
+	sublw   .240                 ; 240 - top - height
+	movwf   PRODH                ; First byte
 
-		movf	PRODL,W
-		sublw   .239                ; 239-top
-		movwf   PRODL               ; --> second byte.
+	movf	PRODL,W
+	sublw   .239                ; 239-top
+	movwf   PRODL               ; --> second byte.
 
-		Index_out 0x50				; Window Horizontal Start Address
-		movf	PRODH,W
-		rcall	TFT_DataWrite		; Lower (and tick)
+	Index_out 0x50				; Window Horizontal Start Address
+	movf	PRODH,W
+	rcall	TFT_DataWrite		; Lower (and tick)
 
-		Index_out 0x51				; Window Horizontal End Address
-		movf	PRODL,W
-		rcall	TFT_DataWrite		; Lower (and tick)
+	Index_out 0x51				; Window Horizontal End Address
+	movf	PRODL,W
+	rcall	TFT_DataWrite		; Lower (and tick)
 
-		Index_out 0x20				; Frame Memory Horizontal Address
-		movf	PRODL,W
-		bra	TFT_DataWrite		; Lower (and tick)  and return
-		;return
-
+	Index_out 0x20				; Frame Memory Horizontal Address
+	movf	PRODL,W
+	bra	TFT_DataWrite		; Lower (and tick)  and return
+;	return
 
 ;=============================================================================
 ; TFT_frame : draw a frame around current box with current color.
@@ -801,7 +800,7 @@ TFT_frame:
 
     ;---- TOP line -----------------------------------------------------------
     movlw   1                           ; row ~ height=1
-    movff   WREG,win_height
+    movwf   win_height
     rcall   TFT_box
 
     ;---- BOTTOM line --------------------------------------------------------
@@ -809,14 +808,14 @@ TFT_frame:
     movff   save_height,WREG             ; and height
     addwf   PRODL,W                      ; top+height
     decf    WREG                         ; top+height-1
-    movff   WREG,win_top                 ; top+height-1 --> top
+    movwf   win_top			 ; top+height-1 --> top
     rcall   TFT_box                        
 
     ;---- LEFT column --------------------------------------------------------
     movff   save_top,win_top             ; Restore top/height.
     movff   save_height,win_height
     movlw   1                               ; column ~ width=1
-    movff   WREG,win_width
+    movwf   win_width+0
     rcall   TFT_box
 
     ;---- RIGHT column -------------------------------------------------------
@@ -824,8 +823,8 @@ TFT_frame:
     movff   save_width,PRODL
     addwf   PRODL,W
     decf    WREG
-    movff   WREG,win_leftx2
-    rcall     TFT_box
+    movwf   win_leftx2
+    rcall    TFT_box
     
     ;---- Restore everything -------------------------------------------------
     movff   save_left,win_leftx2
@@ -841,29 +840,22 @@ TFT_frame:
 
 TFT_box:
     ;---- Define Window ------------------------------------------------------
-;	movf	win_width+0,W
-;	bcf     STATUS,C
-;	rlcf    WREG
-;	movwf   win_width+0
-	bcf     STATUS,C
-	rlcf    win_width+0,F
-	movlw   0
-	rlcf    WREG
-	movwf   win_width+1
-	rcall   TFT_box_write               ; Setup box
+    bcf     STATUS,C
+    rlcf    win_width+0,F
+    rlcf    win_width+1,F		    ; x2
+    rcall   TFT_box_write               ; Setup box
 
     global  TFT_box_16bit_win_left
 TFT_box_16bit_win_left:
     bcf     STATUS,C
     rrcf    win_width+1,F               ; width /= 2
     rrcf    win_width+0,F
-;    movwf   win_width
 
     ;---- Fill Window --------------------------------------------------------
-	Index_out 0x22						; Frame Memory Data Write start
+    Index_out 0x22						; Frame Memory Data Write start
 
-	clrf	PRODH                       ; Column counter.
-	RS_H				; Data
+    clrf	PRODH                       ; Column counter.
+    RS_H				; Data
 
 TFT_box2:                              ; Loop height times
 	movff	win_height,PRODL
@@ -880,30 +872,27 @@ TFT_box3:                              ; loop width times
 	WR_H				; Tick
 
 	decfsz	PRODL,F                     ; row loop finished ?
-	bra		TFT_box3                   ; No: continue.
+	bra	TFT_box3                   ; No: continue.
 
     incf    PRODH,F                     ; column count ++
 
-    movff   win_bargraph,WREG           ; current column == bargraph ?
+    movf    win_bargraph,W             ; current column == bargraph ?
     cpfseq  PRODH
     bra     TFT_box4                   ; No: just loop.
-
-    clrf    WREG                        ; Yes: switch to black
-    movff   WREG,win_color1
-    movff   WREG,win_color2
+    ; Yes: switch to black
+    clrf    win_color1
+    clrf    win_color2
 TFT_box4:
-
-    movff   win_width+0,WREG            ; compare ?
+    movf    win_width+0,W               ; compare ?
     xorwf   PRODH,W
     bnz     TFT_box2                    ; Loop not finished.
 
-	movlw	0x00                        ; NOP, to stop window mode
-	rcall   TFT_CmdWrite
+    movlw	0x00                        ; NOP, to stop window mode
+    rcall   TFT_CmdWrite
 
-	setf    WREG                        ; Reset bargraph mode...
-	movff   WREG,win_bargraph
-
-	return
+    ; Reset bargraph mode...
+    setf	win_bargraph
+    return
 
 ;=============================================================================
 ;Converts 8Bit RGB b'RRRGGGBB' into 16Bit RGB b'RRRRRGGGGGGBBBBB'
@@ -957,7 +946,8 @@ TFT_set_color:
 	rrcf	tft_temp3,F
 
 	rrcf	tft_temp4,F
-	rrcf	tft_temp3,F		; tft_temp3 (b'GGGBBBBB') done.
+	rrcf	tft_temp3,W		; tft_temp3 (b'GGGBBBBB') done.
+	movwf	win_color2		; Set Color registers...
 
 	movff	tft_temp1,	tft_temp2	; Copy
 	clrf	tft_temp1
@@ -1011,10 +1001,8 @@ TFT_set_color:
 	rrcf	tft_temp1,F
 
 	rrcf	tft_temp4,F
-	rrcf	tft_temp1,F		; Red done.
-
-	movff	tft_temp1,win_color1
-	movff	tft_temp3,win_color2	; Set Bank0 Color registers...
+	rrcf	tft_temp1,W		; Red done.
+	movwf	win_color1		; Set Color registers...
 	return
 
 ;=============================================================================

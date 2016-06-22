@@ -3489,11 +3489,12 @@ surf_tissue_saturation_loop:
 	movwf   temp1
     movlw   .20
     subwf   temp1,F                     ; Subtract some offset
-	movff   win_width,WREG              ; Max width.
-	cpfslt	temp1                       ; skip if WREG < win_width
-	movwf	temp1
-	movff   temp1,win_bargraph
-	goto	TFT_box	; and return...
+    movf    win_width+0,W              ; Max width.
+    cpfslt	temp1                       ; skip if WREG < win_width
+    movwf	temp1
+    movff   temp1,win_bargraph
+    clrf    win_width+1
+    goto	TFT_box	; and return...
 
 ;=============================================================================
 ; Draw saturation graph, is surface mode or in dive mode.
@@ -3547,12 +3548,12 @@ tissue_saturation_graph_loop:
 	movwf   temp1
     movlw   .12
     subwf   temp1,F                     ; Subtract some offset
-	movff   win_width,WREG              ; Max width.
+	movf   win_width,W                ; Max width.
 	cpfslt	temp1                       ; skip if WREG < win_width
 	movwf	temp1
 	movff   temp1,win_bargraph
-	call	TFT_box
-    return
+    clrf    win_width+1
+    goto    TFT_box	    ; and return
 
 
 	global	TFT_display_cns

@@ -498,7 +498,8 @@ deco_plan_show_nstd_stop_common:
         movlw	.118
         movwf	win_leftx2    		    ; column left (0-159)
         movlw	.16
-        movwf	win_width    		    ; column max width.
+        movwf	win_width+0    		    ; column max width.
+	clrf    win_width+1
 
         ; Draw used area (up = minutes):
         movlw	.16                     ; Limit length (16min)
@@ -522,12 +523,13 @@ deco_plan_show_clear_bottom:
 
         WIN_LEFT .85                    ; Full divemenu width
         movlw   .159-.85+1
-        movwf   win_width
+        movwf   win_width+0
+	clrf    win_width+1
 
         clrf    win_color1              ; Fill with black
         clrf    win_color2
 
-        goto	TFT_box
+        goto	TFT_box		    ; and return
 
 ;-----------------------------------------------------------------------------
 ; Display the decoplan (simulator).
