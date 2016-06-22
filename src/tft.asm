@@ -498,19 +498,19 @@ box_frame_color:
 box_frame_color16:
 		bra		box_frame_common
 
-;=============================================================================
-; Init for half_pixel_write
-; Set column register on TFT device, and current color.
-; Inputs: win_leftx2
-; Outputs: win_color:2
-; Trashed: WREG, PROD
-        global init_pixel_write
-init_pixel_write:
-        movf   win_leftx2,W
-        mullw   2
-        rcall   pixel_write_col320      ; Start Address Vertical (.0 - .319)
-        setf    WREG
-        bra     TFT_set_color
+;;=============================================================================
+;; Init for half_pixel_write
+;; Set column register on TFT device, and current color.
+;; Inputs: win_leftx2
+;; Outputs: win_color:2
+;; Trashed: WREG, PROD
+;        global init_pixel_write
+;init_pixel_write:
+;        movf   win_leftx2,W
+;        mullw   2
+;        rcall   pixel_write_col320      ; Start Address Vertical (.0 - .319)
+;        setf    WREG
+;        bra     TFT_set_color
 
 ;-----------------------------------------------------------------------------
 ; Writes two half-pixels at position (win_top,win_leftx2)

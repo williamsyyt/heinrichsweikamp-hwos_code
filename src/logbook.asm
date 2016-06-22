@@ -783,9 +783,14 @@ display_profile2f:
     movwf       win_width+1
     call        TFT_box_write           ; open box for d1
 
-    INIT_PIXEL_WRITE logbook_pixel_x_pos       ; pixel x2			(Also sets standard Color!)
+;    INIT_PIXEL_WRITE logbook_pixel_x_pos       ; pixel x2			(Also sets standard Color!)
 
 profile_display_loop:
+	; Init pixel write
+        movf    logbook_pixel_x_pos,W
+	mullw   2
+        call    pixel_write_col320
+    
 	movff		profile_temp+0,profile_temp2+0
 	movff		profile_temp+1,profile_temp2+1		; 16Bit x-scaler
 	incf		profile_temp2+1,F					

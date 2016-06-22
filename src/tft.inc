@@ -43,7 +43,7 @@
     extern  TFT_box_16bit_win_left      ; With column in PRODL:PRODH
     extern  TFT_DataWrite_PROD
     extern  TFT_set_color
-	extern	init_pixel_write
+;	extern	init_pixel_write
 	extern	pixel_write
 	extern	pixel_write_col320
 	extern	half_vertical_line
@@ -186,10 +186,10 @@ PIXEL_WRITE macro   colRegister, rowRegister
         call    pixel_write
         endm
 
-INIT_PIXEL_WRITE macro colRegister
-        movff   colRegister,win_leftx2
-        call    init_pixel_write
-        endm
+;INIT_PIXEL_WRITE macro colRegister
+;        movff   colRegister,win_leftx2
+;        call    init_pixel_write
+;        endm
 
 HALF_PIXEL_WRITE macro rowRegister
         movff   rowRegister,win_top
