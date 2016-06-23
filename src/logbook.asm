@@ -911,7 +911,7 @@ profile_display_skip_temp:
     incf		logbook_pixel_x_pos,F		; Next column
 
     ;---- Draw Marker square , if any ----------------------------------------
-    btfss       log_marker_found            ; Any marker to draw?
+;    btfss       log_marker_found            ; Any marker to draw?	; mH
     bra         profile_display_skip_marker ; No
 
     ; 2x2 square
@@ -931,6 +931,7 @@ profile_display_skip_temp:
     bcf         log_marker_found            ; Clear flag
 
 profile_display_skip_marker:
+    bcf         log_marker_found            ; Clear flag    ; mH
     ;---- Draw CNS curve, if any ---------------------------------------------
     movf        divisor_cns,W
     bz          profile_display_skip_cns
