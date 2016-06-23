@@ -1,7 +1,9 @@
 [2.08]
-
+- Stable Version -
+CHANGE: Logbook marker temporally disabled in internal logbook
 
 [2.07]
+- Stable Version -
 Release version for new OSTC2 (Minor internal hardware changes)
 
 [2.06]
