@@ -208,17 +208,21 @@ basic   CODE
 TFT_CmdWrite:
 	RS_L				; Command
 	clrf	PORTA		; Upper
+	bcf	INTCON,GIE
 	movwf	PORTH		; Lower
 	WR_L
 	WR_H				; Tick
+	bsf	INTCON,GIE
 	return;
 
     global  TFT_DataWrite
 TFT_DataWrite:
 	RS_H				; Data
+	bcf	INTCON,GIE
 	movwf 	PORTH		; Lower
 	WR_L
 	WR_H				; Tick
+	bsf	INTCON,GIE
 	return
 
 ;=============================================================================
@@ -252,16 +256,21 @@ TFT_ClearScreen2:
 	movwf	tft_temp2
 TFT_ClearScreen3:
 	clrf	tft_temp1				; 30*10*256=76800 Pixels -> Clear complete 240*320
+	bcf	INTCON,GIE
 TFT_ClearScreen4:
 	WR_L
 	WR_H							; Tick
 	decfsz	tft_temp1,F
 	bra		TFT_ClearScreen4
+	bsf	INTCON,GIE
 	decfsz	tft_temp2,F
 	bra		TFT_ClearScreen3
 	decfsz	tft_temp3,F
 	bra		TFT_ClearScreen2
-	return
+	
+	movlw	0x00                        ; NOP, to stop window mode
+        bra	TFT_CmdWrite		    ; And return
+;	return
 
 ;=============================================================================
 ; 
@@ -573,10 +582,12 @@ half_pixel_write_1:
 
 		Index_out 0x22                  ; Frame Memory Data Write start
 		RS_H				; Data
+		bcf	INTCON,GIE
 		movff	win_color1,PORTA		; Upper
 		movff	win_color2,PORTH		; Lower
 		WR_L
 		WR_H				; Tick
+		bsf	INTCON,GIE
     	return
 
 ;-----------------------------------------------------------------------------
@@ -635,10 +646,12 @@ half_horizontal_line_loop:
 TFT_DataWrite_PROD:
 ;	RD_H				; Keep high
 	RS_H				; Data
+	bcf	INTCON,GIE
 	movff	PRODH,PORTA	; Move high byte to PORTA
 	movff	PRODL,PORTH	; Move low byte to PORTH
 	WR_L
 	WR_H                ; Tick
+	bsf	INTCON,GIE
 	return
 
 TFT_DataRead_PROD:
@@ -861,6 +874,7 @@ TFT_box2:                              ; Loop height times
 	movff	win_height,PRODL
 
 TFT_box3:                              ; loop width times
+	bcf	INTCON,GIE
 	movff	win_color1,PORTA			; Upper
 	movff	win_color2,PORTH			; Lower
 	WR_L
@@ -870,7 +884,7 @@ TFT_box3:                              ; loop width times
 ;	movff	win_color2,PORTH			; Lower
 	WR_L
 	WR_H				; Tick
-
+	bsf	INTCON,GIE
 	decfsz	PRODL,F                     ; row loop finished ?
 	bra	TFT_box3                   ; No: continue.
 

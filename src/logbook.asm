@@ -373,8 +373,8 @@ display_profile_or_exit:
 	bra			display_profile_or_exit2	; No, check for "Next Page"
 
 exit_logbook:
-    call        TFT_DisplayOff
-    call        TFT_boot
+;    call        TFT_DisplayOff
+;    call        TFT_boot
 	goto		do_main_menu2
 
 display_profile_or_exit2:

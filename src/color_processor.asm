@@ -152,6 +152,7 @@ color_image_not_over:
         bsf     tft_rs,0    ; RS_H				; Data
     	movff	PRODH,PORTA	; Move high byte to PORTA
         movff	PRODL,PORTH	; Move low byte to PORTH
+	bcf	INTCON,GIE
 color_image_loop_pixel:
     	bcf     tft_nwr,0       ; WR_L
         bsf     tft_nwr,0       ; WR_H                ; Tick
@@ -159,6 +160,7 @@ color_image_loop_pixel:
         bra     color_image_loop_pixel
         decfsz  img_count+1
         bra     color_image_loop_pixel
+	bsf	INTCON,GIE
         
         ; And count (on a 24bit counter)
         clrf    WREG                    ; Make a 24bit decrement.
