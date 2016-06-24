@@ -408,13 +408,16 @@ aa_decode_3:
     	movff	PRODH,PORTA	; Move high byte to PORTA
         movff	PRODL,PORTH	; Move low byte to PORTH
 aa_decode_4:
+	bcf	INTCON,GIE
+aa_decode_4a:
 		;---- PIXEL WRITE LOOP -----------------------------------------------
     	bcf     tft_nwr,0       ; WR_L
         bsf     tft_nwr,0       ; WR_H                ; Tick
 
 		decf	aa_bitlen,F
-		bnz		aa_decode_4
-
+		bnz		aa_decode_4a
+		
+	bsf	INTCON,GIE
 		;---- BYTE-CODE LOOP -------------------------------------------------
 		; Are we done ?
 		movf	TBLPTRL,W 			    ; Compare TBLPTR to aa_end
