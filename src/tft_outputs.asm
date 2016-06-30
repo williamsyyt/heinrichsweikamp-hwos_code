@@ -1062,11 +1062,11 @@ TFT_mask_avr_stopwatch:
     ; The mask
     call    TFT_divemask_color
     WIN_TINY          dm_custom_avr_stop_title_column1,dm_custom_avr_stop_title_row
-    STRCPY_TEXT_PRINT tDiveTotalAvr
+    STRCPY_TEXT_PRINT tDiveTotalAvg
     WIN_TINY          dm_custom_avr_stop_title_column2,dm_custom_avr_stop_title_row
     STRCPY_TEXT_PRINT tDiveStopwatch
     WIN_TINY          dm_custom_avr_stop_title_column3,dm_custom_avr_stop_title_row
-    STRCPY_TEXT_PRINT tDiveStopAvr
+    STRCPY_TEXT_PRINT tDiveStopAvg
     goto	TFT_standard_color  ; and return...
 
     global  TFT_dyn_gaslist
@@ -1135,8 +1135,8 @@ TFT_update_avr_stopwatch:
     TSTOSS  opt_units   			; 0=m, 1=ft
 	bra		TFT_update_avr_stopwatch_metric
 ;TFT_update_avr_stopwatch_imperial
-    movff   avr_rel_pressure_total+0,lo
-    movff   avr_rel_pressure_total+1,hi
+    movff   avg_rel_pressure_total+0,lo
+    movff   avg_rel_pressure_total+1,hi
     call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
     call	convert_mbar_to_feet       	; convert value in lo:hi from mbar to feet
     WIN_MEDIUM  dm_custom_avr_stop_column1,dm_custom_avr_stop_row
@@ -1144,8 +1144,8 @@ TFT_update_avr_stopwatch:
     output_16                       ; yxz
     STRCAT_PRINT " "
     ; Stopped average depth
-    movff   avr_rel_pressure+0,lo
-    movff   avr_rel_pressure+1,hi
+    movff   avg_rel_pressure+0,lo
+    movff   avg_rel_pressure+1,hi
     call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
     call	convert_mbar_to_feet       	; convert value in lo:hi from mbar to feet
     WIN_MEDIUM  dm_custom_avr_stop_column3,dm_custom_avr_stop_row
@@ -1156,16 +1156,16 @@ TFT_update_avr_stopwatch:
 
 TFT_update_avr_stopwatch_metric:
     ; Non-resettable average depth
-    movff   avr_rel_pressure_total+0,lo
-    movff   avr_rel_pressure_total+1,hi
+    movff   avg_rel_pressure_total+0,lo
+    movff   avg_rel_pressure_total+1,hi
     call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
     WIN_MEDIUM  dm_custom_avr_stop_column1,dm_custom_avr_stop_row
     bsf     ignore_digit5         ; no cm
     output_16dp  .3               ; yxz.a
     STRCAT_PRINT " "
     ; Stopped average depth
-    movff   avr_rel_pressure+0,lo
-    movff   avr_rel_pressure+1,hi
+    movff   avg_rel_pressure+0,lo
+    movff   avg_rel_pressure+1,hi
     call	adjust_depth_with_salinity			; computes salinity setting into lo:hi [mbar]
     WIN_MEDIUM  dm_custom_avr_stop_column3,dm_custom_avr_stop_row
     bsf     ignore_digit5         ; no cm

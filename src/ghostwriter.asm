@@ -666,9 +666,9 @@ end_dive_oc_cc_common:
     movff	int_O_CNS_fraction+1,WREG		; copy into bank1
 	rcall	ghostwrite_byte_header; Stores CNS%
 
-	movff	avr_rel_pressure_total+0,WREG	; Average Depth
+	movff	avg_rel_pressure_total+0,WREG	; Average Depth
 	rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
-	movff	avr_rel_pressure_total+1,WREG	; Average Depth
+	movff	avg_rel_pressure_total+1,WREG	; Average Depth
 	rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
 
 	movff	total_divetime_seconds+0,WREG	; Total dive time (Regardless of start_dive_threshold)
