@@ -1741,7 +1741,7 @@ logbook_gaslist_common:
 
     ; Average depth
     WIN_TINY    log2_avr_column,log2_avr_row
-    STRCPY_TEXT tAVR
+    STRCPY_TEXT tAVG
     call		ext_flash_byte_read_plus	; read avr low
     movff       temp1,lo
     call		ext_flash_byte_read_plus	; read avr high

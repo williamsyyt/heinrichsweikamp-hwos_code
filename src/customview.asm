@@ -339,7 +339,7 @@ menuview_view5:
 menuview_view6:
 	btfss	FLAG_gauge_mode					; In Gauge mode?
 	bra		menuview_toggle 				; No, call next option
-	STRCPY_TEXT_PRINT	tDivemenu_ResetAvr  ; "Reset Avr."
+	STRCPY_TEXT_PRINT	tDivemenu_ResetAvg  ; "Reset Avg."
 	bra     menuview_exit                   ; Done.
 menuview_view7:
     btfss  	simulatormode_active			; View only for simulator mode

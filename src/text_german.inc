@@ -19,7 +19,7 @@
 
 ; Divemode Menu
     TCODE   tDivemenu_Gaslist,  "Gasliste"    ; Gaslist
-    TCODE   tDivemenu_ResetAvr, "Stoppuhr"    ; Reset Avr.
+    TCODE   tDivemenu_ResetAvg, "Stoppuhr"    ; Reset Avg.
     TCODE   tDivemenu_Setpoint, "Setpoint"      ; Setpoint
     TCODE   tDivemenu_UseSensor,"Akt. Sensor"    ; Use Sensor
     TCODE   tDivemenu_ToggleGF, "Toggle GF"     ; Toggle GF
@@ -218,9 +218,9 @@
     TCODE   tDiveHudMask1,  "Sensor 1"
     TCODE   tDiveHudMask2,  "Sensor 2"
     TCODE   tDiveHudMask3,  "Sensor 3"
-    TCODE   tDiveTotalAvr,  "Durchschn.1"   
+    TCODE   tDiveTotalAvg,  "Durchschn.1"   
     TCODE   tDiveStopwatch, "Stoppuhr"
-    TCODE   tDiveStopAvr,   "Durchschn.2"   ; 11chars max
+    TCODE   tDiveStopAvg,   "Durchschn.2"   ; 11chars max
     TCODE   tApnoeTotal,    " Total"        ; Total (Six chars, right alligned)
     TCODE   tApnoeMax,      "  Letzter TG"  ; Last descend
     TCODE   tApnoeSurface,  "Oberflächenzeit"  ; Surface Time
@@ -249,7 +249,7 @@
 
 ; Logbook
 	TCODE	tCNS2,		"ZNS:"
-	TCODE	tAVR,		"Mit:"
+	TCODE	tAVG,		"Mit:"
 	TCODE	tGF,		"GF:"
 	TCODE	tSAT,		"Sät:"					; Sat:
 

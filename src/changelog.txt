@@ -1,6 +1,9 @@
 [2.08]
 - Stable Version -
 CHANGE: Logbook marker temporally disabled in internal logbook
+BUGFIX: Characters with descenders were not drawn correctly in rare cases
+NEW: Support for different compass chip (Internal hardware change)
+CHANGE: Language fixes
 
 [2.07]
 - Stable Version -

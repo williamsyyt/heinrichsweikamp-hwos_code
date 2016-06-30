@@ -19,7 +19,7 @@
 
 ; Divemode Menu
     TCODE   tDivemenu_Gaslist,  "Lista Gas"       ; Gaslist
-    TCODE   tDivemenu_ResetAvr, "Azzera Media"  ; Reset Avr.
+    TCODE   tDivemenu_ResetAvg, "Azzera Media"  ; Reset Avg.
     TCODE   tDivemenu_Setpoint, "Setpoint"      ; Setpoint
     TCODE   tDivemenu_UseSensor,"Usa Sensori"    ; Use Sensor
     TCODE   tDivemenu_ToggleGF, "Alterna GF"     ; Toggle GF
@@ -219,9 +219,9 @@
     TCODE   tDiveHudMask1,  "Sensor 1"
     TCODE   tDiveHudMask2,  "Sensor 2"
     TCODE   tDiveHudMask3,  "Sensor 3"
-    TCODE   tDiveTotalAvr,  "Media"
+    TCODE   tDiveTotalAvg,  "Media"
     TCODE   tDiveStopwatch, "Cronometro"
-    TCODE   tDiveStopAvr,   "Media Inter"   ; 11chars max
+    TCODE   tDiveStopAvg,   "Media Inter"   ; 11chars max
     TCODE   tApnoeTotal,    "Totale"        ; Total (Six chars, right alligned)
     TCODE   tApnoeMax,      "Ultima Discesa"  ; Last descend
     TCODE   tApnoeSurface,  "Tempo Superficie"  ; Surface Time
@@ -250,7 +250,7 @@
 
 ; Logbook
 	TCODE	tCNS2,		"CNS:"
-	TCODE	tAVR,		"Avr:"
+	TCODE	tAVG,		"Avg:"
 	TCODE	tGF,		"GF:"
 	TCODE	tSAT,		"Sat:"					; Sat:
 

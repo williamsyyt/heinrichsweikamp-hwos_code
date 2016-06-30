@@ -258,8 +258,8 @@ last_surfpressure_30min res 2
 rel_pressure	res 2
 sim_pressure	res 2   ; hold simulated pressure in mbar if in Simulator mode
 max_pressure	res 2
-avr_rel_pressure	res 2
-avr_rel_pressure_total res 2
+avg_rel_pressure	res 2
+avg_rel_pressure_total res 2
 ;---- Data for ISR math subroutines
 isr_xC          res 4
 isr_xA          res 2

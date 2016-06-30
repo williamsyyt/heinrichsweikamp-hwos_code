@@ -809,8 +809,8 @@ calc_average_depth:
 	movff	average_depth_hold+3,xC+3
 
 	call	div32x16 	; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
-	movff	xC+0,avr_rel_pressure+0
-	movff	xC+1,avr_rel_pressure+1
+	movff	xC+0,avg_rel_pressure+0
+	movff	xC+1,avg_rel_pressure+1
 
     btfss   divemode2                   ; displayed divetime is running?
 	return                              ; No (e.g. too shallow)
@@ -823,8 +823,8 @@ calc_average_depth:
 	movff	average_depth_hold_total+2,xC+2
 	movff	average_depth_hold_total+3,xC+3
 	call	div32x16 	; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
-	movff	xC+0,avr_rel_pressure_total+0
-	movff	xC+1,avr_rel_pressure_total+1
+	movff	xC+0,avg_rel_pressure_total+0
+	movff	xC+1,avg_rel_pressure_total+1
 	return
 
 reset_average1:
