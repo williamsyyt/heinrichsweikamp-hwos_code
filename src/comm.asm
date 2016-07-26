@@ -500,6 +500,10 @@ comm_download_mode2:
 	cpfseq	RCREG1
 	bra		$+4
 	bra		comm_hardware_descriptor    ; Send hardware descriptor byte
+	movlw	0x60
+	cpfseq	RCREG1
+	bra		$+4
+	bra		comm_feature_and_hardware   ; Send more detailed informations
 	movlw	"n"
 	cpfseq	RCREG1
 	bra		$+4
@@ -827,6 +831,25 @@ comm_hardware_descriptor:
     movff   hardware_flag,TXREG1
     bra     comm_download_mode0             ; Done.
 
+comm_feature_and_hardware:
+    movlw	0x60								; send echo
+    movwf	TXREG1
+    rcall	comm_rs232_wait_tx					; wait for UART
+    movlw	0x00	; Hardware high byte
+    movwf	TXREG1
+    rcall	comm_rs232_wait_tx					; wait for UART
+    movff	hardware_flag,TXREG1
+    rcall	comm_rs232_wait_tx					; wait for UART
+    movlw	0x00	; Feature high Byte
+    movwf	TXREG1
+    rcall	comm_rs232_wait_tx					; wait for UART
+    movlw	0x00	; Feature low Byte
+    movwf	TXREG1
+    rcall	comm_rs232_wait_tx					; wait for UART
+    movlw	0x00	; Model descriptor byte
+    movwf	TXREG1
+    bra     comm_download_mode0             ; Done.
+   
 ;-----------------------------------------------------------------------------
 
 comm_send_dive:

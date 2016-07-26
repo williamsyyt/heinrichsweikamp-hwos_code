@@ -64,12 +64,12 @@ clear_rambank:
 ; First pass will not have valid temperature!
 	btfss	pressure_refresh 		; Air pressure compensation
 	bra		$-2
-    bcf     LEDr
-; Second pass
+    ; Second pass
 	bcf		pressure_refresh
 	btfss	pressure_refresh 		; Air pressure compensation
 	bra		$-2
-
+    bcf     LEDr
+    
 	clrf	rel_pressure+0
 	clrf	rel_pressure+1
 	clrf	surface_interval+0
@@ -137,6 +137,8 @@ no_deco_restore:
 
     btfsc	RCON,POR					; Was this a power-on reset?
     goto	use_old_batteries				; No, load last stored battery values and return to "power_on_return:"
+
+;    bsf	    LEDg
     goto	new_battery_menu				; No, show "New battery dialog" and return to "power_on_return:"
 
 	global	power_on_return
@@ -165,8 +167,8 @@ power_on_return2:
 	movff	EEDATA,temp2
 	clrf	EEADRH					; Reset EEADRH
 
-	movlw	softwareversion_x
-	cpfseq	temp1					; compare version x
+;	movlw	softwareversion_x
+;	cpfseq	temp1					; compare version x
 	bra		check_firmware_new		; is not equal -> reset CF and store new version in EEPROM
 
 	movlw	softwareversion_y
@@ -281,13 +283,18 @@ restart:
     call    lt2942_init             ; Yes, init battery gauge IC
     bcf     optical_input           ; Clear flag
     
+    banksel 0xF16
     bcf	    ANCON0,7		    ; AN7 Digital input
+    banksel common
     bcf	    lightsen_power	    ; Power-down ambient light sensor
     bcf     ambient_sensor          ; Clear flag
+    nop
     btfss   PORTF,2		    ; Light sensor available?
     bsf	    ambient_sensor          ; Yes.
+    banksel 0xF16
     bsf	    ANCON0,7		    ; AN7 Analog again
-    bsf	    lightsen_power	    ; Power-up ambient light sensor
+    banksel common
+    bsf	    lightsen_power	    ; Power-up ambient light sensor again
     
 restart2:
     btfsc   vusb_in

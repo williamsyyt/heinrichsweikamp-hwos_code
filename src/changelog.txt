@@ -1,3 +1,8 @@
+[2.09]
+- Stable Version -
+BUGFIX: Compatibility with "hwOS Config" fixed
+NEW: New hardware descriptor command 0x60 added (For PC programs)
+
 [2.08]
 - Stable Version -
 CHANGE: Logbook marker temporally disabled in internal logbook
