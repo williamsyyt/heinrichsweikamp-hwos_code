@@ -321,27 +321,18 @@ TFT_boot:
 ; Data Transfer Synchronization
 	Parameter_out 0x00, 0x00
 	Parameter_out 0x00, 0x00
-
-    Index_out 0x00
-    rcall   TFT_CmdRead_PROD           ; Get ID into PRODL:PRODH
-    ; 5:197 -> display0
-    ;37:147 -> display1
-    movlw   .5
-    cpfseq  PRODL           ; display0?
-    bra     TFT_boot_1      ; No
-    movlw   .197
-    cpfseq  PRODH           ; display0?
-    bra     TFT_boot_1      ; No
-
-; Init through config table...
-    movlw   LOW     display0_config_table
-    movwf   TBLPTRL
-    movlw   HIGH    display0_config_table
-    movwf   TBLPTRH
-    movlw   UPPER   display0_config_table
-    movwf   TBLPTRU
-    bcf     screen_type
-    bra     TFT_boot_com
+	
+	; Get screentype from Bootloader-Info
+	movlw   0x7B
+	movwf   TBLPTRL
+	movlw   0xF7
+	movwf   TBLPTRH
+	movlw   0x01
+	movwf   TBLPTRU
+	TBLRD*+			; Reads .110 for cR and USB OSTC3, .0 for BLE (2 and 3), and .2 for display1 OSTC
+	movlw	0x02
+	cpfseq	TABLAT
+	bra     TFT_boot_0      ; Display0
 
 TFT_boot_1:
 ; Init through config table...
@@ -352,7 +343,18 @@ TFT_boot_1:
     movlw   0x01
     movwf   TBLPTRU
     bsf     screen_type
+    bra     TFT_boot_com
 
+TFT_boot_0:
+; Init through config table...
+    movlw   LOW     display0_config_table
+    movwf   TBLPTRL
+    movlw   HIGH    display0_config_table
+    movwf   TBLPTRH
+    movlw   UPPER   display0_config_table
+    movwf   TBLPTRU
+    bcf     screen_type
+    
 TFT_boot_com:
     rcall   display0_init_loop
 
@@ -660,7 +662,7 @@ TFT_CmdRead_PROD:
     setf    TRISA                   ; PortA as input.
     setf    TRISH                   ; PortH as input.
 	RS_H				; Data
-;	WR_H                ; Not write
+	WR_H                ; Not write
 	RD_L                ; Read!
     nop
     nop
