@@ -167,8 +167,8 @@ power_on_return2:
 	movff	EEDATA,temp2
 	clrf	EEADRH					; Reset EEADRH
 
-;	movlw	softwareversion_x
-;	cpfseq	temp1					; compare version x
+	movlw	softwareversion_x
+	cpfseq	temp1					; compare version x
 	bra		check_firmware_new		; is not equal -> reset CF and store new version in EEPROM
 
 	movlw	softwareversion_y
