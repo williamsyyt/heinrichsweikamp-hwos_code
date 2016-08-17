@@ -20,11 +20,11 @@
 
 ; Firmware definition
 #DEFINE	softwareversion_x		d'2'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'09'		; Software version  XX.YY
+#DEFINE	softwareversion_y		d'10'		; Software version  XX.YY
 #DEFINE softwareversion_beta 	0 			; (and 0 for release)
 ; Firmware version will appear in "Change Firmware" style
 #DEFINE firmware_expire_year    .17
-#DEFINE firmware_expire_month   .6
+#DEFINE firmware_expire_month   .8
 #DEFINE firmware_expire_day     .10
 
 #DEFINE comm_service_key        0xABCDEF
@@ -112,7 +112,7 @@
 #DEFINE	high_altitude_dive_threshold .300;[cm]
 #DEFINE	apnoe_timeout			.15 	; [min]
 #DEFINE divemode_menuview_timeout   .10 ; [s]
-#DEFINE	divemode_timeout		.300	; [s]
+#DEFINE	divemode_timeout_default	.6	; [min]
 #DEFINE	divemode_menu_timeout	.30		; [s]
 #DEFINE	ppo2_warning_low		.19     ; [cbar] (Default value)
 #DEFINE ppo2_lowest_setting     .16     ; [cbar] (Minimum value)
@@ -592,6 +592,7 @@ opt_safety_stop_length  res 1   ; [s]
 opt_safety_stop_start   res 1   ; [cbar]
 opt_safety_stop_end     res 1   ; [cbar]
 opt_safety_stop_reset   res 1   ; [cbar]
+opt_diveTimeout		res 1	; Timeout for Divemode [min]
 
 ;-----------------------------EEPROM DATA ------------------------------------
 ; Automatic reset of all options when this is changed:

@@ -1075,6 +1075,9 @@ comm_read_setting:
     movff   opt_safety_stop_reset, TXREG1   ; RCREG1=0x46
     dcfsnz  WREG
     clrf    TXREG1			    ; RCREG1=0x47, ignore conservatism for standard hwOS
+    dcfsnz  WREG
+    movff   opt_diveTimeout, TXREG1	    ; RCREG1=0x48
+
     
 comm_read_abort:
 comm_read_done:
@@ -1375,6 +1378,8 @@ comm_write_setting:
     movff   RCREG1, opt_safety_stop_reset   ; RCREG1=0x46
     dcfsnz  WREG
     nop					    ; RCREG1=0x47, ignore conservatism for standard hwOS
+    dcfsnz  WREG
+    movff   RCREG1, opt_diveTimeout	    ; RCREG1=0x48
 
 
 comm_write_abort:

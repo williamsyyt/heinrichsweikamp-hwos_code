@@ -1,3 +1,7 @@
+[2.10]
+- Stable Version -
+NEW: Adjustable timeout for Divemode
+
 [2.09]
 - Stable Version -
 BUGFIX: Compatibility with "hwOS Config" fixed
