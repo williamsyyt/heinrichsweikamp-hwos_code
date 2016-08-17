@@ -208,7 +208,7 @@ option_table_begin:
         OPTION_UINT8    oSafetyStopStart,  .21,.61,     .51,   -1,    .162,    opt_safety_stop_start            ; [cbar], default 510mbar, min 210mbar, max 610mbar
         OPTION_UINT8    oSafetyStopEnd,    .19,.39,     .29,   -1,    .163,    opt_safety_stop_end              ; [cbar], default 290mbar, min 190mbar, max 390mbar
         OPTION_UINT8    oSafetyStopReset,  .81,.151,    .101,  -1,    .164,    opt_safety_stop_reset            ; [cbar], default 1010mbar, min 810mbar, max 1510mbar
-
+	OPTION_UINT8    oDiveTimeout,	    .1,.20,  divemode_timeout_default,   tMinutes,  .168,    opt_diveTimeout			; Timeout for divemode in minutes
 
 ;=============================================================================
 ; Set Time/Set Date (RAM only)

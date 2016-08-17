@@ -1600,10 +1600,10 @@ TFT_divetimeout:
     call    TFT_warning_set_window_com
     call	TFT_standard_color
     STRCPY  0x94                        ; "End of dive" icon
-    movlw   LOW     divemode_timeout
-    movwf   sub_a+0
-    movlw   HIGH    divemode_timeout
-    movwf   sub_a+1
+    movff	opt_diveTimeout,WREG	    ; in [min]
+    mullw	.60
+    movff	PRODL,sub_a+0
+    movff	PRODH,sub_a+1		    ; in [s]
     movff   timeout_counter,sub_b+0
     movff   timeout_counter2,sub_b+1
     call    subU16  ;  sub_c = sub_a - sub_b (with UNSIGNED values)

@@ -628,10 +628,10 @@ timeout_divemode:
 	infsnz  timeout_counter,F
     incf    timeout_counter2,F			; timeout is 15bits
 
-	movlw	LOW		divemode_timeout
-	movwf	sub_a+0
-	movlw	HIGH	divemode_timeout
-	movwf	sub_a+1
+	movff	opt_diveTimeout,WREG	    ; in [min]
+	mullw	.60
+	movff	PRODL,sub_a+0
+	movff	PRODH,sub_a+1		    ; in [s]
 
 	movff	timeout_counter, sub_b+0
 	movff	timeout_counter2, sub_b+1
