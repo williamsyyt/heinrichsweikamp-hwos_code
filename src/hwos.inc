@@ -112,7 +112,7 @@
 #DEFINE	high_altitude_dive_threshold .300;[cm]
 #DEFINE	apnoe_timeout			.15 	; [min]
 #DEFINE divemode_menuview_timeout   .10 ; [s]
-#DEFINE	divemode_timeout_default	.6	; [min]
+#DEFINE	divemode_timeout_default	.5	; [min]
 #DEFINE	divemode_menu_timeout	.30		; [s]
 #DEFINE	ppo2_warning_low		.19     ; [cbar] (Default value)
 #DEFINE ppo2_lowest_setting     .16     ; [cbar] (Minimum value)
