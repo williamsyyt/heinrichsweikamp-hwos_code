@@ -51,7 +51,6 @@ clear_rambank:
 	bra		clear_rambank			; clear...
 
     call    init_ostc
-	bsf		no_sensor_int			; disable sensor interrupt
 
 ; Air pressure compensation	after reset
 	call	get_calibration_data	; Get calibration data from pressure sensor
