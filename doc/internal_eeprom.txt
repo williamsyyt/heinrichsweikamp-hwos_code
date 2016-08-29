@@ -8,7 +8,7 @@ Add:	Length:         Description:                        	Default:	Comment:				U
  4 -  6     3		Profile pointer for logbook buffer	0		Cleared in production			mH
  7 - 12     6		Battery gauge registers LOW:HIGH	0		Cleared when new battery is used 	mH
 13 - 14     2		Logbook Offset LOW:HIGH 		0		Cleared in production   		mH
-15	    1 		Unused					0		Cleared in production   		mH
+15	    1 		battery_type (See code)			0		Cleared in production   		mH
 16 - 17     2		Backup of number of dives		0		Copied with "Logbook reset"		mH
 18 - 			Options					x		
 
