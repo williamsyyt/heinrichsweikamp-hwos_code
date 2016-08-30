@@ -102,7 +102,7 @@ comm_mode1:
 	dcfsnz 	timeout_counter,F
 	bra		comm_service_exit           ; Timeout -> Exit
 comm_mode2:
-;    btfsc   rechargeable
+;    btfsc   battery_gauge_available
 ;    bra     comm_mode4                  ; Skip
 ;
 ;	call	get_battery_voltage			; gets battery voltage

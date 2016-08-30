@@ -100,27 +100,23 @@ strcat_text_print:
 ;
         global  text_get_tblptr
 text_get_tblptr:
-        extern  text_english_base
-        movlw   UPPER(text_english_base); Complete 12bits to 24bits address.
+        extern  text_1_base
+        movlw   UPPER(text_1_base); Complete 12bits to 24bits address.
         movwf   TBLPTRU
-        movlw   HIGH(text_english_base)
+        movlw   HIGH(text_1_base)
         andlw   0xF0
         iorwf   FSR1H,W
         movwf   TBLPTRH
         movff   FSR1L,TBLPTRL
 
         movff   opt_language,WREG       ; Get lang
-        bz      text_get_english        ; 0 == English
+        bz      text_get_lang1        ; 0 == English
         dcfsnz  WREG                    ; 1 == German
-        bra     text_get_german
-        dcfsnz  WREG                    ; 2 == French
-        bra     text_get_french
-        dcfsnz  WREG                    ; 3 == Italian
-        bra     text_get_italian
-; Other ??? Keep english...
+        bra     text_get_lang2
+; Other ??? Keep language 1
 
 ; Read 2-byte pointer to string
-text_get_english:
+text_get_lang1:
         tblrd*+
         movff   TABLAT,WREG
         tblrd*+
@@ -129,59 +125,23 @@ text_get_english:
         return
 
 ; Add correction for German table:
-text_get_german:
-        extern  text_german_base
-        movlw   LOW(text_german_base)
+text_get_lang2:
+        extern  text_2_base
+        movlw   LOW(text_2_base)
         addwf   TBLPTRL
-        movlw   HIGH(text_german_base)
+        movlw   HIGH(text_2_base)
         addwfc  TBLPTRH
-        movlw   UPPER(text_german_base)
+        movlw   UPPER(text_2_base)
         addwfc  TBLPTRU
 
-        movlw   LOW(text_english_base)
+        movlw   LOW(text_1_base)
         subwf   TBLPTRL
-        movlw   HIGH(text_english_base)
+        movlw   HIGH(text_1_base)
         subwfb  TBLPTRH
-        movlw   UPPER(text_english_base)
+        movlw   UPPER(text_1_base)
         subwfb  TBLPTRU
-        bra     text_get_english
+        bra     text_get_lang1
         
-        ; Add correction for French table:
-text_get_french:
-        extern  text_french_base
-        movlw   LOW(text_french_base)
-        addwf   TBLPTRL
-        movlw   HIGH(text_french_base)
-        addwfc  TBLPTRH
-        movlw   UPPER(text_french_base)
-        addwfc  TBLPTRU
-
-        movlw   LOW(text_english_base)
-        subwf   TBLPTRL
-        movlw   HIGH(text_english_base)
-        subwfb  TBLPTRH
-        movlw   UPPER(text_english_base)
-        subwfb  TBLPTRU
-        bra     text_get_english
-        
-        ; Add correction for italian table:
-text_get_italian:
-        extern  text_italian_base
-        movlw   LOW(text_italian_base)
-        addwf   TBLPTRL
-        movlw   HIGH(text_italian_base)
-        addwfc  TBLPTRH
-        movlw   UPPER(text_italian_base)
-        addwfc  TBLPTRU
-
-        movlw   LOW(text_english_base)
-        subwf   TBLPTRL
-        movlw   HIGH(text_english_base)
-        subwfb  TBLPTRH
-        movlw   UPPER(text_english_base)
-        subwfb  TBLPTRU
-        bra     text_get_english
-
 ;=============================================================================
 ; Copy a null-terminated string from TBLPTR to buffer.
 ;

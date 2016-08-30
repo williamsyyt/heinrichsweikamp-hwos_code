@@ -11,7 +11,7 @@
 ;
 
 #include    "hwos.inc"                  ; Mandatory header
-#include 	"eeprom_rs232.inc"
+#include    "eeprom_rs232.inc"
 
 ;=============================================================================
 ; Options Tables
@@ -117,8 +117,12 @@ option_table_begin:
         OPTION_ENUM8    oBrightness,    3,  0,  tEco,           .23,    opt_brightness                  ; =0: Eco, =1:Medium, =2:Full
         OPTION_UINT8    oDiveSalinity,  0,  4, 0,  tPercent,    .24,    opt_salinity                    ; 0-4%
         OPTION_ENUM8    oCCRMode,    3,  0,  tCCRModeFixedSP,   .25,    opt_ccr_mode                    ; =0: Fixed SP, =1: Sensor, =2: Auto SP
-        OPTION_ENUM8    oLanguage,      4,  0,  tEnglish,   .26,    opt_language                        ; 0=EN, 1=DE, 2=FR, 3=SP
-		OPTION_ENUM8    oDateFormat,    3,  1,  tDateformat,.27,    opt_dateformat                      ; =0:MMDDYY, =1:DDMMYY, =2:YYMMDD
+    IFNDEF	    french_italian
+	OPTION_ENUM8    oLanguage,      2,  0,  tEnglish,   .26,    opt_language                        ; 0=EN, 1=DE
+    ELSE
+	OPTION_ENUM8    oLanguage,      2,  0,  tFrench,    .26,    opt_language                        ; 0=FR, 1=IT
+    ENDIF
+	OPTION_ENUM8    oDateFormat,    3,  1,  tDateformat,.27,    opt_dateformat                      ; =0:MMDDYY, =1:DDMMYY, =2:YYMMDD
         OPTION_ENUM8    oUnits,         2,  0,  tMetric,    .28,    opt_units                           ; 0=Meters, 1=Feets
 
 ;=============================================================================

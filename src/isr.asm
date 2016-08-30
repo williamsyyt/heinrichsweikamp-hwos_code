@@ -327,6 +327,20 @@ isr_tmr7:       						; each 62,5ms
 		cpfseq	CCPR1L					; = current PWM value?
 		rcall	isr_dimm_tft			; No, adjust until max_CCPR1L=CCPR1L !
 
+	banksel common
+	call	get_analog_switches			; Get analog readings
+	btfss	INTCON3,INT1IE
+	bra	isr_tmr7_a
+	btfsc	analog_sw2_pressed
+	rcall	isr_switch_left
+isr_tmr7_a:
+	banksel common
+	btfss	INTCON,INT0IE
+	bra	isr_tmr7_b
+	btfsc	analog_sw1_pressed
+	rcall	isr_switch_right
+isr_tmr7_b:
+		
         banksel isr_backup
         decfsz  ir_S8_timeout,F            ; IR Data still valid?
         bra     isr_tmr7_2              ; Yes, continue

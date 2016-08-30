@@ -83,11 +83,13 @@
     TCODE   tSensorFallback, "Fallback:"        ; Fallback:
     TCODE   tppO2,      "ppO2:"                 ; ppO2:
 
-; New battery menu
 	TCODE   tNewBattTitle,      "New Battery?"
 	TCODE	tNewBattOld,		"Keep old"
 	TCODE	tNewBattNew36,		"New 3.6V"
 	TCODE	tNewBattNew15,		"New 1.5V"
+	TCODE	tNewBattAccu,		"3.6V rechargeable"
+	TCODE	tNew18650,		"Internal 18650"
+
 
 ; Gaslist management
     TCODE   tGas,       "Gas"           ; Gas
@@ -139,6 +141,7 @@
     TCODE   tFlip,      "Rotate Screen:"        ; Rotate Screen
     TCODE   tMODwarning,"MOD warning:"          ; MOD warning
     TCODE   tShowppO2,  "Always show ppO2:"     ; Always show ppO2:
+    TCODE   tTimeoutDive,"Dive Timeout:"	; Dive Timeout
 
 ; VSI display Settings
     TCODE   tVSItext2,  "Variable speed:"     ; Variable speed:

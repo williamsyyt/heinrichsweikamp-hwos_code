@@ -15,13 +15,15 @@
 
 ;#DEFINE __DEBUG
 
+;#DEFINE	    french_italian	    ; If defined, use french and italian instead of english and german	
+	
 #include <p18f87k22.inc>
 #include <ports.inc>                        ; Portmap
 
 ; Firmware definition
 #DEFINE	softwareversion_x		d'2'		; Software version  XX.YY
 #DEFINE	softwareversion_y		d'10'		; Software version  XX.YY
-#DEFINE softwareversion_beta 	0 			; (and 0 for release)
+#DEFINE softwareversion_beta 	1 			; (and 0 for release)
 ; Firmware version will appear in "Change Firmware" style
 #DEFINE firmware_expire_year    .17
 #DEFINE firmware_expire_month   .8
@@ -164,7 +166,27 @@
 #DEFINE lithium_36v_50          .2900   ; [mV]
 #DEFINE lithium_36v_25          .2600   ; [mV]
 #DEFINE lithium_36v_10          .2500   ; [mV]
+	
+; Capacity for 2.4Ah Saft LS14500 and 0.8Ah Panasonic UR14500P
+; battery_gauge:6 is nAs
+; devide through 65536
+; a) devide through 364 -> Result is in percent of a 2.4Ah Battery
+; or b) devide through 121 -> Result is in percent of a 0.8Ah Battery
 
+; For internal battery gauging
+#DEFINE	internal_saft_capacity		.364
+#DEFINE	internal_panasonic_capacity	.121
+
+; For gauge IC	
+#DEFINE	saft_capacity		.281	; 2.4Ah/0.085mAh/100 [%]
+#DEFINE	saft_offset		.37300  ; 65536-(2.4Ah/0.085mAh)
+
+#DEFINE	panasonic_capacity	.94	; 0.8Ah/0.085mAh/100 [%]
+#DEFINE	panasonic_offset	.56124	; 65536-(0.8Ah/0.085mAh)
+
+#DEFINE	ncr18650_capacity	.364	; 3.1Ah/0.085mAh/100 [%]
+#DEFINE	ncr18650_offset		.29065	; 65536-(3.1Ah/0.085mAh)
+	
 #DEFINE	current_sleepmode           .31
 #DEFINE	current_backlight_multi     .115    ; *CCPR1L+current_backlight_offset
 #DEFINE	current_backlight_offset    .216
@@ -202,7 +224,7 @@
 #DEFINE compass_averaging           .10         ; numbers of extra averaging
 
 ; Hardware defines
-#DEFINE rechargeable        hardware_flag,0     ; OSTC has rechargeable battery with battery management chip
+#DEFINE battery_gauge_available        hardware_flag,0     ; OSTC has rechargeable battery with battery management chip
 #DEFINE ambient_sensor      hardware_flag,1     ; OSTC has an ambient sensor
 #DEFINE analog_o2_input     hardware_flag,2     ; OSTC has analog inputs and S8 digital
 #DEFINE optical_input       hardware_flag,3     ; OSTC has an digital optical input
@@ -528,11 +550,18 @@ start_year          res 1   ; At start of dive (For logbook)
 start_hours         res 1   ; At start of dive (For logbook)
 start_mins          res 1   ; At start of dive (For logbook)
 
-old_velocity        res 4   ; Strores the last 4 speeds (8 seconds) in m/min
+old_velocity        res 4   ; Stores the last 4 speeds (8 seconds) in m/min
 opt_gas_type_backup res 5   ; 0=Disabled, 1=First, 2=Travel, 3=Deco
 opt_dil_type_backup res 5   ; 0=Disabled, 1=First, 2=Normal
 opt_OC_bail_gas_change_backup  res 5   ; Gas change depths OC/Bailout
 
+internal_battery_capacity	res 2	; For internal battery gauging
+battery_capacity		res 2	; For battery gauge IC
+battery_offset			res 2	; For battery gauge IC
+
+analog_sw1		res 1	; analog value for switch 1
+analog_sw2		res 1	; analog value for switch 2
+battery_type		res 1	; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah
 
 ;-----------------------------------------------------------------------------
 ; Reserve BANK2 for general purpose buffer (strings, images, etc).
@@ -709,12 +738,13 @@ opt_diveTimeout		res 1	; Timeout for Divemode [min]
 #DEFINE blinking_depth_toggle   flag12,7    ; toggle to blink
 
 #DEFINE neg_flag_velocity       flag13,0    ; neg_flag backup for velocity logic
-;#DEFINE unused
-;#DEFINE unused
+#DEFINE	analog_sw1_pressed	flag13,1    ; =1: Analog switch 1 pressed
+#DEFINE	analog_sw2_pressed	flag13,2    ; =1: Analog switch 2 pressed
 #DEFINE sp2_switched            flag13,3    ; =1: This setpoint has been autoselected already
 #DEFINE sp3_switched            flag13,4    ; =1: This setpoint has been autoselected already
 #DEFINE sp4_switched            flag13,5    ; =1: This setpoint has been autoselected already
 #DEFINE sp5_switched            flag13,6    ; =1: This setpoint has been autoselected already
+#DEFINE	analog_switches		flag13,7    ; =1: Analog switches available
 
 ;=============================================================================
 ; C-code Routines

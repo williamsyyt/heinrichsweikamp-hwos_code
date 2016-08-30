@@ -1,6 +1,7 @@
 [2.10]
 - Stable Version -
 NEW: Adjustable timeout for Divemode
+CHANGE: Firmware now split in two variants (EN/DE) and (FR/IT)
 
 [2.09]
 - Stable Version -

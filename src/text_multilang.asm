@@ -16,9 +16,10 @@
 texts       code    0x009000
 
 ;=============================================================================
-            global  text_english_base
-text_english_base:
-
+            global  text_1_base
+text_1_base:
+    IFNDEF	    french_italian
+    MESSG "hwOS code in English and German!"
 ;---- PASS 1 : generate description block ------------------------------------
 tcode_idx   set     0
 LANG        set     0
@@ -33,8 +34,8 @@ tcode_idx   set     0
 #undefine   TCODE
 
 ;=============================================================================
-            global  text_german_base
-text_german_base:
+            global  text_2_base
+text_2_base:
 
 ;---- PASS 1 : generate description block ------------------------------------
 tcode_idx   set     0
@@ -49,10 +50,9 @@ tcode_idx   set     0
 #include    "text_german.inc"
 #undefine   TCODE
 
+    ELSE
+   MESSG "hwOS code in French and Italian!"
 ;=============================================================================
-            global  text_french_base
-text_french_base
-
 ;---- PASS 1 : generate description block ------------------------------------
 tcode_idx   set     0
 LANG        set     2
@@ -67,8 +67,8 @@ tcode_idx   set     0
 #undefine   TCODE
 
 ;=============================================================================
-            global  text_italian_base
-text_italian_base
+            global  text_2_base
+text_2_base:
 
 ;---- PASS 1 : generate description block ------------------------------------
 tcode_idx   set     0
@@ -83,6 +83,8 @@ tcode_idx   set     0
 #include    "text_italian.inc"
 #undefine   TCODE
 
+    ENDIF
+   
 ;=============================================================================
 
         END

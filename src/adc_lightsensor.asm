@@ -27,7 +27,7 @@ wait_adc2:
 
 	global	get_battery_voltage
 get_battery_voltage:			; starts ADC and waits until fnished
-    btfss   rechargeable
+    btfss   battery_gauge_available
     bra     get_battery_voltage1     ; Normal ostc3 hardware
 
     call    lt2942_get_accumulated_charge
@@ -132,12 +132,10 @@ get_battery_voltage2:
 	movff	battery_gauge+2,xC+0
 	; battery_gauge:6 is nAs
 	; devide through 65536
-	; devide through 364
-	; Result is in percent of a 2,4Ah Battery
-	movlw	LOW		.364
-	movwf	xB+0
-	movlw	HIGH	.364
-	movwf	xB+1
+	; devide through battery_capacity:2
+	; Result is in percent
+	movff	internal_battery_capacity+0,xB+0
+	movff	internal_battery_capacity+1,xB+1
 	call	div32x16	  ; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
 	movff	xC+0,lo
     ; Limit to 100
@@ -306,7 +304,7 @@ get_ambient_level2:
 
     banksel common                  ; flag is in bank1
 	movlw	ambient_light_max_high_cr; cR and 2 hardware brightest setting
-    btfss   rechargeable
+    btfss   battery_gauge_available
     movlw	ambient_light_max_high_15V; 1,5V battery brightest setting
     btfsc	battery_is_36v          ; 3,6V battery in use?
 	movlw	ambient_light_max_high_36V	; 3,6V battery brightest setting
@@ -497,19 +495,20 @@ piezo_config_wait_bit3:
 	bra		piezo_config_wait_bit3			; Wait loop
 	return
 
-    global  reset_battery_pointer
+    global  reset_battery_pointer, reset_battery_internal_only
 reset_battery_pointer:       ; Resets battery pointer 0x07-0x0C and battery_gauge:5
 	extern  lt2942_charge_done
-    btfsc   rechargeable            ; Something to reset?
+    btfsc   battery_gauge_available            ; Something to reset?
     call    lt2942_charge_done      ; Yes, reset accumulating registers to 0xFFFF
+reset_battery_internal_only:
     clrf	EEADRH
-	clrf	EEDATA					; Delete to zero
-	write_int_eeprom 0x07
-	write_int_eeprom 0x08
-	write_int_eeprom 0x09
-	write_int_eeprom 0x0A
-	write_int_eeprom 0x0B
-	write_int_eeprom 0x0C
+    clrf	EEDATA					; Delete to zero
+    write_int_eeprom 0x07
+    write_int_eeprom 0x08
+    write_int_eeprom 0x09
+    write_int_eeprom 0x0A
+    write_int_eeprom 0x0B
+    write_int_eeprom 0x0C
     banksel battery_gauge+0
     clrf    battery_gauge+0
     clrf    battery_gauge+1
@@ -520,6 +519,53 @@ reset_battery_pointer:       ; Resets battery pointer 0x07-0x0C and battery_gaug
     banksel common
     movlw   .100
     movwf   batt_percent
+    return
+
+    global	get_analog_switches
+get_analog_switches:              ; starts ADC and waits until finished
+    return
+    btfsc   analog_switches
+    bra	    get_analog_switches2
+    ; no analog switches
+    bcf		analog_sw2_pressed
+    bcf		analog_sw1_pressed
+    return	; Done.
+get_analog_switches2:    
+    btfsc   adc_running         ; ADC in use?
+    return                      ; Yes, return
+    
+    movlw	b'00001001'	    ; left justified
+    movwf	ADCON2
+    movlw	b'00000000'         ; Vref+ = Vdd
+    movwf	ADCON1
+    movlw	b'00100101'	    ; power on ADC, select AN9
+    rcall	wait_adc
+    movff	ADRESH,analog_sw2
+    bcf		analog_sw2_pressed
+    movlw	.64	; lower limit
+    cpfsgt	ADRESH
+    bra		sw2_pressed
+    movlw	.192	; upper limit
+    cpfsgt	ADRESH
+    bra		get_analog_sw1
+sw2_pressed:    
+    bsf		analog_sw2_pressed
+get_analog_sw1:
+    movlw	b'00101001'	    ; power on ADC, select AN10
+    rcall	wait_adc
+    movff	ADRESH,analog_sw1
+    bcf		analog_sw1_pressed
+    movlw	.64	; lower limit
+    cpfsgt	ADRESH
+    bra		sw1_pressed
+    movlw	.192	; upper limit
+    cpfsgt	ADRESH
+    bra		get_analog_sw_done
+sw1_pressed:    
+    bsf		analog_sw1_pressed
+get_analog_sw_done:
+    movlw	b'10001101'	    ; Restore to right justified
+    movwf	ADCON2
     return
 
 
