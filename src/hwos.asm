@@ -67,10 +67,10 @@ init_ostc:
 
 	banksel common
 
-	movlw	b'00000000'			; 1= Input -> Data TFT_high
-	movwf	TRISA
-	movlw	b'00000000'			; Init port
-	movwf	PORTA
+;	movlw	b'00000000'			; 1= Input -> Data TFT_high
+	clrf	TRISA
+;	movlw	b'00000000'			; Init port
+	clrf	PORTA
 
 	movlw	b'00000011'			; 1= Input, (RB0, RB1) -> Switches, RB2 -> Power_MCP, RB3 -> s8_npower, RB4 -> LED_green, RB5 -> /TFT_POWER
 	movwf	TRISB
@@ -79,33 +79,33 @@ init_ostc:
 
     movlw	b'10011010'			; 1= Input, (RC0, RC1) -> SOSC, RC2 -> TFT_LED_PWM, (RC3,RC4) -> I²C, RC5 -> MOSI_MS5541, (RC6, RC7) -> UART1
 	movwf	TRISC
-	movlw	b'00000000'			; Init port
-	movwf	PORTC
+;	movlw	b'00000000'			; Init port
+	clrf	PORTC
 
 	movlw	b'00100000'			; 1= Input, RD0 -> TFT_NCS, RD1 -> TFT_RS, RD2 -> TFT_NWR, RD3 -> TFT_RD, RD4 -> MOSI_Flash, RD5 -> MISO_Flash, RD6 -> CLK_Flash, RD7 -> TFT_NRESET
 	movwf	TRISD
-	movlw	b'00000000'			; Init port
-	movwf	PORTD
+;	movlw	b'00000000'			; Init port
+	clrf	PORTD
 
-	movlw	b'00000000'			; 1= Input, RE1 -> Power_IR, RE2 -> CS_MCP, RE3 -> LED_blue, RE4 -> power_sw1, RE5 -> Set to 1 for cR hardware
-	movwf	TRISE
+;	movlw	b'00000000'			; 1= Input, RE1 -> Power_IR, RE2 -> CS_MCP, RE3 -> LED_blue, RE4 -> power_sw1, RE5 -> Set to 1 for cR hardware
+	clrf	TRISE
 	movlw	b'00110001'			; Init port
 	movwf	PORTE
 
 	movlw	b'01111110'			; 1= Input, (RF1, RF2, RF3, RF4, RF5) -> Analog
 	movwf	TRISF
-	movlw	b'00000000'			; Init port
-	movwf	PORTF
+;	movlw	b'00000000'			; Init port
+	clrf	PORTF
 
 	movlw	b'00001110'			; 1= Input, <7:6> not implemented, RG0 -> TX3_PIEZO_CFG, RG2 -> RX2, RG3 -> AN17_RSSI, RG4 -> SOSC_OUT, RG5 -> /RESET
 	movwf	TRISG
 	movlw	b'00000001'			; Init port
 	movwf	PORTG
 
-	movlw	b'00000000'			; 1= Input -> Data TFT_low
-	movwf	TRISH
-	movlw	b'00000000'			; Init port
-	movwf	PORTH
+;	movlw	b'00000000'			; 1= Input -> Data TFT_low
+	clrf	TRISH
+;	movlw	b'00000000'			; Init port
+	clrf	PORTH
 
 	movlw	b'10011011'			; 1= Input, RJ4 -> vusb_in, RJ5 -> power_sw2,  RJ6 -> CLK_MS5541, RJ7 -> MISO_MS5541
 	movwf	TRISJ
@@ -189,8 +189,8 @@ init_ostc:
 ; SPI2: External Flash
 	movlw	b'00110000'
 	movwf	SSP2CON1
-	movlw	b'00000000'
-	movwf	SSP2STAT
+;	movlw	b'00000000'
+	clrf	SSP2STAT
 ; ->0,25MHz Bit clock  @1MHz mode (Eco)
 ; ->  4MHz  Bit clock @16MHz mode (Normal)
 ; -> 16MHz  Bit clock @64MHz mode (Fastest)
@@ -198,8 +198,8 @@ init_ostc:
 ; MSSP1 Module: I2C Master
     movlw	b'00101000'		; I2C Master Mode
 	movwf	SSP1CON1
-	movlw	b'00000000'
-	movwf	SSP1CON2
+;	movlw	b'00000000'
+	clrf	SSP1CON2
 	movlw	0x27
 	movwf	SSP1ADD			; 100kHz @ 16MHz Fosc
 

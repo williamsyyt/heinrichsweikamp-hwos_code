@@ -360,7 +360,7 @@ do_return_settings_more:
     	rcall	menu_tree_double_pop	; drop exit line and back to last line
     
 do_settings_menu_more:
-    btfsc   rechargeable            ; piezo buttons available
+    btfsc   battery_gauge_available            ; piezo buttons available
     bra     do_settings_menu_more_piezo
     btfsc   ble_available           ; ble available
     bra     do_settings_menu_more_ostc3p
@@ -631,10 +631,11 @@ do_dispsets_menu:
     MENU_END
 
 do_dispsets_menu_more:
-    MENU_BEGIN  tDispSets, .4
+    MENU_BEGIN  tDispSets, .5
         MENU_OPTION tMODwarning,   oMODwarning,   0
         MENU_OPTION tVSItext2,     oVSItextv2,    0
         MENU_OPTION tVSIgraph,     oVSIgraph,     0
+	MENU_OPTION tTimeoutDive,  oDiveTimeout,  0
         MENU_CALL   tExit,                        do_dispsets_menu_3stack
     MENU_END
 
@@ -674,10 +675,12 @@ new_battery_menu:
 
     call    menu_processor_reset    ; restart from first icon.
 
-    MENU_BEGIN tNewBattTitle, .3
-		MENU_CALL   tNewBattOld,                 use_old_batteries
+    MENU_BEGIN tNewBattTitle, .5
+	MENU_CALL   tNewBattOld,                 use_old_batteries
         MENU_CALL   tNewBattNew36,               use_new_36V_batteries
         MENU_CALL   tNewBattNew15,               use_new_15V_batteries
+	MENU_CALL   tNewBattAccu,		 use_36V_rechargeable
+	MENU_CALL   tNew18650,			 use_18650_battery
     MENU_END
 
 	global	use_old_batteries
@@ -695,13 +698,104 @@ use_old_batteries:
 	movff	EEDATA,battery_gauge+4
 	read_int_eeprom 0x0C
 	movff	EEDATA,battery_gauge+5
-    movlw   .100
-    movwf   batt_percent                ; To have 1,5V batteries right after firmware update
+	read_int_eeprom 0x0F
+	movff	EEDATA,battery_type; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah
+
+	incf	EEDATA,W
+	dcfsnz	WREG,W		   
+	rcall	setup_new_15v	    ;=0
+	dcfsnz	WREG,W		   
+	rcall	setup_new_saft	    ;=1
+	dcfsnz	WREG,W		   
+	rcall	setup_new_panasonic ;=2
+	dcfsnz	WREG,W		   
+	rcall	setup_new_18650	    ;=3
+
+	rcall	setup_new_saft	    ; Any other value
 	goto	power_on_return
 
-use_new_15V_batteries:
+setup_new_saft:
+    banksel battery_capacity
+    movlw   LOW	    internal_saft_capacity
+    movwf   internal_battery_capacity+0
+    movlw   HIGH    internal_saft_capacity
+    movwf   internal_battery_capacity+1
+    movlw   LOW	    saft_capacity
+    movwf   battery_capacity+0
+    movlw   HIGH    saft_capacity
+    movwf   battery_capacity+1
+    movlw   LOW	    saft_offset
+    movwf   battery_offset+0
+    movlw   HIGH    saft_offset
+    movwf   battery_offset+1
+    banksel common
+    bsf	    charge_disable
+    bcf	    TRISE,2
+    movlw   .1
+    movff   WREG,battery_type
+    return
+
+setup_new_18650:    
+    banksel battery_capacity
+    clrf    internal_battery_capacity+0
+    clrf    internal_battery_capacity+1
+    movlw   LOW	    ncr18650_capacity
+    movwf   battery_capacity+0
+    movlw   HIGH    ncr18650_capacity
+    movwf   battery_capacity+1
+    movlw   LOW	    ncr18650_offset
+    movwf   battery_offset+0
+    movlw   HIGH    ncr18650_offset
+    movwf   battery_offset+1
+    banksel common
+    bcf	    charge_disable
+    bsf	    TRISE,2
+    movlw   .3
+    movff   WREG,battery_type
+    return
+    
+setup_new_panasonic:    
+    banksel battery_capacity
+    movlw   LOW	    internal_panasonic_capacity
+    movwf   internal_battery_capacity+0
+    movlw   HIGH    internal_panasonic_capacity
+    movwf   internal_battery_capacity+1
+    movlw   LOW	    panasonic_capacity
+    movwf   battery_capacity+0
+    movlw   HIGH    panasonic_capacity
+    movwf   battery_capacity+1
+    movlw   LOW	    panasonic_offset
+    movwf   battery_offset+0
+    movlw   HIGH    panasonic_offset
+    movwf   battery_offset+1
+    banksel common
+    bcf	    charge_disable
+    bsf	    TRISE,2
+    return    
+
+setup_new_15v:
+    bsf	    charge_disable
+    bcf	    TRISE,2
+    movlw   .100
+    movwf   batt_percent                ; To have 1,5V batteries right after firmware update
+    movlw   .0
+    movff   WREG,battery_type
+    return
+    
+use_18650_battery:
+    rcall   setup_new_18650
+    bra	    use_new_36V_2
 use_new_36V_batteries:
+    rcall   setup_new_saft
+    bra	    use_new_36V_2
+use_new_15V_batteries:
+    rcall   setup_new_15v
+use_new_36V_2:
     call    reset_battery_pointer       ; Resets battery pointer 0x07-0x0C and battery_gauge:5
-	goto	power_on_return
+    goto    power_on_return
+use_36V_rechargeable:
+    rcall   setup_new_panasonic
+    call    reset_battery_internal_only
+    goto    power_on_return
 
     END

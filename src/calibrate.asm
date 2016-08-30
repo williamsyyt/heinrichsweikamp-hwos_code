@@ -7,9 +7,9 @@
 ;   Copyright (c) 2014, Heinrichs Weikamp, all right reserved.
 ;=============================================================================
 
-#include 	"hwos.inc"
-#include	"shared_definitions.h"		; Mailbox between c and asm
-#include	"math.inc"
+#include    "hwos.inc"
+#include    "shared_definitions.h"		; Mailbox between c and asm
+#include    "math.inc"
 #include    "adc_lightsensor.inc"
 #include    "eeprom_rs232.inc"
 
@@ -182,12 +182,7 @@ calibrate_mix2:
 ; (%O2*100)*[ambient,mbar]/100 -> xC
 	movff	amb_pressure+0,xB+0
 	movff	amb_pressure+1,xB+1
-	call	mult16x16		;xA*xB=xC
-	movlw	LOW		.100
-	movwf	xB+0
-	movlw	HIGH	.100
-	movwf	xB+1
-	call	div32x16	  ; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
+	rcall	calibrate_mix2_helper
 	movff	o2_mv_sensor1+0,xB+0
 	movff	o2_mv_sensor1+1,xB+1
 	call	div32x16	  ; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
@@ -202,12 +197,7 @@ calibrate_mix2:
 ; (%O2*100)*[ambient,mbar]/100 -> xC
 	movff	amb_pressure+0,xB+0
 	movff	amb_pressure+1,xB+1
-	call	mult16x16		;xA*xB=xC
-	movlw	LOW		.100
-	movwf	xB+0
-	movlw	HIGH	.100
-	movwf	xB+1
-	call	div32x16	  ; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
+	rcall	calibrate_mix2_helper
 	movff	o2_mv_sensor2+0,xB+0
 	movff	o2_mv_sensor2+1,xB+1
 	call	div32x16	  ; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
@@ -222,12 +212,7 @@ calibrate_mix2:
 ; (%O2*100)*[ambient,mbar]/100 -> xC
 	movff	amb_pressure+0,xB+0
 	movff	amb_pressure+1,xB+1
-	call	mult16x16		;xA*xB=xC
-	movlw	LOW		.100
-	movwf	xB+0
-	movlw	HIGH	.100
-	movwf	xB+1
-	call	div32x16	  ; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
+	rcall	calibrate_mix2_helper
 	movff	o2_mv_sensor3+0,xB+0
 	movff	o2_mv_sensor3+1,xB+1
 	call	div32x16	  ; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
@@ -268,6 +253,15 @@ calibrate_mix2:
     banksel common
 	return
 
+calibrate_mix2_helper:	
+	call	mult16x16		;xA*xB=xC
+	movlw	LOW		.100
+	movwf	xB+0
+	movlw	HIGH	.100
+	movwf	xB+1
+	goto	div32x16	  ; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder (And return)
+
+	
 compute_ppo2_analog:
     call    get_analog_inputs
     bra     compute_ppo2_common
@@ -283,7 +277,7 @@ compute_ppo2:
     ; use digital
     btfss   new_s8_data_available       ; =1: New data frame recieved
     return
-	call	compute_mvolts_for_all_sensors
+	rcall	compute_mvolts_for_all_sensors
 
 compute_ppo2_common:
 	; o2_mv_sensor1:2 * opt_x_s1:2 = o2_ppo2_sensor1/10000
@@ -291,18 +285,7 @@ compute_ppo2_common:
 	movff	o2_mv_sensor1+1,xA+1
 	movff	opt_x_s1+0,xB+0
 	movff	opt_x_s1+1,xB+1
-	call	mult16x16		;xA:2*xB:2=xC:4
-	movlw	LOW		.1000
-	movwf	xB+0
-	movlw	HIGH	.1000
-	movwf	xB+1
-	call	div32x16  ; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
-	movlw	d'1'
-	addwf	xC+0,F
-	movlw	d'0'
-	addwfc	xC+1,F
-    tstfsz  xC+1                        ; ppO2 is higher then 2.55bar?
-    setf    xC+0                        ; Yes.
+	rcall	compute_ppo2_common_helper
 	movff	xC+0,o2_ppo2_sensor1		; result in 0.01bar
 ;    ; Set to zero if sensor is not active!
 ;	btfss	use_O2_sensor1
@@ -313,18 +296,7 @@ compute_ppo2_common:
 	movff	o2_mv_sensor2+1,xA+1
 	movff	opt_x_s2+0,xB+0
 	movff	opt_x_s2+1,xB+1
-	call	mult16x16		;xA:2*xB:2=xC:4
-	movlw	LOW		.1000
-	movwf	xB+0
-	movlw	HIGH	.1000
-	movwf	xB+1
-	call	div32x16  ; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
-	movlw	d'1'
-	addwf	xC+0,F
-	movlw	d'0'
-	addwfc	xC+1,F
-    tstfsz  xC+1                        ; ppO2 is higher then 2.55bar?
-    setf    xC+0                        ; Yes.
+	rcall	compute_ppo2_common_helper
 	movff	xC+0,o2_ppo2_sensor2		; result in 0.01bar
 ;	; Set to zero if sensor is not active!
 ;	btfss	use_O2_sensor2
@@ -335,24 +307,27 @@ compute_ppo2_common:
 	movff	o2_mv_sensor3+1,xA+1
 	movff	opt_x_s3+0,xB+0
 	movff	opt_x_s3+1,xB+1
-	call	mult16x16		;xA:2*xB:2=xC:4
-	movlw	LOW		.1000
-	movwf	xB+0
-	movlw	HIGH	.1000
-	movwf	xB+1
-	call	div32x16  ; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
-	movlw	d'1'
-	addwf	xC+0,F
-	movlw	d'0'
-	addwfc	xC+1,F
-    tstfsz  xC+1                        ; ppO2 is higher then 2.55bar?
-    setf    xC+0                        ; Yes.
+	rcall	compute_ppo2_common_helper
 	movff	xC+0,o2_ppo2_sensor3		; result in 0.01bar
 ;	; Set to zero if sensor is not active!
 ;	btfss	use_O2_sensor3
 ;	clrf	o2_ppo2_sensor3
 	return							; Done.
 
+compute_ppo2_common_helper:
+	call	mult16x16		;xA:2*xB:2=xC:4
+	movlw	LOW		.1000
+	movwf	xB+0
+	movlw	HIGH		.1000
+	movwf	xB+1
+	call	div32x16  ; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
+	movlw	d'1'
+	addwf	xC+0,F
+	movlw	d'0'
+	addwfc	xC+1,F
+        tstfsz  xC+1                        ; ppO2 is higher then 2.55bar?
+        setf    xC+0                        ; Yes.
+        return
 
 compute_mvolts_for_all_sensors:          ; Compute mV or all sensors (S8 Mode)
 ; compute AD results in 100µV steps (16bit/sensor)
@@ -401,6 +376,7 @@ compute_mvolts_for_all_sensors:          ; Compute mV or all sensors (S8 Mode)
 
 	global	transmit_setpoint           ; Transmit current setpoint from WREG (in cbar) to external electronics
 transmit_setpoint:
+    return
     btfss   s8_digital          ; S8 Digital?
     return                      ; No, ignore
 
@@ -422,7 +398,7 @@ transmit_setpoint:
     movff   WREG,TXREG2
     call    rs232_wait_tx2
 
-    movff   temp1,TXREG2                ; Chksum
+    movff   temp1,TXREG2	; Chksum
     call    rs232_wait_tx2
     return
 

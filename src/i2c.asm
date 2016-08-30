@@ -23,9 +23,6 @@
 #include "wait.inc"
 #include "math.inc"
 
-#DEFINE battery_offset          .29065  ; 65536-(3,1Ah/0,085mAh)
-#DEFINE battery_devider         .365    ; 3,1Ah/0,085mAh/100 [%]
-
 i2c    CODE
 
 WaitMSSP:
@@ -500,7 +497,8 @@ I2C_init_compass1:
     rcall       I2C_TX
 init_compass1_common:
     ;movlw	b'01100000'	; CTRL6 Full scale (+/-12 Gauss -> 2730LSB/Gauss)
-    movlw	b'00000000'	; CTRL6 (+/-2 Gauss)
+    ;movlw	b'00000000'	; CTRL6 (+/-2 Gauss)
+    movlw	b'00100000'	; CTRL6 (+/-4 Gauss)
     rcall       I2C_TX
     movlw	b'00000000'	; CTRL7 Continuous Mode
     rcall       I2C_TX
@@ -655,14 +653,14 @@ lt2942_init:                    ; Setup Control register B
 
 	global	lt2942_get_status
 lt2942_get_status:          ; Read status register
-    bcf     rechargeable     ; Clear flag
+    bcf     battery_gauge_available     ; Clear flag
 	clrf	i2c_temp
 	movlw	0x00            ; Point to Status reg
 	call	I2C_TX_GAUGE
 	call	I2C_RX_GAUGE
 	movff	SSP1BUF,WREG
     btfss   WREG,7          ; 2942 found?
-    bsf     rechargeable     ; Yes, set flag
+    bsf     battery_gauge_available     ; Yes, set flag
 	bsf		SSP1CON2,PEN	; Stop condition
 	rcall	WaitMSSP
 	return
@@ -672,8 +670,8 @@ lt2942_get_status:          ; Read status register
 lt2942_get_voltage:		; Read battery voltage registers
 	clrf	i2c_temp
 	movlw	0x08        ; Point to voltage registers
-	call	I2C_TX_GAUGE
-	call	I2C_RX_GAUGE
+	rcall	I2C_TX_GAUGE
+	rcall	I2C_RX_GAUGE
 	bsf		SSP1CON2,ACKEN		; Master acknowlegde
 	rcall	WaitMSSP
 	movff	SSP1BUF,xA+1
@@ -773,10 +771,8 @@ lt2942_get_accumulated_charge:	; Read accumulated charge and compute percent
 
     ; Compute batt_percent
     ; (charge-battery_offset)/365
-    movlw   LOW     battery_offset
-    movwf   sub_b+0
-    movlw   HIGH    battery_offset
-    movwf   sub_b+1
+    movff   battery_offset+0,sub_b+0
+    movff   battery_offset+1,sub_b+1
     call    subU16          ;  sub_c = sub_a - sub_b (with signed values)
 
     clrf    batt_percent   ; Set to zero
@@ -786,10 +782,8 @@ lt2942_get_accumulated_charge:	; Read accumulated charge and compute percent
     ; > Zero, set batt_percent properly
     movff   sub_c+0,xA+0
     movff   sub_c+1,xA+1
-    movlw   LOW     battery_devider
-    movwf   xB+0
-    movlw   HIGH    battery_devider
-    movwf   xB+1
+    movff   battery_capacity+0,xB+0
+    movff   battery_capacity+1,xB+1
     call    div16x16						;xA/xB=xC with xA+0 as remainder, uses divB as temp variable
     movff   xC+0,batt_percent
     return
@@ -798,22 +792,19 @@ lt2942_get_accumulated_charge:	; Read accumulated charge and compute percent
 lt2942_charge_done:                 ; Reset accumulating registers to 0xFFFF
 	clrf	i2c_temp
 	movlw	0x02                ; Point to accumulated charge registers
-    call	I2C_TX_GAUGE
-    movlw   0xFF
-	movff	WREG, SSP1BUF       ; Data Byte
+	rcall	I2C_TX_GAUGE
+	setf	SSP1BUF       ; Data Byte
 	rcall	WaitMSSP
 	rcall	I2C_WaitforACK
-    movlw   0xFF
-	movff	WREG, SSP1BUF       ; Data Byte
+	setf	SSP1BUF       ; Data Byte
 	rcall	WaitMSSP
 	rcall	I2C_WaitforACK
-	bsf		SSP1CON2,PEN		; Stop condition
-	rcall	WaitMSSP
-    return
+	bsf	SSP1CON2,PEN		; Stop condition
+	bra	WaitMSSP; (and return)
 
 I2C_TX_GAUGE:					; Sends a byte to the LT2942 Gauge IC
 	movwf	i2c_temp+1   		; Data byte
-	bsf		SSP1CON2,SEN		; Start condition
+	bsf	SSP1CON2,SEN		; Start condition
 	rcall	WaitMSSP
 	movlw	b'11001000'			; Address byte + Write bit
 	movwf	SSP1BUF				; control byte
@@ -821,8 +812,7 @@ I2C_TX_GAUGE:					; Sends a byte to the LT2942 Gauge IC
 	rcall	I2C_WaitforACK
 	movff	i2c_temp+1, SSP1BUF	; Data Byte
 	rcall	WaitMSSP
-	rcall	I2C_WaitforACK
-	return
+	bra	I2C_WaitforACK ; (and return)
 
 I2C_RX_GAUGE:
 	bsf		SSP1CON2,SEN		; Start condition
@@ -832,8 +822,6 @@ I2C_RX_GAUGE:
 	rcall	WaitMSSP
 	rcall	I2C_WaitforACK
 	bsf		SSP1CON2, RCEN		; Enable recieve mode
-	rcall	WaitMSSP
-	return
+	bra	WaitMSSP; (and return)
     
-    
- END
+    END

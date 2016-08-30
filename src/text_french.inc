@@ -88,6 +88,8 @@
 	TCODE	tNewBattOld,		"Conserver"
 	TCODE	tNewBattNew36,		"Réinit. 3,6V"  ; New 3,6V
 	TCODE	tNewBattNew15,		"Réinit. 1,5V"  ; New 1,5V
+	TCODE	tNewBattAccu,		"3,6V rechargeable"
+	TCODE	tNew18650,		"Internal 18650"
 
 ; Gaslist management
     TCODE   tGas,       "Gaz"           ; Gas
@@ -139,6 +141,7 @@
     TCODE   tFlip,      "Pivoter l'écran:"      ; Rotate Screen
     TCODE   tMODwarning,"Alerte MOD:"           ; MOD warning
     TCODE   tShowppO2,  "Afficher ppO2:"        ; Always show ppO2:
+    TCODE   tTimeoutDive,"Dive Timeout:"	; Dive Timeout
 
 ; VSI display Settings
     TCODE   tVSItext2,  "Vitesse Variable:"     ; Variable speed:
