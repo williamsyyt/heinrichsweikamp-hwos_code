@@ -701,17 +701,17 @@ use_old_batteries:
 	read_int_eeprom 0x0F
 	movff	EEDATA,battery_type; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah
 
-	incf	EEDATA,W
-	dcfsnz	WREG,W		   
+	rcall	setup_new_saft	    ; Any other value
+	incf	EEDATA,F
+	dcfsnz	EEDATA,F
 	rcall	setup_new_15v	    ;=0
-	dcfsnz	WREG,W		   
+	dcfsnz	EEDATA,F
 	rcall	setup_new_saft	    ;=1
-	dcfsnz	WREG,W		   
+	dcfsnz	EEDATA,F
 	rcall	setup_new_panasonic ;=2
 	dcfsnz	WREG,W		   
 	rcall	setup_new_18650	    ;=3
 
-	rcall	setup_new_saft	    ; Any other value
 	goto	power_on_return
 
 setup_new_saft:
