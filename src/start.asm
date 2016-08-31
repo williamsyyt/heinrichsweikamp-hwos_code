@@ -52,6 +52,19 @@ clear_rambank:
 
     call    init_ostc
 
+    ; Get button type from Bootloader-Info
+	bsf	analog_switches
+	movlw   0x7C
+	movwf   TBLPTRL
+	movlw   0xF7
+	movwf   TBLPTRH
+	movlw   0x01
+	movwf   TBLPTRU
+	TBLRD*+			; Reads 0x07 for analog buttons
+	movlw	0x07
+	cpfseq	TABLAT
+	bcf	analog_switches
+	
 ; Air pressure compensation	after reset
 	call	get_calibration_data	; Get calibration data from pressure sensor
 	banksel common                  ; get_calibration_data uses isr_backup
@@ -145,7 +158,7 @@ power_on_return:
     bsf		RCON,POR						; Set bit for next detection
 
     call    lt2942_get_status               ; Check for gauge IC
-    btfss   rechargeable                    ; cR or 2 hardware?
+    btfss   battery_gauge_available         ; cR or 2 hardware?
     bra	    power_on_return2		    ; no
 
     movlw   .30
@@ -266,9 +279,9 @@ restart:
     clrf	flag10
     ; Do not clear flag11 (Sensor calibration and charger status)
     clrf    flag12
-    clrf    flag13
+;    ; Do not clear flag13 (Important hardware flags)
     clrf    hardware_flag           ; hardware descriptor flag
-	bsf		tft_is_dimming          ; TFT is dimming up (soon), ignore ambient sensor!
+    bsf		tft_is_dimming          ; TFT is dimming up (soon), ignore ambient sensor!
 
     ; configure hardware_flag byte
 
@@ -276,7 +289,7 @@ restart:
     bsf     optical_input           ; Set flag
 
     call    lt2942_get_status       ; Check for gauge IC
-    btfss   rechargeable            ; cR/2 hardware?
+    btfss   battery_gauge_available            ; cR/2 hardware?
     bra     restart2                ; No
 
     call    lt2942_init             ; Yes, init battery gauge IC
@@ -307,7 +320,7 @@ restart3:
     bsf     PORTE,0                 ; Stop comms
     btfsc   ble_available           ; ble available?
     bra     restart4                ; Yes, can't be a cR
-    btfss   rechargeable            ; Rechargeable
+    btfss   battery_gauge_available            ; Rechargeable
     bra     restart4                ; No, can't be a cR
     bsf     analog_o2_input         ; Set flag for analog
 restart4:
@@ -331,7 +344,7 @@ restart4:
 
     btfss   analog_o2_input
     bsf     TRISB,3
-    btfss   rechargeable
+    btfss   battery_gauge_available
     bsf     TRISG,0
 	call	ext_flash_disable_protection	; Disable write protection for external flash
 
