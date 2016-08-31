@@ -777,7 +777,7 @@ lt2942_get_accumulated_charge:	; Read accumulated charge and compute percent
 
     clrf    batt_percent   ; Set to zero
     btfsc   neg_flag                ; result negative?
-    return                          ; Yes, done.
+    bra	    lt2942_set_to_zero_percent	; Yes, keep LT2942 at zero percent and return
 
     ; > Zero, set batt_percent properly
     movff   sub_c+0,xA+0
@@ -787,6 +787,19 @@ lt2942_get_accumulated_charge:	; Read accumulated charge and compute percent
     call    div16x16						;xA/xB=xC with xA+0 as remainder, uses divB as temp variable
     movff   xC+0,batt_percent
     return
+
+lt2942_set_to_zero_percent:
+	clrf	i2c_temp
+	movlw	0x02                ; Point to accumulated charge registers
+	rcall	I2C_TX_GAUGE
+	movff	battery_offset+1,SSP1BUF
+	rcall	WaitMSSP
+	rcall	I2C_WaitforACK
+	movff	battery_offset+0,SSP1BUF
+	rcall	WaitMSSP
+	rcall	I2C_WaitforACK
+	bsf	SSP1CON2,PEN		; Stop condition
+	bra	WaitMSSP; (and return)
 
 	global	lt2942_charge_done
 lt2942_charge_done:                 ; Reset accumulating registers to 0xFFFF
