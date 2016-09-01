@@ -709,7 +709,7 @@ use_old_batteries:
 	rcall	setup_new_saft	    ;=1
 	dcfsnz	EEDATA,F
 	rcall	setup_new_panasonic ;=2
-	dcfsnz	WREG,W		   
+	dcfsnz	EEDATA,W		   
 	rcall	setup_new_18650	    ;=3
 
 	goto	power_on_return

@@ -766,20 +766,27 @@ isr_switch_common:
 		return
 
 timer1int:
-   		bcf		PIR1,TMR1IF             ; Clear flag
+   	bcf	PIR1,TMR1IF             ; Clear flag
         banksel common                  ; flag1 is in Bank1
-		bcf		INTCON,INT0IF			; Clear flag
-		bcf		INTCON3,INT1IF			; Clear flag
+	bcf	INTCON,INT0IF		; Clear flag
+	bcf	INTCON3,INT1IF		; Clear flag
+	; digital
         btfss   switch_left1            ; Left button hold-down?
         bra     timer1int_left          ; Yes
         btfss   switch_right2           ; Right button hold-down?
         bra     timer1int_right         ; Yes
-
+	
+	; Analog
+	btfsc	analog_sw2_pressed      ; Left button hold-down?
+	bra     timer1int_left          ; Yes
+	btfsc	analog_sw1_pressed      ; Right button hold-down?
+	bra     timer1int_right         ; Yes
+	
         ; No button hold-down, stop Timer 1
         bcf     T1CON,TMR1ON            ; Stop Timer 1
         bsf     INTCON,INT0IE           ; Enable INT0
         bsf     INTCON3,INT1IE          ; Enable INT1
-		return
+	return
 
 timer1int_left:
         btfss   flip_screen             ; 180° flipped?

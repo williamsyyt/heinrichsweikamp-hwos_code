@@ -523,7 +523,6 @@ reset_battery_internal_only:
 
     global	get_analog_switches
 get_analog_switches:              ; starts ADC and waits until finished
-    return
     btfsc   analog_switches
     bra	    get_analog_switches2
     ; no analog switches
@@ -566,7 +565,11 @@ sw1_pressed:
 get_analog_sw_done:
     movlw	b'10001101'	    ; Restore to right justified
     movwf	ADCON2
+    btfsc	analog_sw1_pressed
     return
-
+    btfsc	analog_sw2_pressed
+    return
+    setf	TMR1H		; No button pressed, enhance timer1 to overflow quickly
+    return
 
 	END
