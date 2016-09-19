@@ -1014,6 +1014,14 @@ change_logbook_offset1:
 	addwfc	hi
 	rcall	do_logoffset_common_write	; lo:hi -> EEPROM
 change_logbook_offset2:
+	; Clear lastdive:4
+	banksel	lastdive_time+0
+	clrf	lastdive_time+0
+	clrf	lastdive_time+1
+	clrf	lastdive_time+2
+	clrf	lastdive_time+3
+	banksel	common
+
 	; Add more here...
 	return	
 

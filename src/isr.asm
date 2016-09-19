@@ -575,13 +575,24 @@ isr_rtcc:								; each second
 
 		rcall	isr_battery_gauge		; Add amount of battery consumption to battery_gauge:6
 
+		; update uptime
+		banksel	uptime+0
+		incf	uptime+0,F
+		movlw	.0
+		addwfc	uptime+1,F
+		addwfc	uptime+2,F
+		addwfc	uptime+3,F
+		
 		banksel common                  ; flag1 is in Bank1
-		bsf		onesecupdate			; A new second has begun
-		btfsc	divemode				; in divemode?
+		bsf		onesecupdate		; A new second has begun
+		btfsc	divemode			; in divemode?
 		rcall	isr_divemode_1sec		; Yes, do some divemode stuff in bank common
 
-        tstfsz  secs                    ; Secs == 0 ?
-        return                          ; No, Done.
+		btfss	divemode			; in divemode?
+		rcall	isr_update_lastdive_time	; No, update the lastdive timer
+
+		tstfsz  secs                    ; Secs == 0 ?
+		return                          ; No, Done.
 
 		bsf		oneminupdate			; A new minute has begun
 
@@ -597,6 +608,17 @@ isr_rtcc2:
 		banksel isr_backup              ; Back to Bank0 ISR data
 		return							; Done.
 
+isr_update_lastdive_time:
+    		; update uptime
+		banksel	lastdive_time+0
+		incf	lastdive_time+0,F
+		movlw	.0
+		addwfc	lastdive_time+1,F
+		addwfc	lastdive_time+2,F
+		addwfc	lastdive_time+3,F
+		banksel	common
+		return
+    
 isr_battery_gauge:	
 	    banksel isr_backup              ; Bank0 ISR data
 		movlw	current_sleepmode		; 100µA/3600 -> nAs	(Sleepmode current)

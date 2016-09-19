@@ -562,6 +562,8 @@ battery_offset			res 2	; For battery gauge IC
 analog_sw1		res 1	; analog value for switch 1
 analog_sw2		res 1	; analog value for switch 2
 battery_type		res 1	; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah
+uptime			res 4	; Uptime [s]
+lastdive_time		res 4	; Time since last dive [s]
 
 ;-----------------------------------------------------------------------------
 ; Reserve BANK2 for general purpose buffer (strings, images, etc).
