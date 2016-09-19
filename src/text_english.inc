@@ -205,6 +205,7 @@
     TCODE   tSerial,    "Serial  : "        ; Serial  : (space)
     TCODE   tTotalDives,"Total Dives: "	    ; Total Dives:
     TCODE   tBatteryV,  "Battery: "         ; Battery:
+    TCODE   tUptime,	"Uptime: "	    ; Uptime: 
     
 ; Divemode screen
     TCODE   tNDL,       "NDL"

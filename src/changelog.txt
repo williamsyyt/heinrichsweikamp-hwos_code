@@ -3,6 +3,7 @@
 NEW: Adjustable timeout for Divemode
 CHANGE: Firmware now split in two variants (EN/DE) and (FR/IT)
 NEW: New battery option for AA 3,7V rechargable (For OSTC 3)
+NEW: Show Uptime (Time since last firmware boot) in information menu
 
 [2.09]
 - Stable Version -

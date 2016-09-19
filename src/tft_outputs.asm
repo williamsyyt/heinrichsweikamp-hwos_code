@@ -10,20 +10,20 @@
 ;  2011-08-07 : [mH] moving from OSTC code
 
 #include    "hwos.inc"                  ; Mandatory header
-#include 	"shared_definitions.h"      ; Mailbox from/to p2_deco.c
-#include 	"tft.inc"
-#include 	"wait.inc"
-#include 	"strings.inc"
-#include	"convert.inc"
-#include 	"varargs.inc"
-#include	"math.inc"
-#include	"isr.inc"
-#include	"eeprom_rs232.inc"
-#include	"adc_lightsensor.inc"
-#include	"surfmode.inc"
-#include	"divemode.inc"
+#include    "shared_definitions.h"      ; Mailbox from/to p2_deco.c
+#include    "tft.inc"
+#include    "wait.inc"
+#include    "strings.inc"
+#include    "convert.inc"
+#include    "varargs.inc"
+#include    "math.inc"
+#include    "isr.inc"
+#include    "eeprom_rs232.inc"
+#include    "adc_lightsensor.inc"
+#include    "surfmode.inc"
+#include    "divemode.inc"
 #include    "external_flash.inc"
-#include	"ghostwriter.inc"
+#include    "ghostwriter.inc"
 #include    "customview.inc"
 #include    "i2c.inc"
 #include    "colorschemes.inc"
@@ -2954,6 +2954,39 @@ info_menu_battery_volts:
     bcf		leftbind
     PUTC    "V"
     return
+
+    ; For the Information menu: Append Uptime
+    global  info_menu_uptime
+    extern  tUptime
+info_menu_uptime:
+    lfsr    FSR1,tUptime
+    call    strcat_text
+    movff   uptime+0,xC+0
+    movff   uptime+1,xC+1
+    movff   uptime+2,xC+2
+    movff   uptime+3,xC+3
+    movlw   LOW	    .3600
+    movwf   xB+0
+    movlw   HIGH    .3600
+    movwf   xB+1		; One day = 3600s
+    call    div32x16	; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
+    ;xC+0:xC+1 -> Full hours
+    movff   xC+1,xA+1
+    movff   xC+0,xA+0
+    clrf    xB+1
+    movlw   .24
+    movwf   xB+0
+    call    div16x16	;xA/xB=xC with xA+0 as remainder 	
+    movff   xC+0,lo
+    movff   xC+1,hi	; Full days
+    bsf	    leftbind
+    output_16
+    PUTC    "d"
+    movff   xA+0,lo	; Full hours
+    output_8
+    PUTC    "h"
+    bcf	    leftbind
+    return  ; Done.
 
 ;-----------------------------------------------------------------------------
 ; ppO2 menu
