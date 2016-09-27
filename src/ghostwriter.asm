@@ -633,8 +633,11 @@ end_dive_oc_cc_common:
     movf    hi,W
     rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
 
-    ; Spare at Byte 59
-    movlw   0xFF
+    ; Battery info at Byte 59
+    movff   battery_type,lo		; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah
+    swapf   lo,F
+    movf    batt_percent,W		; 0-100
+    addwf   lo,W			; upper 4 bits: battery_type, lower 4 bits: batt_percent
     rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
     ; Store 5 Setpoints
     movff   char_I_setpoint_cbar+0,WREG
