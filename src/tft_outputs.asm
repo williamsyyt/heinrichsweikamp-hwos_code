@@ -1251,7 +1251,10 @@ TFT_hud_voltages:                    ; Show HUD details
     bsf     leftbind
     output_16dp  .4         ; x.xx
     bcf     leftbind
-    STRCAT_PRINT "mV  "
+    STRCAT  "mV  "
+    clrf    WREG
+    movff   WREG,buffer+.6                  ; limit string length to 6
+    STRCAT_PRINT    ""
     goto	TFT_standard_color  ; and return...
 
     global  TFT_update_ppo2_sensors         ; Update Sensor data
@@ -1398,7 +1401,10 @@ TFT_menu_hud:            ; Yes, update HUD data
     movff   o2_mv_sensor1+0,lo      ; in 0.1mV steps
     movff   o2_mv_sensor1+1,hi      ; in 0.1mV steps
     output_16dp  .4         ; xxx.y mV
-    STRCAT_PRINT "mV "
+    STRCAT  "mV "
+    clrf    WREG
+    movff   WREG,buffer+.10                  ; limit string length to 10
+    STRCAT_PRINT    ""
     WIN_SMALL   surf_menu_sensor2_column,surf_menu_sensor2_row
     movff   o2_ppo2_sensor2,lo
     clrf    hi
@@ -1407,7 +1413,10 @@ TFT_menu_hud:            ; Yes, update HUD data
     movff   o2_mv_sensor2+0,lo      ; in 0.1mV steps
     movff   o2_mv_sensor2+1,hi      ; in 0.1mV steps
     output_16dp  .4         ; xxx.y mV
-    STRCAT_PRINT "mV "
+    STRCAT  "mV "
+    clrf    WREG
+    movff   WREG,buffer+.10                  ; limit string length to 10
+    STRCAT_PRINT    ""
     WIN_SMALL   surf_menu_sensor3_column,surf_menu_sensor3_row
     movff   o2_ppo2_sensor3,lo
     clrf    hi
@@ -1416,7 +1425,10 @@ TFT_menu_hud:            ; Yes, update HUD data
     movff   o2_mv_sensor3+0,lo      ; in 0.1mV steps
     movff   o2_mv_sensor3+1,hi      ; in 0.1mV steps
     output_16dp  .4         ; xxx.y mV
-    STRCAT_PRINT "mV "
+    STRCAT  "mV "
+    clrf    WREG
+    movff   WREG,buffer+.10                  ; limit string length to 10
+    STRCAT_PRINT    ""
     WIN_SMALL   surf_menu_sensor4_column,surf_menu_sensor4_row
 
     btfss   analog_o2_input
