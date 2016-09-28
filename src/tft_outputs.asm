@@ -2884,6 +2884,12 @@ info_menu_firmware:
     lfsr    FSR1,tFirmware
     call    strcat_text
     rcall   TFT_cat_firmware
+    ; Show language version
+    IFNDEF	    french_italian
+	STRCAT	"_en+de"
+	ELSE
+	STRCAT	"_fr+it"
+    ENDIF
     bcf     win_invert              ; Reset invert flag
     return
 
