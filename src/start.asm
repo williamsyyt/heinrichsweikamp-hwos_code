@@ -142,11 +142,15 @@ no_deco_restore:
 	bcf		menubit							; clear menu flag
 
 ; Check for Power-on reset here
-	extern	new_battery_menu,use_old_batteries
+	extern	new_battery_menu,use_old_batteries, use_old_prior_209
     ; *****************************************************************************
 	; "new_battery_menu" and "use_old_batteries" 'goto' back to "power_on_return"
     ; *****************************************************************************
 
+    ; Try to migrate the old battery status from firmware 2.09 or earlier..
+    btfsc	RCON,POR					; Was this a power-on reset?
+    call	use_old_prior_209
+	
     btfsc	RCON,POR					; Was this a power-on reset?
     goto	use_old_batteries				; No, load last stored battery values and return to "power_on_return:"
 

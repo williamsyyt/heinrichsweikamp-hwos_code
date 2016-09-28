@@ -1062,6 +1062,8 @@ update_battery_registers:
 	write_int_eeprom 0x0B
 	movff	battery_gauge+5,EEDATA
 	write_int_eeprom 0x0C
+	movff	battery_type,EEDATA	; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah
+	write_int_eeprom 0x0F
 	return
 
 

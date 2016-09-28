@@ -23,6 +23,7 @@
 #include	"ghostwriter.inc"
 #include    "adc_lightsensor.inc"
 #include    "wait.inc"
+#include    "i2c.inc"
 
         CBLOCK  tmp+0x40                ; Keep space for menu processor
             gaslist_gas ; Check ram position in gaslist.asm, too!
@@ -684,6 +685,23 @@ new_battery_menu:
 	MENU_CALL   tNew18650,			 use_18650_battery
     MENU_END
 
+	global	use_old_prior_209
+use_old_prior_209:
+	clrf	EEADRH
+	read_int_eeprom 0x0F	    ; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah
+	tstfsz	EEDATA		    ; Was 0x00?
+	return			    ; Yes, return
+	incfsz	EEDATA,F	    ; Was 0xFF?
+	return
+    
+	call    lt2942_get_status       ; Check for gauge IC
+	movlw   .3			; Assume a 18650
+	btfss   battery_gauge_available ; cR/2 hardware?
+	movlw   .1			; Assume a Saft
+        movwf	EEDATA
+	write_int_eeprom 0x0F		; Store the new battery type into EEPROM
+	return
+	
 	global	use_old_batteries
 use_old_batteries:
 	clrf	EEADRH
