@@ -10,6 +10,7 @@
 ;  2011-06-12 : [jDG] Creation...
 
 #include "text_multilang.inc"
+#include "hwos.inc"	    
 
 ; Because text are indexed by 12bits value in FSR register, they can't
 ; just be anywhere. It is safe to make them start in address 0xHHH000.
@@ -55,7 +56,7 @@ tcode_idx   set     0
 ;=============================================================================
 ;---- PASS 1 : generate description block ------------------------------------
 tcode_idx   set     0
-LANG        set     2
+LANG        set     0
 #define     TCODE TCODE_1
 #include    "text_french.inc"
 #undefine   TCODE
@@ -72,7 +73,7 @@ text_2_base:
 
 ;---- PASS 1 : generate description block ------------------------------------
 tcode_idx   set     0
-LANG        set     3
+LANG        set     1
 #define     TCODE TCODE_1
 #include    "text_italian.inc"
 #undefine   TCODE
