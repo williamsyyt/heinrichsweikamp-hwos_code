@@ -315,6 +315,10 @@ TFT_boot:
 
 	WAITMS	d'2'
 	bsf		tft_nreset
+	WAITMS	d'5'
+	bcf		tft_nreset
+	WAITMS	d'5'
+	bsf		tft_nreset
 	WAITMS	d'150'
 	bsf		lightsen_power  		; Supply power to light sensor
 
