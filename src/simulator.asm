@@ -616,9 +616,14 @@ deco_show_plan:
         clrf    decoplan_page
         call    TFT_ClearScreen
         WIN_COLOR   color_greenish
+	btfsc	is_bailout
+	bra	deco_show_plan_bail_title
         TEXT_SMALL  .1,.1, tDivePlan
-        call    TFT_standard_color
-
+	bra	deco_show_plan2
+deco_show_plan_bail_title:	
+	TEXT_SMALL  .1,.1, tDiveBailout
+deco_show_plan2:
+	call    TFT_standard_color
         ; Show plan parameters
         WIN_SMALL   .0,.25
         STRCPY  "Int:"
