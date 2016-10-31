@@ -27,8 +27,8 @@ rtc_init:
 	movwf	month
 	movlw	.15
 	movwf	year
-	rcall	rtc_set_rtc			; writes mins,sec,hours,day,month and year to rtc module
-	return
+;	rcall	rtc_set_rtc			; writes mins,sec,hours,day,month and year to rtc module
+;	return
 	
 	global	rtc_set_rtc
 rtc_set_rtc:

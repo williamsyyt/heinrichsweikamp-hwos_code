@@ -68,11 +68,10 @@ clear_rambank:
 ; Air pressure compensation	after reset
 	call	get_calibration_data	; Get calibration data from pressure sensor
 	banksel common                  ; get_calibration_data uses isr_backup
-	bcf		no_sensor_int		    ; normal sensor interrupt mode
 
-    call	TFT_DisplayOff			; display off
-    bsf     LEDr                    ; Status LED
-	bcf		pressure_refresh
+        call	TFT_DisplayOff			; display off
+        bsf     LEDr                    ; Status LED
+	bcf	pressure_refresh
 ; First pass will not have valid temperature!
 	btfss	pressure_refresh 		; Air pressure compensation
 	bra		$-2
