@@ -141,7 +141,7 @@ no_deco_restore:
 	bcf		menubit							; clear menu flag
 
 ; Check for Power-on reset here
-	extern	new_battery_menu,use_old_batteries, use_old_prior_209
+	extern	use_old_prior_209
     ; *****************************************************************************
 	; "new_battery_menu" and "use_old_batteries" 'goto' back to "power_on_return"
     ; *****************************************************************************
@@ -149,17 +149,11 @@ no_deco_restore:
     ; Try to migrate the old battery status from firmware 2.09 or earlier..
     btfsc	RCON,POR					; Was this a power-on reset?
     call	use_old_prior_209
-	
+
+    bcf		use_old_batt_flag	
     btfsc	RCON,POR					; Was this a power-on reset?
-    goto	use_old_batteries				; No, load last stored battery values and return to "power_on_return:"
-
-;    bsf	    LEDg
-    goto	new_battery_menu				; No, show "New battery dialog" and return to "power_on_return:"
-
-	global	power_on_return
-power_on_return:
-    bsf		RCON,POR						; Set bit for next detection
-
+    bsf		use_old_batt_flag				; No
+    
     call    lt2942_get_status               ; Check for gauge IC
     btfss   battery_gauge_available         ; cR or 2 hardware?
     bra	    power_on_return2		    ; no
@@ -355,7 +349,15 @@ restart4:
     TSTOSS  opt_flip_screen         ; =1: Flip the screen
     bcf     flip_screen             ; Normal orientation
 
-	goto	surfloop				; Jump to Surfaceloop!
+    btfsc   use_old_batt_flag   ; =1: load old battery information after power-on reset
+    goto    use_old_batteries	; Returns to "surfloop"!
+
+    btfsc   RCON,POR	    ; Was this a power-on reset?
+    goto    surfloop	    ; Jump to Surfaceloop!
+    bsf	    RCON,POR	    ; Set bit for next detection
+    ; Things to do after a power-on reset
+    extern  new_battery_menu,use_old_batteries
+    goto    new_battery_menu	; Returns to "surfloop"!
 
 ;=============================================================================
 ; Setup all flags and parameters for divemode and simulator computations.

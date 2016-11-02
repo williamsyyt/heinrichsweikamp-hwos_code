@@ -434,7 +434,7 @@ ignore_digits   res 1
 #DEFINE enable_screen_dumps cvt_flags,4 ; =1: Ignore vin_usb, wait for "l" command (Screen dump
 #DEFINE screen_type         cvt_flags,5 ; =1: display1, =0; display0
 #DEFINE	compass_type	    cvt_flags,6 ; =1: compass1, =0: compass0
-
+#DEFINE	analog_switches	    cvt_flags,7 ; =1: Analog switches available
 ;---- Misc.
 nofly_time              res 2   		; No Fly time in Minutes (Calculated after Dive)
 timeout_counter 		res 1
@@ -746,7 +746,7 @@ opt_diveTimeout		res 1	; Timeout for Divemode [min]
 #DEFINE sp3_switched            flag13,4    ; =1: This setpoint has been autoselected already
 #DEFINE sp4_switched            flag13,5    ; =1: This setpoint has been autoselected already
 #DEFINE sp5_switched            flag13,6    ; =1: This setpoint has been autoselected already
-#DEFINE	analog_switches		flag13,7    ; =1: Analog switches available
+#DEFINE	use_old_batt_flag	flag13,7    ; =1: load old battery information after power-on reset
 
 ;=============================================================================
 ; C-code Routines

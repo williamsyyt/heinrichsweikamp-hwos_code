@@ -23,7 +23,7 @@
 #include "adc_lightsensor.inc"
 #include "shared_definitions.h"
 
-	extern  new_battery_menu,restart,option_reset_all
+	extern  restart,option_reset_all
     extern  option_check_all, gaslist_cleanup_list, get_first_gas_to_WREG, get_first_dil_to_WREG
     extern  vault_decodata_into_eeprom
 
@@ -102,23 +102,6 @@ comm_mode1:
 	dcfsnz 	timeout_counter,F
 	bra		comm_service_exit           ; Timeout -> Exit
 comm_mode2:
-;    btfsc   battery_gauge_available
-;    bra     comm_mode4                  ; Skip
-;
-;	call	get_battery_voltage			; gets battery voltage
-;    movlw   .3
-;    cpfslt  batt_voltage+1              ; Batt Voltage less then 3*256mV?
-;    bra     comm_mode3                  ; No
-;    ; Set flag
-;    bsf     battery_removed_in_usb      ; =1: The battery has been removed in USB
-;    bra     comm_mode4
-;
-;comm_mode3:
-;    ; Voltage ok. Do we have a new battery now?
-;    btfsc   battery_removed_in_usb      ; =1: The battery has been removed in USB
-;    goto	new_battery_menu            ; show "New battery dialog"
-;
-;comm_mode4:
 	rcall	comm_write_get_byte
 
 	movlw	0xAA						; start byte=0xAA?
