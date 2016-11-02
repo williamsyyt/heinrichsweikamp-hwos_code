@@ -653,13 +653,14 @@ do_color_scheme:
 ;=============================================================================
 
 	global	new_battery_menu
+	extern	surfloop
 new_battery_menu:
     bsf     enable_screen_dumps     ; To prevent exiting into COMM mode immediately
 	call	TFT_boot                ; Initialize TFT (includes clear screen)
 	call    TFT_Display_FadeIn      ; Show splash
     movlw   .100
     movwf   batt_percent            ; make sure to reset batt_percent
-
+    
     ; Default (In cases of timeout or USB): Use old battery
 	clrf	EEADRH
 	read_int_eeprom 0x07
@@ -675,16 +676,56 @@ new_battery_menu:
 	read_int_eeprom 0x0C
 	movff	EEDATA,battery_gauge+5
 
-    call    menu_processor_reset    ; restart from first icon.
+	call    menu_processor_reset    ; restart from first icon.
 
-    MENU_BEGIN tNewBattTitle, .5
+    ; hardware_flag:
+    ; 3: 0x0A or 0x13 (2016)
+    ; cR: 0x05
+    ; 2 with BLE: 0x11
+    ; Sport: 0x12
+    ; 3 with BLE: 0x1A 
+
+    movlw   0x0A
+    cpfseq  hardware_flag
+    bra	    $+4
+    bra	    menu_new_battery_AA
+    movlw   0x13
+    cpfseq  hardware_flag
+    bra	    $+4
+    bra	    menu_new_battery_AA
+    movlw   0x12
+    cpfseq  hardware_flag
+    bra	    $+4
+    bra	    menu_new_battery_AA
+    movlw   0x1A
+    cpfseq  hardware_flag
+    bra	    $+4
+    bra	    menu_new_battery_AA
+    movlw   0x11
+    cpfseq  hardware_flag
+    bra	    $+4
+    bra	    menu_new_battery_18650
+    movlw   0x05
+    cpfseq  hardware_flag
+    bra	    $+4
+    bra	    menu_new_battery_18650
+    bra	    use_old_batteries		; any unsupported value
+    
+menu_new_battery_AA:
+    MENU_BEGIN tNewBattTitle, .4
 	MENU_CALL   tNewBattOld,                 use_old_batteries
         MENU_CALL   tNewBattNew36,               use_new_36V_batteries
         MENU_CALL   tNewBattNew15,               use_new_15V_batteries
 	MENU_CALL   tNewBattAccu,		 use_36V_rechargeable
+    MENU_END
+
+menu_new_battery_18650:
+    MENU_BEGIN tNewBattTitle, .2
+	MENU_CALL   tNewBattOld,                 use_old_batteries
 	MENU_CALL   tNew18650,			 use_18650_battery
     MENU_END
 
+    
 	global	use_old_prior_209
 use_old_prior_209:
 	clrf	EEADRH
@@ -730,8 +771,9 @@ use_old_batteries:
 	rcall	setup_new_panasonic ;=2
 	dcfsnz	EEDATA,W		   
 	rcall	setup_new_18650	    ;=3
-
-	goto	power_on_return
+	
+	bcf	use_old_batt_flag		; clear flag
+	goto	surfloop			; Jump to Surfaceloop!
 
 setup_new_saft:
     banksel battery_capacity
@@ -811,10 +853,10 @@ use_new_15V_batteries:
     rcall   setup_new_15v
 use_new_36V_2:
     call    reset_battery_pointer       ; Resets battery pointer 0x07-0x0C and battery_gauge:5
-    goto    power_on_return
+    goto    surfloop				; Jump to Surfaceloop!
 use_36V_rechargeable:
     rcall   setup_new_panasonic
     call    reset_battery_internal_only
-    goto    power_on_return
+    goto    surfloop				; Jump to Surfaceloop!
 
     END

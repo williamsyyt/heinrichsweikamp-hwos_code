@@ -11,4 +11,3 @@
 	extern	restart
 	extern	restart_set_modes_and_flags
 	extern	start
-	extern	power_on_return	
