@@ -2,6 +2,7 @@
 - Stable Version -
 CHANGE: Indicate "Bailout" for bailout deco plan in internal deco planer
 CHANGE: Easier to understand "New Battery" menu (OSTC model dependent)
+BUGFIX: Minor layout corrections in imperial units dive screen
 
 [2.10]
 - Stable Version -
