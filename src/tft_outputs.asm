@@ -1151,7 +1151,10 @@ TFT_update_avr_stopwatch:
     WIN_MEDIUM  dm_custom_avr_stop_column3,dm_custom_avr_stop_row
     output_16                       ; yxz
     bcf     leftbind
-    STRCAT_PRINT " "
+    PUTC    " "
+    clrf    WREG
+    movff   WREG,buffer+.3                  ; limit string length to 3
+    STRCAT_PRINT ""
     return
 
 TFT_update_avr_stopwatch_metric:
@@ -1595,13 +1598,16 @@ TFT_surface_decosettings2:
 
 	global	TFT_debug_output
 TFT_debug_output:
-    return
     WIN_TINY   .80,.0
 	call	TFT_standard_color
 	lfsr	FSR2,buffer
-    movff   hardware_flag,lo
+    movff   analog_sw1,lo
     output_8
-	STRCAT_PRINT ""
+    PUTC    ","
+    movff   analog_sw2,lo
+    output_8
+
+    STRCAT_PRINT ""
     return
 
     global  TFT_divetimeout                     ; Show timeout counter

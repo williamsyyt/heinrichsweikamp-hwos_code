@@ -541,10 +541,10 @@ get_analog_switches2:
     rcall	wait_adc
     movff	ADRESH,analog_sw2
     bcf		analog_sw2_pressed
-    movlw	.64	; lower limit
-    cpfsgt	ADRESH
-    bra		sw2_pressed
-    movlw	.192	; upper limit
+;    movlw	.64	; lower limit
+;    cpfsgt	ADRESH
+;    bra		sw2_pressed
+    movlw	.140	; upper limit
     cpfsgt	ADRESH
     bra		get_analog_sw1
 sw2_pressed:    
@@ -554,10 +554,10 @@ get_analog_sw1:
     rcall	wait_adc
     movff	ADRESH,analog_sw1
     bcf		analog_sw1_pressed
-    movlw	.64	; lower limit
-    cpfsgt	ADRESH
-    bra		sw1_pressed
-    movlw	.192	; upper limit
+;    movlw	.64	; lower limit
+;    cpfsgt	ADRESH
+;    bra		sw1_pressed
+    movlw	.140	; upper limit
     cpfsgt	ADRESH
     bra		get_analog_sw_done
 sw1_pressed:    
