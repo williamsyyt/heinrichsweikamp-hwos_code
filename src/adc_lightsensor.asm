@@ -32,7 +32,15 @@ get_battery_voltage:			; starts ADC and waits until fnished
 
     call    lt2942_get_accumulated_charge
     call    lt2942_get_voltage
+    
+    tstfsz  batt_voltage+1		; <256mV?
+    bra	    get_battery_voltage_noretry	; No
 
+    ; Retry
+    call    lt2942_get_accumulated_charge
+    call    lt2942_get_voltage
+    
+get_battery_voltage_noretry:
     btfsc   divemode
     return                          ; Not in divemode
 
@@ -544,7 +552,7 @@ get_analog_switches2:
 ;    movlw	.64	; lower limit
 ;    cpfsgt	ADRESH
 ;    bra		sw2_pressed
-    movlw	.140	; upper limit
+    movlw	.135	; upper limit
     cpfsgt	ADRESH
     bra		get_analog_sw1
 sw2_pressed:    
@@ -557,7 +565,7 @@ get_analog_sw1:
 ;    movlw	.64	; lower limit
 ;    cpfsgt	ADRESH
 ;    bra		sw1_pressed
-    movlw	.140	; upper limit
+    movlw	.135	; upper limit
     cpfsgt	ADRESH
     bra		get_analog_sw_done
 sw1_pressed:    

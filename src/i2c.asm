@@ -704,7 +704,12 @@ lt2942_get_voltage2:
     ; Update battery voltage in mV
     movff   xC+1,batt_voltage+1
     movff   xC+0,batt_voltage+0
-	return
+    
+    tstfsz  batt_voltage+1  ; <256mV?
+    return		    ; No, done.
+
+    rcall   lt2942_init
+    return
 
 ;	global	lt2942_get_temperature
 ;lt2942_get_temperature:		; Read temperature registers
@@ -757,18 +762,33 @@ lt2942_get_voltage2:
 	global	lt2942_get_accumulated_charge
 lt2942_get_accumulated_charge:	; Read accumulated charge and compute percent
 	clrf	i2c_temp
-	movlw	0x02                ; Point to accumulated charge registers
+	movlw	0x00                ; Point to status register
 	call	I2C_TX_GAUGE
 	call	I2C_RX_GAUGE
-	bsf		SSP1CON2,ACKEN      ; Master acknowlegde
+	bsf	SSP1CON2,ACKEN      ; Master acknowlegde
 	rcall	WaitMSSP
-	movff	SSP1BUF,sub_a+1     ; battery_acumulated_charge+1
-	bsf		SSP1CON2, RCEN      ; Enable recieve mode
-	rcall	WaitMSSP
-	movff	SSP1BUF,sub_a+0     ; battery_acumulated_charge+0
-	bsf		SSP1CON2,PEN        ; Stop condition
-	rcall	WaitMSSP
+	movff	SSP1BUF,gauge_status_byte
 
+	bsf	SSP1CON2, RCEN      ; Enable recieve mode
+	rcall	WaitMSSP	    ; Dummy read (Control byte)
+	
+	bsf	SSP1CON2, RCEN      ; Enable recieve mode
+	rcall	WaitMSSP
+	movff	SSP1BUF,sub_a+1
+	
+	bsf	SSP1CON2, RCEN      ; Enable recieve mode
+	rcall	WaitMSSP
+	movff	SSP1BUF,sub_a+0
+	bsf	SSP1CON2,PEN        ; Stop condition
+	rcall	WaitMSSP
+	
+	movff	gauge_status_byte,sub_b+0   ; copy into bank common
+	btfsc	sub_b+0,0		    ; =1: UVLO Event
+	rcall	lt2942_init
+
+	movff	sub_a+1,battery_acumulated_charge+1 ; Save raw value
+	movff	sub_a+0,battery_acumulated_charge+0 ; Save raw value
+	
     ; Compute batt_percent
     ; (charge-battery_offset)/365
     movff   battery_offset+0,sub_b+0
