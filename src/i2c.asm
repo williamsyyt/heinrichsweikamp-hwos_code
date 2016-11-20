@@ -642,28 +642,26 @@ I2C_sleep_accelerometer:
 lt2942_init:                    ; Setup Control register B
 	clrf	i2c_temp
 	movlw	0x01                ; Point to control reg B
-	call	I2C_TX_GAUGE
-    movlw   b'11111000'         ; Automatic conversion every two seconds
+	rcall	I2C_TX_GAUGE
+	movlw   b'11111000'         ; Automatic conversion every two seconds
 	movff	WREG, SSP1BUF       ; Data Byte
 	rcall	WaitMSSP
 	rcall	I2C_WaitforACK
 	bsf		SSP1CON2,PEN		; Stop condition
-	rcall	WaitMSSP
-    return
+	bra	WaitMSSP ;   (And return)
 
 	global	lt2942_get_status
 lt2942_get_status:          ; Read status register
     bcf     battery_gauge_available     ; Clear flag
 	clrf	i2c_temp
 	movlw	0x00            ; Point to Status reg
-	call	I2C_TX_GAUGE
-	call	I2C_RX_GAUGE
+	rcall	I2C_TX_GAUGE
+	rcall	I2C_RX_GAUGE
 	movff	SSP1BUF,WREG
-    btfss   WREG,7          ; 2942 found?
-    bsf     battery_gauge_available     ; Yes, set flag
-	bsf		SSP1CON2,PEN	; Stop condition
-	rcall	WaitMSSP
-	return
+        btfss   WREG,7          ; 2942 found?
+        bsf     battery_gauge_available     ; Yes, set flag
+	bsf	SSP1CON2,PEN	; Stop condition
+	bra	WaitMSSP ;   (And return)
 
 
 	global	lt2942_get_voltage
@@ -763,18 +761,23 @@ lt2942_get_voltage2:
 lt2942_get_accumulated_charge:	; Read accumulated charge and compute percent
 	clrf	i2c_temp
 	movlw	0x00                ; Point to status register
-	call	I2C_TX_GAUGE
-	call	I2C_RX_GAUGE
+	rcall	I2C_TX_GAUGE
+	rcall	I2C_RX_GAUGE
 	bsf	SSP1CON2,ACKEN      ; Master acknowlegde
 	rcall	WaitMSSP
 	movff	SSP1BUF,gauge_status_byte
 
 	bsf	SSP1CON2, RCEN      ; Enable recieve mode
 	rcall	WaitMSSP	    ; Dummy read (Control byte)
+	movf	SSP1BUF,W
+	bsf	SSP1CON2,ACKEN      ; Master acknowlegde
+	rcall	WaitMSSP
 	
 	bsf	SSP1CON2, RCEN      ; Enable recieve mode
 	rcall	WaitMSSP
 	movff	SSP1BUF,sub_a+1
+	bsf	SSP1CON2,ACKEN      ; Master acknowlegde
+	rcall	WaitMSSP
 	
 	bsf	SSP1CON2, RCEN      ; Enable recieve mode
 	rcall	WaitMSSP
@@ -854,7 +857,7 @@ I2C_RX_GAUGE:
 	movwf	SSP1BUF				; control byte
 	rcall	WaitMSSP
 	rcall	I2C_WaitforACK
-	bsf		SSP1CON2, RCEN		; Enable recieve mode
+	bsf	SSP1CON2, RCEN			; Enable recieve mode
 	bra	WaitMSSP; (and return)
     
     END
