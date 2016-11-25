@@ -457,7 +457,8 @@ piezo_config0:
     
 	btfss	PIR5,TMR5IF
 	bra	piezo_config0			; Wait loop
-    
+
+    bcf	    INTCON,GIE
     movff   opt_cR_button_right,WREG; right button
     btfsc   flip_screen             ; 180° rotation ?
     movff   opt_cR_button_left,WREG ; Yes, left button
@@ -468,10 +469,11 @@ piezo_config0:
     movff   opt_cR_button_right,WREG; Yes, right button
     rcall   piezo_config_tx
 
-    movlw   .200                    ; reserved
+    movlw   .20                    ; reserved
     rcall   piezo_config_tx
-    movlw   .200                    ; reserved
+    movlw   .20                    ; reserved
     rcall   piezo_config_tx
+    bsf	    INTCON,GIE
     return
 
 piezo_config_tx:                    ; Send one byte
