@@ -317,15 +317,15 @@ isr_timer3_skip:
 ;=============================================================================
 
 isr_tmr7:       						; each 62,5ms
-		bcf		PIR5,TMR7IF				; clear flag
-		banksel 0xF16					; Addresses, F16h through F5Fh, are also used by SFRs, but are not part of the Access RAM.
-		movlw	.248
+	bcf		PIR5,TMR7IF				; clear flag
+	banksel 0xF16					; Addresses, F16h through F5Fh, are also used by SFRs, but are not part of the Access RAM.
+	movlw	.248
     	movwf	TMR7H					; -> Rollover after 2048 cycles -> 62,5ms
 
         banksel	isr_backup
-	    movf	max_CCPR1L,W			; Dimm value
-		cpfseq	CCPR1L					; = current PWM value?
-		rcall	isr_dimm_tft			; No, adjust until max_CCPR1L=CCPR1L !
+	movf	max_CCPR1L,W			; Dimm value
+	cpfseq	CCPR1L					; = current PWM value?
+	rcall	isr_dimm_tft			; No, adjust until max_CCPR1L=CCPR1L !
 
 	banksel common
 	call	get_analog_switches			; Get analog readings
