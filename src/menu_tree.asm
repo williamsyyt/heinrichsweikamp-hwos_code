@@ -497,6 +497,7 @@ do_reset_deco:
 	goto	do_return_settings				; back to menu
 
 do_reset_settings:
+    call		TFT_ClearScreen				; Clear screen    
     banksel common
 	extern	option_reset_all
     call	option_reset_all        	; Reset all options to factory default.
