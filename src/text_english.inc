@@ -194,7 +194,6 @@
     TCODE   tDivePlan,  "Dive Plan:"        ; Dive Plan:
     TCODE   tNoDeco,    "No Deco"           ; No Deco
     TCODE   tMore,      "More..."           ; More...
-    TCODE   tCNS,       "CNS"               ; CNS
     TCODE   tGasUsage,  "Gas Usage"         ; Gas Usage
     TCODE   tSetBotUse, "Bottom Gas: "      ; Bottom Gas: (space)
     TCODE   tSetDecoUse,"Deco Gas: "        ; Deco Gas: (space)

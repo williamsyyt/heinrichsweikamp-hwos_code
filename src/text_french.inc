@@ -194,7 +194,6 @@
     TCODE   tDivePlan,  "Runtime:"          ; Dive Plan:
     TCODE   tNoDeco,    "No Déco"           ; No Deco
     TCODE   tMore,      "Suite..."          ; More...
-    TCODE   tCNS,       "CNS"               ; CNS
     TCODE   tGasUsage,  "Util. Gaz"         ; Gas Usage
     TCODE   tSetBotUse, "Gaz Fond: "      ; Bottom Gas: (space)
     TCODE   tSetDecoUse,"Gaz Déco: "        ; Deco Gas: (space)
