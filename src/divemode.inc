@@ -183,9 +183,9 @@
 ; EAD/AND
 #DEFINE    dm_custom_eadend_title_row              dm_customview_row+.1              ; 102
 #DEFINE    dm_custom_ead_row                       dm_customview_row+.16             ; 117
-#DEFINE    dm_custom_ead_column                    .46                               ; 46
+#DEFINE    dm_custom_ead_column                    .50                               ; 50
 #DEFINE    dm_custom_end_row                       dm_custom_ead_row+.23             ; 140
-#DEFINE    dm_custom_end_column                    dm_custom_ead_column              ; 46
+#DEFINE    dm_custom_end_column                    dm_custom_ead_column              ; 50
 ; Tissue title
 #DEFINE    dm_custom_tissue_title_row              dm_customview_row+.1              ; 102
 #DEFINE    dm_custom_tissue_title_column           .120                              ; 120

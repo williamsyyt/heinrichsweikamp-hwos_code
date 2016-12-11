@@ -1755,7 +1755,12 @@ check_ppo2_display:
     bra     check_ppO2_a        ; No
     return                      ; Yes, do not show twice (in custom view and in warning area)
 check_ppO2_a:
-	incf	warning_counter,F	; increase counter
+    movlw   .11
+    cpfseq  menupos3            ; ppO2 shown in Custom View?
+    bra     check_ppO2_b        ; No
+    return                      ; Yes, do not show twice (in custom view and in warning area)
+check_ppO2_b:
+    incf	warning_counter,F	; increase counter
     goto    TFT_display_ppo2	; Show ppO2  (and return)
 
     global  check_cns_violation
@@ -1776,14 +1781,19 @@ check_cns_violation:
 	btfss	STATUS,C
 	return                              ; No Display, no warning
     ; Display CNS
-	incf	warning_counter,F			; increase counter
-	goto	TFT_display_cns				; Show CNS  (and return)
-
+	bra	display_cns_violation
 check_cns_violation2:
-	incf	warning_counter,F			; increase counter
-    bsf		warning_active              ; Set Warning flag
-	goto    TFT_display_cns				; Show CNS  (and return)
-
+        bsf		warning_active      ; Set Warning flag
+display_cns_violation:			    ; Show CNS if not shown in the custom view
+        movlw   .11
+	cpfseq  menupos3		    ; CNS shown in Custom View?
+	bra     display_cns_violation2      ; No
+        return				    ; Yes, do not show twice (in custom view and in warning area)
+display_cns_violation2:
+	incf	warning_counter,F	    ; increase counter
+        goto	TFT_display_cns		    ; Show CNS  (and return)
+    
+	
     global  check_and_store_gf_violation
 check_and_store_gf_violation:
 	movff	char_O_gradient_factor,lo			; gradient factor absolute (Non-GF model)

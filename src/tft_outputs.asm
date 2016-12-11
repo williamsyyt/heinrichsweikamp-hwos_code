@@ -3327,81 +3327,60 @@ TFT_gf_info:
     STRCAT_PRINT   "%"
     return
 
-    global  TFT_ead_end_tissues_clock_mask      ; Setup Mask
-TFT_ead_end_tissues_clock_mask:
+    global  TFT_battinfo_tissues_clock_mask      ; Setup Mask
+TFT_battinfo_tissues_clock_mask:
     ; The mask
-    call    TFT_divemask_color
-	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
-	bra		TFT_ead_end_tissues_clock_mask2 ; Yes
-	btfsc	FLAG_gauge_mode					; In Gauge mode?
-	bra		TFT_ead_end_tissues_clock_mask2 ; Yes
     ; Put three columns at HUD positions
-    WIN_TINY          dm_custom_ead_column,     dm_custom_eadend_title_row
-    STRCPY_TEXT_PRINT tDiveEAD_END
+    call    TFT_divemask_color
+    btfsc   FLAG_apnoe_mode					; In Apnoe mode?
+    bra	    TFT_battinfo_tissues_clock_mask2 ; Yes
+    btfsc   FLAG_gauge_mode					; In Gauge mode?
+    bra	    TFT_battinfo_tissues_clock_mask2 ; Yes
     WIN_TINY          dm_custom_tissue_title_column,  dm_custom_tissue_title_row
     STRCPY_TEXT_PRINT tDiveTissues
-TFT_ead_end_tissues_clock_mask2:            ; Show only clock
+TFT_battinfo_tissues_clock_mask2:            ; Show only clock
+    WIN_TINY          dm_custom_ead_column,     dm_custom_eadend_title_row
+    STRCPY_TEXT_PRINT tBatteryV	    ; "Battery: "
     WIN_TINY    dm_custom_clock_column,  dm_custom_clock_title_row
     STRCPY_TEXT_PRINT tDiveClock
     goto	TFT_standard_color; and return...
 
-    global  TFT_ead_end_tissues_clock           ; Show EAD/END, Tissues and clock
-TFT_ead_end_tissues_clock:
+    global  TFT_battinfo_tissues_clock           ; Show EAD/END, Tissues and clock
+TFT_battinfo_tissues_clock:
     ; Update clock and date
     WIN_SMALL   dm_custom_clock_column, dm_custom_clock_row
     call    TFT_clock2                          ; print clock
 
-	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
-	return                                  ; Yes, done.
-	btfsc	FLAG_gauge_mode					; In Gauge mode?
-	return                                  ; Yes, done.
-
-;    WIN_SMALL   dive_endtime_column,dive_endtime_row
-;
-;    btfss	decostop_active             ; Already in nodeco mode ?
-;	bra     TFT_ead_end_tissues_clock2  ; No, overwrite with some spaces
-;
-;	STRCPY  0x94					; "End of dive" icon
-;    movff	hours,WREG
-;    mullw   .60
-;    movf    mins,W
-;    addwf   PRODL
-;    movlw   .0
-;    addwfc  PRODH
-;	movff	PRODL, lo
-;	movff	PRODH, hi
-;
-;    ; Add TTS
-;    movff	int_O_ascenttime+0,WREG     ; TTS
-;    addwf   lo,F
-;	movff	int_O_ascenttime+1,WREG     ; TTS is 16bits
-;    addwfc  hi,F
-;
-;	call	convert_time				; converts hi:lo in minutes to hours (hi) and minutes (lo)
-;	movf	hi,W
-;	movff	lo,hi
-;	movwf	lo							; exchange lo and hi
-;	output_99x
-;	PUTC    ':'
-;	movff	hi,lo
-;	output_99x
-;	STRCAT_PRINT ""
-;    bra     TFT_ead_end_tissues_clock3
-;
-;TFT_ead_end_tissues_clock2:
-;    STRCPY_PRINT "      "
-;TFT_ead_end_tissues_clock3:
-
-    ; Show END/EAD
+    ; Show Battery info
     WIN_SMALL   dm_custom_ead_column, dm_custom_ead_row
-    STRCPY_TEXT tEAD                            ; EAD:
-    movff   char_O_EAD,lo
-    rcall   TFT_end_ead_common                  ; print "lo m" (or ft) and limit to 8 chars
+    movff   batt_percent,lo         ; Get battery percent
+    TFT_color_code		warn_battery; Color-code battery percent
+    bsf		leftbind
+    output_8
+    bcf		leftbind
+    STRCAT	"% "
+    movlw	0x00
+    movff	WREG,buffer+4			; Only "xxx%"
+    STRCAT_PRINT	""
+    bcf     win_invert
+    call	TFT_standard_color
     WIN_SMALL   dm_custom_end_column, dm_custom_end_row
-    STRCPY_TEXT tEND                            ; END:
-    movff   char_O_END,lo
-    rcall   TFT_end_ead_common                  ; print "lo m" (or ft) and limit to 8 chars
+    movff	batt_voltage+0,lo
+    movff	batt_voltage+1,hi
+    bsf		leftbind
+    output_16dp	.2
+    bcf		leftbind
+    PUTC	'V'
+    movff	buffer+5,buffer+4
+    movlw	0x00
+    movff	WREG,buffer+5			; Only "x.yzV"
+    STRCAT_PRINT	""
 
+    btfsc	FLAG_apnoe_mode					; In Apnoe mode?
+    return                                  ; Yes, done.
+    btfsc	FLAG_gauge_mode					; In Gauge mode?
+    return                                  ; Yes, done.
+    
     ; Show tissue diagram
     call    TFT_divemask_color
     WIN_TINY    dm_custom_tissue_N2_column, dm_custom_tissue_N2_row
@@ -3412,6 +3391,41 @@ TFT_ead_end_tissues_clock:
 	movlb	b'00000001'                         ; select ram bank 1
     bra   DISP_tissue_saturation_graph        ; Show char_O_tissue_N2_saturation and char_O_tissue_He_saturation    ; and return...
 
+    global  TFT_ppo2_ead_end_cns_mask		; Show ppO2, END/EAD and CNS mask
+TFT_ppo2_ead_end_cns_mask:
+    rcall   TFT_mask_ppo2
+    call    TFT_divemask_color
+    WIN_TINY          dm_custom_ead_column,     dm_custom_eadend_title_row
+    STRCPY_TEXT_PRINT tDiveEAD_END
+    WIN_TINY          dm_custom_gf_title_col3, dm_custom_gf_title_row
+    STRCPY_TEXT_PRINT tCNS2
+    goto    	TFT_standard_color; and return...
+    
+    
+    global  TFT_ppo2_ead_end_cns		; Show ppO2, END/EAD and CNS
+TFT_ppo2_ead_end_cns:
+    ;show ppO2
+    rcall	TFT_display_ppo2_val
+    ; Show END/EAD
+    WIN_SMALL   dm_custom_ead_column, dm_custom_ead_row
+    STRCPY_TEXT tEAD                            ; EAD:
+    movff   char_O_EAD,lo
+    rcall   TFT_end_ead_common                  ; print "lo m" (or ft) and limit to 8 chars
+    WIN_SMALL   dm_custom_end_column, dm_custom_end_row
+    STRCPY_TEXT tEND                            ; END:
+    movff   char_O_END,lo
+    rcall   TFT_end_ead_common                  ; print "lo m" (or ft) and limit to 8 chars
+    ; Show CNS
+    WIN_STD   dm_custom_currentgf_column, dm_custom_currentgf_row
+    TFT_color_code		warn_cns		; Color-code CNS output
+    movff	int_O_CNS_fraction+0,lo
+    movff	int_O_CNS_fraction+1,hi
+    bsf		leftbind
+    output_16_3					;Displays only 0...999
+    bcf		leftbind
+    STRCAT_PRINT "%"
+    goto	TFT_standard_color; and return...
+    
 TFT_end_ead_common:           ; print "lo m" (or ft) and limit to 8 chars
     bsf     leftbind
     TSTOSS  opt_units			; 0=Meters, 1=Feets

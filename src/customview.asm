@@ -37,7 +37,7 @@ customview_second:
 	dcfsnz	WREG,F
 	goto    TFT_decoplan                    ; Show decoplan ; and return;			  bra		customview_1sec_view3
 	dcfsnz	WREG,F
-	goto    TFT_ead_end_tissues_clock       ; Update EAD/END, Tissues and clock ; and return; bra		customview_1sec_view4
+	goto    TFT_battinfo_tissues_clock       ; Update EAD/END, Tissues and clock ; and return; bra		customview_1sec_view4
 	dcfsnz	WREG,F
 	goto    TFT_gf_info                     ; Update GF informations ; and return		  bra		customview_1sec_view5
 	dcfsnz	WREG,F
@@ -47,9 +47,11 @@ customview_second:
 	dcfsnz	WREG,F
 	goto    TFT_hud_voltages                ; Show HUD details	; and return	          bra		customview_1sec_view8
 	dcfsnz	WREG,F
-	bra		customview_1sec_view9           ; Make sure to change value in "check_ppo2_display:" when moving around custom views
+	bra	customview_1sec_view9           ; Make sure to change value in "check_ppo2_display:" when moving around custom views
 	dcfsnz	WREG,F
 	goto    TFT_sensor_check                ; Show ppO2 of O2 and Diluent ; and return	  bra		customview_1sec_view10
+	dcfsnz	WREG,F
+	goto	TFT_ppo2_ead_end_cns            ; Show ppO2, END/EAD and CNS
 	; Menupos3=0, do nothing
 	return
 
@@ -60,7 +62,7 @@ customview_second:
 ;customview_1sec_view1:
 ;    goto    TFT_update_ppo2_sensors         ; Update Sensor data ; and return
 ;customview_1sec_view4:
-;    goto    TFT_ead_end_tissues_clock       ; Update EAD/END, Tissues and clock ; and return
+;    goto    TFT_battinfo_tissues_clock       ; Update EAD/END, Tissues and clock ; and return
 ;customview_1sec_view5:
 ;    goto    TFT_gf_info                     ; Update GF informations ; and return
 ;customview_1sec_view6:
@@ -364,7 +366,7 @@ menuview_view8:
 customview_toggle:
 	bcf		switch_right
 	incf	menupos3,F			            ; Number of customview to show
-	movlw	d'10'							; Max number of customsviews in divemode
+	movlw	d'11'							; Max number of customsviews in divemode
 	cpfsgt	menupos3			            ; Max reached?
 	bra		customview_mask		            ; No, show
 customview_toggle_reset:					; Timeout occured
@@ -377,13 +379,13 @@ customview_mask:
 	call	TFT_standard_color
 	movff	menupos3,WREG                   ; Menupos3 holds number of customview function
 	dcfsnz	WREG,F
-	bra		customview_init_view1
+	bra		customview_init_view1		; Update Sensor data
 	dcfsnz	WREG,F
-	bra		customview_init_view2
+	bra		customview_init_view2		; average depth and stopwatch
 	dcfsnz	WREG,F
-	bra		customview_init_view3
+	bra		customview_init_view3		; Decoplan
 	dcfsnz	WREG,F
-	bra		customview_init_view4
+	bra		customview_init_view4		; Battery info, Tissues and clock
 	dcfsnz	WREG,F
 	bra		customview_init_view5           ; GF informations
 	dcfsnz	WREG,F
@@ -393,9 +395,12 @@ customview_mask:
 	dcfsnz	WREG,F
 	bra		customview_init_view8           ; HUD voltages
 	dcfsnz	WREG,F
-	bra		customview_init_view9           ; Ceiling
+	bra		customview_init_view9           ; ppO2, Ceiling and current GF
 	dcfsnz	WREG,F
 	bra		customview_init_view10          ; Sensor check
+	dcfsnz	WREG,F
+	bra		customview_init_view11          ; ppO2, END/EAD and CNS
+
 customview_init_nocustomview:
     call    I2C_sleep_accelerometer         ; Stop accelerometer
     call    I2C_sleep_compass               ; Stop compass
@@ -434,8 +439,8 @@ customview_init_view3:
     bra		customview_toggle_exit
 
 customview_init_view4:
-    call    TFT_ead_end_tissues_clock_mask  ; Setup Mask
-    call    TFT_ead_end_tissues_clock       ; Show EAD/END, Tissues and clock
+    call    TFT_battinfo_tissues_clock_mask  ; Setup Mask
+    call    TFT_battinfo_tissues_clock       ; Show Battery info, Tissues and clock
     bra		customview_toggle_exit
 
 customview_init_view5:
@@ -481,7 +486,7 @@ customview_init_view8:                      ; Sensor millivolts
     call    TFT_hud_voltages                ; Show HUD details
     bra		customview_toggle_exit
 
-customview_init_view9:                      ; Ceiling
+customview_init_view9:                      ; ppO2, Ceiling and current GF
 	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
 	bra		customview_toggle				; yes, Call next view...
 	btfsc	FLAG_gauge_mode					; In Gauge mode?
@@ -502,17 +507,27 @@ customview_init_view9:                      ; Ceiling
     bra		customview_toggle_exit
 
 customview_init_view10:                     ; Sensor check
-	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
-	bra		customview_toggle				; yes, Call next view...
-	btfsc	FLAG_gauge_mode					; In Gauge mode?
-	bra		customview_toggle				; Yes, Call next view...
-	btfss	FLAG_ccr_mode					; In CC mode?
-	bra		customview_toggle				; no, Call next view...
+    btfsc   FLAG_apnoe_mode		    ; In Apnoe mode?
+    bra	    customview_toggle		    ; yes, Call next view...
+    btfsc   FLAG_gauge_mode		    ; In Gauge mode?
+    bra	    customview_toggle		    ; Yes, Call next view...
+    btfss   FLAG_ccr_mode		    ; In CC mode?
+    bra	    customview_toggle		    ; no, Call next view...
 
     call    TFT_sensor_check_mask           ; Show ppO2 of O2 and Diluent mask
     call    TFT_sensor_check                ; Show ppO2 of O2 and Diluent
     bra		customview_toggle_exit
 
+customview_init_view11:                     ; ppO2, END/EAD and CNS
+    btfsc   FLAG_apnoe_mode		    ; In Apnoe mode?
+    bra	    customview_toggle		    ; yes, Call next view...
+    btfsc   FLAG_gauge_mode		    ; In Gauge mode?
+    bra	    customview_toggle		    ; Yes, Call next view...
+
+    call    TFT_ppo2_ead_end_cns_mask       ; Show ppO2, END/EAD and CNS mask
+    call    TFT_ppo2_ead_end_cns            ; Show ppO2, END/EAD and CNS
+    bra		customview_toggle_exit
+    
 customview_toggle_exit:
 	call	TFT_standard_color
 	bcf		toggle_customview			; Clear flag

@@ -693,8 +693,7 @@ deco_show_plan_m2:
 
         ;---- Display CNS result
         WIN_TOP     .205
-        STRCPY_TEXT tCNS
-        STRCAT  ": "
+        STRCPY_TEXT tCNS2	; "CNS:"
         movff   int_O_CNS_fraction+0,lo
         movff   int_O_CNS_fraction+1,hi
         output_16_3                     ; limit to 999 and display only (0-999)

@@ -3,6 +3,8 @@
 CHANGE: Indicate "Bailout" for bailout deco plan in internal deco planer
 CHANGE: Easier to understand "New Battery" menu (OSTC model dependent)
 BUGFIX: Minor layout corrections in imperial units dive screen
+NEW: New Customview 11 in dive mode shows ppO2, EAD/END and CNS
+CHANGE: Customview 4 shows Clock, Battery Information and Tissue Information
 
 [2.10]
 - Stable Version -

@@ -90,8 +90,8 @@ TFT_color_code macro color_code_temp
     extern  TFT_clear_divemode_menu             ; Clear the divemode menu
     extern  TFT_draw_gassep_line                ; Draw the gas separator grid line in spec mode only
     extern  TFT_divemode_menu_cursor            ; the divemode cursor
-    extern  TFT_ead_end_tissues_clock_mask      ; Setup Mask
-    extern  TFT_ead_end_tissues_clock           ; Show EAD/END, Tissues and clock
+    extern  TFT_battinfo_tissues_clock_mask      ; Setup Mask
+    extern  TFT_battinfo_tissues_clock           ; Show EAD/END, Tissues and clock
     extern  TFT_gf_mask                         ; Setup Mask
     extern  TFT_gf_mask_cGF                     ; Setup Mask - current GF only
     extern  TFT_gf_info                         ; Show GF informations
@@ -109,6 +109,9 @@ TFT_color_code macro color_code_temp
     extern  TFT_warning_fallback                ; Show fallback warning
     extern  TFT_sensor_check_mask               ; Show ppO2 of O2 and Diluent mask
     extern  TFT_sensor_check                    ; Show ppO2 of O2 and Diluent
+    extern  TFT_ppo2_ead_end_cns_mask		; Show ppO2, END/EAD and CNS mask
+    extern  TFT_ppo2_ead_end_cns		; Show ppO2, END/EAD and CNS
+
 
 
 ; Misc
