@@ -2984,8 +2984,11 @@ info_menu_battery_volts:
     movff   batt_voltage+0,lo
 	bsf		leftbind
 	output_16dp .2      ; x.xxx
+    STRCAT  "V (T"
+    movff   battery_type,lo		; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah, =4: LiIon 3,7V/2.3Ah
+    output_8
     bcf		leftbind
-    PUTC    "V"
+    PUTC    ")"
     return
 
     ; For the Information menu: Append Uptime

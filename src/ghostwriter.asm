@@ -634,7 +634,7 @@ end_dive_oc_cc_common:
     rcall	ghostwrite_byte_header	; WREG -> Header in ext. flash
 
     ; Battery info at Byte 59
-    movff   battery_type,lo		; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah
+    movff   battery_type,lo		; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah, =4: LiIon 3,7V/2.3Ah
     swapf   lo,F
     movf    batt_percent,W		; 0-100
     addwf   lo,W			; upper 4 bits: battery_type, lower 4 bits: batt_percent
@@ -1062,7 +1062,7 @@ update_battery_registers:
 	write_int_eeprom 0x0B
 	movff	battery_gauge+5,EEDATA
 	write_int_eeprom 0x0C
-	movff	battery_type,EEDATA	; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah
+	movff	battery_type,EEDATA	; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah, =4: LiIon 3,7V/2.3Ah
 	write_int_eeprom 0x0F
 	return
 

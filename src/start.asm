@@ -148,7 +148,7 @@ no_deco_restore:
 
     ; Try to migrate the old battery status from firmware 2.09 or earlier..
     btfsc	RCON,POR					; Was this a power-on reset?
-    call	use_old_prior_209
+    call	use_old_prior_209				; No
 
     bcf		use_old_batt_flag	
     btfsc	RCON,POR					; Was this a power-on reset?
