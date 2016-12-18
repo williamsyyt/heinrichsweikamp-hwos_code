@@ -187,6 +187,9 @@
 #DEFINE	ncr18650_capacity	.364	; 3.1Ah/0.085mAh/100 [%]
 #DEFINE	ncr18650_offset		.29065	; 65536-(3.1Ah/0.085mAh)
 	
+#DEFINE	ur16650_capacity	.271	; 2.3Ah/0.085mAh/100 [%]
+#DEFINE	ur16650_offset		.38477	; 65536-(2.3Ah/0.085mAh)
+	
 #DEFINE	current_sleepmode           .31
 #DEFINE	current_backlight_multi     .115    ; *CCPR1L+current_backlight_offset
 #DEFINE	current_backlight_offset    .216
@@ -561,7 +564,7 @@ battery_offset			res 2	; For battery gauge IC
 
 analog_sw1		res 1	; analog value for switch 1
 analog_sw2		res 1	; analog value for switch 2
-battery_type		res 1	; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah
+battery_type		res 1	; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah, =4: LiIon 3,7V/2.3Ah
 uptime			res 4	; Uptime [s]
 lastdive_time		res 4	; Time since last dive [s]
 battery_acumulated_charge   res 2   ; Raw values in battery gauge IC

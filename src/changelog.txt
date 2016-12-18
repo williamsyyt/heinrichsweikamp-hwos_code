@@ -5,6 +5,8 @@ CHANGE: Easier to understand "New Battery" menu (OSTC model dependent)
 BUGFIX: Minor layout corrections in imperial units dive screen
 NEW: New Customview 11 in dive mode shows ppO2, EAD/END and CNS
 CHANGE: Customview 4 shows Clock, Battery Information and Tissue Information
+CHANGE: Show warnings either in Customview (If active) _or_ next to warning sign
+NEW: Show battery type in information menu (T0:1.5V AA, T1:3.6V AA, T2:3.6V/0.8A LiIon, T3:Internal 18650, T4:Internal 16650)
 
 [2.10]
 - Stable Version -

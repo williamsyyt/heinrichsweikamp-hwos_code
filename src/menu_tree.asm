@@ -730,12 +730,11 @@ menu_new_battery_18650:
 	global	use_old_prior_209
 use_old_prior_209:
 	clrf	EEADRH
-	read_int_eeprom 0x0F	    ; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah
-	tstfsz	EEDATA		    ; Was 0x00?
-	return			    ; Yes, return
+	read_int_eeprom 0x0F	    ; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah, =4: LiIon 3,7V/2.3Ah
 	incfsz	EEDATA,F	    ; Was 0xFF?
+	bra	use_old_prior_209_2 ; Yes
 	return
-    
+use_old_prior_209_2:
 	call    lt2942_get_status       ; Check for gauge IC
 	movlw   .3			; Assume a 18650
 	btfss   battery_gauge_available ; cR/2 hardware?
@@ -760,7 +759,7 @@ use_old_batteries:
 	read_int_eeprom 0x0C
 	movff	EEDATA,battery_gauge+5
 	read_int_eeprom 0x0F
-	movff	EEDATA,battery_type; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah
+	movff	EEDATA,battery_type; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah, =4: LiIon 3,7V/2.3Ah
 
 	rcall	setup_new_saft	    ; Any other value
 	incf	EEDATA,F
@@ -772,10 +771,21 @@ use_old_batteries:
 	rcall	setup_new_panasonic ;=2
 	dcfsnz	EEDATA,W		   
 	rcall	setup_new_18650	    ;=3
+	dcfsnz	EEDATA,W		   
+	rcall	setup_new_16650	    ;=4
 	
 	bcf	use_old_batt_flag		; clear flag
 	goto	surfloop			; Jump to Surfaceloop!
 
+setup_new_15v:
+    bsf	    charge_disable
+    bcf	    TRISE,2
+    movlw   .100
+    movwf   batt_percent                ; To have 1,5V batteries right after firmware update
+    movlw   .0
+    movff   WREG,battery_type
+    return
+    
 setup_new_saft:
     banksel battery_capacity
     movlw   LOW	    internal_saft_capacity
@@ -797,6 +807,27 @@ setup_new_saft:
     movff   WREG,battery_type
     return
 
+setup_new_panasonic:    
+    banksel battery_capacity
+    movlw   LOW	    internal_panasonic_capacity
+    movwf   internal_battery_capacity+0
+    movlw   HIGH    internal_panasonic_capacity
+    movwf   internal_battery_capacity+1
+    movlw   LOW	    panasonic_capacity
+    movwf   battery_capacity+0
+    movlw   HIGH    panasonic_capacity
+    movwf   battery_capacity+1
+    movlw   LOW	    panasonic_offset
+    movwf   battery_offset+0
+    movlw   HIGH    panasonic_offset
+    movwf   battery_offset+1
+    banksel common
+    bcf	    charge_disable
+    bsf	    TRISE,2
+    movlw   .2
+    movff   WREG,battery_type
+    return    
+
 setup_new_18650:    
     banksel battery_capacity
     clrf    internal_battery_capacity+0
@@ -815,35 +846,26 @@ setup_new_18650:
     movlw   .3
     movff   WREG,battery_type
     return
-    
-setup_new_panasonic:    
+
+setup_new_16650:
     banksel battery_capacity
-    movlw   LOW	    internal_panasonic_capacity
-    movwf   internal_battery_capacity+0
-    movlw   HIGH    internal_panasonic_capacity
-    movwf   internal_battery_capacity+1
-    movlw   LOW	    panasonic_capacity
+    clrf    internal_battery_capacity+0
+    clrf    internal_battery_capacity+1
+    movlw   LOW	    ur16650_capacity
     movwf   battery_capacity+0
-    movlw   HIGH    panasonic_capacity
+    movlw   HIGH    ur16650_capacity
     movwf   battery_capacity+1
-    movlw   LOW	    panasonic_offset
+    movlw   LOW	    ur16650_offset
     movwf   battery_offset+0
-    movlw   HIGH    panasonic_offset
+    movlw   HIGH    ur16650_offset
     movwf   battery_offset+1
     banksel common
     bcf	    charge_disable
     bsf	    TRISE,2
-    return    
-
-setup_new_15v:
-    bsf	    charge_disable
-    bcf	    TRISE,2
-    movlw   .100
-    movwf   batt_percent                ; To have 1,5V batteries right after firmware update
-    movlw   .0
+    movlw   .4
     movff   WREG,battery_type
     return
-    
+
 use_18650_battery:
     rcall   setup_new_18650
     bra	    use_new_36V_2

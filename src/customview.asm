@@ -29,63 +29,42 @@ gui     CODE
 
 	global	customview_second
 customview_second:
-	movff	menupos3,WREG               ; copy
+	movff	menupos3,WREG               ; copy current view (1-...)
 	dcfsnz	WREG,F
-	goto    TFT_update_ppo2_sensors         ; Update Sensor data ; and return;		  bra		customview_1sec_view1
+	goto    TFT_update_ppo2_sensors         ; Update Sensor data ; and return
 	dcfsnz	WREG,F
-	goto    TFT_update_avr_stopwatch        ; Update average depth and stopwatch; and return ;bra		customview_1sec_view2
+	goto    TFT_update_avr_stopwatch        ; Update average depth and stopwatch; and return
 	dcfsnz	WREG,F
-	goto    TFT_decoplan                    ; Show decoplan ; and return;			  bra		customview_1sec_view3
+	goto    TFT_decoplan                    ; Show decoplan ; and return
 	dcfsnz	WREG,F
-	goto    TFT_battinfo_tissues_clock       ; Update EAD/END, Tissues and clock ; and return; bra		customview_1sec_view4
+	goto    TFT_battinfo_tissues_clock       ; Update Battery, Tissues and clock ; and return
 	dcfsnz	WREG,F
-	goto    TFT_gf_info                     ; Update GF informations ; and return		  bra		customview_1sec_view5
+	goto    TFT_gf_info                     ; Update GF informations ; and return
 	dcfsnz	WREG,F
-        return  ; Compass updated seperately (Faster) in divemode;				  bra		customview_1sec_view6
+        return  ; Compass updated seperately (Faster) in divemode;
 	dcfsnz	WREG,F
-	goto    TFT_dyn_gaslist                 ; Update the gaslist ; and return		  bra		customview_1sec_view7
+	goto    TFT_dyn_gaslist                 ; Update the gaslist ; and return
 	dcfsnz	WREG,F
-	goto    TFT_hud_voltages                ; Show HUD details	; and return	          bra		customview_1sec_view8
+	goto    TFT_hud_voltages                ; Show HUD details	; and return
 	dcfsnz	WREG,F
 	bra	customview_1sec_view9           ; Make sure to change value in "check_ppo2_display:" when moving around custom views
 	dcfsnz	WREG,F
-	goto    TFT_sensor_check                ; Show ppO2 of O2 and Diluent ; and return	  bra		customview_1sec_view10
+	goto    TFT_sensor_check                ; Show ppO2 of O2 and Diluent ; and return
 	dcfsnz	WREG,F
-	goto	TFT_ppo2_ead_end_cns            ; Show ppO2, END/EAD and CNS
+	goto	TFT_ppo2_ead_end_cns            ; Show ppO2, END/EAD and CNS; and return
 	; Menupos3=0, do nothing
 	return
 
-;customview_1sec_view3:
-;    goto    TFT_decoplan                    ; Show decoplan ; and return
-;customview_1sec_view2:
-;    goto    TFT_update_avr_stopwatch        ; Update average depth and stopwatch; and return
-;customview_1sec_view1:
-;    goto    TFT_update_ppo2_sensors         ; Update Sensor data ; and return
-;customview_1sec_view4:
-;    goto    TFT_battinfo_tissues_clock       ; Update EAD/END, Tissues and clock ; and return
-;customview_1sec_view5:
-;    goto    TFT_gf_info                     ; Update GF informations ; and return
-;customview_1sec_view6:
-;    return  ; Compass updated seperately (Faster) in divemode
-;
-;customview_1sec_view7:                      ; Dynamic gaslist
-;    goto    TFT_dyn_gaslist                 ; Update the gaslist ; and return
-;customview_1sec_view8:                      ; Sensor voltages
-;    goto    TFT_hud_voltages                ; Show HUD details	; and return
 customview_1sec_view9:                      ; Ceiling
     call    TFT_ceiling                     ; Show Ceiling
-
     ; ppO2 value
     call    TFT_display_ppo2_val
-
     ; current GF value
     extern  char_I_deco_model
     TSTOSS  char_I_deco_model               ; 0 = ZH-L16, 1 = ZH-L16-GF
     return                                  ; No GF info for non-GF modes
     goto    TFT_gf_info                     ; Update GF informations ; and return
 
-;customview_1sec_view10:                     ; Sensor check
-;    goto    TFT_sensor_check                ; Show ppO2 of O2 and Diluent ; and return
 
 
 ;=============================================================================

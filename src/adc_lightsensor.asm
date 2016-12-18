@@ -214,8 +214,8 @@ get_battery_voltage3d:
     movf    batt_percent,W
     cpfsgt  lo                      ; keep batt_percent on the lowest value found
     movff   lo,batt_percent         ; store value
-;    btfsc   battery_is_36v          ; but always use computed value for 3,6V battery
-;    movff   lo,batt_percent         ; store value
+    btfsc   battery_is_36v          ; but always use computed value for 3,6V battery
+    movff   lo,batt_percent         ; store value
     bcf     adc_running              ; =1: The ADC is in use
 	return
 
@@ -545,16 +545,18 @@ get_analog_switches2:
     
     movlw	b'00001001'	    ; left justified
     movwf	ADCON2
-    movlw	b'00000000'         ; Vref+ = Vdd
-    movwf	ADCON1
+;    movlw	b'00000000'         ; Vref+ = Vdd
+    clrf	ADCON1
     movlw	b'00100101'	    ; power on ADC, select AN9
     rcall	wait_adc
     movff	ADRESH,analog_sw2
     bcf		analog_sw2_pressed
-;    movlw	.64	; lower limit
-;    cpfsgt	ADRESH
-;    bra		sw2_pressed
-    movlw	.135	; upper limit
+    movff	opt_cR_button_left,WREG		;20-100
+    bcf		STATUS,C
+    rrcf	WREG		;/2 -> 10-50
+    bcf		STATUS,C
+    rrcf	WREG		;/2 -> 5-25
+    addlw	.126		;131-151
     cpfsgt	ADRESH
     bra		get_analog_sw1
 sw2_pressed:    
@@ -564,10 +566,11 @@ get_analog_sw1:
     rcall	wait_adc
     movff	ADRESH,analog_sw1
     bcf		analog_sw1_pressed
-;    movlw	.64	; lower limit
-;    cpfsgt	ADRESH
-;    bra		sw1_pressed
-    movlw	.135	; upper limit
+    bcf		STATUS,C
+    rrcf	WREG		;/2 -> 10-50
+    bcf		STATUS,C
+    rrcf	WREG		;/2 -> 5-25
+    addlw	.126		;131-151
     cpfsgt	ADRESH
     bra		get_analog_sw_done
 sw1_pressed:    

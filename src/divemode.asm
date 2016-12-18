@@ -1651,20 +1651,24 @@ divemode_check_for_warnings2:
     global  check_warn_battery
 check_warn_battery:
     movff   batt_percent,lo
-	movlw	battery_show_level+1
-	cpfslt	lo
+    movlw	battery_show_level+1
+    cpfslt	lo
     return                              ; No Display, no warning
     ; Display Battery, but warn?
-	incf	warning_counter,F			; increase counter
+    movff	batt_percent,lo
+    movlw	color_code_battery_low+1
+    cpfsgt	lo                          ;
+    bsf		warning_active		; Set Warning flag
+    
+    movlw   .4
+    cpfseq  menupos3            ; ppO2 shown in Custom View 4?
+    bra     check_warn_battery2	; No
+    return                      ; Yes, do not show twice (in custom view and in warning area)
+check_warn_battery2:
+    incf	warning_counter,F		    ; increase counter
     call	TFT_update_batt_percent_divemode    ; Show percent
-
-    movff   batt_percent,lo
-	movlw	color_code_battery_low+1
-	cpfslt	lo                          ;
-	return                              ; No warning
-	bsf		warning_active		; Set Warning flag
-	return
-
+    return
+    
 check_divetimeout:
     btfsc		divemode2				
     return                              ; displayed divetime is not running
@@ -1751,12 +1755,12 @@ check_ppO2_1:                   ; ppO2 very high
 
 check_ppo2_display:
     movlw   .9
-    cpfseq  menupos3            ; ppO2 shown in Custom View?
+    cpfseq  menupos3            ; ppO2 shown in Custom View 9?
     bra     check_ppO2_a        ; No
     return                      ; Yes, do not show twice (in custom view and in warning area)
 check_ppO2_a:
     movlw   .11
-    cpfseq  menupos3            ; ppO2 shown in Custom View?
+    cpfseq  menupos3            ; ppO2 shown in Custom View 11?
     bra     check_ppO2_b        ; No
     return                      ; Yes, do not show twice (in custom view and in warning area)
 check_ppO2_b:
