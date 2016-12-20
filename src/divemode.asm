@@ -1661,7 +1661,7 @@ check_warn_battery:
     bsf		warning_active		; Set Warning flag
     
     movlw   .4
-    cpfseq  menupos3            ; ppO2 shown in Custom View 4?
+    cpfseq  menupos3            ; battery shown in Custom View 4?
     bra     check_warn_battery2	; No
     return                      ; Yes, do not show twice (in custom view and in warning area)
 check_warn_battery2:
