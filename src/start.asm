@@ -53,6 +53,8 @@ clear_rambank:
     call    init_ostc
 
     ; Get button type from Bootloader-Info
+        movlw   .16
+	movff   WREG,analog_counter	; init averaging
 	bsf	analog_switches
 	movlw   0x7C
 	movwf   TBLPTRL

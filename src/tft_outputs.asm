@@ -1598,25 +1598,15 @@ TFT_surface_decosettings2:
 
 	global	TFT_debug_output
 TFT_debug_output:
-    return
-    
-;    WIN_TINY   .80,.0
-;	call	TFT_standard_color
-;	lfsr	FSR2,buffer
-;	
-;    movff   battery_acumulated_charge+0,lo
-;    movff   battery_acumulated_charge+1,hi
-;    output_16
-;    PUTC    ","
-;    movff   gauge_status_byte,lo
-;    output_8
-;    movff   analog_sw1,lo
-;    output_8
-;    PUTC    ","
-;    movff   analog_sw2,lo
-;    output_8
-
-;    STRCAT_PRINT ""
+    WIN_TINY   .80,.0
+    call	TFT_standard_color
+    lfsr	FSR2,buffer
+    movff   analog_sw1,lo
+    output_8
+    PUTC    ","
+    movff   analog_sw2,lo
+    output_8
+    STRCAT_PRINT ""
     return
 
     global  TFT_divetimeout                     ; Show timeout counter

@@ -562,6 +562,9 @@ internal_battery_capacity	res 2	; For internal battery gauging
 battery_capacity		res 2	; For battery gauge IC
 battery_offset			res 2	; For battery gauge IC
 
+analog_sw1_raw		res 2	; idle values (average)
+analog_sw2_raw		res 2	; idle values (average)
+analog_counter		res 1	; for averaging
 analog_sw1		res 1	; analog value for switch 1
 analog_sw2		res 1	; analog value for switch 2
 battery_type		res 1	; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah, =4: LiIon 3,7V/2.3Ah
