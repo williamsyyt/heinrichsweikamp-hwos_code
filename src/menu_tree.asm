@@ -678,7 +678,12 @@ new_battery_menu:
 	movff	EEDATA,battery_gauge+5
 
 	call    menu_processor_reset    ; restart from first icon.
-
+ 
+	MENU_BEGIN tNewBattTitle, .1
+		MENU_CALL   tEnter, new_battery_menu2
+        MENU_END
+	
+new_battery_menu2:
     ; hardware_flag:
     ; 3: 0x0A or 0x13 (2016)
     ; cR: 0x05
@@ -693,7 +698,7 @@ new_battery_menu:
     movlw   0x13
     cpfseq  hardware_flag
     bra	    $+4
-    bra	    menu_new_battery_AA
+    bra	    menu_new_battery_AA_16650
     movlw   0x12
     cpfseq  hardware_flag
     bra	    $+4
@@ -711,6 +716,15 @@ new_battery_menu:
     bra	    $+4
     bra	    menu_new_battery_18650
     bra	    use_old_batteries		; any unsupported value
+    
+menu_new_battery_AA_16650:
+    MENU_BEGIN tNewBattTitle, .5
+	MENU_CALL   tNewBattOld,                 use_old_batteries
+        MENU_CALL   tNewBattNew36,               use_new_36V_batteries
+        MENU_CALL   tNewBattNew15,               use_new_15V_batteries
+	MENU_CALL   tNewBattAccu,		 use_36V_rechargeable
+	MENU_CALL   tNew16650,			 use_16650_battery
+    MENU_END
     
 menu_new_battery_AA:
     MENU_BEGIN tNewBattTitle, .4
@@ -866,6 +880,9 @@ setup_new_16650:
     movff   WREG,battery_type
     return
 
+use_16650_battery:
+    rcall   setup_new_16650
+    bra	    use_new_36V_2
 use_18650_battery:
     rcall   setup_new_18650
     bra	    use_new_36V_2

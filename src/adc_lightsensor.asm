@@ -549,31 +549,92 @@ get_analog_switches2:
     clrf	ADCON1
     movlw	b'00100101'	    ; power on ADC, select AN9
     rcall	wait_adc
-    movff	ADRESH,analog_sw2
+    banksel	analog_counter
+    movff	ADRESH,WREG
+    addwf	analog_sw2_raw+0
+    movlw	.0
+    addwfc	analog_sw2_raw+1
+    decfsz	analog_counter,F    ; continue averaging?
+    bra		get_analog_switches2a	; Yes
+    ; Done. Compute average
+    bcf     STATUS,C
+    rrcf    analog_sw2_raw+1
+    rrcf    analog_sw2_raw+0    ; /2
+    bcf     STATUS,C
+    rrcf    analog_sw2_raw+1
+    rrcf    analog_sw2_raw+0    ; /4
+    bcf     STATUS,C
+    rrcf    analog_sw2_raw+1
+    rrcf    analog_sw2_raw+0    ; /8
+    bcf     STATUS,C
+    rrcf    analog_sw2_raw+1
+    rrcf    analog_sw2_raw+0    ; /16
+    movff   analog_sw2_raw+0, analog_sw2
+    clrf    analog_sw2_raw+1
+    clrf    analog_sw2_raw+0	; Reset average registers
+;    movlw   .16
+;    movwf   analog_counter	; only once...
+get_analog_switches2a:    
+    banksel	common
     bcf		analog_sw2_pressed
     movff	opt_cR_button_left,WREG		;20-100
     bcf		STATUS,C
     rrcf	WREG		;/2 -> 10-50
     bcf		STATUS,C
     rrcf	WREG		;/2 -> 5-25
-    addlw	.126		;131-151
+    decf	WREG,W	    	;-1
+    decf	WREG,W	    	;-1
+    decf	WREG,W	    	;-1 -> 2-22
+    banksel	analog_sw2
+    addwf	analog_sw2,W 	; average (~128)
+    banksel	common
     cpfsgt	ADRESH
     bra		get_analog_sw1
-sw2_pressed:    
     bsf		analog_sw2_pressed
 get_analog_sw1:
     movlw	b'00101001'	    ; power on ADC, select AN10
     rcall	wait_adc
-    movff	ADRESH,analog_sw1
+    banksel	analog_counter
+    movff	ADRESH,WREG
+    addwf	analog_sw1_raw+0
+    movlw	.0
+    addwfc	analog_sw1_raw+1
+    tstfsz	analog_counter    ; continue averaging?
+    bra		get_analog_switches1a	; Yes
+    ; Done. Compute average
+    bcf     STATUS,C
+    rrcf    analog_sw1_raw+1
+    rrcf    analog_sw1_raw+0    ; /2
+    bcf     STATUS,C
+    rrcf    analog_sw1_raw+1
+    rrcf    analog_sw1_raw+0    ; /4
+    bcf     STATUS,C
+    rrcf    analog_sw1_raw+1
+    rrcf    analog_sw1_raw+0    ; /8
+    bcf     STATUS,C
+    rrcf    analog_sw1_raw+1
+    rrcf    analog_sw1_raw+0    ; /16
+    movff   analog_sw1_raw+0, analog_sw1
+    clrf    analog_sw1_raw+1
+    clrf    analog_sw1_raw+0	; Reset average registers
+    movlw   .16
+    movwf   analog_counter	; only once...
+get_analog_switches1a:    
+    banksel	common
     bcf		analog_sw1_pressed
+    movff	opt_cR_button_right,WREG		;20-100
     bcf		STATUS,C
     rrcf	WREG		;/2 -> 10-50
     bcf		STATUS,C
     rrcf	WREG		;/2 -> 5-25
-    addlw	.126		;131-151
+    decf	WREG,W	    	;-1
+    decf	WREG,W	    	;-1
+    decf	WREG,W	    	;-1 -> 2-22
+    banksel	analog_sw1
+    addwf	analog_sw1,W 	; average (~128)
+    banksel	common
     cpfsgt	ADRESH
     bra		get_analog_sw_done
-sw1_pressed:    
     bsf		analog_sw1_pressed
 get_analog_sw_done:
     movlw	b'10001101'	    ; Restore to right justified
