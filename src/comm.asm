@@ -1060,6 +1060,8 @@ comm_read_setting:
     clrf    TXREG1			    ; RCREG1=0x47, ignore conservatism for standard hwOS
     dcfsnz  WREG
     movff   opt_diveTimeout, TXREG1	    ; RCREG1=0x48
+    dcfsnz  WREG
+    movff   button_polarity, TXREG1	    ; RCREG1=0x49
 
     
 comm_read_abort:
@@ -1363,6 +1365,8 @@ comm_write_setting:
     nop					    ; RCREG1=0x47, ignore conservatism for standard hwOS
     dcfsnz  WREG
     movff   RCREG1, opt_diveTimeout	    ; RCREG1=0x48
+    dcfsnz  WREG
+    bra	    comm_write_button_polarity	    ; RCREG1=0x49
 
 
 comm_write_abort:
@@ -1503,5 +1507,17 @@ comm_check_day:
 	movwf	day
 	return	
 
+comm_write_button_polarity:
+	; Store RCREG1 into EEPROM .897
+	movlw	LOW	.897
+	movwf	EEADR
+	movlw	HIGH	.897
+	movwf	EEADRH
+	movff	RCREG1,EEDATA
+	movff	EEDATA,button_polarity	    ; 0xFF (Both normal), 0x00 (Both inverted), 0x01 (Left inverted only), 0x02 (Right inverted only) 
+	call    write_eeprom                ; EEDATA into EEPROM@EEADR
+	clrf	EEADRH			    ; Reset EEADRH
+	goto	comm_download_mode0         ; Done. Loop with timeout reset
+	
 ;----------------------------------------------------------------------------
         END

@@ -32,3 +32,4 @@ bank3 (Byte 768-1023), EEADRH=3:
 Add:	Length:         Description:                        		Default:	Comment:				User:
 -------------------------------------------------------------------------------------------------------------------------------------
 768	128		Backup of first 128bytes from flash		x		Copies automatically after update	mH
+897	1		Button polarity (Bit0=SW1=Right, Bit1=SW2=Left) 0xFF		(1= normal, 0=inverted)			mH

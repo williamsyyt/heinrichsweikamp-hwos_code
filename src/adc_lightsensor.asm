@@ -586,12 +586,22 @@ get_analog_switches2a:
     decf	WREG,W	    	;-1
     decf	WREG,W	    	;-1 -> 2-22
     banksel	analog_sw2
+    btfss	button_polarity,1;(1= normal, 0=inverted)
+    bra		sw2_inverted
     addwf	analog_sw2,W 	; average (~128)
-    banksel	common
     cpfsgt	ADRESH
     bra		get_analog_sw1
-    bsf		analog_sw2_pressed
+    banksel	common
+    bsf		analog_sw2_pressed	; Left button normal
+    bra		get_analog_sw1
+sw2_inverted:
+    subwf	analog_sw2,W 	; average (~128)
+    cpfslt	ADRESH
+    bra		get_analog_sw1
+    banksel	common
+    bsf		analog_sw2_pressed	; Left button inverted
 get_analog_sw1:
+    banksel	common
     movlw	b'00101001'	    ; power on ADC, select AN10
     rcall	wait_adc
     banksel	analog_counter
@@ -631,12 +641,22 @@ get_analog_switches1a:
     decf	WREG,W	    	;-1
     decf	WREG,W	    	;-1 -> 2-22
     banksel	analog_sw1
+    btfss	button_polarity,0;(1= normal, 0=inverted)
+    bra		sw1_inverted
     addwf	analog_sw1,W 	; average (~128)
-    banksel	common
     cpfsgt	ADRESH
     bra		get_analog_sw_done
-    bsf		analog_sw1_pressed
+    banksel	common
+    bsf		analog_sw1_pressed	; right button normal
+    bra		get_analog_sw_done
+sw1_inverted:
+    subwf	analog_sw1,W 	; average (~128)
+    cpfslt	ADRESH
+    bra		get_analog_sw_done
+    banksel	common
+    bsf		analog_sw1_pressed	; right button inverted
 get_analog_sw_done:
+    banksel	common
     movlw	b'10001101'	    ; Restore to right justified
     movwf	ADCON2
     btfsc	analog_sw1_pressed
