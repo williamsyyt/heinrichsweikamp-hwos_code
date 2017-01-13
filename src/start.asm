@@ -66,7 +66,16 @@ clear_rambank:
 	movlw	0x07
 	cpfseq	TABLAT
 	bcf	analog_switches
-	
+
+	; read button polarity
+	movlw	LOW	.897
+	movwf	EEADR
+	movlw	HIGH	.897
+	movwf	EEADRH
+	call    read_eeprom                ; EEDATA into EEPROM@EEADR
+	clrf	EEADRH			    ; Reset EEADRH
+	movff	EEDATA,button_polarity	    ; 0xFF (Both normal), 0x00 (Both inverted), 0x01 (Left inverted only), 0x02 (Right inverted only) 
+
 ; Air pressure compensation	after reset
 	call	get_calibration_data	; Get calibration data from pressure sensor
 	banksel common                  ; get_calibration_data uses isr_backup

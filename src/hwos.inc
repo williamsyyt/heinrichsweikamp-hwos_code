@@ -22,12 +22,12 @@
 
 ; Firmware definition
 #DEFINE	softwareversion_x		d'2'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'11'		; Software version  XX.YY
-#DEFINE softwareversion_beta 	1 			; (and 0 for release)
+#DEFINE	softwareversion_y		d'12'		; Software version  XX.YY
+#DEFINE softwareversion_beta 	0 			; (and 0 for release)
 ; Firmware version will appear in "Change Firmware" style
-#DEFINE firmware_expire_year    .17
-#DEFINE firmware_expire_month   .10
-#DEFINE firmware_expire_day     .10
+#DEFINE firmware_expire_year    .18
+#DEFINE firmware_expire_month   .5
+#DEFINE firmware_expire_day     .1
 
 #DEFINE comm_service_key        0xABCDEF
 
@@ -572,6 +572,7 @@ uptime			res 4	; Uptime [s]
 lastdive_time		res 4	; Time since last dive [s]
 battery_acumulated_charge   res 2   ; Raw values in battery gauge IC
 gauge_status_byte	res 1	 ; Gauge IC status byte
+button_polarity		res 1	; 0xFF (Both normal), 0x00 (Both inverted), 0x01 (Left inverted only), 0x02 (Right inverted only) 
 
 ;-----------------------------------------------------------------------------
 ; Reserve BANK2 for general purpose buffer (strings, images, etc).

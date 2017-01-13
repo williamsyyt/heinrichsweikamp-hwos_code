@@ -1598,6 +1598,7 @@ TFT_surface_decosettings2:
 
 	global	TFT_debug_output
 TFT_debug_output:
+    return
     WIN_TINY   .80,.0
     call	TFT_standard_color
     lfsr	FSR2,buffer
