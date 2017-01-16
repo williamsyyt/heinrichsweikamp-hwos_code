@@ -2410,16 +2410,20 @@ TFT_update_batt_voltage:
     bcf     win_invert
 	call	TFT_standard_color
 	WIN_TINY batt_voltage_column,batt_voltage_row
+        movff   battery_type,lo		; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah, =4: LiIon 3,7V/2.3Ah
+	PUTC	"T"
+	bsf	leftbind
+        output_8
+        PUTC    ":"
 	movff	batt_voltage+0,lo
 	movff	batt_voltage+1,hi
-	bsf		leftbind
 	output_16dp	.2
 	bcf		leftbind
 	PUTC	'V'
-	movff	buffer+5,buffer+3
+	movff	buffer+8,buffer+6
 	movlw	0x00
-	movff	WREG,buffer+4			; Only "x.yV"
-    STRCAT_PRINT	""
+	movff	WREG,buffer+7			; Only "x.yV"
+	STRCAT_PRINT	""
 	return
 
 ;update_battery_debug:
