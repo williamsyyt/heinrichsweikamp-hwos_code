@@ -216,23 +216,30 @@ surfloop_loop2:
 
 ; Updates every 1/4 second
     btfss   quarter_second_update
-    bra     surfloop_loop2a
+    bra     surfloop_loop2b
 
     bcf     quarter_second_update
+    
     ; Update Sensors
-
     call    compute_ppo2                ; compute mv_sensorX and ppo2_sensorX arrays
     call    check_sensors               ; Set enable/disable flags
-    btfsc   FLAG_ccr_mode               ; In CCR mode...
+    btfss   FLAG_ccr_mode               ; In CCR mode?
+    bra	    surfloop_loop2a		; No, skip
+    
+    movff   opt_ccr_mode,WREG           ; =0: Fixed SP, =1: Sensor,  =2: Auto SP
+    sublw   .1                          ; opt_ccr_mode = 1 (Sensor)?
+    bnz     surfloop_loop2a		; No, skip
+
     call    TFT_surface_sensor          ; ...update sensor data in surface mode
 
+surfloop_loop2a:
     movlw   .6
     cpfseq  menupos3                    ; in compass view?
-    bra     surfloop_loop2a             ; No
+    bra     surfloop_loop2b             ; No
     extern  TFT_surface_compass_heading
     call    TFT_surface_compass_heading ; Yes, update compass heading value
 
-surfloop_loop2a:
+surfloop_loop2b:
 	btfsc	toggle_customview			; Next view?
 	call	surf_customview_toggle      ; Yes, show next customview (and delete this flag)
 
