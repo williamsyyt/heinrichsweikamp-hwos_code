@@ -394,6 +394,10 @@ customview_init_view1:
     sublw   0x11        ; 2 with BLE
     btfsc   STATUS,Z
     bra		customview_toggle				; no, Call next view...
+    movf    hardware_flag,W
+    sublw   0x13        ; +
+    btfsc   STATUS,Z
+    bra		customview_toggle				; no, Call next view...
 
     bsf     dive_hud1_displayed         ; Set display flag
     bsf     dive_hud2_displayed         ; Set display flag
@@ -458,6 +462,12 @@ customview_init_view8:                      ; Sensor millivolts
 	bra		customview_toggle				; yes, Call next view...
 	btfss	FLAG_ccr_mode					; In CC mode?
 	bra		customview_toggle				; no, Call next view...
+    
+    movf    hardware_flag,W
+    sublw   0x13        ; +
+    btfsc   STATUS,Z
+    bra		customview_toggle				; no, Call next view...
+
     movff   opt_ccr_mode,WREG               ; =0: Fixed SP, =1: Sensor,  =2: Auto SP
     sublw   .1                              ; opt_ccr_mode = 1 (Sensor)?
     bnz     customview_toggle				; no, Call next view...
