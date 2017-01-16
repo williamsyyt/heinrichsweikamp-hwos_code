@@ -18,12 +18,12 @@
 ; column=0...159 (x2)
 
 #DEFINE	surf_clock_row		.0
-#DEFINE	surf_clock_column	.11
+#DEFINE	surf_clock_column	.5
 #DEFINE	surf_date_row		.25
 #DEFINE	surf_date_column	.1
 
 #DEFINE	batt_voltage_row	.8
-#DEFINE	batt_voltage_column	.60
+#DEFINE	batt_voltage_column	.45
 #DEFINE	batt_percent_row	.26
 #DEFINE	batt_percent_column	.60
 

@@ -1,4 +1,4 @@
-[2.11]
+[2.12]
 - Stable Version -
 CHANGE: Indicate "Bailout" for bailout deco plan in internal deco planer
 CHANGE: Easier to understand "New Battery" menu (OSTC model dependent)
@@ -7,6 +7,7 @@ NEW: New Customview 11 in dive mode shows ppO2, EAD/END and CNS
 CHANGE: Customview 4 shows Clock, Battery Information and Tissue Information
 CHANGE: Show warnings either in Customview (If active) _or_ next to warning sign
 NEW: Show battery type in information menu (T0:1.5V AA, T1:3.6V AA, T2:3.6V/0.8A LiIon, T3:Internal 18650, T4:Internal 16650)
+NEW: Show battery type in surface mode next to battery voltage
 
 [2.10]
 - Stable Version -

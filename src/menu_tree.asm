@@ -746,9 +746,8 @@ use_old_prior_209:
 	clrf	EEADRH
 	read_int_eeprom 0x0F	    ; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah, =4: LiIon 3,7V/2.3Ah
 	incfsz	EEDATA,F	    ; Was 0xFF?
-	bra	use_old_prior_209_2 ; Yes
-	return
-use_old_prior_209_2:
+	return			    ; No, done.
+
 	call    lt2942_get_status       ; Check for gauge IC
 	movlw   .3			; Assume a 18650
 	btfss   battery_gauge_available ; cR/2 hardware?
@@ -776,16 +775,16 @@ use_old_batteries:
 	movff	EEDATA,battery_type; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah, =4: LiIon 3,7V/2.3Ah
 
 	rcall	setup_new_saft	    ; Any other value
-	incf	EEDATA,F
+	incf	EEDATA,F	    ; 1 ... 5
 	dcfsnz	EEDATA,F
 	rcall	setup_new_15v	    ;=0
 	dcfsnz	EEDATA,F
 	rcall	setup_new_saft	    ;=1
 	dcfsnz	EEDATA,F
 	rcall	setup_new_panasonic ;=2
-	dcfsnz	EEDATA,W		   
+	dcfsnz	EEDATA,F		   
 	rcall	setup_new_18650	    ;=3
-	dcfsnz	EEDATA,W		   
+	dcfsnz	EEDATA,F		   
 	rcall	setup_new_16650	    ;=4
 	
 	bcf	use_old_batt_flag		; clear flag
