@@ -111,7 +111,7 @@
     TCODE   tDvMode,    "Betrieb:"
     TCODE   tDvOC,      "OC"
     TCODE   tDvCC,      "CC"
-    TCODE   tDvGauge,   "Tiefen."
+    TCODE   tDvGauge,   "Gauge"
     TCODE   tDvApnea,   "Apnoe"
     TCODE   tDkMode,    "Dekotyp:"
     TCODE   tZHL16,     "ZH-L16"

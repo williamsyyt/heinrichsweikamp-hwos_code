@@ -1,3 +1,7 @@
+[2.13]
+- Stable Version -
+BUGFIX: Layout fixes in Gauge mode (German and French language only)
+
 [2.12]
 - Stable Version -
 CHANGE: Indicate "Bailout" for bailout deco plan in internal deco planer
