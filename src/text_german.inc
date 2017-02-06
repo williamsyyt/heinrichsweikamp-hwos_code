@@ -316,6 +316,5 @@
     
     ; PSCR Menu and Settings
     TCODE   tPSCRMenu,	    "PSCR Menü"		; PSCR Menu
-    TCODE   tPSCR_showppo2, "Zeige PSCR ppO2:"	; Show PSCR ppO2
     TCODE   tPSCR_O2_drop,  "O2 drop:"		; O2 drop
     TCODE   tPSCR_lungratio,"Lung ratio:"	; lung ratio
