@@ -77,32 +77,42 @@ do_ccr_menu:
     btfss   optical_input
     bra     do_ccr_menu_ostc2
 
-    MENU_BEGIN  tCCRSetup, .5          ; OSTC3 menu
+    MENU_BEGIN  tCCRSetup, .6          ; OSTC3 menu
         MENU_OPTION     tCCRMode,    oCCRMode,    0
         MENU_CALL       tCCRSensor,             do_ccr_sensor
         MENU_CALL       tDiluentSetup,          do_diluent_setup
         MENU_CALL       tFixedSetpoints,        do_fixed_setpoints
+	MENU_CALL	tPSCRMenu,		do_PSCR_menu
         MENU_CALL       tExit,                  do_continue_main_menu
     MENU_END
 
 do_ccr_menu_cR:                         ; cR menu
-    MENU_BEGIN  tCCRSetup, .6
+    MENU_BEGIN  tCCRSetup, .7
         MENU_OPTION     tCCRMode,    oCCRMode,    0
         MENU_CALL       tCCRSensor,             do_ccr_sensor
         MENU_CALL       tCalibrateMenu,         do_calibrate_menu
         MENU_CALL       tDiluentSetup,          do_diluent_setup
         MENU_CALL       tFixedSetpoints,        do_fixed_setpoints
+	MENU_CALL	tPSCRMenu,		do_PSCR_menu
         MENU_CALL       tExit,                  do_continue_main_menu
     MENU_END
 
 do_ccr_menu_ostc2:
-    MENU_BEGIN  tCCRSetup, .4           ; ostc2 menu
+    MENU_BEGIN  tCCRSetup, .5           ; ostc2 menu
         MENU_OPTION     tCCRMode,    oCCRMode,    0
         MENU_CALL       tDiluentSetup,          do_diluent_setup
         MENU_CALL       tFixedSetpoints,        do_fixed_setpoints
+	MENU_CALL	tPSCRMenu,		do_PSCR_menu
         MENU_CALL       tExit,                  do_continue_main_menu
     MENU_END
 
+do_PSCR_menu:
+    MENU_BEGIN  tPSCRMenu, .4	; PSCR Menu
+	MENU_OPTION     tPSCR_showppo2, oPSCR_showO2,	    0
+	MENU_OPTION     tPSCR_O2_drop,	oPSCR_drop,	    0
+	MENU_OPTION     tPSCR_lungratio,oPSCR_lungratio,    0
+	MENU_CALL       tExit,          do_ccr_menu
+    MENU_END
 
 do_calibrate_menu:
     call    enable_ir_s8                ; Enable IR/S8-Port

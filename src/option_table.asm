@@ -96,7 +96,7 @@ option_table_begin:
         OPTION_UINT8p10 odiveInterval,  .0, .240,   .0,     tMinutes, -1,     char_I_dive_interval
         OPTION_UINT8p2  obottomTime,    .1, .60,    .5,     tMinutes, -1,     char_I_bottom_time
         OPTION_UINT8p3  obottomDepth,   .12,.120,    .21,    tMeters,  -1,     char_I_bottom_depth
-        OPTION_ENUM8    oDiveMode,      4,  0,  tDvOC,               .8,    opt_dive_mode               ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
+        OPTION_ENUM8    oDiveMode,      5,  0,  tDvOC,               .8,    opt_dive_mode               ; 0=OC, 1=CC, 2=Gauge, 3=Apnea, 4=PSCR 
         OPTION_ENUM8    oDecoMode,      2,  1,  tZHL16,              .9,    char_I_deco_model           ; 0 = ZH-L16, 1 = ZH-L16-GF
         OPTION_UINT8p10 oPPO2Max,       .120, ppo2_warning_high, .160,   0,      .10,    opt_ppO2_max
         OPTION_UINT8    oLastDeco,      .3,  .6, .3,  tMeters,      .11,    opt_last_stop
@@ -213,6 +213,9 @@ option_table_begin:
         OPTION_UINT8    oSafetyStopEnd,    .19,.39,     .29,   -1,    .163,    opt_safety_stop_end              ; [cbar], default 290mbar, min 190mbar, max 390mbar
         OPTION_UINT8    oSafetyStopReset,  .81,.151,    .101,  -1,    .164,    opt_safety_stop_reset            ; [cbar], default 1010mbar, min 810mbar, max 1510mbar
 	OPTION_UINT8    oDiveTimeout,	    .1,.20,  divemode_timeout_default,   tMinutes,  .168,    opt_diveTimeout			; Timeout for divemode in minutes
+	OPTION_BOOL	oPSCR_showO2,	0,			      .169,    opt_PSCR_show_ppO2		; =1: Show PSCR ppO2 (Instead of OC ppO2)
+	OPTION_UINT8	oPSCR_drop,	.0,.10,	.4,	     tPercent,.170,    opt_PSCR_drop			; PSCR Drop [%]
+	OPTION_UINT8	oPSCR_lungratio,.5,.20,	.10,	     tPercent,.171,    opt_PSCR_lungratio		; PSCR Lung Ratio [1/x]
 
 ;=============================================================================
 ; Set Time/Set Date (RAM only)

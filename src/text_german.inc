@@ -113,6 +113,7 @@
     TCODE   tDvCC,      "CC"
     TCODE   tDvGauge,   "Gauge"
     TCODE   tDvApnea,   "Apnoe"
+    TCODE   tDvPSCR,	"PSCR"
     TCODE   tDkMode,    "Dekotyp:"
     TCODE   tZHL16,     "ZH-L16"
     TCODE   tZHL16GF,   "ZH-L16+GF"
@@ -312,3 +313,9 @@
     TCODE   tColorSetName1, "Rot"               ; Red
     TCODE   tColorSetName2, "Grün"              ; Green
     TCODE   tColorSetName3, "Blau"              ; Blue
+    
+    ; PSCR Menu and Settings
+    TCODE   tPSCRMenu,	    "PSCR Menü"		; PSCR Menu
+    TCODE   tPSCR_showppo2, "Zeige PSCR ppO2:"	; Show PSCR ppO2
+    TCODE   tPSCR_O2_drop,  "O2 drop:"		; O2 drop
+    TCODE   tPSCR_lungratio,"Lung ratio:"	; lung ratio

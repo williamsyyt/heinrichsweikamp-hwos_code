@@ -22,8 +22,8 @@
 
 ; Firmware definition
 #DEFINE	softwareversion_x		d'2'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'13'		; Software version  XX.YY
-#DEFINE softwareversion_beta 	0 			; (and 0 for release)
+#DEFINE	softwareversion_y		d'14'		; Software version  XX.YY
+#DEFINE softwareversion_beta 	1 			; (and 0 for release)
 ; Firmware version will appear in "Change Firmware" style
 #DEFINE firmware_expire_year    .18
 #DEFINE firmware_expire_month   .6
@@ -380,6 +380,7 @@ flag10           		res 1
 flag11           		res 1
 flag12           		res 1
 flag13                  res 1
+flag14			res 1
 
 hardware_flag           res 1           ; hardware descriptor flag
 
@@ -590,7 +591,7 @@ opt_gas_He_ratio        res 5   ; He ratio Gas1-5
 opt_dil_He_ratio        res 5   ; Must be in line with opt_gas_He_ratio
 opt_gas_type            res 5   ; 0=Disabled, 1=First, 2=Travel, 3=Deco
 opt_dil_type            res 5   ; 0=Disabled, 1=First, 2=Normal
-opt_dive_mode           res 1   ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
+opt_dive_mode           res 1   ; 0=OC, 1=CC, 2=Gauge, 3=Apnea, 4=PSCR
 opt_ppO2_max            res 1   ; PPO2 Max for MOD calculation and color coding in divemode
 opt_ccr_mode            res 1   ; =0: Fixed SP, =1: Sensor
 opt_ppO2_min            res 1   ; PPO2 min for Sensors and color coding in divemode
@@ -633,6 +634,9 @@ opt_safety_stop_start   res 1   ; [cbar]
 opt_safety_stop_end     res 1   ; [cbar]
 opt_safety_stop_reset   res 1   ; [cbar]
 opt_diveTimeout		res 1	; Timeout for Divemode [min]
+opt_PSCR_show_ppO2	res 1	; =1: Show PSCR ppO2 (Instead of OC ppO2)
+opt_PSCR_drop		res 1	; PSCR Drop [%]
+opt_PSCR_lungratio	res 1	; PSCR Lung Ratio [1/x]
 
 ;-----------------------------EEPROM DATA ------------------------------------
 ; Automatic reset of all options when this is changed:
@@ -756,6 +760,8 @@ opt_diveTimeout		res 1	; Timeout for Divemode [min]
 #DEFINE sp4_switched            flag13,5    ; =1: This setpoint has been autoselected already
 #DEFINE sp5_switched            flag13,6    ; =1: This setpoint has been autoselected already
 #DEFINE	use_old_batt_flag	flag13,7    ; =1: load old battery information after power-on reset
+		
+#DEFINE	FLAG_pscr_mode		flag14,0    ; =1: OSTC is in PSCR mode
 
 ;=============================================================================
 ; C-code Routines

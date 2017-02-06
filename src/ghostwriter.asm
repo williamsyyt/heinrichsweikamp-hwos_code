@@ -702,7 +702,7 @@ end_dive_oc_cc_common:
 	rcall	ghostwrite_byte_header  ; Total dive counter, high
 
     movff   opt_dive_mode,WREG
-	rcall	ghostwrite_byte_header  ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
+	rcall	ghostwrite_byte_header  ; 0=OC, 1=CC, 2=Gauge, 3=Apnea, 4=PSCR
 
 ;   Store all tissue data available
     movlw   .16
