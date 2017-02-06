@@ -634,7 +634,6 @@ opt_safety_stop_start   res 1   ; [cbar]
 opt_safety_stop_end     res 1   ; [cbar]
 opt_safety_stop_reset   res 1   ; [cbar]
 opt_diveTimeout		res 1	; Timeout for Divemode [min]
-opt_PSCR_show_ppO2	res 1	; =1: Show PSCR ppO2 (Instead of OC ppO2)
 opt_PSCR_drop		res 1	; PSCR Drop [%]
 opt_PSCR_lungratio	res 1	; PSCR Lung Ratio [1/x]
 

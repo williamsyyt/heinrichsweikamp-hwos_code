@@ -107,8 +107,7 @@ do_ccr_menu_ostc2:
     MENU_END
 
 do_PSCR_menu:
-    MENU_BEGIN  tPSCRMenu, .4	; PSCR Menu
-	MENU_OPTION     tPSCR_showppo2, oPSCR_showO2,	    0
+    MENU_BEGIN  tPSCRMenu, .3	; PSCR Menu
 	MENU_OPTION     tPSCR_O2_drop,	oPSCR_drop,	    0
 	MENU_OPTION     tPSCR_lungratio,oPSCR_lungratio,    0
 	MENU_CALL       tExit,          do_ccr_menu
