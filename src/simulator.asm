@@ -648,7 +648,7 @@ deco_show_plan2:
         ; Show deco mode
         WIN_TOP .155
         lfsr    FSR2,buffer
-        movff   opt_dive_mode,lo        ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
+        movff   opt_dive_mode,lo        ; 0=OC, 1=CC, 2=Gauge, 3=Apnea, 4=PSCR
         call    TFT_display_decotype_surface1
         
         ;---- Display model

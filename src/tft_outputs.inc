@@ -111,6 +111,7 @@ TFT_color_code macro color_code_temp
     extern  TFT_sensor_check                    ; Show ppO2 of O2 and Diluent
     extern  TFT_ppo2_ead_end_cns_mask		; Show ppO2, END/EAD and CNS mask
     extern  TFT_ppo2_ead_end_cns		; Show ppO2, END/EAD and CNS
+    extern  compute_pscr_ppo2			; Compute ppO2 for PSCR mode
 
 
 

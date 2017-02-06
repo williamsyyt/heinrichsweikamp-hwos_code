@@ -148,7 +148,7 @@ surfloop:
     call    compute_ppo2                ; compute mv_sensorX and ppo2_sensorX arrays
     call    check_sensors               ; Set enable/disable flags
 
-    movff   opt_dive_mode,lo            ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
+    movff   opt_dive_mode,lo            ; 0=OC, 1=CC, 2=Gauge, 3=Apnea, 4=PSCR
     tstfsz  lo
     bra     surfloop_no_oc              ; Not OC
     call    TFT_show_OC_startgas_surface; Show first gas and "OSTC2-like" active gases

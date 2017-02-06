@@ -286,9 +286,10 @@ restart:
     clrf	flag9
     clrf	flag10
     ; Do not clear flag11 (Sensor calibration and charger status)
-    clrf    flag12
+    clrf	flag12
 ;    ; Do not clear flag13 (Important hardware flags)
-    clrf    hardware_flag           ; hardware descriptor flag
+    clrf	flag14
+    clrf	hardware_flag           ; hardware descriptor flag
     bsf		tft_is_dimming          ; TFT is dimming up (soon), ignore ambient sensor!
 
     ; configure hardware_flag byte
@@ -385,11 +386,12 @@ restart_set_modes_and_flags:		    ; "Call"ed from divemode, as well!
     movlw   .10
     movwf   samplingrate
 restart_set_modes_and_flags1:
-    movff   opt_dive_mode,lo            ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
+    movff   opt_dive_mode,lo            ; 0=OC, 1=CC, 2=Gauge, 3=Apnea, 4=PSCR
 
 	bcf		FLAG_apnoe_mode
     bcf     FLAG_ccr_mode             ; =1: CCR mode (Fixed ppO2 or Sensor) active
     bcf     FLAG_gauge_mode           ; =1: In Gauge mode
+    bcf	    FLAG_pscr_mode
     call    disable_ir_s8             ; IR off
 
     tstfsz  lo
@@ -426,10 +428,18 @@ restart_set_modes_and_flags3:
     return
 
 restart_set_modes_and_flags4:
+    decfsz  lo,F
+    bra     restart_set_modes_and_flags5
     ; Apnea Mode
-	bsf		FLAG_apnoe_mode
+    bsf		FLAG_apnoe_mode
     return							    ; start in Surfacemode
 
+restart_set_modes_and_flags5:
+    ; PSCR Mode
+    bsf		FLAG_pscr_mode
+    return							    ; start in Surfacemode
+    
+    
 backup_flash_page:       ; backup the first 128bytes from flash to EEPROM
     	; Start address in internal flash
     	movlw   0x00

@@ -1946,7 +1946,7 @@ TFT_active_gas_divemode2:
 TFT_display_decotype_surface:
 	WIN_STD  surf_decotype_column,surf_decotype_row
     WIN_COLOR	color_lightblue
-    movff   opt_dive_mode,lo        ; 0=OC, 1=CC, 2=Gauge, 3=Apnea
+    movff   opt_dive_mode,lo        ; 0=OC, 1=CC, 2=Gauge, 3=Apnea, 4=PSCR
     tstfsz  lo
     bra     TFT_display_decotype_surface2
 TFT_display_decotype_surface0:
@@ -1983,7 +1983,13 @@ TFT_display_decotype_surface3_1:
     STRCAT_TEXT_PRINT	tDvGauge	; Gauge
     bra     TFT_display_decotype_exit
 TFT_display_decotype_surface4:
+    decfsz  lo,F
+    bra     TFT_display_decotype_surface5
+TFT_display_decotype_surface4_1:    
     STRCAT_TEXT_PRINT	tDvApnea	; Apnea
+    bra     TFT_display_decotype_exit
+TFT_display_decotype_surface5:
+    STRCAT_TEXT_PRINT	tDvPSCR	    	; PSCR
 TFT_display_decotype_exit:
     goto	TFT_standard_color  ; and return...
 
@@ -1998,8 +2004,12 @@ TFT_display_decotype_surface1_2:
     STRCAT_TEXT_PRINT   tDvCC               ; CC (w/o Sensor/Fixed Display)
 TFT_display_decotype_surface1_3:
     decfsz  lo,F
-    bra     TFT_display_decotype_surface4   ; Apnea
+    bra     TFT_display_decotype_surface1_4
     bra     TFT_display_decotype_surface3_1 ; Gauge
+TFT_display_decotype_surface1_4:
+    decfsz  lo,F
+    bra     TFT_display_decotype_surface4_1 ; Apnea
+    bra     TFT_display_decotype_surface5   ; PSCR
 
 ;=============================================================================
 
@@ -3665,6 +3675,26 @@ TFT_mask_ppo2:
 
 	global	TFT_display_ppo2_val
 TFT_display_ppo2_val:
+    btfss	FLAG_pscr_mode
+    bra		TFT_display_ppo2_val_non_pscr	; Non-PSCR modes...
+    	; in PSCR mode
+    call		compute_pscr_ppo2		; pSCR ppO2 into sub_c:2
+    movff		sub_c+0,xA+0
+    movff		sub_c+1,xA+1
+    movlw		d'100'
+    movwf		xB+0
+    clrf		xB+1
+    call		div16x16				; /100
+    tstfsz      xC+1                    ; Is ppO2 > 2.55bar ?
+    setf        xC+0                    ; yes: bound to 2.55... better than wrap around.
+    movff		xC+0,char_I_actual_ppO2	; copy last ppO2 to buffer register (for pSCR CNS)
+    clrf		xC+2
+    clrf		xC+3
+    movff		sub_c+0,xC+0
+    movff		sub_c+1,xC+1			; copy for comptibility
+    bra			TFT_display_ppo2_val_com
+
+TFT_display_ppo2_val_non_pscr:
     SAFE_2BYTE_COPY amb_pressure, xA
 	movlw	d'10'
 	movwf	xB+0
@@ -3676,6 +3706,7 @@ TFT_display_ppo2_val:
 	clrf	xB+1
 	call	mult16x16               ; char_I_O2_ratio * p_amb/10
 
+TFT_display_ppo2_val_com:
     call    TFT_standard_color
 	TFT_color_code		warn_ppo2		; Color-code output (ppO2 stored in xC)
     WIN_MEDIUM  dm_custom_ceiling_ppo2_val_col, dm_custom_ceiling_value_row
@@ -3832,4 +3863,51 @@ convert_celsius_to_fahrenheit:		; convert value in lo:hi from celsius to fahrenh
 	movff	xC+1,hi                 ; restore lo and hi with updated value
 	return
 
+;=============================================================================
+    global	compute_pscr_ppo2
+compute_pscr_ppo2:
+; (Pressure[mbar]*char_I_O2_ratio)-(100-char_I_O2_ratio)*CF61*CF62*10	
+	movff	char_I_O2_ratio,WREG
+	sublw	.100			; 100-char_I_O2_ratio -> WREG
+	mullw	.10				; (100-char_I_O2_ratio)*10 -> PROD:2
+	movff	PRODL,xA+0
+	movff	PRODH,xA+1
+	movff	opt_PSCR_drop,xB+0	; O2 Drop
+	clrf	xB+1
+	call	mult16x16	;xA*xB=xC -> (100-char_I_O2_ratio)*10*CF61
+	movff	xC+0,xA+0
+	movff	xC+1,xA+1
+	movff	opt_PSCR_lungratio,xB+0	; Lung ratio
+	clrf	xB+1
+	call	mult16x16	;xA*xB=xC -> (100-char_I_O2_ratio)*10*CF61*CF62
+
+	movlw	.10
+	movwf	xB+0
+	clrf	xB+1
+	call	div32x16	  ; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
+	; store xC:2 in lo:hi
+	movff	xC+0,lo
+	movff	xC+1,hi
+
+	SAFE_2BYTE_COPY amb_pressure, xA
+	movff	char_I_O2_ratio,xB+0
+	clrf	xB+1
+	call	mult16x16	;xA*xB=xC -> xC:4 = Pressure[mbar]*char_I_O2_ratio
+
+	movlw	.10
+	movwf	xB+0
+	clrf	xB+1
+	call	div32x16	  ; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
+
+	; store xC:2 in sub_a
+	movff	xC+0,sub_a+0
+	movff	xC+1,sub_a+1
+	; reload result from lo:hi
+	movff	lo,sub_b+0
+	movff	hi,sub_b+1
+
+	call	subU16		;sub_c = sub_a - sub_b (with UNSIGNED values)
+	return
+	
+	
 	END

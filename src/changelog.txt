@@ -1,3 +1,6 @@
+[2.14]
+NEW: PSCR mode (Passive semi-closed rebreather)
+
 [2.13]
 - Stable Version -
 BUGFIX: Layout fixes in Gauge mode (German and French language only)
