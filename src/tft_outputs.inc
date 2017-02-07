@@ -112,7 +112,8 @@ TFT_color_code macro color_code_temp
     extern  TFT_ppo2_ead_end_cns_mask		; Show ppO2, END/EAD and CNS mask
     extern  TFT_ppo2_ead_end_cns		; Show ppO2, END/EAD and CNS
     extern  compute_pscr_ppo2			; Compute ppO2 for PSCR mode
-
+    extern  TFT_pscr_info_mask			; Show ppO2, drop and lung ratio mask
+    extern  TFT_pscr_info			; Show ppO2, drop and lung ratio
 
 
 ; Misc

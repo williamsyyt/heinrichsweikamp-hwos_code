@@ -277,6 +277,18 @@
 #DEFINE    dm_custom_s_check_ppo2_o2_column .8                          ; 8
 #DEFINE    dm_custom_s_check_ppo2_dil_col   .108                        ; 108
 #DEFINE    dm_custom_s_check_value_row      dm_customview_row+.18       ; 119
+    
+;******* Custom content / #12 - PSCR Info   *******
+; Title
+#DEFINE	   dm_custom_pscr_text_row	    dm_customview_row+.1        ; 102
+#DEFINE	   dm_custom_pscr_text_drop_column  .55    
+#DEFINE	   dm_custom_pscr_text_ratio_column .105
+; Value
+#DEFINE	   dm_custom_pscr_drop_column	    .66
+#DEFINE	   dm_custom_pscr_drop_row	    dm_customview_row+.18
+#DEFINE	   dm_custom_pscr_ratio_column	    .110
+#DEFINE	   dm_custom_pscr_ratio_row	    dm_customview_row+.18
+    
 ; II. End of the custom content row. (101-163)
 
 

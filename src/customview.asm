@@ -52,6 +52,9 @@ customview_second:
 	goto    TFT_sensor_check                ; Show ppO2 of O2 and Diluent ; and return
 	dcfsnz	WREG,F
 	goto	TFT_ppo2_ead_end_cns            ; Show ppO2, END/EAD and CNS; and return
+	dcfsnz	WREG,F
+	goto	TFT_pscr_info			; Show ppO2, drop and lung ratio; and return
+
 	; Menupos3=0, do nothing
 	return
 
@@ -345,7 +348,7 @@ menuview_view8:
 customview_toggle:
 	bcf		switch_right
 	incf	menupos3,F			            ; Number of customview to show
-	movlw	d'11'							; Max number of customsviews in divemode
+	movlw	d'12'							; Max number of customsviews in divemode
 	cpfsgt	menupos3			            ; Max reached?
 	bra		customview_mask		            ; No, show
 customview_toggle_reset:					; Timeout occured
@@ -379,6 +382,8 @@ customview_mask:
 	bra		customview_init_view10          ; Sensor check
 	dcfsnz	WREG,F
 	bra		customview_init_view11          ; ppO2, END/EAD and CNS
+	dcfsnz	WREG,F
+	bra		customview_init_view12          ; PSCR Info
 
 customview_init_nocustomview:
     call    I2C_sleep_accelerometer         ; Stop accelerometer
@@ -515,6 +520,14 @@ customview_init_view11:                     ; ppO2, END/EAD and CNS
 
     call    TFT_ppo2_ead_end_cns_mask       ; Show ppO2, END/EAD and CNS mask
     call    TFT_ppo2_ead_end_cns            ; Show ppO2, END/EAD and CNS
+    bra		customview_toggle_exit
+
+customview_init_view12:		            ; PSCR Info    
+    btfss   FLAG_pscr_mode		    ; In PSCR mode?
+    bra	    customview_toggle		    ; No, Call next view...
+    
+    call    TFT_pscr_info_mask		    ; Show ppO2, drop and lung ratio
+    call    TFT_pscr_info		    ; Show ppO2, drop and lung ratio
     bra		customview_toggle_exit
     
 customview_toggle_exit:
