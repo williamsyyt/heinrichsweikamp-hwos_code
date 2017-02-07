@@ -1819,6 +1819,11 @@ check_ppO2_a:
     bra     check_ppO2_b        ; No
     return                      ; Yes, do not show twice (in custom view and in warning area)
 check_ppO2_b:
+    movlw   .12
+    cpfseq  menupos3            ; ppO2 shown in Custom View 12?
+    bra     check_ppO2_c        ; No
+    return                      ; Yes, do not show twice (in custom view and in warning area)
+check_ppO2_c:
     incf	warning_counter,F	; increase counter
     goto    TFT_display_ppo2	; Show ppO2  (and return)
 

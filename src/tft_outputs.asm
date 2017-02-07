@@ -1907,16 +1907,26 @@ TFT_active_setpoint_bail:
     STRCPY_TEXT_PRINT   tDiveBailout    ; Bailout
     bra     TFT_active_setpoint_diluent
 
+TFT_show_pscr_mode_divemode:
+    WIN_TINY   dm_active_dil_column, dm_active_dil_row+.1
+    STRCPY_TEXT_PRINT   tDvPSCR		; PSCR
+    return
+    
+    
 	global	TFT_active_gas_divemode
 TFT_active_gas_divemode:				; Display gas/Setpoint
     btfsc   divemode_menu               ; Is the dive mode menu shown?
     return                              ; Yes, return
-	btfsc	FLAG_apnoe_mode				; Ignore in Apnoe mode
-	return
-    btfsc   FLAG_ccr_mode               ; in CCR mode
+    btfsc	FLAG_apnoe_mode		; Ignore in Apnoe mode
+    return
+    btfsc   FLAG_ccr_mode               ; in CCR mode?
     bra     TFT_active_setpoint         ; Yes, show setpoint
 
     call    TFT_standard_color
+
+    btfsc   FLAG_pscr_mode		; in PSCR mode?
+    rcall   TFT_show_pscr_mode_divemode ; Yes, show "PSCR"
+
 	WIN_STD dm_active_gas_column, dm_active_gas_row
     movff   char_I_O2_ratio,lo          ; lo now stores O2 in %
     movff   char_I_He_ratio,hi          ; hi now stores He in %
@@ -3399,6 +3409,38 @@ TFT_battinfo_tissues_clock:
 	movlb	b'00000001'                         ; select ram bank 1
     bra   DISP_tissue_saturation_graph        ; Show char_O_tissue_N2_saturation and char_O_tissue_He_saturation    ; and return...
 
+    
+    global  TFT_pscr_info_mask
+TFT_pscr_info_mask:		    ; Show ppO2, drop and lung ratio mask    
+    rcall   TFT_mask_ppo2
+    call    TFT_divemask_color
+    WIN_TINY          dm_custom_pscr_text_drop_column, dm_custom_pscr_text_row
+    STRCPY_TEXT_PRINT tPSCR_O2_drop
+    WIN_TINY          dm_custom_pscr_text_ratio_column, dm_custom_pscr_text_row
+    STRCPY_TEXT_PRINT tPSCR_lungratio
+    goto    	TFT_standard_color; and return...
+    
+    global	TFT_pscr_info			; Show ppO2, drop and lung ratio
+TFT_pscr_info:
+    ;show ppO2
+    rcall	TFT_display_ppo2_val
+    ; Show Drop
+    WIN_STD dm_custom_pscr_drop_column,dm_custom_pscr_drop_row
+    movff   opt_PSCR_drop,lo
+    bsf	    leftbind
+    output_8
+    STRCAT_PRINT "%"
+    ; Show lung ratio
+    WIN_STD dm_custom_pscr_ratio_column,dm_custom_pscr_ratio_row
+    movff   opt_PSCR_lungratio,lo
+    bsf	    leftbind
+    STRCPY  "1/"
+    output_8
+    STRCAT_PRINT   ""
+    bcf	    leftbind
+    return
+    
+    
     global  TFT_ppo2_ead_end_cns_mask		; Show ppO2, END/EAD and CNS mask
 TFT_ppo2_ead_end_cns_mask:
     rcall   TFT_mask_ppo2
