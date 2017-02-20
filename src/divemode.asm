@@ -228,6 +228,9 @@ calc_deko_divemode:
 ; Calculate CNS
     btfss   FLAG_pscr_mode		; in PSCR mode?
     rcall   set_actual_ppo2             ; No, set char_I_actual_ppO2
+    btfsc   is_bailout			; Always in bailout...
+    rcall   set_actual_ppo2             ; ...set char_I_actual_ppO2
+    
     clrf    WREG
     movff   WREG,char_I_step_is_1min    ; Make sure to be in 2sec mode.
 	call	deco_calc_CNS_fraction		; calculate CNS
@@ -312,6 +315,10 @@ calc_deko_divemode2:
     btfsc   FLAG_ccr_mode                   ; In CCR mode?
     rcall    calc_deko_divemode_sensor      ; External sensor stuff
 
+;    btfsc   FLAG_pscr_mode                   ; In PSCR mode?
+;    rcall    calc_deko_divemode_sensor      ; External sensor stuff
+
+    
 	SAFE_2BYTE_COPY amb_pressure,int_I_pres_respiration ; C-code needs the ambient pressure
 	clrf	WREG
 	movff	WREG,char_I_step_is_1min    ; Force 2 second deco mode
@@ -321,6 +328,9 @@ calc_deko_divemode2:
 	
 	btfss	FLAG_pscr_mode
 	bra	calc_deko_divemode2a	    ; Non-PSCR modes...
+
+	btfsc	is_bailout
+	bra	calc_deko_divemode2a	    ; Skip in bailout
 	
 	; in PSCR mode, compute fO2 into char_I_O2_ratio
 	call		compute_pscr_ppo2	; pSCR ppO2 into sub_c:2
@@ -949,7 +959,11 @@ gas_switched_common:
     decf    menupos,W               ; 1-5 -> 0-4
     btfss   FLAG_ccr_mode           ; Choose OC Gases
     rcall   setup_gas_registers     ; With WREG=Gas 0-4
+    decf    menupos,W               ; 1-5 -> 0-4
     btfsc   FLAG_ccr_mode           ; Choose CC Diluents
+    rcall   setup_dil_registers     ; With WREG=Gas 0-4
+    decf    menupos,W               ; 1-5 -> 0-4
+    btfsc   FLAG_pscr_mode          ; Choose CC Diluents
     rcall   setup_dil_registers     ; With WREG=Gas 0-4
 
     decf    menupos,W               ; 1-5 -> 0-4
@@ -1183,8 +1197,11 @@ check_gas_change:					; Checks if a better gas should be selected (by user)
 	clrf	xB+1
 	call	div16x16				; compute depth in full m -> result in xC+0
 
+    btfsc   FLAG_ccr_mode           ; In PSCR mode...
+    bra     check_gas_change2	    ; Yes, check for diluents
     btfss   FLAG_ccr_mode           ; In CCR mode...
     bra     check_gas_change_OC_bail; No, check for OC or bailout
+check_gas_change2:
     btfsc   is_bailout              ; Bailout?
     bra     check_gas_change_OC_bail; Yes, check for OC or bailout
 
@@ -1512,7 +1529,9 @@ diveloop_boot:
     rcall   dive_boot_oc
     btfsc   FLAG_ccr_mode
     rcall   dive_boot_cc
-
+    btfsc   FLAG_pscr_mode
+    rcall   dive_boot_cc
+    
     ; Copy opt_dil_types into backup (For "lost gas" feature)
     movff   opt_dil_type+0,opt_dil_type_backup+0    ; 0=Disabled, 1=First, 2=Normal
     movff   opt_dil_type+1,opt_dil_type_backup+1    ; 0=Disabled, 1=First, 2=Normal
@@ -1596,6 +1615,9 @@ diveloop_boot_2:
 divemode_boot1:
     btfsc   FLAG_ccr_mode               ; =1: CCR mode (Fixed ppO2 or Sensor) active
     bra     divemode_boot2
+    btfsc   FLAG_pscr_mode
+    bra     divemode_boot2
+    
     ; in OC Mode, disable ppO2 logging
     movlw   .0
     movwf   divisor_ppo2_sensors
@@ -1651,6 +1673,8 @@ divemode_check_for_warnings1:
     ; Warnings only in deco modes
     btfss   FLAG_ccr_mode                       ; Don't check in CCR mode
 	rcall	check_ppO2							; check ppO2 and displays warning, if required
+	; mH: PSCR handling missing here (Not critical but should be done...)
+	
     btfsc   is_bailout                          ; But check in Bailout case...
 	rcall	check_ppO2							; check ppO2 and displays warning, if required
 	rcall	check_cns_violation					; Check CNS value and display it, if required
@@ -1712,8 +1736,11 @@ check_divetimeout:
 
 check_ppO2:							    ; check current ppO2 and display warning if required
     btfss	FLAG_pscr_mode
-    bra			check_ppO2_non_pscr		; Non-PSCR modes...
+    bra		check_ppO2_non_pscr		; Non-PSCR modes...
     	; in PSCR mode
+    btfsc	is_bailout
+    bra		check_ppO2_non_pscr		; Non-PSCR modes...
+	
     call		compute_pscr_ppo2		; pSCR ppO2 into sub_c:2
     movff		sub_c+0,xA+0
     movff		sub_c+1,xA+1
