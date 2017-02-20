@@ -2,7 +2,7 @@
 ;
 ;   File option_table.asm
 ;
-;   Thje option table
+;   The option table
 ;
 ;   Copyright (c) 2011, JD Gascuel, HeinrichsWeikamp, all right reserved.
 ;=============================================================================
