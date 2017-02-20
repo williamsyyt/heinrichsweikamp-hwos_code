@@ -1,4 +1,7 @@
+[2.15]
+
 [2.14]
+- BETA Version -
 NEW: PSCR mode (Passive semi-closed rebreather)
 
 [2.13]
