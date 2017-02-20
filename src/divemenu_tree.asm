@@ -30,8 +30,11 @@ do_continue_main_divemenu:
 
         btfsc   FLAG_ccr_mode
         bra     main_divemenu_ccr       ; CCR Menu
-
-        bcf     ccr_diluent_setup      ; For OC gases
+        
+	btfsc   FLAG_pscr_mode
+        bra     main_divemenu_ccr       ; Proceeds to PSCR menu then...
+	
+        bcf     ccr_diluent_setup       ; For OC gases
         bcf     is_bailout_menu
         movlw   .1
         movwf   menupos                 ; Set to first option in divemode menu
@@ -53,6 +56,10 @@ main_divemenu_ccr:
     bsf     ccr_diluent_setup      ; For diluents
     movlw   .1
     movwf   menupos                 ; Set to first option in divemode menu
+    
+    btfsc   FLAG_pscr_mode
+    bra     main_divemenu_pscr      ; PSCR Menu
+    
     MENU_BEGIN  tMainMenu, .6
         MENU_CALL   tDiveBailout,       do_divemode_gaslist_bail
         MENU_CALL   tDivemenu_Setpoint, do_divemode_splist
@@ -61,8 +68,17 @@ main_divemenu_ccr:
         MENU_CALL   tDivemenu_ToggleGF, do_divemode_togglegf
         MENU_CALL   tExit,              do_exit_divemode_menu
     MENU_END
-
-
+    
+main_divemenu_pscr:
+    MENU_BEGIN  tMainMenu, .6
+        MENU_CALL   tDiveBailout,       do_divemode_gaslist_bail
+        MENU_CALL   tDivemenu_Gaslist,  do_divemode_gaslist_pscr	; quit bailout and always use diluents here
+        MENU_CALL   tDivemenu_ResetAvg, do_divemode_resetavg
+        MENU_CALL   tDivemenu_ToggleGF, do_divemode_togglegf
+	MENU_CALL   tDivemenu_Marker,   do_set_marker
+        MENU_CALL   tExit,              do_exit_divemode_menu
+    MENU_END
+    
 do_togglegf:
     TSTOSS  opt_enable_aGF          ; =1: aGF can be selected underwater
     bra     do_exit_divemode_menu   ; exit
@@ -127,16 +143,22 @@ do_switch_sp2:
     ; Clear some flags in case we were in bailout before...
     bcf     is_bailout              ; =1: Bailout
     bcf     is_bailout_menu         ;
-    bcf		better_gas_available	;=1: A better gas is available and a gas change is advised in divemode
+    bcf	    better_gas_available    ;=1: A better gas is available and a gas change is advised in divemode
     bcf     blinking_better_gas     ; Clear blinking flag
     bra     do_exit_divemode_menu   ; And exit
 
+do_divemode_gaslist_pscr:
+    bcf     is_bailout              ; =1: Bailout
+    bcf     is_bailout_menu         ;
+    bra	    do_divemode_gaslist_pscr2
+    
 do_divemode_gaslist_bail:
     bcf     ccr_diluent_setup       ; For OC gases
     bsf     is_bailout_menu         ; =1: Bailout
 do_divemode_gaslist:
     btfsc   is_bailout              ; In Bailout case?
     bcf     ccr_diluent_setup       ; Yes, use OC gases
+do_divemode_gaslist_pscr2:    
     bsf     short_gas_decriptions
     movlw   .1
     movwf   menupos                 ; Set to first option in divemode menu

@@ -1909,9 +1909,14 @@ TFT_active_setpoint_bail:
 
 TFT_show_pscr_mode_divemode:
     WIN_TINY   dm_active_dil_column, dm_active_dil_row+.1
+    btfsc   is_bailout                  ; =1: Bailout
+    bra     TFT_show_pscr_mode_divemode_bail	; Show "Bailout" instead of PSCR
     STRCPY_TEXT_PRINT   tDvPSCR		; PSCR
     return
     
+TFT_show_pscr_mode_divemode_bail:    
+    STRCPY_TEXT_PRINT   tDiveBailout    ; Bailout
+    return
     
 	global	TFT_active_gas_divemode
 TFT_active_gas_divemode:				; Display gas/Setpoint
@@ -3719,6 +3724,9 @@ TFT_mask_ppo2:
 TFT_display_ppo2_val:
     btfss	FLAG_pscr_mode
     bra		TFT_display_ppo2_val_non_pscr	; Non-PSCR modes...
+    btfsc	is_bailout
+    bra		TFT_display_ppo2_val_non_pscr	; In bailout
+
     	; in PSCR mode
     call		compute_pscr_ppo2		; pSCR ppO2 into sub_c:2
     movff		sub_c+0,xA+0

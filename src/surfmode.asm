@@ -223,9 +223,12 @@ surfloop_loop2:
     ; Update Sensors
     call    compute_ppo2                ; compute mv_sensorX and ppo2_sensorX arrays
     call    check_sensors               ; Set enable/disable flags
-    btfss   FLAG_ccr_mode               ; In CCR mode?
+    btfsc   FLAG_ccr_mode               ; In CCR mode?
+    bra	    surfloop_loop2a1		; Yes.
+    btfss   FLAG_pscr_mode              ; In PSCR mode?
     bra	    surfloop_loop2a		; No, skip
-    
+        
+surfloop_loop2a1:    
     movff   opt_ccr_mode,WREG           ; =0: Fixed SP, =1: Sensor,  =2: Auto SP
     sublw   .1                          ; opt_ccr_mode = 1 (Sensor)?
     bnz     surfloop_loop2a		; No, skip

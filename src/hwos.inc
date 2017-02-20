@@ -25,9 +25,9 @@
 #DEFINE	softwareversion_y		d'14'		; Software version  XX.YY
 #DEFINE softwareversion_beta 	1 			; (and 0 for release)
 ; Firmware version will appear in "Change Firmware" style
-#DEFINE firmware_expire_year    .18
-#DEFINE firmware_expire_month   .6
-#DEFINE firmware_expire_day     .1
+#DEFINE firmware_expire_year    .17
+#DEFINE firmware_expire_month   .3
+#DEFINE firmware_expire_day     .30
 
 #DEFINE comm_service_key        0xABCDEF
 

@@ -344,13 +344,6 @@ menuview_view8:
 
 ;=============================================================================
 ; Show next customview (and delete this flag)
-	global	customview_toggle
-customview_toggle:
-	bcf		switch_right
-	incf	menupos3,F			            ; Number of customview to show
-	movlw	d'12'							; Max number of customsviews in divemode
-	cpfsgt	menupos3			            ; Max reached?
-	bra		customview_mask		            ; No, show
 customview_toggle_reset:					; Timeout occured
 	clrf	menupos3			            ; Reset to zero (Zero=no custom view)
     global  customview_mask
@@ -391,10 +384,14 @@ customview_init_nocustomview:
 	bra		customview_toggle_exit	
 
 customview_init_view1:
-	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
-	bra		customview_toggle				; yes, Call next view...
-	btfss	FLAG_ccr_mode					; In CC mode?
-	bra		customview_toggle				; no, Call next view...
+    btfsc	FLAG_apnoe_mode					; In Apnoe mode?
+    bra		customview_toggle				; yes, Call next view...
+    btfsc	FLAG_pscr_mode					; In PSCR mode?
+    bra		customview_init_view1a				; Yes
+    btfss	FLAG_ccr_mode					; In CC mode?
+    bra		customview_toggle				; no, Call next view...
+    
+customview_init_view1a:    
     movf    hardware_flag,W
     sublw   0x11        ; 2 with BLE
     btfsc   STATUS,Z
@@ -409,7 +406,7 @@ customview_init_view1:
     bsf     dive_hud3_displayed         ; Set display flag
     call    TFT_hud_mask                ; Setup HUD mask
     call    TFT_update_ppo2_sensors     ; Update Sensor data
-	bra		customview_toggle_exit	
+    bra	    customview_toggle_exit	
 
 customview_init_view2:
 	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
@@ -465,9 +462,11 @@ customview_init_view8:                      ; Sensor millivolts
 	bra		customview_toggle				; Yes, Call next view...
 	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
 	bra		customview_toggle				; yes, Call next view...
+        btfsc	FLAG_pscr_mode					; In PSCR mode?
+	bra		customview_init_view8a				; Yes
 	btfss	FLAG_ccr_mode					; In CC mode?
 	bra		customview_toggle				; no, Call next view...
-    
+customview_init_view8a:    
     movf    hardware_flag,W
     sublw   0x13        ; +
     btfsc   STATUS,Z
@@ -478,13 +477,13 @@ customview_init_view8:                      ; Sensor millivolts
     bnz     customview_toggle				; no, Call next view...
     call    TFT_hud_mask                    ; Setup HUD mask
     call    TFT_hud_voltages                ; Show HUD details
-    bra		customview_toggle_exit
+    goto    customview_toggle_exit
 
 customview_init_view9:                      ; ppO2, Ceiling and current GF
 	btfsc	FLAG_apnoe_mode					; In Apnoe mode?
-	bra		customview_toggle				; yes, Call next view...
+	bra	customview_toggle				; yes, Call next view...
 	btfsc	FLAG_gauge_mode					; In Gauge mode?
-	bra		customview_toggle				; Yes, Call next view...
+	bra	customview_toggle				; Yes, Call next view...
     call    TFT_ceiling_mask                ; Setup mask
     call    TFT_ceiling                     ; Show Ceiling
 
@@ -500,6 +499,18 @@ customview_init_view9:                      ; ppO2, Ceiling and current GF
     call    TFT_gf_info                     ; Show GF informations
     bra		customview_toggle_exit
 
+;=============================================================================
+; Show next customview (and delete this flag)
+	global	customview_toggle
+customview_toggle:
+	bcf	switch_right
+	incf	menupos3,F			            ; Number of customview to show
+	movlw	d'12'							; Max number of customsviews in divemode
+	cpfsgt	menupos3			            ; Max reached?
+	goto	customview_mask		            ; No, show
+	goto	customview_toggle_reset
+    
+    
 customview_init_view10:                     ; Sensor check
     btfsc   FLAG_apnoe_mode		    ; In Apnoe mode?
     bra	    customview_toggle		    ; yes, Call next view...
@@ -520,7 +531,7 @@ customview_init_view11:                     ; ppO2, END/EAD and CNS
 
     call    TFT_ppo2_ead_end_cns_mask       ; Show ppO2, END/EAD and CNS mask
     call    TFT_ppo2_ead_end_cns            ; Show ppO2, END/EAD and CNS
-    bra		customview_toggle_exit
+    goto    customview_toggle_exit
 
 customview_init_view12:		            ; PSCR Info    
     btfss   FLAG_pscr_mode		    ; In PSCR mode?
