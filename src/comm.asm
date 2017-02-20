@@ -1062,6 +1062,10 @@ comm_read_setting:
     movff   opt_diveTimeout, TXREG1	    ; RCREG1=0x48
     dcfsnz  WREG
     movff   button_polarity, TXREG1	    ; RCREG1=0x49
+    dcfsnz  WREG
+    movff   opt_PSCR_drop, TXREG1	    ; RCREG1=0x4A
+    dcfsnz  WREG
+    movff   opt_PSCR_lungratio, TXREG1	    ; RCREG1=0x4B
 
     
 comm_read_abort:
@@ -1367,6 +1371,10 @@ comm_write_setting:
     movff   RCREG1, opt_diveTimeout	    ; RCREG1=0x48
     dcfsnz  WREG
     bra	    comm_write_button_polarity	    ; RCREG1=0x49
+    dcfsnz  WREG
+    movff   RCREG1, opt_PSCR_drop	    ; RCREG1=0x4A
+    dcfsnz  WREG
+    movff   RCREG1, opt_PSCR_lungratio	    ; RCREG1=0x4B
 
 
 comm_write_abort:

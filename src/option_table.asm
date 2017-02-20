@@ -213,7 +213,7 @@ option_table_begin:
         OPTION_UINT8    oSafetyStopEnd,    .19,.39,     .29,   -1,    .163,    opt_safety_stop_end              ; [cbar], default 290mbar, min 190mbar, max 390mbar
         OPTION_UINT8    oSafetyStopReset,  .81,.151,    .101,  -1,    .164,    opt_safety_stop_reset            ; [cbar], default 1010mbar, min 810mbar, max 1510mbar
 	OPTION_UINT8    oDiveTimeout,	    .1,.20,  divemode_timeout_default,   tMinutes,  .168,    opt_diveTimeout			; Timeout for divemode in minutes
-	OPTION_UINT8	oPSCR_drop,	.0,.10,	.4,	     tPercent,.169,    opt_PSCR_drop			; PSCR Drop [%]
+	OPTION_UINT8	oPSCR_drop,	.0,.15,	.4,	     tPercent,.169,    opt_PSCR_drop			; PSCR Drop [%]
 	OPTION_UINT8	oPSCR_lungratio,.5,.20,	.10,	     tPercent,.170,    opt_PSCR_lungratio		; PSCR Lung Ratio [1/x]
 
 ;=============================================================================
