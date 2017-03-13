@@ -182,7 +182,7 @@ surfloop_loop:
 
 ; One Second tasks for all modes
 	call	speed_normal
-	call	TFT_debug_output
+	;call	TFT_debug_output
 	call	TFT_clock					; update clock
 	call	timeout_surfmode			; check timeout 
 	call	get_battery_voltage			; get battery voltage
@@ -198,6 +198,7 @@ surfloop_loop:
 surfloop_loop2:	
 ; Tasks approx. every 50ms for all modes
 	call	test_switches_surfmode		; check switches
+	call	TFT_debug_output
 
 ; One minute tasks for all modes
 	btfsc	oneminupdate				; do every minute tasks
