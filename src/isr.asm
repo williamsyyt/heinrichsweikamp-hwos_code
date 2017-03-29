@@ -316,18 +316,13 @@ isr_timer3_skip:
 
 ;=============================================================================
 
-isr_tmr7:       						; each 62,5ms
-	bcf		PIR5,TMR7IF				; clear flag
+isr_tmr7:       					; each 62,5ms
+	bcf		PIR5,TMR7IF			; clear flag
 	banksel 0xF16					; Addresses, F16h through F5Fh, are also used by SFRs, but are not part of the Access RAM.
 	movlw	.248
     	movwf	TMR7H					; -> Rollover after 2048 cycles -> 62,5ms
 
-        banksel	isr_backup
-	movf	max_CCPR1L,W			; Dimm value
-	cpfseq	CCPR1L					; = current PWM value?
-	rcall	isr_dimm_tft			; No, adjust until max_CCPR1L=CCPR1L !
-
-	banksel common
+        banksel common
 	call	get_analog_switches			; Get analog readings
 	btfss	INTCON3,INT1IE
 	bra	isr_tmr7_a
@@ -340,6 +335,16 @@ isr_tmr7_a:
 	btfsc	analog_sw1_pressed
 	rcall	isr_switch_right
 isr_tmr7_b:
+        banksel common
+	btfss	no_sensor_int		; No sensor interrupt (because it's addressed during sleep)
+	bra	isr_tmr7_c		; No, continue
+	banksel isr_backup              ; Back to Bank0 ISR data
+	return						
+isr_tmr7_c:
+	banksel	isr_backup
+	movf	max_CCPR1L,W				; Dimm value
+	cpfseq	CCPR1L					; = current PWM value?
+	rcall	isr_dimm_tft				; No, adjust until max_CCPR1L=CCPR1L !
 		
         banksel isr_backup
         decfsz  ir_S8_timeout,F            ; IR Data still valid?
