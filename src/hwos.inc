@@ -26,8 +26,8 @@
 #DEFINE softwareversion_beta 	1 			; (and 0 for release)
 ; Firmware version will appear in "Change Firmware" style
 #DEFINE firmware_expire_year    .18
-#DEFINE firmware_expire_month   .2
-#DEFINE firmware_expire_day     .20
+#DEFINE firmware_expire_month   .3
+#DEFINE firmware_expire_day     .29
 
 #DEFINE comm_service_key        0xABCDEF
 
@@ -761,7 +761,7 @@ opt_PSCR_lungratio	res 1	; PSCR Lung Ratio [1/x]
 #DEFINE	use_old_batt_flag	flag13,7    ; =1: load old battery information after power-on reset
 		
 #DEFINE	FLAG_pscr_mode		flag14,0    ; =1: OSTC is in PSCR mode
-
+#DEFINE	deep_sleep		flag14,1    ; OSTC is in deep sleep (ignore buttons, etc)
 ;=============================================================================
 ; C-code Routines
 ; PART 2

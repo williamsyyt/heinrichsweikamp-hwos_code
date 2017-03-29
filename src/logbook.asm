@@ -168,6 +168,7 @@
     #DEFINE log_cns_start       .53
     #DEFINE log_gf_start        .55
     #DEFINE log_gf_end          .56
+    #DEFINE log_batt_info	.59
     #DEFINE log_sp1             .60
     #DEFINE log_sp2             .62
     #DEFINE log_sp3             .64
@@ -911,10 +912,10 @@ profile_display_skip_temp:
     incf		logbook_pixel_x_pos,F		; Next column
 
     ;---- Draw Marker square , if any ----------------------------------------
-;    btfss       log_marker_found            ; Any marker to draw?	; mH
+    btfss       log_marker_found            ; Any marker to draw?
     bra         profile_display_skip_marker ; No
 
-    ; 2x2 square
+    ; tiny "m"
     incf        apnoe_mins,W	; increase row (Y)
     movwf       win_top
     movlw       .4
@@ -927,8 +928,10 @@ profile_display_skip_temp:
 
     movlw       color_orange
     call        TFT_set_color
-    call        TFT_box                     ; Draw 2x2 Box
-    bcf         log_marker_found            ; Clear flag
+    WIN_FONT   FT_TINY
+    lfsr	FSR2,buffer
+    STRCPY_PRINT    "m"
+;    bcf         log_marker_found            ; Clear flag
 
 profile_display_skip_marker:
     bcf         log_marker_found            ; Clear flag    ; mH
@@ -1619,203 +1622,244 @@ logbook_page2: ; Show more info
 	movf		PRODH,W
 	addwfc		ext_flash_address+2,F
 	; pointer at the first 0xFA of header
-    call        logbook_show_divenumber             ; Show the dive number in medium font
+    rcall        logbook_show_divenumber             ; Show the dive number in medium font
+	; Show date and time in first row
+    	WIN_SMALL	.59,.10
+	LOG_POINT_TO    log_date
+	call		ext_flash_byte_read_plus
+	movff		temp1,convert_value_temp+2		; Year
+	call		ext_flash_byte_read_plus
+	movff		temp1,convert_value_temp+0		; Month
+	call		ext_flash_byte_read_plus
+	movff		temp1,convert_value_temp+1		; Day
+	call		TFT_convert_date			; converts into "DD/MM/YY" or "MM/DD/YY" or "YY/MM/DD" in postinc2
+	PUTC		"-"
+	call		ext_flash_byte_read_plus		; hour
+	movff		temp1,lo
+	call		ext_flash_byte_read_plus		; Minutes
+	movff		temp1,hi
+	output_99x						; hour
+	PUTC		':'
+	movff		hi,lo			
+	output_99x						; minute
+	STRCAT_PRINT	""					; Display 1st row of details
 
+	; Show max depth and dive time
+	WIN_SMALL	.5,.35
+	STRCAT		"Max:"
+	LOG_POINT_TO    log_max_depth
+	call		ext_flash_byte_read_plus	; read max depth
+	movff		temp1,lo				
+	call		ext_flash_byte_read_plus	; read max depth
+	movff		temp1,hi
 
-    LOG_POINT_TO    log_surface_press
-    ; surface pressure in mbar
-    call		ext_flash_byte_read_plus	; read surface pressure
-    movff       temp1,lo
-    call		ext_flash_byte_read_plus	; read surface pressure
-    movff       temp1,hi
-    WIN_TINY    MBAR_column,MBAR_row
-	bsf			leftbind
-	output_16							; Air pressure before dive
-	STRCAT_TEXT_PRINT    tMBAR
+	TSTOSS		opt_units			; 0=Meters, 1=Feets
+	bra		logbook_page2_depth_metric
+	; imperial
+	call		convert_mbar_to_feet       	; convert value in lo:hi from mbar to feet
+	PUTC	' '
+	bcf		leftbind
+	output_16_3
+	STRCAT_TEXT	tFeets
+	bra		logbook_page2_depth_common
 
-    ; OC/CC Gas List
-    LOG_POINT_TO    log_divemode
-    call		ext_flash_byte_read_plus            ; 0=OC, 1=CC, 2=Gauge, 3=Apnea into temp1
-    WIN_TINY	log2_title_column,log2_title_row1
-    WIN_COLOR   color_greenish
-    movlw       .1
-    cpfseq      temp1       ;=CC?
-    bra         logbook_gaslist_oc
-    STRCPY_TEXT_PRINT   tGaslistCC
-    bra         logbook_gaslist_common
-logbook_gaslist_oc:
-    STRCPY_TEXT_PRINT   tGaslist
-logbook_gaslist_common:
-    LOG_POINT_TO    log_gas1
-    WIN_FRAME_STD   log2_title_row1-2, log2_gas_row5+.15, log2_title_column-2, .159    ; Top, Bottom, Left, Right
-    bcf		leftbind
-	movlw		color_white					; Color for Gas 1
-	call		TFT_set_color				; Set Color...
-	WIN_TINY	log2_gas_column, log2_gas_row1
-    rcall       log_show_gas_common2
-	movlw		color_green					; Color for Gas 2
-	call		TFT_set_color				; Set Color...
-	WIN_TINY	log2_gas_column, log2_gas_row2
-    rcall       log_show_gas_common2
-	movlw		color_red					; Color for Gas 3
-	call		TFT_set_color				; Set Color...
-	WIN_TINY	log2_gas_column, log2_gas_row3
-    rcall       log_show_gas_common2
-	movlw		color_yellow				; Color for Gas 4
-	call		TFT_set_color				; Set Color...
-	WIN_TINY	log2_gas_column, log2_gas_row4
-    rcall       log_show_gas_common2
-	movlw		color_cyan  				; Color for Gas 5
-	call		TFT_set_color				; Set Color...
-	WIN_TINY	log2_gas_column, log2_gas_row5
-    rcall       log_show_gas_common2
+logbook_page2_depth_metric:
+	bsf		leftbind
+	output_16dp	d'3'					; max. depth
+	STRCAT_TEXT     tMeters
 
-    ; Firmware
-	call		TFT_standard_color
-    WIN_TINY    log2_firmware_column,log2_firmware_row
-    STRCPY_TEXT tFirmware
-    call		ext_flash_byte_read_plus	; read firmware xx
-    movff       temp1,lo
-    bsf         leftbind
-    output_8
-    PUTC        "."
-    call		ext_flash_byte_read_plus	; read firmware yy
-    movff       temp1,lo
-    output_99x
-    STRCAT_PRINT	""
+logbook_page2_depth_common:	
+	STRCAT		" - "
+	call		ext_flash_byte_read_plus		; divetime in minutes	
+	movff		temp1,lo
+	call		ext_flash_byte_read_plus	
+	movff		temp1,hi				; divetime in minutes
 
-    ; Battery
-    WIN_TINY    log2_battery_column,log2_battery_row
-    STRCPY      "Batt:"
-    call		ext_flash_byte_read_plus	; read battery low
-    movff       temp1,lo
-    call		ext_flash_byte_read_plus	; read battery high
-    movff       temp1,hi
-    output_16dp  .2
-    STRCAT_PRINT	"V"
+	bsf		leftbind
+	output_16						; divetime minutes
+	PUTC		"m"
+        LOG_POINT_TO    log_divetime+.2
+	call		ext_flash_byte_read_plus				; read divetime seconds
+	movff		temp1,lo
+	bsf		leftbind
+	output_99x							; divetime seconds
+	call	TFT_standard_color
+	STRCAT_PRINT    "s"
+;    ; Dive mode
+;        LOG_POINT_TO    log_divemode
+;        call		ext_flash_byte_read_plus            ; Read divemode
+;        movff       temp1,lo
+;	call        TFT_display_decotype_surface1       ; "strcat_print"s divemode (OC, CC, APNEA or GAUGE)
 
-    ; Setpoint list
-    LOG_POINT_TO    log_sp1
-    WIN_TINY	log2_title_column,log2_title_sp_row
-    WIN_COLOR   color_greenish
-    STRCPY_TEXT_PRINT   tFixedSetpoints
-    WIN_FRAME_STD   log2_title_sp_row-2, log2_sp_row5+.15, log2_title_column-2, .159    ; Top, Bottom, Left, Right
-	WIN_TINY	log2_gas_column, log2_sp_row1
-    rcall       log_show_sp_common
-	WIN_TINY	log2_gas_column, log2_sp_row2
-    rcall       log_show_sp_common
-	WIN_TINY	log2_gas_column, log2_sp_row3
-    rcall       log_show_sp_common
-	WIN_TINY	log2_gas_column, log2_sp_row4
-    rcall       log_show_sp_common
-	WIN_TINY	log2_gas_column, log2_sp_row5
-    rcall       log_show_sp_common
-
-    ; Salinity
-    WIN_TINY    log2_salinity_column,log2_salinity_row
-    STRCPY_TEXT tDvSalinity
-    bsf         leftbind
-    call		ext_flash_byte_read_plus	; read salinity
-    movff       temp1,lo
-    movff       temp1,total_divetime_seconds+1  ; backup for average depth display
-    output_8
-    STRCAT_PRINT	"%"
-
-    ; CNS
-    LOG_POINT_TO    log_cns_start
-    WIN_TINY    log2_cns_column,log2_cns_row
-    STRCPY_TEXT tCNS2
-    call		ext_flash_byte_read_plus	; read cns low
-    movff       temp1,lo
-    call		ext_flash_byte_read_plus	; read cns high
-    movff       temp1,hi
-    output_16
-    LOG_POINT_TO    log_cns_end
-    STRCAT      "->"
-    call		ext_flash_byte_read_plus	; read CNS low
-    movff       temp1,lo
-    call		ext_flash_byte_read_plus	; read CNS high
-    movff       temp1,hi
-    output_16
-    STRCAT_PRINT	"%"
-
-    ; Average depth
-    WIN_TINY    log2_avr_column,log2_avr_row
-    STRCPY_TEXT tAVG
-    call		ext_flash_byte_read_plus	; read avr low
-    movff       temp1,lo
-    call		ext_flash_byte_read_plus	; read avr high
-    movff       temp1,hi
-
-    movf        total_divetime_seconds+1,W         ; salinity for this dive
-    call        adjust_depth_with_salinity_log     ; computes salinity setting (FROM WREG!) into lo:hi [mbar]
-
-    output_16dp .3
-    STRCAT_PRINT    "m"
-
-    ; Deco model
+	
+	; Deco model
+    WIN_SMALL   .5,.65
     LOG_POINT_TO    log_decomodel
-    WIN_TINY    log2_decomodel_column,log2_decomodel_row
-    STRCPY_TEXT tDkMode
-    call		ext_flash_byte_read_plus	; read deco model
+    call	ext_flash_byte_read_plus	; read deco model
     movff       temp1,lo
     decfsz      temp1,F
     bra         logbook_decomodel1
     ; Deco model GF Version
     STRCAT_TEXT_PRINT    tZHL16GF
     LOG_POINT_TO    log_gf_lo
-    WIN_TINY    log2_decomodel2_column,log2_decomodel2_row
-    STRCPY_TEXT tGF_low
-    call		ext_flash_byte_read_plus            ; Read GF lo
+    WIN_SMALL   .5,.90
+    STRCPY_TEXT tGF
+    call	ext_flash_byte_read_plus            ; Read GF lo
     movff       temp1,lo
     output_8
-    STRCAT_PRINT	"%"
-    WIN_TINY    log2_decomodel3_column,log2_decomodel3_row
-    STRCPY_TEXT tGF_high
-    call		ext_flash_byte_read_plus            ; Read GF hi
-    movff       temp1,lo
-    output_8
-    STRCAT_PRINT	"%"
-    bra         logbook_decomodel2
+    STRCAT	"%/"
+    bra         logbook_decomodel_common
 logbook_decomodel1:
     ; Deco model NON-GF Version
     STRCAT_TEXT_PRINT    tZHL16
     LOG_POINT_TO    log_sat_mult
-    WIN_TINY    log2_decomodel2_column,log2_decomodel2_row
-    STRCPY_TEXT tSaturationMult
-    call		ext_flash_byte_read_plus            ; Read sat_mult
+    WIN_SMALL   .5,.90
+    call	ext_flash_byte_read_plus            ; Read sat_mult
+    movff       temp1,lo
+    output_8
+    STRCAT	"%/"
+logbook_decomodel_common:
+    call	ext_flash_byte_read_plus            ; Read desat_mult or GF_hi
     movff       temp1,lo
     output_8
     STRCAT_PRINT	"%"
-    WIN_TINY    log2_decomodel3_column,log2_decomodel3_row
-    STRCPY_TEXT tDesaturationMult
-    call		ext_flash_byte_read_plus            ; Read desat_mult
+    
+    ; CNS
+    LOG_POINT_TO    log_cns_start
+    WIN_SMALL    .5,.115
+    STRCPY_TEXT tCNS2
+    call	ext_flash_byte_read_plus	; read cns low
     movff       temp1,lo
-    output_8
+    call	ext_flash_byte_read_plus	; read cns high
+    movff       temp1,hi
+    output_16
+    LOG_POINT_TO    log_cns_end
+    STRCAT      "->"
+    call	ext_flash_byte_read_plus	; read CNS low
+    movff       temp1,lo
+    call	ext_flash_byte_read_plus	; read CNS high
+    movff       temp1,hi
+    output_16
     STRCAT_PRINT	"%"
-logbook_decomodel2:
-    ; Dive mode
-    LOG_POINT_TO    log_divemode
-    WIN_TINY    log2_divemode_column,log2_divemode_row
-    STRCPY_TEXT tDvMode
-    call		ext_flash_byte_read_plus            ; Read divemode
-    movff       temp1,lo
-    call        TFT_display_decotype_surface1       ; "strcat_print"s divemode (OC, CC, APNEA or GAUGE)
 
+    ; Salinity
+    WIN_SMALL	.5,.140
+    LOG_POINT_TO    log_salinity
+    STRCPY_TEXT tDvSalinity
+    bsf         leftbind
+    call	ext_flash_byte_read_plus	; read salinity
+    movff       temp1,lo
+    movff       temp1,total_divetime_seconds+1  ; backup for average depth display
+    output_8
+    STRCAT_PRINT	"%"
+
+    ; Average depth
+    WIN_SMALL	.5,.165
+    STRCPY_TEXT tAVG
+    LOG_POINT_TO    log_avr_depth
+    call	ext_flash_byte_read_plus	; read avr low
+    movff       temp1,lo
+    call	ext_flash_byte_read_plus	; read avr high
+    movff       temp1,hi
+    movf        total_divetime_seconds+1,W         ; salinity for this dive
+    call        adjust_depth_with_salinity_log     ; computes salinity setting (FROM WREG!) into lo:hi [mbar]
+    output_16dp .3
+    STRCAT_PRINT    "m"
+    
     ; Last deco
     LOG_POINT_TO    log_last_stop
-    WIN_TINY    log2_lastdeco_column,log2_lastdeco_row
+    WIN_SMALL	.5,.190
     STRCPY_TEXT tLastDecostop
-    call		ext_flash_byte_read_plus            ; Read last stop
+    call	ext_flash_byte_read_plus            ; Read last stop
     movff       temp1,lo
     output_8
-    STRCAT_PRINT	"m"
+    STRCAT_PRINT    "m"
 
-    ; A frame around the details
-    WIN_TINY	log2_lastdeco_column,log2_salinity_row-.16
-    WIN_COLOR   color_greenish
-    STRCPY_TEXT_PRINT   tLogbook
-    WIN_FRAME_STD   log2_salinity_row-.18, MBAR_row+.15, 0, .85    ; Top, Bottom, Left, Right
+    movlw       color_lightblue
+    call	TFT_set_color
+    WIN_FRAME_COLOR16   .63,.220,.2,.105; Top, Bottom, Left, Right
+
+    ; Firmware
+    call	TFT_standard_color
+    WIN_SMALL	.110,.65
+    STRCAT  "V:"
+    LOG_POINT_TO    log_firmware
+    call	ext_flash_byte_read_plus	; read firmware xx
+    movff       temp1,lo
+    bsf         leftbind
+    output_8
+    PUTC        "."
+    call	ext_flash_byte_read_plus	; read firmware yy
+    movff       temp1,lo
+    output_99x
+    STRCAT_PRINT	""
+
+    ; Battery voltage
+    WIN_SMALL	.110,.90
+    STRCAT_PRINT     "Batt:"
+    WIN_SMALL	.110,.115
+    LOG_POINT_TO    log_battery	    ; Battery voltage...
+    call	ext_flash_byte_read_plus	; read battery low
+    movff       temp1,lo
+    call	ext_flash_byte_read_plus	; read battery high
+    movff       temp1,hi
+    output_16dp  .2
+    STRCAT_PRINT	"V"
+
+       ; surface pressure in mbar
+    LOG_POINT_TO    log_surface_press
+    call	ext_flash_byte_read_plus	; read surface pressure
+    movff       temp1,lo
+    call	ext_flash_byte_read_plus	; read surface pressure
+    movff       temp1,hi
+    WIN_SMALL	.110,.140
+    lfsr        FSR2,buffer
+    bsf		leftbind
+    output_16							; Air pressure before dive
+    STRCAT_TEXT    tMBAR
+    clrf    WREG
+    movff   WREG,buffer+7	    ; limit to 7 chars
+    STRCAT_PRINT	""
+
+    movlw       color_greenish
+    call	TFT_set_color
+    WIN_FRAME_COLOR16   .63,.220,.107,.159; Top, Bottom, Left, Right
+
+   
+    
+    
+;    ; OC/CC Gas List
+;    LOG_POINT_TO    log_divemode
+;    call		ext_flash_byte_read_plus            ; 0=OC, 1=CC, 2=Gauge, 3=Apnea into temp1
+;    WIN_TINY	log2_title_column,log2_title_row1
+;    WIN_COLOR   color_greenish
+;    STRCPY_TEXT_PRINT   tGaslist
+;    WIN_FRAME_STD   log2_title_row1-2, log2_gas_row3+.15, log2_title_column-2, .159    ; Top, Bottom, Left, Right
+;    bcf		leftbind
+;    LOG_POINT_TO    log_gas1
+;	movlw		color_white					; Color for Gas 1
+;	call		TFT_set_color				; Set Color...
+;	WIN_TINY	log2_gas_column, log2_gas_row1
+;    rcall       log_show_gas_common2
+;	movlw		color_green					; Color for Gas 2
+;	call		TFT_set_color				; Set Color...
+;	WIN_TINY	log2_gas_column, log2_gas_row2
+;    rcall       log_show_gas_common2
+;	movlw		color_red					; Color for Gas 3
+;	call		TFT_set_color				; Set Color...
+;	WIN_TINY	log2_gas_column, log2_gas_row3
+;    rcall       log_show_gas_common2
+;;	movlw		color_yellow				; Color for Gas 4
+;;	call		TFT_set_color				; Set Color...
+;;	WIN_TINY	log2_gas_column, log2_gas_row4
+;;    rcall       log_show_gas_common2
+;;	movlw		color_cyan  				; Color for Gas 5
+;;	call		TFT_set_color				; Set Color...
+;;	WIN_TINY	log2_gas_column, log2_gas_row5
+;;    rcall       log_show_gas_common2
+;
+;
+;
 
     rcall       logbook_preloop_tasks       ; Clear some flags and set to Speed_eco
 display_details_loop:
