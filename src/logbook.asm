@@ -918,23 +918,25 @@ profile_display_skip_temp:
     ; tiny "m"
     incf        apnoe_mins,W	; increase row (Y)
     movwf       win_top
-    movlw       .4
-    movwf       win_height
-    movlw       .2
-    movwf       win_width+0
-    clrf	win_width+1
+    ; limit win_top to 220
+    movlw	.220
+    cpfslt	win_top
+    movwf	win_top
     decf        logbook_pixel_x_pos,W	; decrease column (X)
     movwf       win_leftx2
+    ; limit win_leftx2 to 151
+    movlw	.151
+    cpfslt	win_leftx2
+    movwf	win_leftx2
 
     movlw       color_orange
     call        TFT_set_color
-    WIN_FONT   FT_TINY
+    WIN_FONT	FT_TINY
     lfsr	FSR2,buffer
     STRCPY_PRINT    "m"
-;    bcf         log_marker_found            ; Clear flag
+    bcf         log_marker_found            ; Clear flag
 
 profile_display_skip_marker:
-    bcf         log_marker_found            ; Clear flag    ; mH
     ;---- Draw CNS curve, if any ---------------------------------------------
     movf        divisor_cns,W
     bz          profile_display_skip_cns
