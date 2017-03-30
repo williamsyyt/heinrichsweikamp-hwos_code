@@ -229,8 +229,8 @@ onesec_sleep:
 	btfsc	oneminupdate			; one minute in sleep?
 	rcall	onemin_sleep			; do oneminute tasks, e.g. calculate desaturation
 
-;    btfsc   battery_gauge_available
-;    call    get_battery_voltage     ; Check for charger
+	btfsc   battery_gauge_available
+	call    get_battery_voltage     ; Check for charger
 
 	incf	divemins+0,F 			; counts to #test_pressure_in_sleep (10)
 	movlw	d'10'
