@@ -64,8 +64,7 @@ sleeploop_pre:
 	movwf	apnoe_max_pressure+0		; Used as temp
 	bcf	onesecupdate
 sleeploop_pre1:
-	sleep
-	sleep
+	rcall	sleepmode_sleep
 	btfss	onesecupdate			; Wait 1 second
 	bra	sleeploop_pre1
 	bcf	onesecupdate
@@ -102,7 +101,8 @@ sleeploop_loop:
 	
 	btfsc	deep_sleep			; Enter deep sleep?
 	bra	deepsleep			; Yes
-
+no_deepsleep:
+    
 	rcall 	sleepmode_sleep			; Wait at least 35ms (every 62,5ms Timer7 wakeup)
 
 	; Any button pressed in sleep?
@@ -118,7 +118,7 @@ sleeploop_loop:
 
 deepsleep:
 	btfss   analog_switches
-        return			; no analog switches
+        bra	no_deepsleep			; no analog switches, no deep sleep required
 
 	bcf	PIE1,0		; Stop Timer 1 Interrupt
 	bcf	PIE2,1		; Stop Timer 2 Interrupt
@@ -137,7 +137,7 @@ deepsleep_loop:
 	btfsc	onesecupdate			; one second in sleep?
 	rcall	onesec_sleep			; check switches, check pressure sensor, etc.
 
-	sleep
+	rcall	sleepmode_sleep
     
 	btfss	deep_sleep			; Enter normal sleepmode?
 	bra	sleeploop_pre			; Yes
