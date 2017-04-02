@@ -1800,13 +1800,33 @@ logbook_decomodel_common:
     LOG_POINT_TO    log_firmware
     call	ext_flash_byte_read_plus	; read firmware xx
     movff       temp1,lo
+    bsf		neg_flag    ; set flag for 2.15 or newer
+    movlw	.1
+    cpfsgt	lo	    ; >1?
+    bcf		neg_flag    ; No, clear flag
     bsf         leftbind
     output_8
     PUTC        "."
     call	ext_flash_byte_read_plus	; read firmware yy
     movff       temp1,lo
+    movlw	.14
+    cpfsgt	lo	    ; >14?
+    bcf		neg_flag    ; No, clear flag
     output_99x
     STRCAT_PRINT	""
+
+    btfss   neg_flag    ; set flag for 2.15 or newer
+    bra	    logbook_no_batt_info
+    
+    ; Battery percent (for dives with 2.15 or newer)
+    WIN_SMALL	.110,.140
+    LOG_POINT_TO    log_batt_info	    ; Battery percent
+    call	ext_flash_byte_read_plus	; read battery low
+    movff       temp1,lo
+    output_8
+    STRCAT_PRINT	"%"
+
+logbook_no_batt_info:		; dives with firmware <2.15
 
     ; Battery voltage
     WIN_SMALL	.110,.90
@@ -1819,14 +1839,14 @@ logbook_decomodel_common:
     movff       temp1,hi
     output_16dp  .2
     STRCAT_PRINT	"V"
-
-       ; surface pressure in mbar
+   
+    ; surface pressure in mbar
     LOG_POINT_TO    log_surface_press
     call	ext_flash_byte_read_plus	; read surface pressure
     movff       temp1,lo
     call	ext_flash_byte_read_plus	; read surface pressure
     movff       temp1,hi
-    WIN_SMALL	.110,.140
+    WIN_SMALL	.110,.165
     lfsr        FSR2,buffer
     bsf		leftbind
     output_16							; Air pressure before dive
