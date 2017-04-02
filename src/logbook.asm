@@ -935,6 +935,18 @@ profile_display_skip_temp:
     lfsr	FSR2,buffer
     STRCPY_PRINT    "m"
     bcf         log_marker_found            ; Clear flag
+    
+    movlw       profile_left
+    movwf       win_leftx2
+    movlw       profile_top
+    movwf       win_top
+    movlw       profile_height_pixels
+    movwf       win_height
+    movlw       LOW (profile_width_pixels*.2)
+    movwf       win_width+0
+    movlw       HIGH (profile_width_pixels*.2)
+    movwf       win_width+1
+    call        TFT_box_write           ; re-open box for d1
 
 profile_display_skip_marker:
     ;---- Draw CNS curve, if any ---------------------------------------------
