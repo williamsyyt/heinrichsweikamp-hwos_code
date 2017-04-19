@@ -496,9 +496,9 @@ I2C_init_compass1:
     movlw	b'01100100'	; CTRL5 HIGH res, 6,25Hz
     rcall       I2C_TX
 init_compass1_common:
-    ;movlw	b'01100000'	; CTRL6 Full scale (+/-12 Gauss -> 2730LSB/Gauss)
+    movlw	b'01100000'	; CTRL6 Full scale (+/-12 Gauss -> 2730LSB/Gauss)
     ;movlw	b'00000000'	; CTRL6 (+/-2 Gauss)
-    movlw	b'00100000'	; CTRL6 (+/-4 Gauss)
+    ;movlw	b'00100000'	; CTRL6 (+/-4 Gauss)
     rcall       I2C_TX
     movlw	b'00000000'	; CTRL7 Continuous Mode
     rcall       I2C_TX
