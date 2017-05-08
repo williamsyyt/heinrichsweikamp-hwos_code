@@ -171,7 +171,7 @@
 #DEFINE    dm_cust_dstop_6th_stop_row            dm_cust_dstop_2nd_stop_row     ; 116
 #DEFINE    dm_cust_dstop_6th_stop_column         .111                           ; 111
 #DEFINE    dm_cust_dstop_7th_stop_row            dm_cust_dstop_3rd_stop_row     ; 140
-#DEFINE    dm_cust_dstop_7th_stop_column         dm_cust_dstop_6th_stop_column  ; 112
+#DEFINE    dm_cust_dstop_7th_stop_column         dm_cust_dstop_6th_stop_column  ; 111
 
 ;******* Custom content / #3 - Time, EAD/END and tissue saturation *******
 ; Clock
