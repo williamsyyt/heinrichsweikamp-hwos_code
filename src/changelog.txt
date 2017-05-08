@@ -1,3 +1,7 @@
+[2.16]
+- Stable Version -
+BUGFIX: Compass sensitivity for newer models
+
 [2.15]
 - Stable Version -
 NEW: Deep Sleep mode for OSTC Plus and OSTC 2 (2017) (Entered automatically)
