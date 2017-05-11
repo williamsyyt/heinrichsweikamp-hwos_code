@@ -1,5 +1,7 @@
 [2.16]
 - Stable Version -
+NEW: Third and fourth logbook page per dive showing Gaslist and Setpoints in standard font size
+
 BUGFIX: Compass sensitivity for newer models
 
 [2.15]

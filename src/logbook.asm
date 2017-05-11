@@ -1602,109 +1602,7 @@ logbook_show_divenumber3:
 
 
 logbook_page2: ; Show more info
-;	call		speed_fastest
-    clrf        CCP1CON                     ; stop PWM
-    bcf         PORTC,2                     ; Pull PWM out to GND
-    call		TFT_ClearScreen				; Clear screen
-
-; Set ext_flash pointer to "#divesecs-oldest" dive
-; compute read_int_eeprom .2 - divesecs
-; Read required header data for profile display
-; look in header for pointer to begin of diveprofile (Byte 2-4)
-; Set pointer (ext_flash_log_pointer:3) to this address, start drawing
-
-	decf	divesecs,F		;-1
-	read_int_eeprom .2
-	movf	EEDATA,W
-	bcf		STATUS,C
-	subfwb	divesecs,W		; max. dives (low value) - divesecs
-	movwf	lo				; result
-	incf	divesecs,F		;+1
-	; Set ext_flash_address:3 to TOC entry of this dive
-	; 1st: 200000h-200FFFh -> lo=0
-	; 2nd: 201000h-201FFFh -> lo=1
-	; 3rd: 202000h-202FFFh -> lo=2
-	; 256: 2FF000h-2FFFFFh -> lo=255 (And hi>0...)
-	clrf		ext_flash_address+0
-	clrf		ext_flash_address+1
-	movlw		0x20
-	movwf		ext_flash_address+2
-	movlw		.16
-	mulwf		lo					; lo*16 = offset to 0x2000 (up:hi)
-	movf		PRODL,W
-	addwf		ext_flash_address+1,F
-	movf		PRODH,W
-	addwfc		ext_flash_address+2,F
-	; pointer at the first 0xFA of header
-    rcall        logbook_show_divenumber             ; Show the dive number in medium font
-	; Show date and time in first row
-    	WIN_SMALL	.59,.10
-	LOG_POINT_TO    log_date
-	call		ext_flash_byte_read_plus
-	movff		temp1,convert_value_temp+2		; Year
-	call		ext_flash_byte_read_plus
-	movff		temp1,convert_value_temp+0		; Month
-	call		ext_flash_byte_read_plus
-	movff		temp1,convert_value_temp+1		; Day
-	call		TFT_convert_date			; converts into "DD/MM/YY" or "MM/DD/YY" or "YY/MM/DD" in postinc2
-	PUTC		"-"
-	call		ext_flash_byte_read_plus		; hour
-	movff		temp1,lo
-	call		ext_flash_byte_read_plus		; Minutes
-	movff		temp1,hi
-	output_99x						; hour
-	PUTC		':'
-	movff		hi,lo			
-	output_99x						; minute
-	STRCAT_PRINT	""					; Display 1st row of details
-
-	; Show max depth and dive time
-	WIN_SMALL	.5,.35
-	STRCAT		"Max:"
-	LOG_POINT_TO    log_max_depth
-	call		ext_flash_byte_read_plus	; read max depth
-	movff		temp1,lo				
-	call		ext_flash_byte_read_plus	; read max depth
-	movff		temp1,hi
-
-	TSTOSS		opt_units			; 0=Meters, 1=Feets
-	bra		logbook_page2_depth_metric
-	; imperial
-	call		convert_mbar_to_feet       	; convert value in lo:hi from mbar to feet
-	PUTC	' '
-	bcf		leftbind
-	output_16_3
-	STRCAT_TEXT	tFeets
-	bra		logbook_page2_depth_common
-
-logbook_page2_depth_metric:
-	bsf		leftbind
-	output_16dp	d'3'					; max. depth
-	STRCAT_TEXT     tMeters
-
-logbook_page2_depth_common:	
-	STRCAT		" - "
-	call		ext_flash_byte_read_plus		; divetime in minutes	
-	movff		temp1,lo
-	call		ext_flash_byte_read_plus	
-	movff		temp1,hi				; divetime in minutes
-
-	bsf		leftbind
-	output_16						; divetime minutes
-	PUTC		"m"
-        LOG_POINT_TO    log_divetime+.2
-	call		ext_flash_byte_read_plus				; read divetime seconds
-	movff		temp1,lo
-	bsf		leftbind
-	output_99x							; divetime seconds
-	call	TFT_standard_color
-	STRCAT_PRINT    "s"
-;    ; Dive mode
-;        LOG_POINT_TO    log_divemode
-;        call		ext_flash_byte_read_plus            ; Read divemode
-;        movff       temp1,lo
-;	call        TFT_display_decotype_surface1       ; "strcat_print"s divemode (OC, CC, APNEA or GAUGE)
-
+    rcall   log_details_header	; Shows number, time/date and basic dive info
 	
 	; Deco model
     WIN_SMALL   .5,.65
@@ -1804,6 +1702,9 @@ logbook_decomodel_common:
     movlw	.1
     cpfsgt	lo	    ; >1?
     bcf		neg_flag    ; No, clear flag
+    movlw	.9
+    cpfslt	lo	    ; <9?
+    bcf		neg_flag    ; No, clear flag (When unit was updgraded from hwOS Sport (10.xx))
     bsf         leftbind
     output_8
     PUTC        "."
@@ -1859,65 +1760,218 @@ logbook_no_batt_info:		; dives with firmware <2.15
     call	TFT_set_color
     WIN_FRAME_COLOR16   .63,.220,.107,.159; Top, Bottom, Left, Right
 
-   
-    
-    
-;    ; OC/CC Gas List
-;    LOG_POINT_TO    log_divemode
-;    call		ext_flash_byte_read_plus            ; 0=OC, 1=CC, 2=Gauge, 3=Apnea into temp1
-;    WIN_TINY	log2_title_column,log2_title_row1
-;    WIN_COLOR   color_greenish
-;    STRCPY_TEXT_PRINT   tGaslist
-;    WIN_FRAME_STD   log2_title_row1-2, log2_gas_row3+.15, log2_title_column-2, .159    ; Top, Bottom, Left, Right
-;    bcf		leftbind
-;    LOG_POINT_TO    log_gas1
-;	movlw		color_white					; Color for Gas 1
-;	call		TFT_set_color				; Set Color...
-;	WIN_TINY	log2_gas_column, log2_gas_row1
-;    rcall       log_show_gas_common2
-;	movlw		color_green					; Color for Gas 2
-;	call		TFT_set_color				; Set Color...
-;	WIN_TINY	log2_gas_column, log2_gas_row2
-;    rcall       log_show_gas_common2
-;	movlw		color_red					; Color for Gas 3
-;	call		TFT_set_color				; Set Color...
-;	WIN_TINY	log2_gas_column, log2_gas_row3
-;    rcall       log_show_gas_common2
-;;	movlw		color_yellow				; Color for Gas 4
-;;	call		TFT_set_color				; Set Color...
-;;	WIN_TINY	log2_gas_column, log2_gas_row4
-;;    rcall       log_show_gas_common2
-;;	movlw		color_cyan  				; Color for Gas 5
-;;	call		TFT_set_color				; Set Color...
-;;	WIN_TINY	log2_gas_column, log2_gas_row5
-;;    rcall       log_show_gas_common2
-;
-;
-;
-
     rcall       logbook_preloop_tasks       ; Clear some flags and set to Speed_eco
 display_details_loop:
-    btfsc		switch_left					; SET/MENU?
-	goto		display_profile2            ; Show the profile view again
-    btfsc		switch_right				; ENTER?
-	bra			exit_profileview			; back to list
-    rcall       log_screendump_and_onesecond    ; Check if we need to make a screenshot and check for new second
-	btfsc		sleepmode					; Timeout?
-	bra			exit_profileview			; back to list
-
-	bra			display_details_loop        ; wait for something to do
+    btfsc		switch_left		; SET/MENU?
+    bra			logbook_page3		; Details, 2nd page
+    btfsc		switch_right		; ENTER?
+    bra			exit_profileview	; back to list
+    rcall		log_screendump_and_onesecond    ; Check if we need to make a screenshot and check for new second
+    btfsc		sleepmode		; Timeout?
+    bra			exit_profileview	; back to list
+    bra			display_details_loop    ; wait for something to do
 
     global  logbook_preloop_tasks
 logbook_preloop_tasks:
 	movlw       CCP1CON_VALUE               ; See hwos.inc
 	movwf       CCP1CON                     ; Power-on backlight
-	call		TFT_standard_color
-	bcf			sleepmode					; clear some flags
-	bcf			switch_right
-	bcf			switch_left
-	clrf		timeout_counter2
-	goto    	speed_normal                ; and return
+	call	    TFT_standard_color
+	bcf	    sleepmode			; clear some flags
+	bcf	    switch_right
+	bcf	    switch_left
+	clrf	    timeout_counter2
+	goto	    speed_normal                ; and return
 
+    
+logbook_page3: ; Show even more info
+    rcall   log_details_header	; Shows number, time/date and basic dive info
+
+    ; OC/CC Gas List
+    LOG_POINT_TO    log_divemode
+    call	ext_flash_byte_read_plus            ; 0=OC, 1=CC, 2=Gauge, 3=Apnea into temp1
+    WIN_SMALL   .5,.65
+    WIN_COLOR   color_greenish
+    STRCPY_TEXT_PRINT   tGaslist
+    bcf		leftbind
+    LOG_POINT_TO    log_gas1
+    movlw	color_white				; Color for Gas 1
+    call	TFT_set_color				; Set Color...
+    WIN_SMALL   .5,.90
+    rcall       log_show_gas_common2
+    movlw	color_green				; Color for Gas 2
+    call	TFT_set_color				; Set Color...
+    WIN_SMALL   .5,.115
+    rcall       log_show_gas_common2
+    movlw	color_red				; Color for Gas 3
+    call	TFT_set_color				; Set Color...
+    WIN_SMALL   .5,.140
+    rcall       log_show_gas_common2
+    movlw	color_yellow				; Color for Gas 4
+    call	TFT_set_color				; Set Color...
+    WIN_SMALL   .5,.165
+    rcall       log_show_gas_common2
+    movlw	color_cyan  				; Color for Gas 5
+    call	TFT_set_color				; Set Color...
+    WIN_SMALL   .5,.190
+    rcall       log_show_gas_common2
+
+    movlw       color_lightblue
+    call	TFT_set_color
+    WIN_FRAME_COLOR16   .63,.220,.2,.90; Top, Bottom, Left, Right
+
+    rcall       logbook_preloop_tasks       ; Clear some flags and set to Speed_eco
+display_details2_loop:
+    btfsc		switch_left		; SET/MENU?
+    goto		logbook_page4		; Show more info
+    btfsc		switch_right		; ENTER?
+    bra			exit_profileview	; back to list
+    rcall		log_screendump_and_onesecond    ; Check if we need to make a screenshot and check for new second
+    btfsc		sleepmode		; Timeout?
+    bra			exit_profileview	; back to list
+    bra			display_details2_loop   ; wait for something to do	
+
+logbook_page4: ; Show even more info
+    rcall   log_details_header	; Shows number, time/date and basic dive info
+    
+        ; Setpoint list
+    LOG_POINT_TO    log_sp1
+    WIN_SMALL   .5,.65
+    WIN_COLOR   color_greenish
+    STRCPY_TEXT_PRINT   tFixedSetpoints
+    call	    TFT_standard_color
+    WIN_SMALL   .5,.90
+    rcall       log_show_sp_common
+    WIN_SMALL   .5,.115
+    rcall       log_show_sp_common
+    WIN_SMALL   .5,.140
+    rcall       log_show_sp_common
+    WIN_SMALL   .5,.165
+    rcall       log_show_sp_common
+    WIN_SMALL   .5,.190
+    rcall       log_show_sp_common
+
+    movlw       color_greenish
+    call	TFT_set_color
+    WIN_FRAME_COLOR16   .63,.220,.2,.112; Top, Bottom, Left, Right
+
+    rcall       logbook_preloop_tasks       ; Clear some flags and set to Speed_eco
+display_details3_loop:
+    btfsc		switch_left		; SET/MENU?
+    goto		display_profile2        ; Show the profile view again
+    btfsc		switch_right		; ENTER?
+    bra			exit_profileview	; back to list
+    rcall		log_screendump_and_onesecond    ; Check if we need to make a screenshot and check for new second
+    btfsc		sleepmode		; Timeout?
+    bra			exit_profileview	; back to list
+    bra			display_details3_loop   ; wait for something to do	
+
+    
+    
+log_details_header:    
+    clrf        CCP1CON				; stop PWM
+    bcf         PORTC,2				; Pull PWM out to GND
+    call	TFT_ClearScreen			; Clear screen
+
+; Set ext_flash pointer to "#divesecs-oldest" dive
+; compute read_int_eeprom .2 - divesecs
+; Read required header data for profile display
+; look in header for pointer to begin of diveprofile (Byte 2-4)
+; Set pointer (ext_flash_log_pointer:3) to this address, start drawing
+
+	decf	divesecs,F		;-1
+	read_int_eeprom .2
+	movf	EEDATA,W
+	bcf		STATUS,C
+	subfwb	divesecs,W		; max. dives (low value) - divesecs
+	movwf	lo				; result
+	incf	divesecs,F		;+1
+	; Set ext_flash_address:3 to TOC entry of this dive
+	; 1st: 200000h-200FFFh -> lo=0
+	; 2nd: 201000h-201FFFh -> lo=1
+	; 3rd: 202000h-202FFFh -> lo=2
+	; 256: 2FF000h-2FFFFFh -> lo=255 (And hi>0...)
+	clrf		ext_flash_address+0
+	clrf		ext_flash_address+1
+	movlw		0x20
+	movwf		ext_flash_address+2
+	movlw		.16
+	mulwf		lo					; lo*16 = offset to 0x2000 (up:hi)
+	movf		PRODL,W
+	addwf		ext_flash_address+1,F
+	movf		PRODH,W
+	addwfc		ext_flash_address+2,F
+	; pointer at the first 0xFA of header
+	rcall        logbook_show_divenumber             ; Show the dive number in medium font
+	; Show date and time in first row
+    	WIN_SMALL	.59,.10
+	LOG_POINT_TO    log_date
+	call		ext_flash_byte_read_plus
+	movff		temp1,convert_value_temp+2		; Year
+	call		ext_flash_byte_read_plus
+	movff		temp1,convert_value_temp+0		; Month
+	call		ext_flash_byte_read_plus
+	movff		temp1,convert_value_temp+1		; Day
+	call		TFT_convert_date			; converts into "DD/MM/YY" or "MM/DD/YY" or "YY/MM/DD" in postinc2
+	PUTC		"-"
+	call		ext_flash_byte_read_plus		; hour
+	movff		temp1,lo
+	call		ext_flash_byte_read_plus		; Minutes
+	movff		temp1,hi
+	output_99x						; hour
+	PUTC		':'
+	movff		hi,lo			
+	output_99x						; minute
+	STRCAT_PRINT	""					; Display 1st row of details
+
+	; Show max depth and dive time
+	WIN_SMALL	.5,.35
+	STRCAT		"Max:"
+	LOG_POINT_TO    log_max_depth
+	call		ext_flash_byte_read_plus	; read max depth
+	movff		temp1,lo				
+	call		ext_flash_byte_read_plus	; read max depth
+	movff		temp1,hi
+
+	TSTOSS		opt_units			; 0=Meters, 1=Feets
+	bra		logbook_page2_depth_metric
+	; imperial
+	call		convert_mbar_to_feet       	; convert value in lo:hi from mbar to feet
+	PUTC	' '
+	bcf		leftbind
+	output_16_3
+	STRCAT_TEXT	tFeets
+	bra		logbook_page2_depth_common
+
+logbook_page2_depth_metric:
+	bsf		leftbind
+	output_16dp	d'3'					; max. depth
+	STRCAT_TEXT     tMeters
+
+logbook_page2_depth_common:	
+	STRCAT		" - "
+	call		ext_flash_byte_read_plus		; divetime in minutes	
+	movff		temp1,lo
+	call		ext_flash_byte_read_plus	
+	movff		temp1,hi				; divetime in minutes
+
+	bsf		leftbind
+	output_16						; divetime minutes
+	PUTC		"m"
+        LOG_POINT_TO    log_divetime+.2
+	call		ext_flash_byte_read_plus				; read divetime seconds
+	movff		temp1,lo
+	bsf		leftbind
+	output_99x							; divetime seconds
+	call	TFT_standard_color
+	STRCAT_PRINT    "s"
+;    ; Dive mode
+;        LOG_POINT_TO    log_divemode
+;        call		ext_flash_byte_read_plus            ; Read divemode
+;        movff       temp1,lo
+;	call        TFT_display_decotype_surface1       ; "strcat_print"s divemode (OC, CC, APNEA or GAUGE)
+	return
+    
+    
 log_show_sp_common:
     lfsr		FSR2,buffer
 	call		ext_flash_byte_read_plus					; Read setpoint
