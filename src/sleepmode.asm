@@ -58,8 +58,12 @@ sleeploop_pre:
         btfss   analog_switches
         bra	sleeploop_loop     ; no analog switches
 
-	bsf	power_sw1
-	bsf	power_sw2
+        bsf     power_sw1
+        btfss   power_sw1
+        bra     $-4
+        bsf     power_sw2
+        btfss   power_sw2
+        bra     $-4
 	movlw	.4				; Wait for button circuity
 	movwf	apnoe_max_pressure+0		; Used as temp
 	bcf	onesecupdate

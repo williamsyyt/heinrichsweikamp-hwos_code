@@ -251,12 +251,12 @@ init_ostc:
 	movlw	b'00001000'			; Bit3: TMR7
 	movwf	PIE5
 
-;    bsf     power_sw1
-;    btfss   power_sw1
-;    bra     $-4
-;    bsf     power_sw2
-;    btfss   power_sw2
-;    bra     $-4
+        bsf     power_sw1
+        btfss   power_sw1
+        bra     $-4
+        bsf     power_sw2
+        btfss   power_sw2
+        bra     $-4
 
 	movlw	d'2'
 	movff   WREG,speed_setting		; Normal
