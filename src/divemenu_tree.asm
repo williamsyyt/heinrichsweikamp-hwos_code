@@ -148,6 +148,7 @@ do_switch_sp2:
     bra     do_exit_divemode_menu   ; And exit
 
 do_divemode_gaslist_pscr:
+    bsf     ccr_diluent_setup       ; For Diluents
     bcf     is_bailout              ; =1: Bailout
     bcf     is_bailout_menu         ;
     bra	    do_divemode_gaslist_pscr2

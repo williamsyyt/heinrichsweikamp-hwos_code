@@ -234,7 +234,7 @@ logbook:
 	clrf		logbook_flags
     clrf        CCP1CON                     ; stop PWM
     bcf         PORTC,2                     ; Pull PWM out to GND
-    call		TFT_ClearScreen				; Clear screen
+	call    TFT_boot
 ;	call		TFT_standard_color
 	clrf		menupos3					; Here: used rows on current logbook-page	
 	clrf		logbook_page_number			; Here: # of current displayed page
@@ -401,7 +401,8 @@ display_profile2:
 ;	call		speed_fastest
     clrf        CCP1CON                     ; stop PWM
     bcf         PORTC,2                     ; Pull PWM out to GND
-    call		TFT_ClearScreen				; Clear screen
+    call        TFT_boot
+    ;call		TFT_ClearScreen				; Clear screen
 ; Set ext_flash pointer to "#divesecs-oldest" dive
 ; compute read_int_eeprom .2 - divesecs
 ; Read required header data for profile display
@@ -1433,10 +1434,11 @@ exit_profileview:
 	movlw		logbook_row_number
 	movwf		menupos						; here: active row on current page
 ;    call        TFT_DisplayOff
-;    call        TFT_boot
+    call        TFT_boot
     clrf        CCP1CON                     ; stop PWM
     bcf         PORTC,2                     ; Pull PWM out to GND
-	call		TFT_ClearScreen				; clear details/profile
+        call        TFT_boot
+;	call		TFT_ClearScreen				; clear details/profile
 	goto		logbook2					; start search
 
 next_logbook2:
@@ -1449,7 +1451,8 @@ next_logbook2:
     bsf         keep_cursor_new_page        ; Keep cursor on "next page"
     clrf        CCP1CON                     ; stop PWM
     bcf         PORTC,2                     ; Pull PWM out to GND
-	call		TFT_ClearScreen
+    call        TFT_boot
+	;call		TFT_ClearScreen
 	goto		logbook2					; start search
 
 next_logbook3:
@@ -1870,7 +1873,8 @@ display_details3_loop:
 log_details_header:    
     clrf        CCP1CON				; stop PWM
     bcf         PORTC,2				; Pull PWM out to GND
-    call	TFT_ClearScreen			; Clear screen
+    call        TFT_boot
+    ;call	TFT_ClearScreen			; Clear screen
 
 ; Set ext_flash pointer to "#divesecs-oldest" dive
 ; compute read_int_eeprom .2 - divesecs

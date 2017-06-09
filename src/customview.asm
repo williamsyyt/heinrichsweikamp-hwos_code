@@ -159,7 +159,9 @@ surf_customview_init_view1:                 ; View1: OC Gas list
     btfsc   FLAG_apnoe_mode
     bra     surf_customview_toggle
     btfsc   FLAG_ccr_mode
-    bra     surf_customview_init_view1_bail ; Bailoutversion
+    bra     surf_customview_init_view1_bail ; Bailout version of "OC Gas List"
+    btfsc   FLAG_pscr_mode
+    bra     surf_customview_init_view1_bail ; Bailout version of "OC Gas List"
     STRCPY_TEXT_PRINT tGaslist              ; Title of customview
     call    TFT_standard_color
     call	TFT_gaslist_surfmode            ; Show gas list
@@ -172,12 +174,15 @@ surf_customview_init_view1_bail:
     bra		customview_toggle_exit          ; Done.
 
 surf_customview_init_view2:                 ; View2: CC Dil list
+    btfsc   FLAG_pscr_mode
+    bra     surf_customview_init_view2_2
     btfss   FLAG_ccr_mode
     bra     surf_customview_toggle
     btfsc   FLAG_gauge_mode
     bra     surf_customview_toggle
     btfsc   FLAG_apnoe_mode
     bra     surf_customview_toggle
+surf_customview_init_view2_2:    
     STRCPY_TEXT_PRINT tGaslistCC            ; Title of customview
     call    TFT_standard_color
     call	TFT_dillist_surfmode            ; Show diluent list

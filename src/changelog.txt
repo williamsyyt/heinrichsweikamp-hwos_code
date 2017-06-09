@@ -1,8 +1,11 @@
 [2.16]
 - Stable Version -
 NEW: Third and fourth logbook page per dive showing Gaslist and Setpoints in standard font size
-
+BUGFIX: several minor graphic issues in logbook fixed
+BUGFIX: Rare button issues in OSTC Plus hardware
 BUGFIX: Compass sensitivity for newer models
+BUGFIX: PSCR mode showed bailout gaslist instead of diluent gaslist
+NEW: More customviews in surface mode for PSCR mode
 
 [2.15]
 - Stable Version -

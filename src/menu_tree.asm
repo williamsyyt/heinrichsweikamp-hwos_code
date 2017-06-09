@@ -36,6 +36,7 @@ gui     CODE
 do_main_menu:
         movff   menupos3,customview_surfmode; save last customview
 do_main_menu2:
+    call        TFT_boot
 		bcf		sleepmode				; for timeout
 		call    menu_processor_reset    ; restart from first icon.
 
