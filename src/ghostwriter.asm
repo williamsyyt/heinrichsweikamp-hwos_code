@@ -1020,6 +1020,11 @@ change_logbook_offset2:
 	clrf	lastdive_time+1
 	clrf	lastdive_time+2
 	clrf	lastdive_time+3
+	movff	divemins+0,lastdive_duration+0
+	movff	divemins+1,lastdive_duration+1
+	movff	divesecs,lastdive_duration+2
+	movff	max_pressure+0,lastdive_maxdepth+0
+	movff	max_pressure+1,lastdive_maxdepth+1
 	banksel	common
 
 	; Add more here...

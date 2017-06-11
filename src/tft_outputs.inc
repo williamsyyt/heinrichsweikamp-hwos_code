@@ -16,6 +16,7 @@ TFT_color_code macro color_code_temp
 	endm
 
 ; Surface mode
+	extern	TFT_surface_lastdive
     extern  TFT_show_OC_startgas_surface   ; Show first gas and "OSTC2-like" active gases
 	extern	TFT_serial
 	extern	TFT_clock

@@ -22,7 +22,7 @@
 
 ; Firmware definition
 #DEFINE	softwareversion_x		d'2'		; Software version  XX.YY
-#DEFINE	softwareversion_y		d'16'		; Software version  XX.YY
+#DEFINE	softwareversion_y		d'17'		; Software version  XX.YY
 #DEFINE softwareversion_beta 	0 			; (and 0 for release)
 ; Firmware version will appear in "Change Firmware" style
 #DEFINE firmware_expire_year    .18
@@ -571,6 +571,8 @@ analog_sw2		res 1	; analog value for switch 2
 battery_type		res 1	; =0:1.5V, =1:3,6V Saft, =2:LiIon 3,7V/0.8Ah, =3:LiIon 3,7V/3.1Ah, =4: LiIon 3,7V/2.3Ah
 uptime			res 4	; Uptime [s]
 lastdive_time		res 4	; Time since last dive [s]
+lastdive_duration	res 3	; mins:2 and secs
+lastdive_maxdepth	res 2	; in mbar	
 battery_acumulated_charge   res 2   ; Raw values in battery gauge IC
 gauge_status_byte	res 1	 ; Gauge IC status byte
 button_polarity		res 1	; 0xFF (Both normal), 0x00 (Both inverted), 0x01 (Left inverted only), 0x02 (Right inverted only) 
