@@ -16,6 +16,7 @@
 	TCODE	tMenu,		"<Menü"     	; <Menu
     TCODE   tView,      "View>"         ; View>
     TCODE   tHeading,   "Kurs:"         ; Heading:
+    TCODE   tLastDive,	"Letzter TG"	; Last Dive (Max 10 chars)
 
 ; Divemode Menu
     TCODE   tDivemenu_Gaslist,  "Gasliste"    ; Gaslist

@@ -119,7 +119,7 @@ customview_minute:
 surf_customview_toggle:
 	bcf		switch_right
 	incf	menupos3,F			            ; Number of customview to show
-	movlw	d'7'							; Max number of customsviews in surface mode
+	movlw	d'8'					; Max number of customsviews in surface mode
 	cpfsgt	menupos3			            ; Max reached?
 	bra		surf_customview_mask		    ; No, show
     movlw   .1
@@ -142,10 +142,12 @@ surf_customview_mask:
 	bra		surf_customview_init_view4      ; Custom Text
 	dcfsnz	WREG,F
 	bra		surf_customview_init_view5      ; Tissue Diagram
-    dcfsnz	WREG,F
+	dcfsnz	WREG,F
 	bra		surf_customview_init_view6      ; Compass
-    dcfsnz	WREG,F
+	dcfsnz	WREG,F
 	bra		surf_customview_init_view7      ; Deco settings
+	dcfsnz	WREG,F
+	bra		surf_customview_init_view8      ; Last Dive info
 
     call    I2C_sleep_accelerometer         ; Stop accelerometer
     call    I2C_sleep_compass               ; Stop compass
@@ -220,8 +222,9 @@ surf_customview_init_view6:                 ; View6: Compass
     extern  TFT_surface_compass_mask
     call	TFT_surface_compass_mask        ; Show compass
     bra		customview_toggle_exit          ; Done.
+    
 surf_customview_init_view7:
-    btfsc   FLAG_gauge_mode
+    btfsc   FLAG_gauge_mode		    ; View7: Deco settings
     bra     surf_customview_toggle
     btfsc   FLAG_apnoe_mode
     bra     surf_customview_toggle
@@ -230,6 +233,12 @@ surf_customview_init_view7:
     call    TFT_surface_decosettings        ; Show all deco settings
     bra		customview_toggle_exit          ; Done.
 
+surf_customview_init_view8:                 ; View8: Last dive info
+    call	TFT_surface_lastdive		; Show last dive interval
+
+    bra		customview_toggle_exit          ; Done.
+    
+    
     global  menuview_toggle
 menuview_toggle:            ; Show Menu or the simulator tasks
     movlw   divemode_menuview_timeout

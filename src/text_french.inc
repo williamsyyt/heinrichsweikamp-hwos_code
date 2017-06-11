@@ -16,6 +16,7 @@
 	TCODE	tMenu,		"<Menu" 		; <Menu
     TCODE   tView,      "Vues>"         ; View>
     TCODE   tHeading,   "Cap:"      ; Heading:
+    TCODE   tLastDive,	"Last Dive"	; Last Dive (Max 10 chars)
 
 ; Divemode Menu
     TCODE   tDivemenu_Gaslist,  "Liste Gaz"      ; Gas List

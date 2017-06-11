@@ -3557,6 +3557,70 @@ TFT_sensor_check:
     bsf     neg_flag_velocity
     goto    TFT_display_ppo2_com; and return...
 
+    global  TFT_surface_lastdive
+TFT_surface_lastdive:
+    call    TFT_divemask_color
+    WIN_TINY    surf_gaslist_column,surf_gaslist_row+.5
+    STRCAT_TEXT_PRINT   tLastDive		    ; Last Dive:
+    WIN_TINY    surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.1)+.5
+    STRCAT_TEXT_PRINT   tDivetime		    ; Divetime
+    WIN_TINY    surf_gaslist_column,surf_gaslist_row+(surf_gaslist_spacing*.2)+.5
+    STRCAT_TEXT_PRINT   tMaxDepth		    ; Max. Depth
+    call	TFT_standard_color
+    WIN_SMALL    surf_gaslist_column+.48,surf_gaslist_row
+    movff   lastdive_time+0,xC+0
+    movff   lastdive_time+1,xC+1
+    movff   lastdive_time+2,xC+2
+    movff   lastdive_time+3,xC+3
+    movlw   LOW	    .3600
+    movwf   xB+0
+    movlw   HIGH    .3600
+    movwf   xB+1		; One day = 3600s
+    call    div32x16	; xC:4 / xB:2 = xC+3:xC+2 with xC+1:xC+0 as remainder
+    ;xC+0:xC+1 -> Full hours
+    movff   xC+1,xA+1
+    movff   xC+0,xA+0
+    clrf    xB+1
+    movlw   .24
+    movwf   xB+0
+    call    div16x16	;xA/xB=xC with xA+0 as remainder 	
+    movff   xC+0,lo
+    movff   xC+1,hi	; Full days
+    bsf	    leftbind
+    output_16
+    PUTC    "d"
+    movff   xA+0,lo	; Full hours
+    output_8
+    STRCAT_PRINT    "h"
+    WIN_SMALL    surf_gaslist_column+.48,surf_gaslist_row+(surf_gaslist_spacing*.1)
+    movff   lastdive_duration+0,lo
+    movff   lastdive_duration+1,hi
+    output_16							; divetime minutes
+    PUTC    ":"
+    movff   lastdive_duration+3,lo
+    output_99x							; divetime seconds
+    STRCAT_PRINT    ""
+    WIN_SMALL    surf_gaslist_column+.48,surf_gaslist_row+(surf_gaslist_spacing*.2)
+    movff   lastdive_maxdepth+0,lo
+    movff   lastdive_maxdepth+1,hi
+    TSTOSS  opt_units			; 0=Meters, 1=Feets
+    bra	    TFT_surface_lastdive_metric
+	;imperial
+    rcall   convert_mbar_to_feet    ; convert value in lo:hi from mbar to feet
+    output_16_3                         ; limit to 999 and display only (0-999)
+    STRCAT_TEXT tFeets1
+    bra	    TFT_surface_lastdive2
+
+TFT_surface_lastdive_metric:
+    bsf     ignore_digit5               ; no cm...
+    movlw   d'1'					; +1
+    movff   WREG,ignore_digits		; no 1000m
+    output_16dp .3  					; xxx.y
+    STRCAT_TEXT tMeters
+TFT_surface_lastdive2:
+    STRCAT_PRINT    ""
+    bcf	    leftbind
+    return  ; Done.
 
     global  TFT_surface_tissues
 TFT_surface_tissues:             ; Show Tissue diagram in surface mode
@@ -3802,7 +3866,7 @@ TFT_show_ppO2_2:
     ; neg_flag_velocity is hijacked, used to toggle the fillup lenght.
     btfsc   neg_flag_velocity
     movlw   .4
-    rcall   TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
+    call    TFT_fillup_with_spaces      ; Fillup FSR2 with spaces (Total string length in #WREG)
     STRCAT_PRINT ""
     bcf	win_invert
     goto	TFT_standard_color; and return...
