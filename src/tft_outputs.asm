@@ -3597,7 +3597,7 @@ TFT_surface_lastdive:
     movff   lastdive_duration+1,hi
     output_16							; divetime minutes
     PUTC    ":"
-    movff   lastdive_duration+3,lo
+    movff   lastdive_duration+2,lo
     output_99x							; divetime seconds
     STRCAT_PRINT    ""
     WIN_SMALL    surf_gaslist_column+.48,surf_gaslist_row+(surf_gaslist_spacing*.2)
