@@ -689,7 +689,7 @@ gaslist_reset_mod_title2:
         movwf   lo                      ; Copy to lo
 
         movf    gaslist_gas,W           ; Compare to switch depth
-        lfsr    FSR1,char_I_dil_change  ; Setup Diluents
+        lfsr    FSR1,char_I_dil_change-.5  ; Setup Diluents
         btfss   ccr_diluent_setup           ; In CCR-Menu?
         lfsr    FSR1,opt_OC_bail_gas_change ; No, setup OC Gases
         movf   	PLUSW1,W
@@ -706,7 +706,7 @@ gaslist_reset_mod:
 
         movf    gaslist_gas,W           ; Read current gas O2 ratio
 
-        lfsr    FSR1,char_I_dil_change      ; Setup Diluents mH
+        lfsr    FSR1,char_I_dil_change-.5   ; Setup Diluents
         btfss   ccr_diluent_setup           ; In CCR-Menu?
         lfsr    FSR1,opt_OC_bail_gas_change ; No, setup OC Gases
 

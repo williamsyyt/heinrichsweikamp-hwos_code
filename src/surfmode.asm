@@ -10,19 +10,19 @@
 ;  2011-08-07 : [mH] moving from OSTC code
 
 #include    "hwos.inc"                 ; Mandatory header
-#include 	"shared_definitions.h"      ; Mailbox from/to p2_deco.c
-#include	"start.inc"
-#include	"tft.inc"
-#include	"tft_outputs.inc"
-#include	"isr.inc"
-#include	"adc_lightsensor.inc"
-#include 	"menu_processor.inc"
-#include	"strings.inc"
-#include	"sleepmode.inc"
-#include 	"wait.inc"                  ; speed_*
-#include	"external_flash.inc"
-#include	"customview.inc"
-#include	"divemode.inc"
+#include    "shared_definitions.h"      ; Mailbox from/to p2_deco.c
+#include    "start.inc"
+#include    "tft.inc"
+#include    "tft_outputs.inc"
+#include    "isr.inc"
+#include    "adc_lightsensor.inc"
+#include    "menu_processor.inc"
+#include    "strings.inc"
+#include    "sleepmode.inc"
+#include    "wait.inc"                  ; speed_*
+#include    "external_flash.inc"
+#include    "customview.inc"
+#include    "divemode.inc"
 #include    "mcp.inc"                   ; RX
 #include    "i2c.inc"
 #include    "comm.inc"
