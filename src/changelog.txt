@@ -5,6 +5,7 @@ BUGFIX: several minor graphic issues in logbook fixed
 BUGFIX: Rare button issues in OSTC Plus hardware
 BUGFIX: Compass sensitivity for newer models
 BUGFIX: PSCR mode showed bailout gaslist instead of diluent gaslist
+BUGFIX: PSCR mode "Better Gas" showed bailout gases instead of diluents
 NEW: More customviews in surface mode for PSCR mode
 NEW: Last Dive customviews in surface mode with divetime, depth and interval
 BUGFIX: Reset to MOD in Diluent Menu did reset Setpoint change depth
