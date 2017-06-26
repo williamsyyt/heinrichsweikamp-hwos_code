@@ -957,15 +957,20 @@ gas_switched_common:
     return                          ; Yes, do not switch gas (There is no Gas #0 !)
 
     decf    menupos,W               ; 1-5 -> 0-4
-    btfss   FLAG_ccr_mode           ; Choose OC Gases
-    rcall   setup_gas_registers     ; With WREG=Gas 0-4
-    decf    menupos,W               ; 1-5 -> 0-4
     btfsc   FLAG_ccr_mode           ; Choose CC Diluents
     rcall   setup_dil_registers     ; With WREG=Gas 0-4
     decf    menupos,W               ; 1-5 -> 0-4
     btfsc   FLAG_pscr_mode          ; Choose CC Diluents
     rcall   setup_dil_registers     ; With WREG=Gas 0-4
-
+    ; OC mode?
+    btfsc   FLAG_ccr_mode           ; CCR?
+    bra	    gas_switched_common2    ; Yes
+    btfsc   FLAG_pscr_mode          ; PSCR?
+    bra	    gas_switched_common2    ; Yes
+    ; -> OC
+    decf    menupos,W               ; 1-5 -> 0-4
+    rcall   setup_gas_registers     ; With WREG=Gas 0-4
+gas_switched_common2:
     decf    menupos,W               ; 1-5 -> 0-4
     btfsc   is_bailout              ; Choose OC Bailouts (OC Gases)
     rcall   setup_gas_registers     ; With WREG=Gas 0-4
@@ -1197,7 +1202,7 @@ check_gas_change:					; Checks if a better gas should be selected (by user)
 	clrf	xB+1
 	call	div16x16				; compute depth in full m -> result in xC+0
 
-    btfsc   FLAG_ccr_mode           ; In PSCR mode...
+    btfsc   FLAG_pscr_mode          ; In PSCR mode...
     bra     check_gas_change2	    ; Yes, check for diluents
     btfss   FLAG_ccr_mode           ; In CCR mode...
     bra     check_gas_change_OC_bail; No, check for OC or bailout
