@@ -1066,6 +1066,9 @@ comm_read_setting:
     movff   opt_PSCR_drop, TXREG1	    ; RCREG1=0x4A
     dcfsnz  WREG
     movff   opt_PSCR_lungratio, TXREG1	    ; RCREG1=0x4B
+    dcfsnz  WREG
+    movff   opt_ppO2_max_deco, TXREG1       ; RCREG1=0x4C
+
 
     
 comm_read_abort:
@@ -1375,6 +1378,8 @@ comm_write_setting:
     movff   RCREG1, opt_PSCR_drop	    ; RCREG1=0x4A
     dcfsnz  WREG
     movff   RCREG1, opt_PSCR_lungratio	    ; RCREG1=0x4B
+    dcfsnz  WREG
+    movff   RCREG1, opt_ppO2_max_deco	    ; RCREG1=0x4C
 
 
 comm_write_abort:

@@ -215,7 +215,7 @@ option_table_begin:
 	OPTION_UINT8    oDiveTimeout,	    .1,.20,  divemode_timeout_default,   tMinutes,  .168,    opt_diveTimeout			; Timeout for divemode in minutes
 	OPTION_UINT8	oPSCR_drop,	.0,.15,	.4,	     tPercent,.169,    opt_PSCR_drop			; PSCR Drop [%]
 	OPTION_UINT8	oPSCR_lungratio,.5,.20,	.10,	     tPercent,.170,    opt_PSCR_lungratio		; PSCR Lung Ratio [1/x]
-
+	OPTION_UINT8p10 oPPO2MaxDeco,.120, ppo2_warning_high_deco,.160,0,.171, opt_ppO2_max_deco		; ppO2 max for deco gases
 ;=============================================================================
 ; Set Time/Set Date (RAM only)
 		OPTION_UINT8    oSetHours,		.0,	.23, .0,	0, -1,		hours
