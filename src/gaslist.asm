@@ -536,13 +536,14 @@ gaslist_spdepthminus:
         return
 
 ;----------------------------------------------------------------------------
-; Compute MOD from ppO2 Max and current O2 Ratio.
+; Compute MOD from opt_ppO2_max/opt_ppO2_max_deco and current O2 Ratio.
 ;
 ; Input:  gaslist_gas = current gas index.
 ;         opt_gas_O2_ratio[gaslist_gas] = current O2 ratio
 ; Output: WREG = MOD [m]
 ;
 gaslist_calc_mod:
+	movff	gaslist_gas,gaslist_gas_global	; copy for color coding
         movf    gaslist_gas,W           ; Read current gas O2 ratio
         lfsr    FSR1,opt_gas_O2_ratio   ; Read opt_gas_O2_ratio[WREG]
         movf    PLUSW1,W
@@ -552,9 +553,18 @@ gaslist_calc_mod:
 
         ; Pamb max = ppO2 Max / O2 ratio
         movwf   xB+0
-        clrf    xB+1
 
-        movff   opt_ppO2_max,WREG
+	movf    gaslist_gas,W           ; Read current gas O2 ratio
+	lfsr	FSR1,opt_gas_type	; 0=Disabled, 1=First, 2=Travel, 3=Deco for OC gases and 0=Disabled, 1=First, 2=Normal for diluents
+	movff   PLUSW1,xA+0		; xA+0 used as temp here -> holds type
+	
+	movff   opt_ppO2_max_deco,xB+1	; xB+1 used as temp here
+	movlw	.3			
+	cpfseq	xA+0			; Deco?
+	movff   opt_ppO2_max,xB+1	; No, overwrite with travel/bottom max
+	movf	xB+1,W			; Result in WREG
+	
+	clrf	xB+1			; Clear for div16x16
         mullw   .10
         movff   PRODL,xA+0
         movff   PRODH,xA+1
@@ -569,7 +579,7 @@ gaslist_calc_mod_divemode:
     extern  TFT_color_code1
         movwf   hi                          ; Copy O2%
         movlw	warn_gas_in_gaslist
-        call	TFT_color_code1             ; Color-code current row in Gaslist (%O2 in hi), opt_ppO2_max as threshold
+        call	TFT_color_code1             ; Color-code current row in Gaslist (%O2 in hi), opt_ppO2_max/opt_ppO2_max_deco as threshold
         return
 ;----------------------------------------------------------------------------
 

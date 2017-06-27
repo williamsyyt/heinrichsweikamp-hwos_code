@@ -119,8 +119,10 @@
 #DEFINE	ppo2_warning_low		.19     ; [cbar] (Default value)
 #DEFINE ppo2_lowest_setting     .16     ; [cbar] (Minimum value)
 #DEFINE	ppo2_display_high		.120	; [cbar]
-#DEFINE	ppo2_warning_high		.160    ; [cbar] (Default value)
-#DEFINE ppo2_highest_setting    .160    ; [cbar] (Max. Value)
+#DEFINE	ppo2_warning_high		.160    ; [cbar] (Default value) for bottom/travel gases
+#DEFINE	ppo2_warning_high_deco		.160    ; [cbar] (Default value) for deco gases
+#DEFINE ppo2_highest_setting    .160    ; [cbar] (Max. Value) for bottom/travel gases
+#DEFINE ppo2_highest_setting_deco  .160    ; [cbar] (Max. Value) for deco gases
 #DEFINE	cns_display_high		.70		; [%]
 #DEFINE	cns_warning_high		.100    ; [%]
 #DEFINE	gf_display_high     	.75		; [%]
@@ -576,6 +578,8 @@ lastdive_maxdepth	res 2	; in mbar
 battery_acumulated_charge   res 2   ; Raw values in battery gauge IC
 gauge_status_byte	res 1	 ; Gauge IC status byte
 button_polarity		res 1	; 0xFF (Both normal), 0x00 (Both inverted), 0x01 (Left inverted only), 0x02 (Right inverted only) 
+gaslist_gas_global	res 1	; for color coding the gas lists
+active_gas_type		res 1	; 0=Disabled, 1=First, 2=Travel, 3=Deco for OC gases and 0=Disabled, 1=First, 2=Normal for diluents	
 
 ;-----------------------------------------------------------------------------
 ; Reserve BANK2 for general purpose buffer (strings, images, etc).
@@ -592,7 +596,7 @@ opt_dil_O2_ratio        res 5   ; Must be in line with opt_gas_O2_ratio
 opt_gas_He_ratio        res 5   ; He ratio Gas1-5
 opt_dil_He_ratio        res 5   ; Must be in line with opt_gas_He_ratio
 opt_gas_type            res 5   ; 0=Disabled, 1=First, 2=Travel, 3=Deco
-opt_dil_type            res 5   ; 0=Disabled, 1=First, 2=Normal
+opt_dil_type            res 5   ; 0=Disabled, 1=First, 2=Normal -> ; Must be in line with opt_gas_type
 opt_dive_mode           res 1   ; 0=OC, 1=CC, 2=Gauge, 3=Apnea, 4=PSCR
 opt_ppO2_max            res 1   ; PPO2 Max for MOD calculation and color coding in divemode
 opt_ccr_mode            res 1   ; =0: Fixed SP, =1: Sensor
@@ -638,6 +642,7 @@ opt_safety_stop_reset   res 1   ; [cbar]
 opt_diveTimeout		res 1	; Timeout for Divemode [min]
 opt_PSCR_drop		res 1	; PSCR Drop [%]
 opt_PSCR_lungratio	res 1	; PSCR Lung Ratio [1/x]
+opt_ppO2_max_deco       res 1   ; PPO2 Max Decogases (for MOD calculation and color coding in divemode)
 
 ;-----------------------------EEPROM DATA ------------------------------------
 ; Automatic reset of all options when this is changed:

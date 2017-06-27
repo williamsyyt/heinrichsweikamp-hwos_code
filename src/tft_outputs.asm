@@ -159,7 +159,15 @@ TFT_color_code_gaslist:				; %O2 in hi
     bra			TFT_warnings_color      ; too low -> Warning Color!
 
 ; Check for high ppo2
-	movff		opt_ppO2_max,WREG		; PPO2 Max for MOD calculation and color coding in divemode
+    	movff   gaslist_gas_global,WREG	; Read current gas O2 ratio
+	lfsr	FSR1,opt_gas_type	; 0=Disabled, 1=First, 2=Travel, 3=Deco for OC gases and 0=Disabled, 1=First, 2=Normal for diluents
+	movff   PLUSW1,xA+0		; xA+0 used as temp here -> holds type
+	
+	movff   opt_ppO2_max_deco,xB+1	; xB+1 used as temp here
+	movlw	.3			
+	cpfseq	xA+0			; Deco?
+	movff   opt_ppO2_max,xB+1	; No, overwrite with travel/bottom max
+	movf	xB+1,W			; Result in WREG
 	mullw		d'100'					; opt_ppO2_max*100
 	movff		PRODL,sub_b+0
 	movff		PRODH,sub_b+1
@@ -240,7 +248,13 @@ TFT_color_code_ppo2_depth:
 
 	movff	xC+0,sub_a+0
 	movff	xC+1,sub_a+1
-	movff	opt_ppO2_max,WREG		; PPO2 Max for MOD calculation and color coding in divemode
+	;active_gas_type -> 0=Disabled, 1=First, 2=Travel, 3=Deco for OC gases and 0=Disabled, 1=First, 2=Normal for diluents	
+	movff   active_gas_type,xA+0	; xA+0 used as temp here -> holds type
+	movff   opt_ppO2_max_deco,xB+1	; xB+1 used as temp here
+	movlw	.3			
+	cpfseq	xA+0			; Deco?
+	movff   opt_ppO2_max,xB+1	; No, overwrite with travel/bottom max
+	movf	xB+1,W			; Result in WREG
 	mullw	d'100'
 	movff	PRODL,sub_b+0
 	movff	PRODH,sub_b+1
@@ -299,7 +313,15 @@ TFT_color_code_ppo2:
 
 	movff	xC+0,sub_a+0
 	movff	xC+1,sub_a+1
-	movff	opt_ppO2_max,WREG		; PPO2 Max for MOD calculation and color coding in divemode
+	
+	;active_gas_type -> 0=Disabled, 1=First, 2=Travel, 3=Deco for OC gases and 0=Disabled, 1=First, 2=Normal for diluents	
+	movff   active_gas_type,xA+0	; xA+0 used as temp here -> holds type
+	movff   opt_ppO2_max_deco,xB+1	; xB+1 used as temp here
+	movlw	.3			
+	cpfseq	xA+0			; Deco?
+	movff   opt_ppO2_max,xB+1	; No, overwrite with travel/bottom max
+	movf	xB+1,W			; Result in WREG
+
 	mullw	d'100'
 	movff	PRODL,sub_b+0
 	movff	PRODH,sub_b+1
@@ -3072,14 +3094,24 @@ divesets_ppo2_common2:
     return                      ; Done.
 
 	global	divesets_ppo2_min
-    extern  tPPO2Min
+    extern  tPPO2MIN
 divesets_ppo2_min:
-    lfsr    FSR1,tPPO2Min
+    lfsr    FSR1,tPPO2MIN
     call    strcat_text
 	movff	opt_ppO2_min,lo
     movlw   ppo2_warning_low
     bra     divesets_ppo2_common
 
+	global	divesets_ppo2_max_deco
+    extern  tPPO2DECO
+divesets_ppo2_max_deco:
+    lfsr    FSR1,tPPO2DECO
+    call    strcat_text
+	movff	opt_ppO2_max_deco,lo
+    movlw   ppo2_warning_high_deco
+    bra     divesets_ppo2_common
+    
+    
 ;=============================================================================
 
     global  TFT_clear_warning_text

@@ -310,9 +310,10 @@ do_divemode_menu:
     MENU_END
 
 do_ppo2_menu:
-    MENU_BEGIN  tppO2settings, .4
-		MENU_DYNAMIC divesets_ppo2_max,         do_toggle_ppo2_max
-		MENU_DYNAMIC divesets_ppo2_min,         do_toggle_ppo2_min
+    MENU_BEGIN  tppO2settings, .5
+	MENU_DYNAMIC divesets_ppo2_max,         do_toggle_ppo2_max
+	MENU_DYNAMIC divesets_ppo2_max_deco,    do_toggle_ppo2_max_deco
+	MENU_DYNAMIC divesets_ppo2_min,         do_toggle_ppo2_min
         MENU_OPTION  tShowppO2, oShowppO2,      0
         MENU_CALL    tExit,                  	do_return_divemode_menu
     MENU_END
@@ -567,6 +568,19 @@ do_toggle_ppo2_max2:
     movff   lo,opt_ppO2_max
     return
 
+do_toggle_ppo2_max_deco:             ; add 0.1bar, with hard-coded max.
+    movff   opt_ppO2_max_deco,lo     ; banksafe
+    movlw	.10
+	addwf	lo,F
+	movlw	ppo2_highest_setting_deco
+	cpfsgt	lo
+    bra     do_toggle_ppo2_max_deco2
+	movlw	.120
+	movwf	lo
+do_toggle_ppo2_max_deco2:
+    movff   lo,opt_ppO2_max_deco
+    return
+    
 do_toggle_ppo2_min:             ; sub 0.1bar, with hard-coded min.
     movff   opt_ppO2_min,lo     ; banksafe
     incf    lo,F

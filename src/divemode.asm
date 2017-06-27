@@ -993,6 +993,8 @@ setup_gas_registers:                ; With WREG=Gas 0-4
     movff   PLUSW1,char_I_O2_ratio  ; O2 (For ppO2 calculations)
     lfsr    FSR1,opt_gas_He_ratio+0
     movff   PLUSW1,char_I_He_ratio  ; He
+    lfsr    FSR1,opt_gas_type
+    movff   PLUSW1,active_gas_type  ; 0=Disabled, 1=First, 2=Travel, 3=Deco for OC gases and 0=Disabled, 1=First, 2=Normal for diluents
     incf    WREG,W                  ; Gas# 1-5
 	movff	WREG,char_I_current_gas	; Set gas
 	movff	WREG,active_gas			; Set for logbook and display
@@ -1012,6 +1014,8 @@ setup_dil_registers:                ; With WREG=dil 0-4
     movff   PLUSW1,char_I_O2_ratio  ; O2 (For ppO2 calculations)
     lfsr    FSR1,opt_dil_He_ratio+0
     movff   PLUSW1,char_I_He_ratio  ; He
+    lfsr    FSR1,opt_dil_type
+    movff   PLUSW1,active_gas_type  ; 0=Disabled, 1=First, 2=Travel, 3=Deco for OC gases and 0=Disabled, 1=First, 2=Normal for diluents
     incf    WREG,W                  ; Gas# 1-5
 	movff	WREG,char_I_current_gas	; Set gas
 	movff	WREG,active_gas			; Set for logbook and display
@@ -1328,7 +1332,7 @@ check_gas_common4:
 ;check if we are within our warning thresholds!
 	movff	xC+0,sub_b+0
 	movff	xC+1,sub_b+1
-	movff	opt_ppO2_max,WREG	; PPO2 Max for MOD calculation and color coding in divemode
+	movff	opt_ppO2_max_deco,WREG	; PPO2 Max for MOD calculation and color coding in divemode
     addlw   .1                  ; e.g. >1.60
 	mullw	d'100'				; opt_ppO2_max*100
 	movff	PRODL,sub_a+0
@@ -1818,8 +1822,14 @@ check_ppO2_0:
 ;check if we are within our warning thresholds!
 	movff	xC+0,sub_b+0
 	movff	xC+1,sub_b+1
-	movff	opt_ppO2_max,WREG	; PPO2 Max for MOD calculation and color coding in divemode
-    addlw   .1                  ; e.g. >1.60
+		;active_gas_type -> 0=Disabled, 1=First, 2=Travel, 3=Deco for OC gases and 0=Disabled, 1=First, 2=Normal for diluents	
+	movff   active_gas_type,xA+0	; xA+0 used as temp here -> holds type
+	movff   opt_ppO2_max_deco,xB+1	; xB+1 used as temp here
+	movlw	.3			
+	cpfseq	xA+0			; Deco?
+	movff   opt_ppO2_max,xB+1	; No, overwrite with travel/bottom max
+	movf	xB+1,W			; Result in WREG
+	addlw   .1                  ; e.g. >1.60
 	mullw	d'100'				; opt_ppO2_max*100
 	movff	PRODL,sub_a+0
 	movff	PRODH,sub_a+1
