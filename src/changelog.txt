@@ -1,5 +1,5 @@
-[2.17]
-- Stable Version -
+[2.18]
+- Beta Version -
 NEW: Third and fourth logbook page per dive showing Gaslist and Setpoints in standard font size
 BUGFIX: several minor graphic issues in logbook fixed
 BUGFIX: Rare button issues in OSTC Plus hardware
