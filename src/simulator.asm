@@ -742,6 +742,7 @@ deco_show_plan_3:
 ;---- In OC+BAIL modes, show the gas Usage special page -----------------------
 simulator_show_decoplan5_0:    
     bcf     is_bailout                  ; Back to normal
+    bcf	    ccr_diluent_setup		; init for OC/Bailout
 
     ; Make sure to pass first gas
     call    get_first_gas_to_WREG       ; Gets first gas (0-4) into WREG
