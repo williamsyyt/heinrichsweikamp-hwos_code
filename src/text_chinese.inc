@@ -190,7 +190,7 @@
     TCODE   tPlan,  	"潜水模拟"        ; Simulator
 
 ; Decoplanner submenu
-    TCODE   tBtTm,  	"底部时间:"        ; Bot. Time: (10 chars)
+    TCODE   tBtTm,  	"滞底时间:"        ; Bot. Time: (10 chars)
     TCODE   tBtTm_short,"时间:"             ; Bot. Time: (max. 6 chars)
     TCODE   tMxDep, 	"最大深度:"        ; Max Depth: (10 chars)
     TCODE   tIntvl, 	"Interval :"        ; Interval : (10 chars)
