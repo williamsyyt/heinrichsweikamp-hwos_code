@@ -19,17 +19,17 @@
     TCODE   tLastDive,	"上一潜"	; Last Dive (Max 10 chars)
 
 ; Divemode Menu
-    TCODE   tDivemenu_Gaslist,  "气体"       ; Gaslist
+    TCODE   tDivemenu_Gaslist,  "气体列表"       ; Gaslist
     TCODE   tDivemenu_ResetAvg, "Reset Avg."    ; Reset Avg.
     TCODE   tDivemenu_Setpoint, "Setpoint"      ; Setpoint
-    TCODE   tDivemenu_UseSensor,"Use Sensor"    ; Use Sensor
-    TCODE   tDivemenu_ToggleGF, "Toggle GF"     ; Toggle GF
-    TCODE   tDivemenu_Marker,   "Set Marker"    ; Set Marker
-    TCODE   tDivemenu_LostGas,  "Lost Gas"      ; Lost Gas
+    TCODE   tDivemenu_UseSensor,"使用传感器"    ; Use Sensor
+    TCODE   tDivemenu_ToggleGF, "切换GF"     ; Toggle GF
+    TCODE   tDivemenu_Marker,   "设置标记"    ; Set Marker
+    TCODE   tDivemenu_LostGas,  "气体丢失"      ; Lost Gas
 
 ; Main menu
-    TCODE   tNext,      "<Next"         ; <Next
-    TCODE   tEnter,     "Enter>"        ; Enter>
+    TCODE   tNext,      "<下页"         ; <Next
+    TCODE   tEnter,     "选择>"        ; Enter>
 
     TCODE   tMainMenu,  "主菜单"     ; MainMenu
     TCODE   tLogbook,   "日志"       ; Logbook
