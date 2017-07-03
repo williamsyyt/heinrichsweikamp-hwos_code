@@ -19,17 +19,17 @@
     TCODE   tLastDive,	"上一潜"	; Last Dive (Max 10 chars)
 
 ; Divemode Menu
-    TCODE   tDivemenu_Gaslist,  "气体"       ; Gaslist
+    TCODE   tDivemenu_Gaslist,  "气体列表"       ; Gaslist
     TCODE   tDivemenu_ResetAvg, "Reset Avg."    ; Reset Avg.
     TCODE   tDivemenu_Setpoint, "Setpoint"      ; Setpoint
-    TCODE   tDivemenu_UseSensor,"Use Sensor"    ; Use Sensor
-    TCODE   tDivemenu_ToggleGF, "Toggle GF"     ; Toggle GF
-    TCODE   tDivemenu_Marker,   "Set Marker"    ; Set Marker
-    TCODE   tDivemenu_LostGas,  "Lost Gas"      ; Lost Gas
+    TCODE   tDivemenu_UseSensor,"使用传感器"    ; Use Sensor
+    TCODE   tDivemenu_ToggleGF, "切换GF"     ; Toggle GF
+    TCODE   tDivemenu_Marker,   "设置标记"    ; Set Marker
+    TCODE   tDivemenu_LostGas,  "气体丢失"      ; Lost Gas
 
 ; Main menu
-    TCODE   tNext,      "<Next"         ; <Next
-    TCODE   tEnter,     "Enter>"        ; Enter>
+    TCODE   tNext,      "<下页"         ; <Next
+    TCODE   tEnter,     "选择>"        ; Enter>
 
     TCODE   tMainMenu,  "主菜单"     ; MainMenu
     TCODE   tLogbook,   "日志"       ; Logbook
@@ -55,205 +55,205 @@
     TCODE   tGaslistCC, "CC稀释气体"
     TCODE   tGasEdit,   "气体设置"
     TCODE   tType,      "输入: "
-    TCODE   tGasDisabled,"Disabled"  ; Disabled
-    TCODE   tGasFirst,   "First"     ; First
-    TCODE   tGasTravel,  "Travel"    ; Travel
-    TCODE   tGasDeco,    "Deco"      ; Deco
-    TCODE   tDilDisabled,"Disabled"  ; Disabled
-    TCODE   tDilFirst,   "First"     ; First
-    TCODE   tDilNorm,   "Normal"     ; Normal
-    TCODE   tAir,       "Air  "         ; Enum: values must follows (5 chars)
-    TCODE   tO2,        "O2   "         ; tAir + 5
-    TCODE   tO2Plus,    "O2 +"
-    TCODE   tO2Minus,   "O2 -"
-    TCODE   tHePlus,    "He +"
-    TCODE   tHeMinus,   "He -"
+    TCODE   tGasDisabled,"关闭"  ; Disabled
+    TCODE   tGasFirst,   "主气体"     ; First
+    TCODE   tGasTravel,  "阶段气"    ; Travel
+    TCODE   tGasDeco,    "减压气"      ; Deco
+    TCODE   tDilDisabled,"关闭"  ; Disabled
+    TCODE   tDilFirst,   "主气"     ; First
+    TCODE   tDilNorm,   "正常"     ; Normal
+    TCODE   tAir,       "空气  "         ; Enum: values must follows (5 chars)
+    TCODE   tO2,        "氧   "         ; tAir + 5
+    TCODE   tO2Plus,    "氧 +"
+    TCODE   tO2Minus,   "氧 -"
+    TCODE   tHePlus,    "氦 +"
+    TCODE   tHeMinus,   "氦 -"
     TCODE   tMOD,       "MOD:"
     TCODE   tEAD,       "EAD:"
-    TCODE   tGasDepth,  "Change depth"
-    TCODE   tDepthPlus, "Depth +"
-    TCODE   tDepthMinus,"Depth -"
-    TCODE   tDepthReset,"Reset to MOD:"
-    TCODE   tSetup_mix, "Setup Mix"
-    TCODE   tCCRMode,   "CCR Mode:"             ; CCR Mode:
-    TCODE   tCCRModeFixedSP,  "Fixed SP"        ; Fixed SP
-    TCODE   tCCRModeSensor,   "Sensor"          ; Sensor
-    TCODE   tCCRModeAutoSP,   "Auto SP"         ; Auto SP
+    TCODE   tGasDepth,  "改变深度"
+    TCODE   tDepthPlus, "深度 +"
+    TCODE   tDepthMinus,"深度 -"
+    TCODE   tDepthReset,"设置MOD至:"
+    TCODE   tSetup_mix, "设置混合比"
+    TCODE   tCCRMode,   "CCR模式:"             ; CCR Mode:
+    TCODE   tCCRModeFixedSP,  "修正SP"        ; Fixed SP
+    TCODE   tCCRModeSensor,   "传感器"          ; Sensor
+    TCODE   tCCRModeAutoSP,   "自动SP"         ; Auto SP
     TCODE   tSP,            "SP"                ; SP (SetPoint)
-    TCODE   tSPPlus,    "ppO2+"                  ; pO2+
+    TCODE   tSPPlus,    "氧分压+"                  ; pO2+
     TCODE   tSensorFallback, "Fallback:"        ; Fallback:
-    TCODE   tppO2,      "ppO2:"                 ; ppO2:
+    TCODE   tppO2,      "氧分压:"                 ; ppO2:
 
-	TCODE   tNewBattTitle,      "New Battery?"
-	TCODE	tNewBattOld,		"Keep old"
-	TCODE	tNewBattNew36,		"New 3.6V Saft"
-	TCODE	tNewBattNew15,		"New 1.5V AA"
-	TCODE	tNewBattAccu,		"3.6V LiIon AA"
-	TCODE	tNew18650,		"Internal 18650"
-	TCODE	tNew16650,		"Internal 16650"
+	TCODE   tNewBattTitle,      "新电池?"
+	TCODE	tNewBattOld,		"保留旧电池"
+	TCODE	tNewBattNew36,		"新3.6V锂电池"
+	TCODE	tNewBattNew15,		"新1.5V AA电池"
+	TCODE	tNewBattAccu,		"3.6V锂AA电池"
+	TCODE	tNew18650,		"18650锂电池"
+	TCODE	tNew16650,		"16650锂电池"
 
 
 ; Gaslist management
-    TCODE   tGas,       "Gas"           ; Gas
-    TCODE   tGasErr,    "Err"           ; Err  (3 chars)
+    TCODE   tGas,       "气体"           ; Gas
+    TCODE   tGasErr,    "错"           ; Err  (3 chars)
         
 ; Communication Menu
-	TCODE	tUsbTitle,	"USB Mode"
-    TCODE   tBleTitle,  "Bluetooth Mode"
-	TCODE	tUsbStarting,  "Starting..."
-	TCODE	tUsbStartDone, "Done."
-	TCODE	tUsbServiceMode, "Service mode enabled"
-	TCODE	tUsbClosed,		"Port closed"
-	TCODE	tUsbExit,		"Exited"
-	TCODE	tUsbDownloadMode, "Download mode enabled"
-    TCODE   tUsbLlBld,      "Low-level Bootloader"
+	TCODE	tUsbTitle,	"USB模式"
+    TCODE   tBleTitle,  "蓝牙模式"
+	TCODE	tUsbStarting,  "传输..."
+	TCODE	tUsbStartDone, "完成"
+	TCODE	tUsbServiceMode, "检测模式已激活"
+	TCODE	tUsbClosed,		"端口关闭"
+	TCODE	tUsbExit,		"已退出"
+	TCODE	tUsbDownloadMode, "下载模式已激活"
+    TCODE   tUsbLlBld,      "低级引导载入"
 
 ; Dive Settings
-    TCODE   tDvMode,    "Dive Mode:"
-    TCODE   tDvOC,      "OC"
-    TCODE   tDvCC,      "CC"
-    TCODE   tDvGauge,   "Gauge"
-    TCODE   tDvApnea,   "Apnea"
-    TCODE   tDvPSCR,	"PSCR"
-    TCODE   tDkMode,    "Decotype:"
+    TCODE   tDvMode,    "潜水模式:"
+    TCODE   tDvOC,      "开放系统"
+    TCODE   tDvCC,      "封闭式循环系统"
+    TCODE   tDvGauge,   "仪表"
+    TCODE   tDvApnea,   "自由潜"
+    TCODE   tDvPSCR,	"主动式半封闭循环系统"
+    TCODE   tDkMode,    "减压模型:"
     TCODE   tZHL16,     "ZH-L16"
     TCODE   tZHL16GF,   "ZH-L16+GF"
-    TCODE   tPPO2Max,   "ppO2 Max:"
-    TCODE   tPPO2DECO,	"ppO2 Deco:"
-    TCODE   tPPO2MIN,   "ppO2 Min:"
-    TCODE   tLastDecostop, "Last Deco:"
-    TCODE   tDecoparameters, "Deco Parameters"
+    TCODE   tPPO2Max,   "最大氧分压:"
+    TCODE   tPPO2DECO,	"减压氧分压:"
+    TCODE   tPPO2MIN,   "最小氧分压:"
+    TCODE   tLastDecostop, "最后减压停留深度:"
+    TCODE   tDecoparameters, "减压参数"
     TCODE   tGF_low,    "GF low:"
     TCODE   tGF_high,   "GF high:"
-    TCODE   tSaturationMult,    "Saturation:"
-    TCODE   tDesaturationMult,  "Desaturation:"
+    TCODE   tSaturationMult,    "饱和:"
+    TCODE   tDesaturationMult,  "不饱和:"
     TCODE   tFTTSMenu,  "Future TTS:"            ; Future TTS
-    TCODE   taGFMenu,   "Alternative GF"         ; Alternative GF
-    TCODE   taGF_low,   "aGF low:"               ; aGF low
-    TCODE   taGF_high,  "aGF high:"              ; aGF high
-    TCODE   taGF_enable,"aGF selectable:"        ; aGF Selectable
-    TCODE   tDiveaGF_active,"aGF!"               ; aGF!
-    TCODE   tppO2settings,"ppO2 Settings"        ; ppO2 Settings
-    TCODE   tsafetystopmenu,"Safety Stop:"       ; Safety Stop:
+    TCODE   taGFMenu,   "备用GF值"         ; Alternative GF
+    TCODE   taGF_low,   "备用GF low:"               ; aGF low
+    TCODE   taGF_high,  "备用GF high:"              ; aGF high
+    TCODE   taGF_enable,"可选备用GF:"        ; aGF Selectable
+    TCODE   tDiveaGF_active,"备用GF!"               ; aGF!
+    TCODE   tppO2settings,"氧分压设置"        ; ppO2 Settings
+    TCODE   tsafetystopmenu,"安全停留:"       ; Safety Stop:
 
 ; Display Settings
-    TCODE   tBright,    "Brightness:"
-    TCODE   tEco,       "Eco"
-    TCODE   tMedium,    "Medium"
-    TCODE   tHigh,      "High"
-    TCODE   tDvSalinity,"Salinity:"             ; Salinity
-    TCODE   tFlip,      "Rotate Screen:"        ; Rotate Screen
-    TCODE   tMODwarning,"MOD warning:"          ; MOD warning
-    TCODE   tShowppO2,  "Always show ppO2:"     ; Always show ppO2:
-    TCODE   tTimeoutDive,"Dive Timeout:"	; Dive Timeout
+    TCODE   tBright,    "亮度:"
+    TCODE   tEco,       "节能"
+    TCODE   tMedium,    "正常"
+    TCODE   tHigh,      "高亮"
+    TCODE   tDvSalinity,"盐度:"             ; Salinity
+    TCODE   tFlip,      "旋转屏幕:"        ; Rotate Screen
+    TCODE   tMODwarning,"MOD报警:"          ; MOD warning
+    TCODE   tShowppO2,  "总是显示氧分压:"     ; Always show ppO2:
+    TCODE   tTimeoutDive,"潜水超时:"	; Dive Timeout
 
 ; VSI display Settings
-    TCODE   tVSItext2,  "Variable speed:"     ; Variable speed:
-    TCODE   tVSIgraph,  "Speed graph:"        ; Speed graph:
+    TCODE   tVSItext2,  "可变速:"     ; Variable speed:
+    TCODE   tVSIgraph,  "速度表:"        ; Speed graph:
 
 ; Setup Menu
-    TCODE   tSystSets,  "Settings"
-    TCODE   tLanguage,  "Language:"
-    TCODE   tEnglish,   "English"
-    TCODE   tGerman,    "German"
-    TCODE   tFrench,    "French"
-    TCODE   tItalian,   "Italian"
-    TCODE   tCompassMenu,"Compass calibration"  ; Compass calibration
+    TCODE   tSystSets,  "设置"
+    TCODE   tLanguage,  "语言:"
+    TCODE   tEnglish,   "英语"
+    TCODE   tGerman,    "德语"
+    TCODE   tFrench,    "法语"
+    TCODE   tItalian,   "意大利语"
+    TCODE   tCompassMenu,"指南针校准"  ; Compass calibration
     TCODE   tCompassGain,"Compass Gain:"         ; Compass gain:
 
-    TCODE   tUnits,     "Units:"
-    TCODE   tMetric,     " m/°C"            ; Enum menu
-    TCODE   tImperial,   "ft/°F"
+    TCODE   tUnits,     "单位:"
+    TCODE   tMetric,     " 米/°C"            ; Enum menu
+    TCODE   tImperial,   "英尺/°F"
 	
     TCODE   tDefName,   "HW OSTC"
 	TCODE	tbar,		"bar"				; bar
 
-    TCODE   tButtonleft,"Left button:"      ; Left button
-    TCODE   tButtonright,"Right button:"    ; Right button
+    TCODE   tButtonleft,"左键:"      ; Left button
+    TCODE   tButtonright,"右键:"    ; Right button
 
 ; Units for all menu
-    TCODE   tMeters,    "m"
-	TCODE	tFeets,		"ft"
-	TCODE	tFeets1,	"f"
+    TCODE   tMeters,    "米"
+	TCODE	tFeets,		"英尺"
+	TCODE	tFeets1,	"英尺"
     TCODE   tMinutes,   "'"
     TCODE   tPercent,   "%"
-    TCODE   tLitersMinute, "l/min"
+    TCODE   tLitersMinute, "升/分钟"
 
 ; Date
-	TCODE	tDateFormat, "Date:"
-	TCODE	tDateformat, "MMDDYY"
-	TCODE	tDateformat1,"DDMMYY"
-	TCODE	tDateformat2,"YYMMDD"
+	TCODE	tDateFormat, "日期:"
+	TCODE	tDateformat, "月日年"
+	TCODE	tDateformat1,"日月年"
+	TCODE	tDateformat2,"年月日"
 
 ; Simulator menu
-    TCODE   tInter, 	"Start Simulator"  ; Start Simulator
-    TCODE   tPlan,  	"Simulator"        ; Simulator
+    TCODE   tInter, 	"开始模拟"  ; Start Simulator
+    TCODE   tPlan,  	"潜水模拟"        ; Simulator
 
 ; Decoplanner submenu
-    TCODE   tBtTm,  	"Bot. Time:"        ; Bot. Time: (10 chars)
-    TCODE   tBtTm_short,"Time:"             ; Bot. Time: (max. 6 chars)
-    TCODE   tMxDep, 	"Max Depth:"        ; Max Depth: (10 chars)
+    TCODE   tBtTm,  	"滞底时间:"        ; Bot. Time: (10 chars)
+    TCODE   tBtTm_short,"时间:"             ; Bot. Time: (max. 6 chars)
+    TCODE   tMxDep, 	"最大深度:"        ; Max Depth: (10 chars)
     TCODE   tIntvl, 	"Interval :"        ; Interval : (10 chars)
-    TCODE   tDeco,  	"Calculate Deco"    ; Calculate Deco
-    TCODE   tDivePlan,  "Dive Plan:"        ; Dive Plan:
-    TCODE   tNoDeco,    "No Deco"           ; No Deco
-    TCODE   tMore,      "More..."           ; More...
-    TCODE   tGasUsage,  "Gas Usage"         ; Gas Usage
-    TCODE   tSetBotUse, "Bottom Gas: "      ; Bottom Gas: (space)
-    TCODE   tSetDecoUse,"Deco Gas: "        ; Deco Gas: (space)
+    TCODE   tDeco,  	"计算减压"    ; Calculate Deco
+    TCODE   tDivePlan,  "潜水计划:"        ; Dive Plan:
+    TCODE   tNoDeco,    "免减压"           ; No Deco
+    TCODE   tMore,      "更多..."           ; More...
+    TCODE   tGasUsage,  "气体使用"         ; Gas Usage
+    TCODE   tSetBotUse, "底部气体: "      ; Bottom Gas: (space)
+    TCODE   tSetDecoUse,"减压气体: "        ; Deco Gas: (space)
 
 
 ; Information menu
-    TCODE   tFirmware,  "Firmware: "        ; Firmware: (space)
-    TCODE   tSerial,    "Serial  : "        ; Serial  : (space)
-    TCODE   tTotalDives,"Total Dives: "	    ; Total Dives:
-    TCODE   tBatteryV,  "Battery: "         ; Battery:
-    TCODE   tUptime,	"Uptime: "	    ; Uptime: 
+    TCODE   tFirmware,  "固件: "        ; Firmware: (space)
+    TCODE   tSerial,    "序列号  : "        ; Serial  : (space)
+    TCODE   tTotalDives,"总潜数: "	    ; Total Dives:
+    TCODE   tBatteryV,  "电池: "         ; Battery:
+    TCODE   tUptime,	"运行时间: "	    ; Uptime: 
     
 ; Divemode screen
     TCODE   tNDL,       "NDL"
     TCODE   tTTS,   	"TTS"
-	TCODE	tVelMetric,	 "m/min"
-	TCODE	tVelImperial,"ft/m "
-	TCODE	tGasSelect,  "Select Gas"       ; Select Gas
-	TCODE	tSelectAir,	 "Air "     		; Air
-	TCODE	tSelectO2,	 "O2  "             ; O2
-    TCODE   tSelectNx,   "Nx"               ; Nx
-    TCODE   tSelectTx,   "Tx"               ; Tx
-    TCODE   tDepth,      "Depth"            ; Depth
-    TCODE   tMaxDepth,   "Max. Depth"       ; Max. Depth - max 10chars!
-    TCODE   tDivetime,   "Divetime"         ; Divetime
-    TCODE   tDiveHudMask1,  "Sensor 1"
-    TCODE   tDiveHudMask2,  "Sensor 2"
-    TCODE   tDiveHudMask3,  "Sensor 3"
+	TCODE	tVelMetric,	 "米每分钟"
+	TCODE	tVelImperial,"英尺每分钟"
+	TCODE	tGasSelect,  "选择气体"       ; Select Gas
+	TCODE	tSelectAir,	 "空气 "     		; Air
+	TCODE	tSelectO2,	 "氧气 "             ; O2
+    TCODE   tSelectNx,   "高氧"               ; Nx
+    TCODE   tSelectTx,   "三混"               ; Tx
+    TCODE   tDepth,      "深度"            ; Depth
+    TCODE   tMaxDepth,   "最大深度"       ; Max. Depth - max 10chars!
+    TCODE   tDivetime,   "潜水时间"         ; Divetime
+    TCODE   tDiveHudMask1,  "传感器 1"
+    TCODE   tDiveHudMask2,  "传感器 2"
+    TCODE   tDiveHudMask3,  "传感器 3"
     TCODE   tDiveTotalAvg,  "Total Avg"
-    TCODE   tDiveStopwatch, "Stopwatch"
+    TCODE   tDiveStopwatch, "计时器"
     TCODE   tDiveStopAvg,   "Stopped Avg"   ; 11chars max
     TCODE   tApnoeTotal,    " Total"        ; Total (Six chars, right alligned)
     TCODE   tApnoeMax,      "Last Descent"  ; Last descent
-    TCODE   tApnoeSurface,  "Surface Time"  ; Surface Time
-    TCODE   tDiveDecoplan,  "Decoplan"      ; Decoplan
-    TCODE   tDiveClock,     "Clock"         ; Clock
+    TCODE   tApnoeSurface,  "水面时间"  ; Surface Time
+    TCODE   tDiveDecoplan,  "减压计划"      ; Decoplan
+    TCODE   tDiveClock,     "时间"         ; Clock
     TCODE   tDiveEAD_END,   "EAD/END"       ; EAD/END
-    TCODE   tDiveTissues,   "Tissues"       ; Tissues
+    TCODE   tDiveTissues,   "组织隔腔"       ; Tissues
     TCODE   tEND,           "END:"          ; END:
-    TCODE   tHe,            "He"            ; He
-    TCODE   tN2,            "N2"            ; N2
-    TCODE   tDiveBailout,   "Bailout"       ; Bailout
-    TCODE   tGFactors,      "GF Values"     ; GF Values
-    TCODE   taGFactors,     "aGF Values"    ; aGF Values
-    TCODE   tGFInfo,        "Current GF"    ; GF Info
-    TCODE   tCeiling,       "Ceiling"       ; Ceiling
-    TCODE   tDiveSafetyStop,"Stop"         ; Stop (Four chars, right alligned)
+    TCODE   tHe,            "氦"            ; He
+    TCODE   tN2,            "氮"            ; N2
+    TCODE   tDiveBailout,   "紧急逃生"       ; Bailout
+    TCODE   tGFactors,      "GF值"     ; GF Values
+    TCODE   taGFactors,     "备用GF值"    ; aGF Values
+    TCODE   tGFInfo,        "当前GF值"    ; GF Info
+    TCODE   tCeiling,       "上限"       ; Ceiling
+    TCODE   tDiveSafetyStop,"停留"         ; Stop (Four chars, right alligned)
     TCODE   tDiveFallback,  "Fallback!"     ; Fallback! (max. nine chars)
-    TCODE   tSensorCheck,   "Sensor Check"  ; Sensor Check
+    TCODE   tSensorCheck,   "传感器检测"  ; Sensor Check
 
 ; Divemode menu
-    TCODE   tDivePreMenu,   "Menu?"         ; Menu?
+    TCODE   tDivePreMenu,   "菜单?"         ; Menu?
     TCODE   tSetHeading,    "Bearing"       ; Bearing (Max. seven chars)
 
 ; Simulator menu
-	TCODE	tQuitSim,	 "Quit?"            ; Quit Simulation?
+	TCODE	tQuitSim,	 "离开?"            ; Quit Simulation?
 
 ; Logbook
 	TCODE	tCNS2,		"CNS:"
@@ -268,34 +268,34 @@
 	TCODE	tMBAR,		"mbar"
 
 ; Logbook menu
-	TCODE	tNextLog, 	"Next Page"
+	TCODE	tNextLog, 	"下页"
 
 ; Reset menu
-	TCODE	tReboot,	"Reboot"			;Reboot
-	TCODE	tResetMenu2,"Are you sure?"		;Are you sure?
-	TCODE	tAbort,     "Abort"             ;Abort
-	TCODE	tResetSettings, "Reset all" 	;Reset all
-	TCODE	tResetDeco,	"Reset Deco"		;Reset Deco
-    TCODE	tResetBattery,	"Reset Battery"		;Reset Battery
-    TCODE	tResetLogbook,	"Reset Logbook"		;Reset Logbook
+	TCODE	tReboot,	"重启"			;Reboot
+	TCODE	tResetMenu2,"是否确认?"		;Are you sure?
+	TCODE	tAbort,     "取消"             ;Abort
+	TCODE	tResetSettings, "全部重置" 	;Reset all
+	TCODE	tResetDeco,	"减压重置"		;Reset Deco
+    TCODE	tResetBattery,	"电池重置"		;Reset Battery
+    TCODE	tResetLogbook,	"日志重置"		;Reset Logbook
 
 ; Set Time Menu/Set Date Menu
-	TCODE	tSetHours,	"Set Hours"			; Set Hours
-	TCODE	tSetMinutes,"Set Minutes"		; Set Minutes
-	TCODE	tSetSeconds,"Clear Seconds"		; Clear seconds
-	TCODE	tSetDay,	"Set Day"			; Set Day
-	TCODE	tSetMonth,	"Set Month"			; Set Month
-	TCODE	tSetYear,	"Set Year"			; Set Year
+	TCODE	tSetHours,	"设置小时"			; Set Hours
+	TCODE	tSetMinutes,"设置分钟"		; Set Minutes
+	TCODE	tSetSeconds,"清除秒"		; Clear seconds
+	TCODE	tSetDay,	"设置日期"			; Set Day
+	TCODE	tSetMonth,	"设置月份"			; Set Month
+	TCODE	tSetYear,	"设置年份"			; Set Year
 
 ; Logbook Offset Menu
-	TCODE	tLogOffset,		"Logbook offset"	; Logbook offset
+	TCODE	tLogOffset,		"日志偏移"	; Logbook offset
 	TCODE	tLogOffsetp1,	"+1"				; +1
 	TCODE	tLogOffsetp10,	"+10"				; +10
 	TCODE	tLogOffsetm1,	"-1"				; -1
 	TCODE	tLogOffsetm10,	"-10"				; -10
 
 ; Sampling rate
-    TCODE   tSamplingrate,  "Sampling rate:"    ; Sampling rate:
+    TCODE   tSamplingrate,  "采样率:"    ; Sampling rate:
     TCODE   tSampling2s,    "2s"                ; 2s
     TCODE   tSampling10s,   "10s"               ; 10s
 
@@ -310,14 +310,14 @@
     TCODE   tNW,            "NW"                ; North-West,293°-337°
 
 ; Color Scheme menu
-    TCODE   tColorScheme,   "Colour scheme"     ; Colour scheme
-    TCODE   tColorSetDive,  "Divemode:"         ; Divemode:
-    TCODE   tColorSetName0, "Standard"          ; Standard
-    TCODE   tColorSetName1, "Red"               ; Red
-    TCODE   tColorSetName2, "Green"             ; Green
-    TCODE   tColorSetName3, "Blue"              ; Blue
+    TCODE   tColorScheme,   "颜色方案"     ; Colour scheme
+    TCODE   tColorSetDive,  "潜水模式:"         ; Divemode:
+    TCODE   tColorSetName0, "标准"          ; Standard
+    TCODE   tColorSetName1, "红"               ; Red
+    TCODE   tColorSetName2, "绿"             ; Green
+    TCODE   tColorSetName3, "蓝"              ; Blue
     
 ; PSCR Menu and Settings
-    TCODE   tPSCRMenu,	    "PSCR Menu"		; PSCR Menu
+    TCODE   tPSCRMenu,	    "主动半循环系统设置"		; PSCR Menu
     TCODE   tPSCR_O2_drop,  "O2 drop:"		; O2 drop
     TCODE   tPSCR_lungratio,"Lung ratio:"	; lung ratio
