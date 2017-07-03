@@ -148,8 +148,8 @@
     TCODE   tTimeoutDive,"潜水超时:"	; Dive Timeout
 
 ; VSI display Settings
-    TCODE   tVSItext2,  "可变速:"     ; Variable speed:
-    TCODE   tVSIgraph,  "速度表:"        ; Speed graph:
+    TCODE   tVSItext2,  "最大上升速度:"     ; Variable speed:
+    TCODE   tVSIgraph,  "图形模式:"        ; Speed graph:
 
 ; Setup Menu
     TCODE   tSystSets,  "设置"
@@ -193,7 +193,7 @@
     TCODE   tBtTm,  	"滞底时间:"        ; Bot. Time: (10 chars)
     TCODE   tBtTm_short,"时间:"             ; Bot. Time: (max. 6 chars)
     TCODE   tMxDep, 	"最大深度:"        ; Max Depth: (10 chars)
-    TCODE   tIntvl, 	"Interval :"        ; Interval : (10 chars)
+    TCODE   tIntvl, 	"水面间隔:"        ; Interval : (10 chars)
     TCODE   tDeco,  	"计算减压"    ; Calculate Deco
     TCODE   tDivePlan,  "潜水计划:"        ; Dive Plan:
     TCODE   tNoDeco,    "免减压"           ; No Deco
