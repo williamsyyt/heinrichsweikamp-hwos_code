@@ -89,8 +89,8 @@
 	TCODE	tNewBattNew36,		"新3.6V锂电池"
 	TCODE	tNewBattNew15,		"新1.5V AA电池"
 	TCODE	tNewBattAccu,		"3.6V锂AA电池"
-	TCODE	tNew18650,		"内置18650电池"
-	TCODE	tNew16650,		"内置16650电池"
+	TCODE	tNew18650,		"18650锂电池"
+	TCODE	tNew16650,		"16650锂电池"
 
 
 ; Gaslist management
