@@ -15,12 +15,12 @@
     TCODE   tBeta,      "测试版"         	; beta
     TCODE   tMenu,	"<菜单" 	; <Menu
     TCODE   tView,      "查看>"         ; View>
-    TCODE   tHeading,   "Heading:"      ; Heading:
+    TCODE   tHeading,   "标签"      ; Heading:
     TCODE   tLastDive,	"上一潜"	; Last Dive (Max 10 chars)
 
 ; Divemode Menu
     TCODE   tDivemenu_Gaslist,  "气体列表"       ; Gaslist
-    TCODE   tDivemenu_ResetAvg, "Reset Avg."    ; Reset Avg.
+    TCODE   tDivemenu_ResetAvg, "重置平均值"    ; Reset Avg.
     TCODE   tDivemenu_Setpoint, "Setpoint"      ; Setpoint
     TCODE   tDivemenu_UseSensor,"使用传感器"    ; Use Sensor
     TCODE   tDivemenu_ToggleGF, "切换GF"     ; Toggle GF
@@ -47,7 +47,7 @@
     TCODE   tFixedSetpoints,"Fixed Setpoints" ; Fixed Setpoints
     TCODE   tCCRSensor, "CCR传感器"    ; CCR Sensor
     TCODE   tCalibrateMenu, "校准"   ; Calibration
-    TCODE   tCalibrationGas, "Cal. Gas O2:"  ; Cal. Gas O2:
+    TCODE   tCalibrationGas, "氧气校准:"  ; Cal. Gas O2:
     TCODE   tCalibrate, "校准"     ; Calibrate
 
 ; Gas menu
@@ -64,10 +64,10 @@
     TCODE   tDilNorm,   "正常"     ; Normal
     TCODE   tAir,       "空气  "         ; Enum: values must follows (5 chars)
     TCODE   tO2,        "氧   "         ; tAir + 5
-    TCODE   tO2Plus,    "氧 +"
-    TCODE   tO2Minus,   "氧 -"
-    TCODE   tHePlus,    "氦 +"
-    TCODE   tHeMinus,   "氦 -"
+    TCODE   tO2Plus,    "O2 +"
+    TCODE   tO2Minus,   "O2 -"
+    TCODE   tHePlus,    "He +"
+    TCODE   tHeMinus,   "He -"
     TCODE   tMOD,       "MOD:"
     TCODE   tEAD,       "EAD:"
     TCODE   tGasDepth,  "改变深度"
@@ -89,8 +89,8 @@
 	TCODE	tNewBattNew36,		"新3.6V锂电池"
 	TCODE	tNewBattNew15,		"新1.5V AA电池"
 	TCODE	tNewBattAccu,		"3.6V锂AA电池"
-	TCODE	tNew18650,		"18650锂电池"
-	TCODE	tNew16650,		"16650锂电池"
+	TCODE	tNew18650,		"内置18650电池"
+	TCODE	tNew16650,		"内置16650电池"
 
 
 ; Gaslist management
@@ -110,18 +110,18 @@
 
 ; Dive Settings
     TCODE   tDvMode,    "潜水模式:"
-    TCODE   tDvOC,      "开放系统"
-    TCODE   tDvCC,      "封闭式循环系统"
-    TCODE   tDvGauge,   "仪表"
-    TCODE   tDvApnea,   "自由潜"
-    TCODE   tDvPSCR,	"主动式半封闭循环系统"
+    TCODE   tDvOC,      "OC模式"
+    TCODE   tDvCC,      "CCR模式"
+    TCODE   tDvGauge,   "仪表模式"
+    TCODE   tDvApnea,   "自由潜模式"
+    TCODE   tDvPSCR,	"pSCR模式"
     TCODE   tDkMode,    "减压模型:"
     TCODE   tZHL16,     "ZH-L16"
     TCODE   tZHL16GF,   "ZH-L16+GF"
     TCODE   tPPO2Max,   "最大氧分压:"
     TCODE   tPPO2DECO,	"减压氧分压:"
     TCODE   tPPO2MIN,   "最小氧分压:"
-    TCODE   tLastDecostop, "最后减压停留深度:"
+    TCODE   tLastDecostop, "最终停留深度:"
     TCODE   tDecoparameters, "减压参数"
     TCODE   tGF_low,    "GF low:"
     TCODE   tGF_high,   "GF high:"
@@ -139,7 +139,7 @@
 ; Display Settings
     TCODE   tBright,    "亮度:"
     TCODE   tEco,       "节能"
-    TCODE   tMedium,    "正常"
+    TCODE   tMedium,    "标准"
     TCODE   tHigh,      "高亮"
     TCODE   tDvSalinity,"盐度:"             ; Salinity
     TCODE   tFlip,      "旋转屏幕:"        ; Rotate Screen
@@ -219,7 +219,7 @@
 	TCODE	tSelectAir,	 "空气 "     		; Air
 	TCODE	tSelectO2,	 "氧气 "             ; O2
     TCODE   tSelectNx,   "高氧"               ; Nx
-    TCODE   tSelectTx,   "三混"               ; Tx
+    TCODE   tSelectTx,   "氦氧"               ; Tx
     TCODE   tDepth,      "深度"            ; Depth
     TCODE   tMaxDepth,   "最大深度"       ; Max. Depth - max 10chars!
     TCODE   tDivetime,   "潜水时间"         ; Divetime
@@ -253,7 +253,7 @@
     TCODE   tSetHeading,    "Bearing"       ; Bearing (Max. seven chars)
 
 ; Simulator menu
-	TCODE	tQuitSim,	 "离开?"            ; Quit Simulation?
+	TCODE	tQuitSim,	 "退出?"            ; Quit Simulation?
 
 ; Logbook
 	TCODE	tCNS2,		"CNS:"
@@ -288,7 +288,7 @@
 	TCODE	tSetYear,	"设置年份"			; Set Year
 
 ; Logbook Offset Menu
-	TCODE	tLogOffset,		"日志偏移"	; Logbook offset
+	TCODE	tLogOffset,		"日志计数调整"	; Logbook offset
 	TCODE	tLogOffsetp1,	"+1"				; +1
 	TCODE	tLogOffsetp10,	"+10"				; +10
 	TCODE	tLogOffsetm1,	"-1"				; -1
@@ -318,6 +318,6 @@
     TCODE   tColorSetName3, "蓝"              ; Blue
     
 ; PSCR Menu and Settings
-    TCODE   tPSCRMenu,	    "主动半循环系统设置"		; PSCR Menu
+    TCODE   tPSCRMenu,	    "pSCR菜单"		; PSCR Menu
     TCODE   tPSCR_O2_drop,  "O2 drop:"		; O2 drop
     TCODE   tPSCR_lungratio,"Lung ratio:"	; lung ratio
