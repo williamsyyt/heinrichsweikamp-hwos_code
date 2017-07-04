@@ -39,7 +39,7 @@
     TCODE	tSetTimeDate,"日期时间设置"; Set Time & Date
     TCODE   tDispSets,  "显示设置" ; Display Settings
     TCODE   tExit,      "退出"          ; Exit
-	TCODE	tResetMenu, "重置菜单"	; Reset Menu
+	TCODE	tResetMenu, "菜单重置"	; Reset Menu
 	TCODE	tDiveModeMenu,"减压模式"	; Deco Mode
 	TCODE	tInfoMenu,	"信息"	; Information
     TCODE   tCCRSetup,  "CCR设置"     ; CCR Setup
@@ -145,7 +145,7 @@
     TCODE   tFlip,      "屏幕翻转:"        ; Rotate Screen
     TCODE   tMODwarning,"MOD报警:"          ; MOD warning
     TCODE   tShowppO2,  "一直显示氧分压:"     ; Always show ppO2:
-    TCODE   tTimeoutDive,"潜水间隔时限:"	; Dive Timeout
+    TCODE   tTimeoutDive,"潜水中止时限:"	; Dive Timeout
 
 ; VSI display Settings
     TCODE   tVSItext2,  "最大上升速度:"     ; Variable speed:
@@ -192,7 +192,7 @@
 
 ; Decoplanner submenu
     TCODE   tBtTm,  	"滞底时间:"        ; Bot. Time: (10 chars)
-    TCODE   tBtTm_short,"时间:"             ; Bot. Time: (max. 6 chars)
+    TCODE   tBtTm_short,"滞底:"             ; Bot. Time: (max. 6 chars)
     TCODE   tMxDep, 	"最大深度:"        ; Max Depth: (10 chars)
     TCODE   tIntvl, 	"水面间隔 :"        ; Interval : (10 chars)
     TCODE   tDeco,  	"减压计算"    ; Calculate Deco
@@ -212,8 +212,8 @@
     TCODE   tUptime,	"运行时间: "	    ; Uptime: 
     
 ; Divemode screen
-    TCODE   tNDL,       "NDL"
-    TCODE   tTTS,   	"TTS"
+    TCODE   tNDL,       "免减压极限"
+    TCODE   tTTS,   	"返回水面时间"
 	TCODE	tVelMetric,	 "米每分钟"
 	TCODE	tVelImperial,"英尺每分钟"
 	TCODE	tGasSelect,  "选择气体"       ; Select Gas
