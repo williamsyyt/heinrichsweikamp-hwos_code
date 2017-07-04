@@ -238,8 +238,8 @@
     TCODE   tDiveEAD_END,   "EAD/END"       ; EAD/END
     TCODE   tDiveTissues,   "组织隔腔"       ; Tissues
     TCODE   tEND,           "END:"          ; END:
-    TCODE   tHe,            "氦"            ; He
-    TCODE   tN2,            "氮"            ; N2
+    TCODE   tHe,            "He"            ; He
+    TCODE   tN2,            "N2"            ; N2
     TCODE   tDiveBailout,   "逃生"       ; Bailout
     TCODE   tGFactors,      "GF值"     ; GF Values
     TCODE   taGFactors,     "备用GF值"    ; aGF Values
