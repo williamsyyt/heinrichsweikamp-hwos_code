@@ -15,7 +15,7 @@
     TCODE   tBeta,      "测试版"         	; beta
     TCODE   tMenu,	"<菜单" 	; <Menu
     TCODE   tView,      "查看>"         ; View>
-    TCODE   tHeading,   "标签:"      ; Heading:
+    TCODE   tHeading,   "航向:"      ; Heading:
     TCODE   tLastDive,	"上一潜"	; Last Dive (Max 10 chars)
 
 ; Divemode Menu
@@ -43,7 +43,7 @@
 	TCODE	tDiveModeMenu,"减压模式"	; Deco Mode
 	TCODE	tInfoMenu,	"信息"	; Information
     TCODE   tCCRSetup,  "CCR设置"     ; CCR Setup
-    TCODE   tDiluentSetup,"稀释气设置"   ; Diluent Setup
+    TCODE   tDiluentSetup,"稀释气体设置"   ; Diluent Setup
     TCODE   tFixedSetpoints,"选定设置点" ; Fixed Setpoints
     TCODE   tCCRSensor, "CCR传感器"    ; CCR Sensor
     TCODE   tCalibrateMenu, "校准"   ; Calibration
@@ -81,7 +81,7 @@
     TCODE   tCCRModeAutoSP,   "自动设置点"         ; Auto SP
     TCODE   tSP,            "设置点"                ; SP (SetPoint)
     TCODE   tSPPlus,    "氧分压+"                  ; pO2+
-    TCODE   tSensorFallback, "Fallback:"        ; Fallback:
+    TCODE   tSensorFallback, "偏差隔离:"        ; Fallback:
     TCODE   tppO2,      "氧分压:"                 ; ppO2:
 
 	TCODE   tNewBattTitle,      "新电池?"
@@ -95,7 +95,7 @@
 
 ; Gaslist management
     TCODE   tGas,       "气体"           ; Gas
-    TCODE   tGasErr,    "err"           ; Err  (3 chars)
+    TCODE   tGasErr,    "Err"           ; Err  (3 chars)
         
 ; Communication Menu
 	TCODE	tUsbTitle,	"USB模式"
@@ -246,7 +246,7 @@
     TCODE   tGFInfo,        "当前GF值"    ; GF Info
     TCODE   tCeiling,       "上限"       ; Ceiling
     TCODE   tDiveSafetyStop,"停留"         ; Stop (Four chars, right alligned)
-    TCODE   tDiveFallback,  "Fallback!"     ; Fallback! (max. nine chars)
+    TCODE   tDiveFallback,  "偏差隔离!"     ; Fallback! (max. nine chars)
     TCODE   tSensorCheck,   "传感器检测"  ; Sensor Check
 
 ; Divemode menu
@@ -301,14 +301,14 @@
     TCODE   tSampling10s,   "10秒"               ; 10s
 
 ; Compass directions
-    TCODE   tN,             "N "                ; N(orth),338°-22°
-    TCODE   tNE,            "NE"                ; North-East,23°-67°
-    TCODE   tE,             "E "                ; E(east),68°-112°
-    TCODE   tSE,            "SE"                ; South-East,113°-157°
-    TCODE   tS,             "S "                ; S(outh),158°-202°
-    TCODE   tSW,            "SW"                ; South-West,203°-247°
-    TCODE   tW,             "W "                ; W(West),248°-292°
-    TCODE   tNW,            "NW"                ; North-West,293°-337°
+    TCODE   tN,             "北 "                ; N(orth),338°-22°
+    TCODE   tNE,            "东北"                ; North-East,23°-67°
+    TCODE   tE,             "东 "                ; E(east),68°-112°
+    TCODE   tSE,            "东南"                ; South-East,113°-157°
+    TCODE   tS,             "南 "                ; S(outh),158°-202°
+    TCODE   tSW,            "西南"                ; South-West,203°-247°
+    TCODE   tW,             "西 "                ; W(West),248°-292°
+    TCODE   tNW,            "西北"                ; North-West,293°-337°
 
 ; Color Scheme menu
     TCODE   tColorScheme,   "配色"     ; Colour scheme
