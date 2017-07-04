@@ -320,6 +320,6 @@
     
 ; PSCR Menu and Settings
     TCODE   tPSCRMenu,	    "pSCR"		; PSCR Menu
-    TCODE   tPSCR_O2_drop,  "O2 drop:"		; O2 drop
-    TCODE   tPSCR_lungratio,"Lung ratio:"	; lung ratio
+    TCODE   tPSCR_O2_drop,  "氧含量降低:"		; O2 drop
+    TCODE   tPSCR_lungratio,"肺容量比:"	; lung ratio
     
