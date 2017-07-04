@@ -51,8 +51,8 @@
     TCODE   tCalibrate, "校准"     ; Calibrate
 
 ; Gas menu
-    TCODE   tGaslist,   "OC气体列表"
-    TCODE   tGaslistCC, "CC稀释气体"
+    TCODE   tGaslist,   "开放系统气体列表"
+    TCODE   tGaslistCC, "密闭循环稀释气体"
     TCODE   tGasEdit,   "气体设置"
     TCODE   tType,      "输入: "
     TCODE   tGasDisabled,"关闭"  ; Disabled
