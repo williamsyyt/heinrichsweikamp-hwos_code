@@ -47,7 +47,7 @@
     TCODE   tFixedSetpoints,"选定设置点" ; Fixed Setpoints
     TCODE   tCCRSensor, "CCR传感器"    ; CCR Sensor
     TCODE   tCalibrateMenu, "校准"   ; Calibration
-    TCODE   tCalibrationGas, "氧气校准"  ; Cal. Gas O2:
+    TCODE   tCalibrationGas, "O2校准"  ; Cal. Gas O2:
     TCODE   tCalibrate, "校准"     ; Calibrate
 
 ; Gas menu
@@ -63,7 +63,7 @@
     TCODE   tDilFirst,   "首选稀释气体"     ; First
     TCODE   tDilNorm,   "标准稀释气体"     ; Normal
     TCODE   tAir,       "空气  "         ; Enum: values must follows (5 chars)
-    TCODE   tO2,        "氧气  "         ; tAir + 5
+    TCODE   tO2,        "纯氧  "         ; tAir + 5
     TCODE   tO2Plus,    "O2 +"
     TCODE   tO2Minus,   "O2 -"
     TCODE   tHePlus,    "He +"
@@ -218,9 +218,9 @@
 	TCODE	tVelImperial,"英尺每分钟"
 	TCODE	tGasSelect,  "选择气体"       ; Select Gas
 	TCODE	tSelectAir,	 "空气 "     		; Air
-	TCODE	tSelectO2,	 "氧气 "             ; O2
-    TCODE   tSelectNx,   "高氧"               ; Nx
-    TCODE   tSelectTx,   "氦氧"               ; Tx
+	TCODE	tSelectO2,	 "纯氧 "             ; O2
+    TCODE   tSelectNx,   "Nx"               ; Nx
+    TCODE   tSelectTx,   "Tx"               ; Tx
     TCODE   tDepth,      "深度"            ; Depth
     TCODE   tMaxDepth,   "最大深度"       ; Max. Depth - max 10chars!
     TCODE   tDivetime,   "潜水时间"         ; Divetime
