@@ -125,8 +125,8 @@
     TCODE   tDecoparameters, "减压参数"
     TCODE   tGF_low,    "GF low:"
     TCODE   tGF_high,   "GF high:"
-    TCODE   tSaturationMult,    "饱和:"
-    TCODE   tDesaturationMult,  "不饱和:"
+    TCODE   tSaturationMult,    "过饱和度:"
+    TCODE   tDesaturationMult,  "未饱和度:"
     TCODE   tFTTSMenu,  "返回水面时间:"            ; Future TTS
     TCODE   taGFMenu,   "备用GF"         ; Alternative GF
     TCODE   taGF_low,   "备用GF low:"               ; aGF low
